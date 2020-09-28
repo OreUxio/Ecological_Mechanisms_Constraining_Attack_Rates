@@ -1,0 +1,915 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/xercesc/util/PlatformUtils.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/xercesc/util</a> - PlatformUtils.hpp<span style="font-size: 80%;"> (source / <a href="PlatformUtils.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  * Licensed to the Apache Software Foundation (ASF) under one or more
+<span class="lineNum">       3 </span>            :  * contributor license agreements.  See the NOTICE file distributed with
+<span class="lineNum">       4 </span>            :  * this work for additional information regarding copyright ownership.
+<span class="lineNum">       5 </span>            :  * The ASF licenses this file to You under the Apache License, Version 2.0
+<span class="lineNum">       6 </span>            :  * (the &quot;License&quot;); you may not use this file except in compliance with
+<span class="lineNum">       7 </span>            :  * the License.  You may obtain a copy of the License at
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  *      http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>            :  * limitations under the License.
+<span class="lineNum">      16 </span>            :  */
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : /*
+<span class="lineNum">      19 </span>            :  * $Id: PlatformUtils.hpp 932887 2010-04-11 13:04:59Z borisk $
+<span class="lineNum">      20 </span>            :  */
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #if !defined(XERCESC_INCLUDE_GUARD_PLATFORMUTILS_HPP)
+<span class="lineNum">      23 </span>            : #define XERCESC_INCLUDE_GUARD_PLATFORMUTILS_HPP
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #include &lt;xercesc/util/XercesDefs.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;xercesc/util/XMLException.hpp&gt;
+<span class="lineNum">      27 </span>            : #include &lt;xercesc/util/PanicHandler.hpp&gt;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : #include &lt;xercesc/util/XMLFileMgr.hpp&gt;
+<span class="lineNum">      30 </span>            : #include &lt;xercesc/util/XMLMutexMgr.hpp&gt;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : XERCES_CPP_NAMESPACE_BEGIN
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : class XMLMsgLoader;
+<span class="lineNum">      35 </span>            : class XMLNetAccessor;
+<span class="lineNum">      36 </span>            : class XMLTransService;
+<span class="lineNum">      37 </span>            : class MemoryManager;
+<span class="lineNum">      38 </span>            : class XMLMutex;
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : //
+<span class="lineNum">      41 </span>            : //  For internal use only
+<span class="lineNum">      42 </span>            : //
+<span class="lineNum">      43 </span>            : //  This class provides a simple abstract API via which lazily evaluated
+<span class="lineNum">      44 </span>            : //  data can be cleaned up.
+<span class="lineNum">      45 </span>            : //
+<span class="lineNum">      46 </span>            : class XMLUTIL_EXPORT XMLDeleter
+<span class="lineNum">      47 </span>            : {
+<span class="lineNum">      48 </span>            : public :
+<span class="lineNum">      49 </span>            :     virtual ~XMLDeleter();
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : protected :
+<span class="lineNum">      52 </span>            :     XMLDeleter();
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : private :
+<span class="lineNum">      55 </span>            :     XMLDeleter(const XMLDeleter&amp;);
+<span class="lineNum">      56 </span>            :     XMLDeleter&amp; operator=(const XMLDeleter&amp;);
+<span class="lineNum">      57 </span>            : };
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : /**
+<span class="lineNum">      61 </span>            :   * Utilities that must be implemented in a platform-specific way.
+<span class="lineNum">      62 </span>            :   *
+<span class="lineNum">      63 </span>            :   * This class contains methods that must be implemented in a platform
+<span class="lineNum">      64 </span>            :   * specific manner. The actual implementations of these methods are
+<span class="lineNum">      65 </span>            :   * available in the per-platform files inside &lt;code&gt;src/util/Platforms
+<span class="lineNum">      66 </span>            :   * &lt;/code&gt;.
+<span class="lineNum">      67 </span>            :   */
+<span class="lineNum">      68 </span>            : class XMLUTIL_EXPORT XMLPlatformUtils
+<span class="lineNum">      69 </span>            : {
+<span class="lineNum">      70 </span>            : public :
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            :     /** @name Public Static Data */
+<span class="lineNum">      73 </span>            :     //@{
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :     /** The network accessor
+<span class="lineNum">      76 </span>            :       *
+<span class="lineNum">      77 </span>            :       * This is provided by the per-platform driver, so each platform can
+<span class="lineNum">      78 </span>            :       * choose what actual implementation it wants to use. The object must
+<span class="lineNum">      79 </span>            :       * be dynamically allocated.
+<span class="lineNum">      80 </span>            :       *
+<span class="lineNum">      81 </span>            :       * &lt;i&gt;Note that you may optionally, if your platform driver does not
+<span class="lineNum">      82 </span>            :       * install a network accessor, set it manually from your client code
+<span class="lineNum">      83 </span>            :       * after calling Initialize(). This works because this object is
+<span class="lineNum">      84 </span>            :       * not required during initialization, and only comes into play during
+<span class="lineNum">      85 </span>            :       * actual XML parsing.&lt;/i&gt;
+<span class="lineNum">      86 </span>            :       */
+<span class="lineNum">      87 </span>            :     static XMLNetAccessor*      fgNetAccessor;
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     /** The transcoding service.
+<span class="lineNum">      90 </span>            :       *
+<span class="lineNum">      91 </span>            :       * This is provided by the per platform driver, so each platform can
+<span class="lineNum">      92 </span>            :       * choose what implementation it wants to use. When the platform
+<span class="lineNum">      93 </span>            :       * independent initialization code needs to get a transcoding service
+<span class="lineNum">      94 </span>            :       * object, it will call &lt;code&gt;makeTransService()&lt;/code&gt; to ask the
+<span class="lineNum">      95 </span>            :       * per-platform code to create one. Only one transcoding service
+<span class="lineNum">      96 </span>            :       * object is requested per-process, so it is shared and synchronized
+<span class="lineNum">      97 </span>            :       * among parser instances within that process.
+<span class="lineNum">      98 </span>            :       */
+<span class="lineNum">      99 </span>            :     static XMLTransService*     fgTransService;
+<span class="lineNum">     100 </span>            : #ifdef OS390
+<span class="lineNum">     101 </span>            :     static XMLTransService*     fgTransService2;
+<span class="lineNum">     102 </span>            : #endif
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :     /** The Panic Handler
+<span class="lineNum">     105 </span>            :       *
+<span class="lineNum">     106 </span>            :       *   This is the application provided panic handler.
+<span class="lineNum">     107 </span>            :       */
+<span class="lineNum">     108 </span>            :     static PanicHandler*        fgUserPanicHandler;
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            :     /** The Panic Handler
+<span class="lineNum">     111 </span>            :       *
+<span class="lineNum">     112 </span>            :       *   This is the default panic handler.
+<span class="lineNum">     113 </span>            :       */
+<span class="lineNum">     114 </span>            :     static PanicHandler*        fgDefaultPanicHandler;
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            :     /** The configurable memory manager
+<span class="lineNum">     117 </span>            :       *
+<span class="lineNum">     118 </span>            :       *   This is the pluggable memory manager. If it is not provided by an
+<span class="lineNum">     119 </span>            :       *   application, a default implementation is used.
+<span class="lineNum">     120 </span>            :       */
+<span class="lineNum">     121 </span>            :     static MemoryManager*       fgMemoryManager;
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :     static XMLFileMgr*          fgFileMgr;
+<span class="lineNum">     124 </span>            :     static XMLMutexMgr*         fgMutexMgr;
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            :     /** Global mutex for fast or infrequent operations.
+<span class="lineNum">     127 </span>            :       *
+<span class="lineNum">     128 </span>            :       *   Use this mutex only for fast (e.g., increment an integer,
+<span class="lineNum">     129 </span>            :       *   check flag, etc.) or infrequent (e.g., once-off initialization)
+<span class="lineNum">     130 </span>            :       *   operations.
+<span class="lineNum">     131 </span>            :       */
+<span class="lineNum">     132 </span>            :     static XMLMutex*            fgAtomicMutex;
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :     static bool                 fgXMLChBigEndian;
+<span class="lineNum">     135 </span>            :     static bool                 fgSSE2ok;
+<span class="lineNum">     136 </span>            :     //@}
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            :     /** @name Initialization and Panic methods */
+<span class="lineNum">     140 </span>            :     //@{
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            :     /** Perform per-process parser initialization
+<span class="lineNum">     143 </span>            :       *
+<span class="lineNum">     144 </span>            :       * Initialization &lt;b&gt;must&lt;/b&gt; be called first in any client code.
+<span class="lineNum">     145 </span>            :       *
+<span class="lineNum">     146 </span>            :       * @param locale The locale to use for messages.
+<span class="lineNum">     147 </span>            :       *
+<span class="lineNum">     148 </span>            :       * The locale is set iff the Initialize() is invoked for the very first time,
+<span class="lineNum">     149 </span>            :       * to ensure that each and every message loader, in the process space, share
+<span class="lineNum">     150 </span>            :       * the same locale.
+<span class="lineNum">     151 </span>            :       *
+<span class="lineNum">     152 </span>            :       * All subsequent invocations of Initialize(), with a different locale, have
+<span class="lineNum">     153 </span>            :       * no effect on the message loaders, either instantiated, or to be instantiated.
+<span class="lineNum">     154 </span>            :       *
+<span class="lineNum">     155 </span>            :       * To set to a different locale, client application needs to Terminate() (or
+<span class="lineNum">     156 </span>            :       * multiple Terminate() in the case where multiple Initialize() have been invoked
+<span class="lineNum">     157 </span>            :       * before), followed by Initialize(new_locale).
+<span class="lineNum">     158 </span>            :       *
+<span class="lineNum">     159 </span>            :       * The default locale is &quot;en_US&quot;.
+<span class="lineNum">     160 </span>            :       *
+<span class="lineNum">     161 </span>            :       * @param nlsHome User specified location where MsgLoader retrieves error message files.
+<span class="lineNum">     162 </span>            :       *                the discussion above with regard to locale, applies to nlsHome as well.
+<span class="lineNum">     163 </span>            :       *
+<span class="lineNum">     164 </span>            :       * @param panicHandler Application's panic handler, application owns this handler.
+<span class="lineNum">     165 </span>            :       *                     Application shall make sure that the plugged panic handler persists
+<span class="lineNum">     166 </span>            :       *                     through the call to XMLPlatformUtils::Terminate().
+<span class="lineNum">     167 </span>            :       *
+<span class="lineNum">     168 </span>            :       * @param memoryManager Plugged-in memory manager which is owned by the
+<span class="lineNum">     169 </span>            :       *                      application. Applications must make sure that the
+<span class="lineNum">     170 </span>            :       *                      plugged-in memory manager persist through the call to
+<span class="lineNum">     171 </span>            :       *                      XMLPlatformUtils::Terminate()
+<span class="lineNum">     172 </span>            :       */
+<span class="lineNum">     173 </span>            :     static void Initialize(const char*          const locale = XMLUni::fgXercescDefaultLocale
+<span class="lineNum">     174 </span>            :                          , const char*          const nlsHome = 0
+<span class="lineNum">     175 </span>            :                          ,       PanicHandler*  const panicHandler = 0
+<span class="lineNum">     176 </span>            :                          ,       MemoryManager* const memoryManager = 0);
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            :       /** Perform per-process parser initialization
+<span class="lineNum">     179 </span>            :       *
+<span class="lineNum">     180 </span>            :       * Initialization &lt;b&gt;must&lt;/b&gt; be called first in any client code.
+<span class="lineNum">     181 </span>            :       *
+<span class="lineNum">     182 </span>            :       * @param initialDOMHeapAllocSize The size of the first memory block
+<span class="lineNum">     183 </span>            :       * allocated by the DOMDocument heap. Note that changing this parameter
+<span class="lineNum">     184 </span>            :       * may result in poor performance and/or excessive memory usage. For
+<span class="lineNum">     185 </span>            :       * the default value refer to dom/impl/DOMDocumentImpl.cpp.
+<span class="lineNum">     186 </span>            :       *
+<span class="lineNum">     187 </span>            :       * @param maxDOMHeapAllocSize The maximum size of the memory block
+<span class="lineNum">     188 </span>            :       * allocated by the DOMDocument heap. As the document grows, the
+<span class="lineNum">     189 </span>            :       * allocated by the heap memory blocks grow from initialDOMHeapAllocSize
+<span class="lineNum">     190 </span>            :       * to maxDOMHeapAllocSize. Note that changing this parameter may result
+<span class="lineNum">     191 </span>            :       * in poor performance and/or excessive memory usage. For the default
+<span class="lineNum">     192 </span>            :       * value refer to dom/impl/DOMDocumentImpl.cpp.
+<span class="lineNum">     193 </span>            :       *
+<span class="lineNum">     194 </span>            :       * @param maxDOMSubAllocationSize The maximum size of the memory block
+<span class="lineNum">     195 </span>            :       * requested that is handled by the DOMDocument heap. A request for a
+<span class="lineNum">     196 </span>            :       * larger block is handled directly by the memory manager. Note that
+<span class="lineNum">     197 </span>            :       * changing this parameter may result in poor performance and/or
+<span class="lineNum">     198 </span>            :       * excessive memory usage. For the default value refer to
+<span class="lineNum">     199 </span>            :       * dom/impl/DOMDocumentImpl.cpp.
+<span class="lineNum">     200 </span>            :       *
+<span class="lineNum">     201 </span>            :       * @param locale The locale to use for messages.
+<span class="lineNum">     202 </span>            :       *
+<span class="lineNum">     203 </span>            :       * The locale is set iff the Initialize() is invoked for the very first time,
+<span class="lineNum">     204 </span>            :       * to ensure that each and every message loader, in the process space, share
+<span class="lineNum">     205 </span>            :       * the same locale.
+<span class="lineNum">     206 </span>            :       *
+<span class="lineNum">     207 </span>            :       * All subsequent invocations of Initialize(), with a different locale, have
+<span class="lineNum">     208 </span>            :       * no effect on the message loaders, either instantiated, or to be instantiated.
+<span class="lineNum">     209 </span>            :       *
+<span class="lineNum">     210 </span>            :       * To set to a different locale, client application needs to Terminate() (or
+<span class="lineNum">     211 </span>            :       * multiple Terminate() in the case where multiple Initialize() have been invoked
+<span class="lineNum">     212 </span>            :       * before), followed by Initialize(new_locale).
+<span class="lineNum">     213 </span>            :       *
+<span class="lineNum">     214 </span>            :       * The default locale is &quot;en_US&quot;.
+<span class="lineNum">     215 </span>            :       *
+<span class="lineNum">     216 </span>            :       * @param nlsHome User specified location where MsgLoader retrieves error message files.
+<span class="lineNum">     217 </span>            :       * the discussion above with regard to locale, applies to nlsHome as well.
+<span class="lineNum">     218 </span>            :       *
+<span class="lineNum">     219 </span>            :       * @param panicHandler Application's panic handler, application owns this handler.
+<span class="lineNum">     220 </span>            :       * Application shall make sure that the plugged panic handler persists
+<span class="lineNum">     221 </span>            :       * through the call to XMLPlatformUtils::Terminate().
+<span class="lineNum">     222 </span>            :       *
+<span class="lineNum">     223 </span>            :       * @param memoryManager Plugged-in memory manager which is owned by the
+<span class="lineNum">     224 </span>            :       * application. Applications must make sure that the plugged-in memory
+<span class="lineNum">     225 </span>            :       * manager persist through the call to XMLPlatformUtils::Terminate()
+<span class="lineNum">     226 </span>            :       */
+<span class="lineNum">     227 </span>            :     static void Initialize(XMLSize_t initialDOMHeapAllocSize
+<span class="lineNum">     228 </span>            :                          , XMLSize_t maxDOMHeapAllocSize
+<span class="lineNum">     229 </span>            :                          , XMLSize_t maxDOMSubAllocationSize
+<span class="lineNum">     230 </span>            :                          , const char*          const locale = XMLUni::fgXercescDefaultLocale
+<span class="lineNum">     231 </span>            :                          , const char*          const nlsHome = 0
+<span class="lineNum">     232 </span>            :                          ,       PanicHandler*  const panicHandler = 0
+<span class="lineNum">     233 </span>            :                          ,       MemoryManager* const memoryManager = 0);
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            :     /** Perform per-process parser termination
+<span class="lineNum">     236 </span>            :       *
+<span class="lineNum">     237 </span>            :       * The termination call is currently optional, to aid those dynamically
+<span class="lineNum">     238 </span>            :       * loading the parser to clean up before exit, or to avoid spurious
+<span class="lineNum">     239 </span>            :       * reports from leak detectors.
+<span class="lineNum">     240 </span>            :       */
+<span class="lineNum">     241 </span>            :     static void Terminate();
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :     /** The panic mechanism.
+<span class="lineNum">     244 </span>            :       *
+<span class="lineNum">     245 </span>            :       * If, during initialization, we cannot even get far enough along
+<span class="lineNum">     246 </span>            :       * to get transcoding up or get message loading working, we call
+<span class="lineNum">     247 </span>            :       * this method.&lt;/p&gt;
+<span class="lineNum">     248 </span>            :       *
+<span class="lineNum">     249 </span>            :       * Each platform can implement it however they want. This method will
+<span class="lineNum">     250 </span>            :       * delegate the panic handling to a user specified panic handler or
+<span class="lineNum">     251 </span>            :       * in the absence of it, the default panic handler.
+<span class="lineNum">     252 </span>            :       *
+<span class="lineNum">     253 </span>            :       * In case the default panic handler does not support a particular
+<span class="lineNum">     254 </span>            :       * platform, the platform specific panic handling shall be implemented
+<span class="lineNum">     255 </span>            :       * here &lt;/p&gt;.
+<span class="lineNum">     256 </span>            :       *
+<span class="lineNum">     257 </span>            :       * @param reason The enumeration that defines the cause of the failure
+<span class="lineNum">     258 </span>            :       */
+<span class="lineNum">     259 </span>            :     static void panic
+<span class="lineNum">     260 </span>            :     (
+<span class="lineNum">     261 </span>            :         const   PanicHandler::PanicReasons    reason
+<span class="lineNum">     262 </span>            :     );
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            :     //@}
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            :     /** @name File Methods */
+<span class="lineNum">     267 </span>            :     //@{
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            :     /** Make a new file object appropriate for the platform.
+<span class="lineNum">     270 </span>            :       *
+<span class="lineNum">     271 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     272 </span>            :       */
+<span class="lineNum">     273 </span>            :     static XMLFileMgr* makeFileMgr(MemoryManager* const manager);
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            :     /** Get the current file position
+<span class="lineNum">     276 </span>            :       *
+<span class="lineNum">     277 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     278 </span>            :       * use local file services to determine the current position within
+<span class="lineNum">     279 </span>            :       * the passed file.
+<span class="lineNum">     280 </span>            :       *
+<span class="lineNum">     281 </span>            :       * Since the file API provided here only reads, if the host platform
+<span class="lineNum">     282 </span>            :       * supports separate read/write positions, only the read position is
+<span class="lineNum">     283 </span>            :       * of any interest, and hence should be the one returned.
+<span class="lineNum">     284 </span>            :       *
+<span class="lineNum">     285 </span>            :       * @param theFile The file handle
+<span class="lineNum">     286 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     287 </span>            :       */
+<span class="lineNum">     288 </span>            :     static XMLFilePos curFilePos(FileHandle theFile
+<span class="lineNum">     289 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            :     /** Closes the file handle
+<span class="lineNum">     292 </span>            :       *
+<span class="lineNum">     293 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     294 </span>            :       * use local file services to close the passed file handle, and to
+<span class="lineNum">     295 </span>            :       * destroy the passed file handle and any allocated data or system
+<span class="lineNum">     296 </span>            :       * resources it contains.
+<span class="lineNum">     297 </span>            :       *
+<span class="lineNum">     298 </span>            :       * @param theFile The file handle to close
+<span class="lineNum">     299 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     300 </span>            :       */
+<span class="lineNum">     301 </span>            :     static void closeFile(FileHandle theFile
+<span class="lineNum">     302 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            :     /** Returns the file size
+<span class="lineNum">     305 </span>            :       *
+<span class="lineNum">     306 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     307 </span>            :       * use local file services to determine the current size of the file
+<span class="lineNum">     308 </span>            :       * represented by the passed handle.
+<span class="lineNum">     309 </span>            :       *
+<span class="lineNum">     310 </span>            :       * @param theFile The file handle whose size you want
+<span class="lineNum">     311 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     312 </span>            :       * @return Returns the size of the file in bytes
+<span class="lineNum">     313 </span>            :       */
+<span class="lineNum">     314 </span>            :     static XMLFilePos fileSize(FileHandle theFile
+<span class="lineNum">     315 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            :     /** Opens the file
+<span class="lineNum">     318 </span>            :       *
+<span class="lineNum">     319 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     320 </span>            :       * use local file services to open passed file. If it fails, a
+<span class="lineNum">     321 </span>            :       * null handle pointer should be returned.
+<span class="lineNum">     322 </span>            :       *
+<span class="lineNum">     323 </span>            :       * @param fileName The string containing the name of the file
+<span class="lineNum">     324 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     325 </span>            :       * @return The file handle of the opened file
+<span class="lineNum">     326 </span>            :       */
+<span class="lineNum">     327 </span>            :     static FileHandle openFile(const char* const fileName
+<span class="lineNum">     328 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            :     /** Opens a named file
+<span class="lineNum">     331 </span>            :       *
+<span class="lineNum">     332 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     333 </span>            :       * use local file services to open the passed file. If it fails, a
+<span class="lineNum">     334 </span>            :       * null handle pointer should be returned.
+<span class="lineNum">     335 </span>            :       *
+<span class="lineNum">     336 </span>            :       * @param fileName The string containing the name of the file
+<span class="lineNum">     337 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     338 </span>            :       * @return The file handle of the opened file
+<span class="lineNum">     339 </span>            :       */
+<span class="lineNum">     340 </span>            :     static FileHandle openFile(const XMLCh* const fileName
+<span class="lineNum">     341 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            :     /** Open a named file to write
+<span class="lineNum">     344 </span>            :       *
+<span class="lineNum">     345 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     346 </span>            :       * use local file services to open passed file. If it fails, a
+<span class="lineNum">     347 </span>            :       * null handle pointer should be returned.
+<span class="lineNum">     348 </span>            :       *
+<span class="lineNum">     349 </span>            :       * @param fileName The string containing the name of the file
+<span class="lineNum">     350 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     351 </span>            :       * @return The file handle of the opened file
+<span class="lineNum">     352 </span>            :       */
+<span class="lineNum">     353 </span>            :     static FileHandle openFileToWrite(const char* const fileName
+<span class="lineNum">     354 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     355 </span>            : 
+<span class="lineNum">     356 </span>            :     /** Open a named file to write
+<span class="lineNum">     357 </span>            :       *
+<span class="lineNum">     358 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     359 </span>            :       * use local file services to open the passed file. If it fails, a
+<span class="lineNum">     360 </span>            :       * null handle pointer should be returned.
+<span class="lineNum">     361 </span>            :       *
+<span class="lineNum">     362 </span>            :       * @param fileName The string containing the name of the file
+<span class="lineNum">     363 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     364 </span>            :       * @return The file handle of the opened file
+<span class="lineNum">     365 </span>            :       */
+<span class="lineNum">     366 </span>            :     static FileHandle openFileToWrite(const XMLCh* const fileName
+<span class="lineNum">     367 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span>            :     /** Opens the standard input as a file
+<span class="lineNum">     370 </span>            :       *
+<span class="lineNum">     371 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     372 </span>            :       * use local file services to open a handle to the standard input.
+<span class="lineNum">     373 </span>            :       * It should be a copy of the standard input handle, since it will
+<span class="lineNum">     374 </span>            :       * be closed later!
+<span class="lineNum">     375 </span>            :       *
+<span class="lineNum">     376 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     377 </span>            :       * @return The file handle of the standard input stream
+<span class="lineNum">     378 </span>            :       */
+<span class="lineNum">     379 </span>            :     static FileHandle openStdInHandle(MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     380 </span>            : 
+<span class="lineNum">     381 </span>            :     /** Reads the file buffer
+<span class="lineNum">     382 </span>            :       *
+<span class="lineNum">     383 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     384 </span>            :       * use local file services to read up to 'toRead' bytes of data from
+<span class="lineNum">     385 </span>            :       * the passed file, and return those bytes in the 'toFill' buffer. It
+<span class="lineNum">     386 </span>            :       * is not an error not to read the requested number of bytes. When the
+<span class="lineNum">     387 </span>            :       * end of file is reached, zero should be returned.
+<span class="lineNum">     388 </span>            :       *
+<span class="lineNum">     389 </span>            :       * @param theFile The file handle to be read from.
+<span class="lineNum">     390 </span>            :       * @param toRead The maximum number of byte to read from the current
+<span class="lineNum">     391 </span>            :       * position
+<span class="lineNum">     392 </span>            :       * @param toFill The byte buffer to fill
+<span class="lineNum">     393 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     394 </span>            :       *
+<span class="lineNum">     395 </span>            :       * @return Returns the number of bytes read from the stream or file
+<span class="lineNum">     396 </span>            :       */
+<span class="lineNum">     397 </span>            :     static XMLSize_t readFileBuffer
+<span class="lineNum">     398 </span>            :     (
+<span class="lineNum">     399 </span>            :                 FileHandle      theFile
+<span class="lineNum">     400 </span>            :         , const XMLSize_t       toRead
+<span class="lineNum">     401 </span>            :         ,       XMLByte* const  toFill
+<span class="lineNum">     402 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager
+<span class="lineNum">     403 </span>            :     );
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            :     /** Writes the buffer to the file
+<span class="lineNum">     406 </span>            :       *
+<span class="lineNum">     407 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     408 </span>            :       * use local file services to write up to 'toWrite' bytes of data to
+<span class="lineNum">     409 </span>            :       * the passed file. Unless exception raised by local file services,
+<span class="lineNum">     410 </span>            :       * 'toWrite' bytes of data is to be written to the passed file.
+<span class="lineNum">     411 </span>            :       *
+<span class="lineNum">     412 </span>            :       * @param theFile The file handle to be written to.
+<span class="lineNum">     413 </span>            :       * @param toWrite The maximum number of byte to write from the current
+<span class="lineNum">     414 </span>            :       * position
+<span class="lineNum">     415 </span>            :       * @param toFlush The byte buffer to flush
+<span class="lineNum">     416 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     417 </span>            :       * @return void
+<span class="lineNum">     418 </span>            :       */
+<span class="lineNum">     419 </span>            :     static void writeBufferToFile
+<span class="lineNum">     420 </span>            :     (
+<span class="lineNum">     421 </span>            :           FileHandle     const  theFile
+<span class="lineNum">     422 </span>            :         , XMLSize_t             toWrite
+<span class="lineNum">     423 </span>            :         , const XMLByte* const  toFlush
+<span class="lineNum">     424 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager
+<span class="lineNum">     425 </span>            :     );
+<span class="lineNum">     426 </span>            : 
+<span class="lineNum">     427 </span>            :     /** Resets the file handle
+<span class="lineNum">     428 </span>            :       *
+<span class="lineNum">     429 </span>            :       * This must be implemented by the per-platform driver which will use
+<span class="lineNum">     430 </span>            :       * local file services to reset the file position to the start of the
+<span class="lineNum">     431 </span>            :       * the file.
+<span class="lineNum">     432 </span>            :       *
+<span class="lineNum">     433 </span>            :       * @param theFile The file handle that you want to reset
+<span class="lineNum">     434 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     435 </span>            :       */
+<span class="lineNum">     436 </span>            :     static void resetFile(FileHandle theFile
+<span class="lineNum">     437 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     438 </span>            : 
+<span class="lineNum">     439 </span>            :     //@}
+<span class="lineNum">     440 </span>            : 
+<span class="lineNum">     441 </span>            : 
+<span class="lineNum">     442 </span>            :     /** @name File System Methods */
+<span class="lineNum">     443 </span>            :     //@{
+<span class="lineNum">     444 </span>            :     /** Gets the full path from a relative path
+<span class="lineNum">     445 </span>            :       *
+<span class="lineNum">     446 </span>            :       * This must be implemented by the per-platform driver. It should
+<span class="lineNum">     447 </span>            :       * complete a relative path using the 'current directory', or whatever
+<span class="lineNum">     448 </span>            :       * the local equivalent of a current directory is. If the passed
+<span class="lineNum">     449 </span>            :       * source path is actually fully qualified, then a straight copy of it
+<span class="lineNum">     450 </span>            :       * will be returned.
+<span class="lineNum">     451 </span>            :       *
+<span class="lineNum">     452 </span>            :       * @param srcPath The path of the file for which you want the full path
+<span class="lineNum">     453 </span>            :       *
+<span class="lineNum">     454 </span>            :       * @param manager Pointer to the memory manager to be used to
+<span class="lineNum">     455 </span>            :       *                allocate objects.
+<span class="lineNum">     456 </span>            :       *
+<span class="lineNum">     457 </span>            :       * @return Returns the fully qualified path of the file name including
+<span class="lineNum">     458 </span>            :       *         the file name. This is dyanmically allocated and must be
+<span class="lineNum">     459 </span>            :       *         deleted  by the caller when its no longer needed! The memory
+<span class="lineNum">     460 </span>            :       *         returned will beallocated using the static memory manager, if
+<span class="lineNum">     461 </span>            :       *         user do not supply a memory manager. Users then need to make
+<span class="lineNum">     462 </span>            :       *         sure to use either the default or user specific memory manager
+<span class="lineNum">     463 </span>            :       *         to deallocate the memory.
+<span class="lineNum">     464 </span>            :       */
+<span class="lineNum">     465 </span>            :     static XMLCh* getFullPath
+<span class="lineNum">     466 </span>            :     (
+<span class="lineNum">     467 </span>            :         const XMLCh* const srcPath
+<span class="lineNum">     468 </span>            :         , MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager
+<span class="lineNum">     469 </span>            :     );
+<span class="lineNum">     470 </span>            : 
+<span class="lineNum">     471 </span>            :     /** Gets the current working directory
+<span class="lineNum">     472 </span>            :       *
+<span class="lineNum">     473 </span>            :       * This must be implemented by the per-platform driver. It returns
+<span class="lineNum">     474 </span>            :       * the current working directory is.
+<span class="lineNum">     475 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     476 </span>            :       * @return Returns the current working directory.
+<span class="lineNum">     477 </span>            :       *         This is dyanmically allocated and must be deleted
+<span class="lineNum">     478 </span>            :       *         by the caller when its no longer needed! The memory returned
+<span class="lineNum">     479 </span>            :       *         will be allocated using the static memory manager, if users
+<span class="lineNum">     480 </span>            :       *         do not supply a memory manager. Users then need to make sure
+<span class="lineNum">     481 </span>            :       *         to use either the default or user specific memory manager to
+<span class="lineNum">     482 </span>            :       *         deallocate the memory.
+<span class="lineNum">     483 </span>            :       */
+<span class="lineNum">     484 </span>            :     static XMLCh* getCurrentDirectory
+<span class="lineNum">     485 </span>            :     (
+<span class="lineNum">     486 </span>            :         MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager
+<span class="lineNum">     487 </span>            :     );
+<span class="lineNum">     488 </span>            : 
+<span class="lineNum">     489 </span>            :     /** Check if a character is a slash
+<span class="lineNum">     490 </span>            :       *
+<span class="lineNum">     491 </span>            :       * This must be implemented by the per-platform driver.
+<span class="lineNum">     492 </span>            :       *
+<span class="lineNum">     493 </span>            :       * @param c the character to be examined
+<span class="lineNum">     494 </span>            :       *
+<span class="lineNum">     495 </span>            :       * @return true  if the character examined is a slash
+<span class="lineNum">     496 </span>            :       *         false otherwise
+<span class="lineNum">     497 </span>            :       */
+<span class="lineNum">     498 </span>            :     static inline bool isAnySlash(XMLCh c);
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span>            :     /** Remove occurrences of the pair of dot slash
+<span class="lineNum">     501 </span>            :       *
+<span class="lineNum">     502 </span>            :       * To remove the sequence, dot slash if it is part of the sequence,
+<span class="lineNum">     503 </span>            :       * slash dot slash.
+<span class="lineNum">     504 </span>            :       *
+<span class="lineNum">     505 </span>            :       * @param srcPath The path for which you want to remove the dot slash sequence.
+<span class="lineNum">     506 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     507 </span>            :       * @return
+<span class="lineNum">     508 </span>            :       */
+<span class="lineNum">     509 </span>            :     static void   removeDotSlash(XMLCh* const srcPath
+<span class="lineNum">     510 </span>            :         , MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     511 </span>            : 
+<span class="lineNum">     512 </span>            :     /** Remove occurrences of the dot dot slash
+<span class="lineNum">     513 </span>            :       *
+<span class="lineNum">     514 </span>            :       * To remove the sequence, slash dot dot slash and its preceding path segment
+<span class="lineNum">     515 </span>            :       * if and only if the preceding path segment is not slash dot dot slash.
+<span class="lineNum">     516 </span>            :       *
+<span class="lineNum">     517 </span>            :       * @param srcPath The path for which you want to remove the slash dot
+<span class="lineNum">     518 </span>            :       *        dot slash sequence and its preceding path segment.
+<span class="lineNum">     519 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     520 </span>            :       * @return
+<span class="lineNum">     521 </span>            :       */
+<span class="lineNum">     522 </span>            :     static void   removeDotDotSlash(XMLCh* const srcPath
+<span class="lineNum">     523 </span>            :         , MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     524 </span>            : 
+<span class="lineNum">     525 </span>            :     /** Determines if a path is relative or absolute
+<span class="lineNum">     526 </span>            :       *
+<span class="lineNum">     527 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     528 </span>            :       * determine whether the passed path is relative or not. The concept
+<span class="lineNum">     529 </span>            :       * of relative and absolute might be... well relative on different
+<span class="lineNum">     530 </span>            :       * platforms. But, as long as the determination is made consistently
+<span class="lineNum">     531 </span>            :       * and in coordination with the weavePaths() method, it should work
+<span class="lineNum">     532 </span>            :       * for any platform.
+<span class="lineNum">     533 </span>            :       *
+<span class="lineNum">     534 </span>            :       * @param toCheck The file name which you want to check
+<span class="lineNum">     535 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     536 </span>            :       * @return Returns true if the filename appears to be relative
+<span class="lineNum">     537 </span>            :       */
+<span class="lineNum">     538 </span>            :     static bool isRelative(const XMLCh* const toCheck
+<span class="lineNum">     539 </span>            :         , MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager
+<span class="lineNum">     540 </span>            :         );
+<span class="lineNum">     541 </span>            : 
+<span class="lineNum">     542 </span>            :     /** Utility to join two paths
+<span class="lineNum">     543 </span>            :       *
+<span class="lineNum">     544 </span>            :       * This must be implemented by the per-platform driver, and should
+<span class="lineNum">     545 </span>            :       * weave the relative path part together with the base part and return
+<span class="lineNum">     546 </span>            :       * a new path that represents this combination.
+<span class="lineNum">     547 </span>            :       *
+<span class="lineNum">     548 </span>            :       * If the relative part turns out to be fully qualified, it will be
+<span class="lineNum">     549 </span>            :       * returned as is. If it is not, then it will be woven onto the
+<span class="lineNum">     550 </span>            :       * passed base path, by removing one path component for each leading
+<span class="lineNum">     551 </span>            :       * &quot;../&quot; (or whatever is the equivalent in the local system) in the
+<span class="lineNum">     552 </span>            :       * relative path.
+<span class="lineNum">     553 </span>            :       *
+<span class="lineNum">     554 </span>            :       * @param basePath The string containing the base path
+<span class="lineNum">     555 </span>            :       * @param relativePath The string containing the relative path
+<span class="lineNum">     556 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     557 </span>            :       * @return Returns a string containing the 'woven' path. It should
+<span class="lineNum">     558 </span>            :       * be dynamically allocated and becomes the responsibility of the
+<span class="lineNum">     559 </span>            :       * caller to delete.
+<span class="lineNum">     560 </span>            :       */
+<span class="lineNum">     561 </span>            :     static XMLCh* weavePaths
+<span class="lineNum">     562 </span>            :     (
+<span class="lineNum">     563 </span>            :         const   XMLCh* const    basePath
+<span class="lineNum">     564 </span>            :         , const XMLCh* const    relativePath
+<span class="lineNum">     565 </span>            :         , MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager
+<span class="lineNum">     566 </span>            :     );
+<span class="lineNum">     567 </span>            :     //@}
+<span class="lineNum">     568 </span>            : 
+<span class="lineNum">     569 </span>            :     /** @name Timing Methods */
+<span class="lineNum">     570 </span>            :     //@{
+<span class="lineNum">     571 </span>            : 
+<span class="lineNum">     572 </span>            :     /** Gets the system time in milliseconds
+<span class="lineNum">     573 </span>            :       *
+<span class="lineNum">     574 </span>            :       * This must be implemented by the per-platform driver, which should
+<span class="lineNum">     575 </span>            :       * use local services to return the current value of a running
+<span class="lineNum">     576 </span>            :       * millisecond timer. Note that the value returned is only as accurate
+<span class="lineNum">     577 </span>            :       * as the millisecond time of the underlying host system.
+<span class="lineNum">     578 </span>            :       *
+<span class="lineNum">     579 </span>            :       * @return Returns the system time as an unsigned long
+<span class="lineNum">     580 </span>            :       */
+<span class="lineNum">     581 </span>            :     static unsigned long getCurrentMillis();
+<span class="lineNum">     582 </span>            :     //@}
+<span class="lineNum">     583 </span>            : 
+<span class="lineNum">     584 </span>            :     /** @name Mutex Methods */
+<span class="lineNum">     585 </span>            :     //@{
+<span class="lineNum">     586 </span>            : 
+<span class="lineNum">     587 </span>            :     /** Factory method for creating MutexMgr object.
+<span class="lineNum">     588 </span>            :       *
+<span class="lineNum">     589 </span>            :       * This factory method creates a mutexmgr that will be used
+<span class="lineNum">     590 </span>            :       * on the particular platform.
+<span class="lineNum">     591 </span>            :       *
+<span class="lineNum">     592 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     593 </span>            :       */
+<span class="lineNum">     594 </span>            :     static XMLMutexMgr* makeMutexMgr(MemoryManager* const manager);
+<span class="lineNum">     595 </span>            : 
+<span class="lineNum">     596 </span>            :     /** Closes a mutex handle
+<span class="lineNum">     597 </span>            :       *
+<span class="lineNum">     598 </span>            :       * Each per-platform driver must implement this. Only it knows what
+<span class="lineNum">     599 </span>            :       * the actual content of the passed mutex handle is.
+<span class="lineNum">     600 </span>            :       *
+<span class="lineNum">     601 </span>            :       * @param mtxHandle The mutex handle that you want to close
+<span class="lineNum">     602 </span>            :       * @param manager The MemoryManager used to allocate the object
+<span class="lineNum">     603 </span>            :       */
+<span class="lineNum">     604 </span>            :     static void closeMutex(void* const mtxHandle, MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     605 </span>            : 
+<span class="lineNum">     606 </span>            :     /** Locks a mutex handle
+<span class="lineNum">     607 </span>            :       *
+<span class="lineNum">     608 </span>            :       * Each per-platform driver must implement this. Only it knows what
+<span class="lineNum">     609 </span>            :       * the actual content of the passed mutex handle is.
+<span class="lineNum">     610 </span>            :       *
+<span class="lineNum">     611 </span>            :       * @param mtxHandle The mutex handle that you want to lock
+<span class="lineNum">     612 </span>            :       */
+<span class="lineNum">     613 </span>            :     static void lockMutex(void* const mtxHandle);
+<span class="lineNum">     614 </span>            : 
+<span class="lineNum">     615 </span>            :     /** Make a new mutex
+<span class="lineNum">     616 </span>            :       *
+<span class="lineNum">     617 </span>            :       * Each per-platform driver must implement this. Only it knows what
+<span class="lineNum">     618 </span>            :       * the actual content of the passed mutex handle is. The returned
+<span class="lineNum">     619 </span>            :       * handle pointer will be eventually passed to closeMutex() which is
+<span class="lineNum">     620 </span>            :       * also implemented by the platform driver.
+<span class="lineNum">     621 </span>            :       *
+<span class="lineNum">     622 </span>            :       * @param manager The MemoryManager to use to allocate objects
+<span class="lineNum">     623 </span>            :       */
+<span class="lineNum">     624 </span>            :     static void* makeMutex(MemoryManager* const manager = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     625 </span>            : 
+<span class="lineNum">     626 </span>            :     /** Unlocks a mutex
+<span class="lineNum">     627 </span>            :       *
+<span class="lineNum">     628 </span>            :       * Each per-platform driver must implement this. Only it knows what
+<span class="lineNum">     629 </span>            :       * the actual content of the passed mutex handle is.
+<span class="lineNum">     630 </span>            :       *
+<span class="lineNum">     631 </span>            :       * Note that, since the underlying system synchronization services
+<span class="lineNum">     632 </span>            :       * are used, Xerces cannot guarantee that lock/unlock operations are
+<span class="lineNum">     633 </span>            :       * correctly enforced on a per-thread basis or that incorrect nesting
+<span class="lineNum">     634 </span>            :       * of lock/unlock operations will be caught.
+<span class="lineNum">     635 </span>            :       *
+<span class="lineNum">     636 </span>            :       * @param mtxHandle The mutex handle that you want to unlock
+<span class="lineNum">     637 </span>            :       */
+<span class="lineNum">     638 </span>            :     static void unlockMutex(void* const mtxHandle);
+<span class="lineNum">     639 </span>            : 
+<span class="lineNum">     640 </span>            :     //@}
+<span class="lineNum">     641 </span>            : 
+<span class="lineNum">     642 </span>            : 
+<span class="lineNum">     643 </span>            :     /** @name External Message Support */
+<span class="lineNum">     644 </span>            :     //@{
+<span class="lineNum">     645 </span>            : 
+<span class="lineNum">     646 </span>            :     /** Loads the message set from among the available domains
+<span class="lineNum">     647 </span>            :       *
+<span class="lineNum">     648 </span>            :       * The returned object must be dynamically allocated and the caller
+<span class="lineNum">     649 </span>            :       * becomes responsible for cleaning it up.
+<span class="lineNum">     650 </span>            :       *
+<span class="lineNum">     651 </span>            :       * @param msgDomain The message domain which you want to load
+<span class="lineNum">     652 </span>            :       */
+<span class="lineNum">     653 </span>            :     static XMLMsgLoader* loadMsgSet(const XMLCh* const msgDomain);
+<span class="lineNum">     654 </span>            : 
+<span class="lineNum">     655 </span>            :     //@}
+<span class="lineNum">     656 </span>            : 
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span>            :     /** @name NEL Character Handling  */
+<span class="lineNum">     659 </span>            :     //@{
+<span class="lineNum">     660 </span>            :     /**
+<span class="lineNum">     661 </span>            :       * This function enables the recognition of NEL(0x85) char and LSEP (0x2028) as newline chars
+<span class="lineNum">     662 </span>            :       * which is disabled by default.
+<span class="lineNum">     663 </span>            :       * It is only called once per process. Once it is set, any subsequent calls
+<span class="lineNum">     664 </span>            :       * will result in exception being thrown.
+<span class="lineNum">     665 </span>            :       *
+<span class="lineNum">     666 </span>            :       * Note: 1. Turning this option on will make the parser non compliant to XML 1.0.
+<span class="lineNum">     667 </span>            :       *       2. This option has no effect to document conforming to XML 1.1 compliant,
+<span class="lineNum">     668 </span>            :       *          which always recognize these two chars (0x85 and 0x2028) as newline characters.
+<span class="lineNum">     669 </span>            :       *
+<span class="lineNum">     670 </span>            :       */
+<span class="lineNum">     671 </span>            :     static void recognizeNEL(bool state
+<span class="lineNum">     672 </span>            :         , MemoryManager* const manager  = XMLPlatformUtils::fgMemoryManager);
+<span class="lineNum">     673 </span>            : 
+<span class="lineNum">     674 </span>            :     /**
+<span class="lineNum">     675 </span>            :       * Return the value of fgNEL flag.
+<span class="lineNum">     676 </span>            :       */
+<span class="lineNum">     677 </span>            :     static bool isNELRecognized();
+<span class="lineNum">     678 </span>            :     //@}
+<span class="lineNum">     679 </span>            : 
+<span class="lineNum">     680 </span>            :     /** @name Strict IANA Encoding Checking */
+<span class="lineNum">     681 </span>            :     //@{
+<span class="lineNum">     682 </span>            :     /**
+<span class="lineNum">     683 </span>            :       * This function enables/disables strict IANA encoding names checking.
+<span class="lineNum">     684 </span>            :       *
+<span class="lineNum">     685 </span>            :       * The strict checking is disabled by default.
+<span class="lineNum">     686 </span>            :       *
+<span class="lineNum">     687 </span>            :       * @param state If true, a strict IANA encoding name check is performed,
+<span class="lineNum">     688 </span>            :       *              otherwise, no checking.
+<span class="lineNum">     689 </span>            :       *
+<span class="lineNum">     690 </span>            :       */
+<span class="lineNum">     691 </span>            :     static void strictIANAEncoding(const bool state);
+<span class="lineNum">     692 </span>            : 
+<span class="lineNum">     693 </span>            :     /**
+<span class="lineNum">     694 </span>            :       * Returns whether a strict IANA encoding name check is enabled or
+<span class="lineNum">     695 </span>            :       * disabled.
+<span class="lineNum">     696 </span>            :       */
+<span class="lineNum">     697 </span>            :     static bool isStrictIANAEncoding();
+<span class="lineNum">     698 </span>            :     //@}
+<span class="lineNum">     699 </span>            : 
+<span class="lineNum">     700 </span>            :     /**
+<span class="lineNum">     701 </span>            :       * Aligns the specified pointer per platform block allocation
+<span class="lineNum">     702 </span>            :       * requirements.
+<span class="lineNum">     703 </span>            :       *
+<span class="lineNum">     704 </span>            :       * The results of this function may be altered by defining
+<span class="lineNum">     705 </span>            :       * XML_PLATFORM_NEW_BLOCK_ALIGNMENT.
+<span class="lineNum">     706 </span>            :       */
+<span class="lineNum">     707 </span>            :     static inline XMLSize_t alignPointerForNewBlockAllocation(XMLSize_t ptrSize);
+<span class="lineNum">     708 </span>            : 
+<span class="lineNum">     709 </span>            : private :
+<span class="lineNum">     710 </span>            :     // -----------------------------------------------------------------------
+<span class="lineNum">     711 </span>            :     //  Unimplemented constructors and operators
+<span class="lineNum">     712 </span>            :     // -----------------------------------------------------------------------
+<span class="lineNum">     713 </span>            :     XMLPlatformUtils();
+<span class="lineNum">     714 </span>            : 
+<span class="lineNum">     715 </span>            :     /** @name Private static methods */
+<span class="lineNum">     716 </span>            :     //@{
+<span class="lineNum">     717 </span>            : 
+<span class="lineNum">     718 </span>            :     /** Loads a message set from the available domains
+<span class="lineNum">     719 </span>            :       *
+<span class="lineNum">     720 </span>            :       * @param msgDomain The message domain containing the message to be
+<span class="lineNum">     721 </span>            :       * loaded
+<span class="lineNum">     722 </span>            :       */
+<span class="lineNum">     723 </span>            :     static XMLMsgLoader* loadAMsgSet(const XMLCh* const msgDomain);
+<span class="lineNum">     724 </span>            : 
+<span class="lineNum">     725 </span>            :     /** Creates a net accessor object.
+<span class="lineNum">     726 </span>            :       *
+<span class="lineNum">     727 </span>            :       * Each per-platform driver must implement this method. However,
+<span class="lineNum">     728 </span>            :       * having a Net Accessor is optional and this method can return a
+<span class="lineNum">     729 </span>            :       * null pointer if remote access via HTTP and FTP URLs is not required.
+<span class="lineNum">     730 </span>            :       *
+<span class="lineNum">     731 </span>            :       * @return An object derived from XMLNetAccessor. It must be dynamically
+<span class="lineNum">     732 </span>            :       *         allocated, since it will be deleted later.
+<span class="lineNum">     733 </span>            :       */
+<span class="lineNum">     734 </span>            :     static XMLNetAccessor* makeNetAccessor();
+<span class="lineNum">     735 </span>            : 
+<span class="lineNum">     736 </span>            :     /** Creates a Transcoding service
+<span class="lineNum">     737 </span>            :       *
+<span class="lineNum">     738 </span>            :       * Each per-platform driver must implement this method and return some
+<span class="lineNum">     739 </span>            :       * derivative of the XMLTransService class. This object serves as the
+<span class="lineNum">     740 </span>            :       * transcoder factory for this process. The object must be dynamically
+<span class="lineNum">     741 </span>            :       * allocated and the caller is responsible for cleaning it up.
+<span class="lineNum">     742 </span>            :       *
+<span class="lineNum">     743 </span>            :       * @return A dynamically allocated object of some class derived from
+<span class="lineNum">     744 </span>            :       *         the XMLTransService class.
+<span class="lineNum">     745 </span>            :       */
+<span class="lineNum">     746 </span>            :     static XMLTransService* makeTransService();
+<span class="lineNum">     747 </span>            : 
+<span class="lineNum">     748 </span>            :     /** Search for sequence, slash dot dot slash
+<span class="lineNum">     749 </span>            :       *
+<span class="lineNum">     750 </span>            :       * @param srcPath the path to search
+<span class="lineNum">     751 </span>            :       *
+<span class="lineNum">     752 </span>            :       * @return   the position of the first occurrence of slash dot dot slash
+<span class="lineNum">     753 </span>            :       *            -1 if no such sequence is found
+<span class="lineNum">     754 </span>            :       */
+<span class="lineNum">     755 </span>            :     static int  searchSlashDotDotSlash(XMLCh* const srcPath);
+<span class="lineNum">     756 </span>            : 
+<span class="lineNum">     757 </span>            :     //@}
+<span class="lineNum">     758 </span>            : 
+<span class="lineNum">     759 </span>            :     /** @name Private static methods */
+<span class="lineNum">     760 </span>            :     //@{
+<span class="lineNum">     761 </span>            : 
+<span class="lineNum">     762 </span>            :     /**
+<span class="lineNum">     763 </span>            :       * Indicates whether the memory manager was supplied by the user
+<span class="lineNum">     764 </span>            :       * or not. Users own the memory manager, and if none is supplied,
+<span class="lineNum">     765 </span>            :       * Xerces uses a default one that it owns and is responsible for
+<span class="lineNum">     766 </span>            :       * deleting in Terminate().
+<span class="lineNum">     767 </span>            :       */
+<span class="lineNum">     768 </span>            :     static bool fgMemMgrAdopted;
+<span class="lineNum">     769 </span>            : 
+<span class="lineNum">     770 </span>            :     //@}
+<span class="lineNum">     771 </span>            : };
+<span class="lineNum">     772 </span>            : 
+<span class="lineNum">     773 </span>            : 
+<span class="lineNum">     774 </span>            : MakeXMLException(XMLPlatformUtilsException, XMLUTIL_EXPORT)
+<span class="lineNum">     775 </span>            : 
+<span class="lineNum">     776 </span>            : 
+<span class="lineNum">     777 </span>            : // ---------------------------------------------------------------------------
+<span class="lineNum">     778 </span>            : //  XMLPlatformUtils: alignPointerForNewBlockAllocation
+<span class="lineNum">     779 </span>            : // ---------------------------------------------------------------------------
+<span class="lineNum">     780 </span>            : //  Calculate alignment required by platform for a new
+<span class="lineNum">     781 </span>            : //  block allocation. We use this in our custom allocators
+<span class="lineNum">     782 </span>            : //  to ensure that returned blocks are properly aligned.
+<span class="lineNum">     783 </span>            : //  Note that, although this will take a pointer and return the position
+<span class="lineNum">     784 </span>            : //  at which it should be placed for correct alignment, in our code
+<span class="lineNum">     785 </span>            : //  we normally use XMLSize_t parameters to discover what the alignment
+<span class="lineNum">     786 </span>            : //  of header blocks should be.  Thus, if this is to be
+<span class="lineNum">     787 </span>            : //  used for the former purpose, to make compilers happy
+<span class="lineNum">     788 </span>            : //  some casting will be necessary - neilg.
+<span class="lineNum">     789 </span>            : //
+<span class="lineNum">     790 </span>            : //  Note: XML_PLATFORM_NEW_BLOCK_ALIGNMENT may be specified on a
+<span class="lineNum">     791 </span>            : //        per-architecture basis to dictate the alignment requirements
+<span class="lineNum">     792 </span>            : //        of the architecture. In the absense of this specification,
+<span class="lineNum">     793 </span>            : //        this routine guesses at the correct alignment value.
+<span class="lineNum">     794 </span>            : //
+<span class="lineNum">     795 </span>            : //        A XML_PLATFORM_NEW_BLOCK_ALIGNMENT value of zero is illegal.
+<span class="lineNum">     796 </span>            : //        If a platform requires absolutely no alignment, a value
+<span class="lineNum">     797 </span>            : //        of 1 should be specified (&quot;align pointers on 1 byte boundaries&quot;).
+<span class="lineNum">     798 </span>            : //
+<span class="lineNum">     799 </span>            : inline XMLSize_t
+<span class="lineNum">     800 </span>            : XMLPlatformUtils::alignPointerForNewBlockAllocation(XMLSize_t ptrSize)
+<span class="lineNum">     801 </span>            : {
+<span class="lineNum">     802 </span>            :     //    Macro XML_PLATFORM_NEW_BLOCK_ALIGNMENT may be defined
+<span class="lineNum">     803 </span>            :     //    as needed to dictate alignment requirements on a
+<span class="lineNum">     804 </span>            :     //    per-architecture basis. In the absense of that we
+<span class="lineNum">     805 </span>            :     //    take an educated guess.
+<span class="lineNum">     806 </span>            : #ifdef XML_PLATFORM_NEW_BLOCK_ALIGNMENT
+<span class="lineNum">     807 </span>            :     static const XMLSize_t alignment = XML_PLATFORM_NEW_BLOCK_ALIGNMENT;
+<span class="lineNum">     808 </span>            : #else
+<span class="lineNum">     809 </span>            :     static const XMLSize_t alignment = (sizeof(void*) &gt;= sizeof(double)) ? sizeof(void*) : sizeof(double);
+<span class="lineNum">     810 </span>            : #endif
+<span class="lineNum">     811 </span>            : 
+<span class="lineNum">     812 </span>            :     //    Calculate current alignment of pointer
+<span class="lineNum">     813 </span>            :     XMLSize_t current = ptrSize % alignment;
+<span class="lineNum">     814 </span>            : 
+<span class="lineNum">     815 </span>            :     //    Adjust pointer alignment as needed
+<span class="lineNum">     816 </span>            :     return (current == 0)
+<span class="lineNum">     817 </span>            :          ? ptrSize
+<span class="lineNum">     818 </span>            :          : (ptrSize + alignment - current);
+<span class="lineNum">     819 </span>            : }
+<span class="lineNum">     820 </span>            : 
+<span class="lineNum">     821 </span>            : 
+<span class="lineNum">     822 </span>            : 
+<span class="lineNum">     823 </span>            : // ---------------------------------------------------------------------------
+<a name="824"><span class="lineNum">     824 </span>            : //  XMLDeleter: Public Destructor</a>
+<span class="lineNum">     825 </span>            : // ---------------------------------------------------------------------------
+<span class="lineNum">     826 </span><span class="lineNoCov">          0 : inline XMLDeleter::~XMLDeleter()</span>
+<span class="lineNum">     827 </span>            : {
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     829 </span>            : 
+<span class="lineNum">     830 </span>            : // ---------------------------------------------------------------------------
+<span class="lineNum">     831 </span>            : //  XMLDeleter: Hidden constructors and operators
+<span class="lineNum">     832 </span>            : // ---------------------------------------------------------------------------
+<span class="lineNum">     833 </span>            : inline XMLDeleter::XMLDeleter()
+<span class="lineNum">     834 </span>            : {
+<span class="lineNum">     835 </span>            : }
+<span class="lineNum">     836 </span>            : 
+<span class="lineNum">     837 </span>            : XERCES_CPP_NAMESPACE_END
+<span class="lineNum">     838 </span>            : 
+<span class="lineNum">     839 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

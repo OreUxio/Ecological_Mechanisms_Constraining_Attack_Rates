@@ -1,0 +1,573 @@
+// $Id: MoranI.cc 1933 2010-11-05 18:15:50Z axel $
+#include <string>
+const std::string version("$Revision: 1933 $");
+const std::string source("$Source: /home/cvsrep/CVS/NewWeb/src/MoranI.cc,v $ $Date: 2010-11-05 18:15:50 +0000 (Fri, 05 Nov 2010) $");
+
+#include <math.h>
+#include <algorithm>
+#include <CLHEP/Matrix/DiagMatrix.h>
+
+#include "MoranI.h"
+#include "simple_vector.h"
+#include "sequence.h"
+#include "random.h"
+#include "linpack_eigen.h"
+#include "Statistics.h"
+#include "niche_width_finder.h"
+#include "gsl/gsl_sf.h"
+#include "ODE.h"
+
+using namespace std;
+
+static double miss_adaptation=0;
+
+// adjustable parameters:
+#include "cfgList.h"
+static cfgStruct cfg[] = 
+  { 
+    CFGDOUBLE(miss_adaptation),
+    {0, CFG_END, 0}   /* no more parameters */
+  };
+static cfg_add dummy(cfg);
+
+
+
+MoranI::degree_t MoranI::get_degrees_of_separation(const int S0){
+  
+  degree_t degree;
+  simple_vector< descendants_set_t > descendants(S0);
+
+  for(int i=S0;i-->0;){
+    descendants[i].insert(i);
+  }
+
+  int open_degrees=(S0*(S0-1))/2;
+  double time_before_present=0;
+
+  while(open_degrees){
+    // link two species (speciation backward in time)
+    int p,c; // parent and child indices
+    
+    // assume a speciation rate s=1:
+    time_before_present+=random_exponential(1.0/S0);
+
+    // get parent
+    p=random_integer(S0);
+
+    if(!descendants[p].empty()){
+
+      // get child
+      do{
+	c=random_integer(S0);
+      }while(p==c);
+      
+      if(!descendants[c].empty()){
+	for(diter c_desc=descendants[c].begin();
+	    c_desc!=descendants[c].end();
+	    c_desc++ ){
+	  for(diter p_desc=descendants[p].begin();
+	      p_desc!=descendants[p].end();
+	      p_desc++ ){
+	    degree(*p_desc,*c_desc)=time_before_present;
+	    open_degrees--;
+	  }
+	}
+	for(diter c_desc=descendants[c].begin();
+	    c_desc!=descendants[c].end();
+	    c_desc++ ){
+	  descendants[p].insert(*c_desc);
+	}
+	descendants[c].clear();
+      }
+    }
+  }
+#if 1 // write distance matrices on the fly to distance.dat
+  {
+    static ofstream distances("distances.dat");
+    distances << S0 << endl;
+    for(int i=0;i<S0;++i){
+      for(int j=0;j<S0;++j){
+ 	distances << degree(i,j) << " ";
+      }
+      distances << endl;
+    }
+  }
+#endif
+  return degree;
+}
+
+inline double MoranI::variance(const int S0,double time_since_speciaton){
+  if(_saturation){
+    double V=1.0/_saturation;
+    return 2*V*(1-exp(-2/V*time_since_speciaton));
+  }else
+    return 4*time_since_speciaton;
+}
+
+CLHEP::HepMatrix MoranI::get_spread_covariance(const int S0,degree_t degrees){
+  // We assume a diffusion constant D=1 here.  The mean distance
+  // squared between species is 4 D t per dimension.
+
+  const int size_m=S0-1;
+  CLHEP::HepMatrix cov(size_m,size_m,0);
+  for(int i=size_m;i-->0;){
+    cov[i][i]=variance(S0,degrees(i,size_m));
+    for(int j=i;j-->0;){
+      cov[i][j]=cov[j][i]=
+	(variance(S0,degrees(i,size_m))+
+	 variance(S0,degrees(j,size_m))-
+	 variance(S0,degrees(i,j)) 
+	 )*0.5;
+    }
+  }
+  return cov;
+}
+
+void MoranI::truncate_body_sizes(sequence< double > & clade_body_size){
+  for(int i=clade_body_size.size();i-->0;){
+    double s=clade_body_size[i];
+    while(s>=1 || s<0){
+      if(s>=1) 
+	s=2-s;
+      else
+	s=-s;
+    }
+    clade_body_size[i]=s;
+  }
+}
+
+
+MoranI::MoranI(int ndim,double D_bodymass,double C0,
+	       double lambda,double saturation,double q,int co_co,
+	       bool adaptation):
+  _ndim(ndim),
+  _D_bodymass(D_bodymass),_C0(C0),
+  _lambda(lambda),
+  _saturation(saturation),
+  _q(q),_correct_correlations(co_co),
+  _adaptation(adaptation)
+{
+  if(_q<1){
+    // select a subset of species
+    FATAL_ERROR("q<1 not implemented");
+  }
+}
+
+static double smax(sequence< double > x){
+  if(x.size()==0)
+    return 0;
+  double xmax=x[0];
+  for(int i=x.size();i-->0;){
+    if(x[i]>xmax) xmax=x[i];
+  }
+  return xmax;
+}
+
+
+CLHEP::HepMatrix MoranI::neutral_resource_traits(const int S0,
+					  double & total_variance){
+    // compute phylogenetic tree:
+  const degree_t degrees=get_degrees_of_separation(S0);
+
+  // compute time since first speciation:
+  const double max_degree=smax(Map(::smax,degrees));
+
+  // compute clade total variance
+  total_variance=variance(S0,max_degree)/2;
+
+  // compute phylogenetic correlations:
+  CLHEP::HepMatrix cholesky=
+    get_spread_covariance(S0,degrees);
+
+
+  // compute Cholesky factorization of covariance:
+  CholeskyL(cholesky);
+  // alternatively, this might be faster: rCholeskyL(cholesky);
+  
+
+  // compute positions:
+  CLHEP::HepMatrix normals(S0-1,_ndim),ri(S0,_ndim);
+  for(int i=S0-1;i-->0;){
+    for(int d=_ndim;d-->0;){
+      normals[i][d]=gaussian(0,1);
+    }
+  }
+  ri.sub(1,1,cholesky^normals);
+
+  return ri;
+}
+
+CLHEP::HepMatrix distance_squared_matrix(const CLHEP::HepMatrix & fi, 
+				  const CLHEP::HepMatrix & ri) 
+{
+  const int S0=fi.num_row();
+  const int ndim=fi.num_col();
+  CLHEP::HepMatrix d2(S0,S0);
+  for(int i=S0;i-->0;){
+    for(int j=S0;j-->0;){
+      double sum=0;
+      for(int n=ndim;n-->0;){
+	double delta=fi[i][n]-ri[j][n];
+	sum+=delta*delta;
+      }
+      d2[i][j]=sum;
+    }
+  }
+  return d2;
+}
+
+class adaptive_dynamics_t : public ODE_dynamical_object{
+  CLHEP::HepMatrix & fi;
+  const CLHEP::HepMatrix & ri;
+  const int S0;
+  const int ndim;
+  CLHEP::HepMatrix strength;
+  CLHEP::HepDiagMatrix summed_strength;
+  CLHEP::HepVector weight;
+
+public:
+  adaptive_dynamics_t(CLHEP::HepMatrix & f, const CLHEP::HepMatrix & r):
+    fi(f),ri(r),S0(fi.num_row()),ndim(fi.num_col()),
+    strength(S0,S0),summed_strength(S0,0),weight(S0){};
+  virtual void write_state_to(ODE_vector & state) const {
+    int p=0;
+    for(int i=S0;i-->0;){
+      for(int j=ndim;j-->0;){
+	state[p++]=fi[i][j];
+      }
+    }
+  }
+  virtual void read_state_from(const ODE_vector & state){
+    int p=0;
+    for(int i=S0;i-->0;){
+      for(int j=ndim;j-->0;){
+	fi[i][j]=state[p++];
+      }
+    }
+  }
+  virtual int number_of_variables(){return S0*ndim;}
+  virtual int dynamics(ODE_vector const & state,
+			ODE_vector & time_derivative){
+    const double exponent=ndim;
+    const double wsum_exponent=1;
+
+    read_state_from(state);
+    
+    // compute distances:
+    const CLHEP::HepMatrix d2=distance_squared_matrix(fi,ri);
+    summed_strength*=0; // set all to zero.
+    
+    // get raw weights and weight sums
+    for(int prey=S0;prey-->0;){
+      double wsum=0;
+      for(int pred=S0;pred-->0;){
+	const double w=pow(d2[pred][prey],-0.5*exponent);
+	weight[pred]=w;
+	wsum+=w;
+      }
+      
+      const double pow_wsum=pow(wsum,wsum_exponent+1);
+
+      // compute absolute forces and "strength"
+      for(int pred=S0;pred-->0;){
+	const double s=
+	  exponent*(wsum-wsum_exponent*weight[pred])/
+	  (pow_wsum*d2[pred][prey]);
+	strength[pred][prey]=s;
+	summed_strength[pred][pred]+=s;
+      }
+    }
+    
+    // compute total forces and step:
+    CLHEP::HepMatrix dfi_dt = strength*ri-summed_strength*fi;
+
+    int p=0;
+    for(int i=S0;i-->0;){
+      for(int j=ndim;j-->0;){
+	time_derivative[p++]=dfi_dt[i][j];
+      }
+    }
+    return 0;
+  }
+};
+    
+    
+
+class gaussian_adaptive_dynamics_t : public ODE_dynamical_object{
+  CLHEP::HepMatrix & fi;
+  const CLHEP::HepMatrix & ri;
+  const int S0;
+  const int ndim;
+  const double w2;
+
+public:
+  gaussian_adaptive_dynamics_t(CLHEP::HepMatrix & f, const CLHEP::HepMatrix & r, double ww2):
+    fi(f),ri(r),S0(fi.num_row()),ndim(fi.num_col()),
+    w2(ww2){};
+  virtual void write_state_to(ODE_vector & state) const {
+    int p=0;
+    for(int i=S0;i-->0;){
+      for(int j=ndim;j-->0;){
+	state[p++]=fi[i][j];
+      }
+    }
+  }
+  virtual void read_state_from(const ODE_vector & state){
+    int p=0;
+    for(int i=S0;i-->0;){
+      for(int j=ndim;j-->0;){
+	fi[i][j]=state[p++];
+      }
+    }
+  }
+  virtual int number_of_variables() const {return S0*ndim;}
+  virtual int dynamics(ODE_vector const & state,
+			ODE_vector & time_derivative){
+    const double a=0.1;
+    const double w2F=0.25*w2;
+    const double fac1=pow(2*M_PI*w2,0*-0.5*ndim)/w2;
+    const double fac2=2*a*pow(2*M_PI*w2F,0*-0.5*ndim)/w2F;
+
+    read_state_from(state);
+
+    CLHEP::HepMatrix dfi_dt(S0,ndim,0);
+    
+    // compute distances:
+    const CLHEP::HepMatrix d2=distance_squared_matrix(fi,ri);
+    const CLHEP::HepMatrix fd2=distance_squared_matrix(fi,fi);
+    
+    
+    for(int i=S0;i-->0;){
+      for(int j=S0;j-->0;){
+	double fac1a=fac1*exp(-0.5*d2[i][j]/w2);
+	for(int d=ndim;d-->0;){
+	  dfi_dt[i][d]+=(ri[j][d]-fi[i][d])*fac1a;
+	}
+      }
+      for(int j=S0;j-->0;){
+	double fac2a=fac2*exp(-0.5*fd2[i][j]/w2F);
+	for(int d=ndim;d-->0;){
+	  dfi_dt[i][d]-=(fi[j][d]-fi[i][d])*fac2a;
+	}
+      }
+    }
+    
+//     // compute U just for the hack of it:
+//     double U1=0,U2=0,U;
+//     for(int i=S0;i-->0;){
+//       for(int j=S0;j-->0;){
+// 	U1+=exp(-0.5*d2
+	
+    int p=0;
+    for(int i=S0;i-->0;){
+      for(int j=ndim;j-->0;){
+	time_derivative[p++]=dfi_dt[i][j];
+      }
+    }
+    return 0;
+  }
+};
+    
+    
+
+void MoranI::adapt_foragers(CLHEP::HepMatrix & fi, const CLHEP::HepMatrix & ri, double w2){
+  const int ndim=fi.num_col();
+  //adaptive_dynamics_t dyn(fi,ri);
+  gaussian_adaptive_dynamics_t dyn(fi,ri,w2);
+  ODE_state ode_state(&dyn);
+  ODE_vector 
+    start_state=ode_state, 
+    last_state=ode_state;
+  double next_stop=1e-3;
+  long int n_steps=0;
+  const double expansion_factor=2;
+  ASSERT(expansion_factor>1);
+
+#if 1
+  ofstream relaxation("relaxation.dat");
+  while(true){
+    if(ode_state.integrate_until(next_stop))
+      break;//dirty error handling!!
+    const double time_since_last=
+      (expansion_factor-1)*next_stop/expansion_factor;
+    
+    relaxation << dyn.current_time << " " << ode_state << endl;
+
+    bool ok=true;
+    average_meter dist_to_start;
+    for(int i=dyn.number_of_variables();i-->0;){
+      dist_to_start.sample(fabs(start_state[i]-ode_state[i]));
+    }
+    for(int i=dyn.number_of_variables();i-->0;){
+      if(0.01*dist_to_start/next_stop < 
+	 fabs(last_state[i]-ode_state[i])/time_since_last){
+// 	REPORT(fabs(start_state[i]-ode_state[i])/next_stop);
+// 	REPORT(fabs( last_state[i]-ode_state[i])/time_since_last);
+	ok=false;
+	break;
+      }
+    }
+    if(ok){
+      break;
+    }
+
+    last_state=ode_state;
+    next_stop*=expansion_factor;
+  }
+#else
+  while(next_stop<5000){
+    ode_state.integrate_until(next_stop);
+    const double time_since_last=
+      (expansion_factor-1)*next_stop/expansion_factor;
+    
+    bool ok=true;
+    for(int i=dyn.number_of_variables();i-->0;){
+      if(0.002*fabs(start_state[i]-ode_state[i])/next_stop < 
+	 fabs(last_state[i]-ode_state[i])/time_since_last){
+	REPORT(fabs(start_state[i]-ode_state[i])/next_stop);
+	REPORT(fabs( last_state[i]-ode_state[i])/time_since_last);
+	ok=false;
+	break;
+      }
+    }
+    if(false && ok){
+      break;
+    }
+
+    last_state=ode_state;
+    next_stop+=2;
+  }
+#endif  
+  //REPORT(fi);
+  //REPORT(ri);
+}
+
+Interaction_Matrix MoranI::draw_sample(const double rS0){
+
+  const int S0=int(rS0+unirand());
+  
+  double total_variance;
+  CLHEP::HepMatrix ri=neutral_resource_traits(S0,total_variance);
+
+  //this is too difficult to explain:
+  double total_std=sqrt(total_variance);
+  
+  // center all coordinates:
+  for(int d=_ndim;d-->0;){
+    double mean=0;
+    for(int i=S0;i-->0;) mean+=ri[i][d];
+    mean/=S0;
+    for(int i=S0;i-->0;) ri[i][d]-=mean;
+  }
+
+  // use this instead:
+  double F_std=0; 
+  if(miss_adaptation){
+    double d2sum=0;
+    for(int i=S0;i-->0;){ 
+      for(int d=_ndim;d-->0;){
+	d2sum+=ri[i][d]*ri[i][d];
+      }
+    }
+    F_std=sqrt(d2sum/((S0-1)*_ndim));
+    REPORT_ONCE(F_std*F_std);
+    REPORT_ONCE(total_variance);
+    F_std=sqrt(total_variance);
+  }
+  
+
+
+  // sample target species:
+  simple_vector< int > target(S0);
+  for(int i=S0;i-->0;){
+    target[i]=random_integer(S0);
+  }
+
+  // sample foraging traits:
+  CLHEP::HepMatrix fi(S0,_ndim);
+  for(int i=S0;i-->0;){
+    if(miss_adaptation){
+      for(int d=_ndim;d-->0;){
+	fi[i][d]=
+	  sqrt(miss_adaptation)*gaussian(0,F_std)+
+	  sqrt(1-miss_adaptation)*ri[target[i]][d];
+      }
+    }else{
+      for(int d=_ndim;d-->0;){
+	fi[i][d]=ri[target[i]][d];
+      }
+    }
+  }
+  
+  if(_adaptation){
+    if(!miss_adaptation)
+      FATAL_ERROR("some miss_adaptation>0 required before doing adaptation");
+    const double adaptation_stepsize=0.01*F_std/_ndim;
+    adapt_foragers(fi,ri,(1.0/9)*niche_width_finder(_saturation,S0,_C0,_ndim));
+  }
+    
+  // compute phenotypic distances between foragers and prey:
+  CLHEP::HepMatrix d2=distance_squared_matrix(fi,ri);
+  
+  // compute niche radius:
+  double niche_radius_squared;
+  if(true || !miss_adaptation){
+    static sequence< double > radius;
+    niche_radius_squared=radius[S0];
+    if(!niche_radius_squared){
+      radius[S0]=
+	niche_radius_squared=
+	niche_width_finder(_saturation,S0,_C0,_ndim);
+    }
+  }else{//miss_adaptation
+    sequence< double > d2_list(S0*S0+1);
+    int pos=0;
+    for(int fi=S0;fi-->0;){
+      for(int vi=S0;vi-->0;){
+	d2_list(pos++)=d2[fi][vi];
+      }
+    }
+    sort(&d2_list(0),&d2_list(S0*S0));
+    niche_radius_squared=d2_list(int(_C0*pos));
+    REPORT(niche_radius_squared);
+  }
+
+  static ofstream FVdist("FVdist.dat",ios_base::app);
+  for(int f=S0;f-->0;){
+    double d2min=d2[f][0];
+    double d2max=0;
+    for(int v=S0;v-->0;){
+      if(d2[f][v]<d2min) d2min=d2[f][v];
+      if(d2[f][v]<niche_radius_squared && d2[f][v]>d2max) d2max=d2[f][v];
+    }
+    FVdist << _ndim << " "
+	   << d2max/_ndim << " " 
+	   << d2min/_ndim << " " 
+	   << d2max/niche_radius_squared << " " 
+	   << d2min/niche_radius_squared << " " 
+	   << niche_radius_squared/_ndim << " " 
+	   << endl;
+  }
+	 
+
+  // compute links:
+  Interaction_Matrix m(S0);
+
+  for(int f=S0;f-->0;){
+    for(int v=S0;v-->0;){
+      if(d2[f][v]<niche_radius_squared 
+ 	 &&
+	 gsl_sf_erf_Q(ri[f][0]/total_std)>
+	 gsl_sf_erf_Q(ri[v][0]/total_std)-_lambda
+	 ){
+      //if(unirand()<_C0){
+	m[f][v]=
+	  NetworkAnalysis::eats;
+      }else{
+	m[f][v]=
+	  NetworkAnalysis::none;
+      }
+    }
+  }
+  return m;
+}

@@ -1,0 +1,164 @@
+// $Id$
+    
+#include <vector>
+#include <gsl/gsl_roots.h>
+#include "s_t.h"
+#include "binomial_dist.h"
+#include "error.h"
+#include "random.h"
+
+double lambda = 0;
+double plant_fraction=-1;  // -1 mean no distiction between animals and plants
+
+// adjustable parameters:
+#include "cfgList.h"
+static cfgStruct cfg[] = 
+  { 
+    CFGDOUBLE(lambda),
+    CFGDOUBLE(plant_fraction),
+    {0, CFG_END, 0}   /* no more parameters */
+  };
+static cfg_add dummy(cfg);
+
+using namespace std;
+
+const int s_t::unset=-1;
+int s_t::link_threshold=unset;
+props_t::swapping_probability s_t::swap_weapons=0;
+props_t::swapping_probability s_t::swap_armor=0;
+double s_t::true_C0;
+
+s_t & s_t::operator=(const s_t & other){
+  FATAL_ERROR("assignment of s_t forbidden");
+  return *this;
+}
+
+void s_t::set_link_threshold(double C0){
+    vector<double> p(n_property_bits+1);
+    // for debugging:
+    //double * p=(double *)malloc(sizeof(*p)*(n_property_bits+1));
+
+    const double CC0=1-C0;
+
+    //// we have to compute a binomial distribution but avoid
+    //// overflows.
+    //first compute p un-normalized: 
+    p[n_property_bits/2]=1;
+    for(int j=n_property_bits/2+1;j<=n_property_bits;j++){
+      p[j]=p[j-1]*double(n_property_bits-j+1)/j;
+    }
+    for(int j=n_property_bits/2-1;j>=0;j--){
+      p[j]=p[j+1]*double(1+j)/(n_property_bits-j);
+    }
+    //find the normalization constant:
+    double norm=0;
+    for(int j=0;j<=n_property_bits;j++){
+      norm+=p[j];
+    }
+    //cumulate and normalize:
+    double sum=0;
+    for(int j=0;j<=n_property_bits;j++){
+      double hold=p[j];
+      p[j]=sum/norm;
+      sum+=hold;
+    }
+    //!! now p[j] is the probability to have n<j
+
+    //find the j with p[j] closest to CC0:
+    ALWAYS_ASSERT(CC0>=0);
+    if(CC0>=p[n_property_bits]){
+      link_threshold=n_property_bits;
+    }else{
+      int j=1;
+      while(p[j]<CC0) j++;
+      //(now p[j]>=CC0)
+      if((p[j]-CC0)<(CC0-p[j-1]))
+	link_threshold=j;
+      else
+	link_threshold=j-1;
+    }
+    true_C0=1-p[link_threshold];
+}
+
+double s_t::delta_p_break(double switching_probability,void * vparam){
+    // convert the type of parameters struct
+    param_t & param= *(param_t *)vparam;
+    // compute this:
+//     Sum[Binomial[nBits,m0]*binDist[m0,m0-m+k]*binDist[nBits-m0,k],
+//     {m0,t,nBits},{m,0,t-1},{k,0,nBits-m0}]/
+//       Sum[Binomial[nBits,m0],{m0,t,nBits}]
+    double denominator_sum=0;
+    double sum1=0;
+    for(int m0=link_threshold;m0<=n_property_bits;m0++){
+      // m0: position before switching
+      double sum2=0;
+      for(int k=0;k<=n_property_bits-m0;k++){
+	// k: number of bits swapped up
+	double sum3=0;
+	for(int m=k;m<link_threshold;m++){
+	  // m: position after switching
+	  sum3+=binomial_dist(m0,m0-m+k,switching_probability);
+	}
+	sum3*=binomial_dist(n_property_bits-m0,k,switching_probability);
+	sum2+=sum3;
+      }
+      double binom=binomial_dist(n_property_bits,m0,0.5);
+      sum2*=binom;
+      sum1+=sum2;
+      denominator_sum+=binom;
+    }
+    return sum1/denominator_sum-(param.p_break);
+}
+
+double s_t::compute_swapping_probability(double beta){
+
+    if(link_threshold==unset){
+      FATAL_ERROR("You have to set C0 before setting breaking probabilies.");
+    }
+    double p_break=(beta*(1-true_C0));
+
+    // set up gsl root finder:
+    double lower,upper;
+    const gsl_root_fsolver_type * T =
+      //gsl_root_fsolver_bisection;
+      gsl_root_fsolver_brent;
+    gsl_root_fsolver * s =
+      gsl_root_fsolver_alloc (T);
+    gsl_function F;
+    F.function = &delta_p_break;
+    param_t param;
+    param.p_break=p_break;
+    F.params = &param;
+    if(int error=gsl_root_fsolver_set (s, &F, 0, 1)){
+      REPORT(error);
+      FATAL_ERROR("initializing gsl root solver");
+    }
+    std::cout << "using " << gsl_root_fsolver_name(s) << 
+      " algorithm for root finding" << std::endl;
+
+    // find root:
+    int root_finding_iterations=0;
+    do{
+      if(gsl_root_fsolver_iterate(s))
+	FATAL_ERROR("problem computing swapping prob");
+      upper=gsl_root_fsolver_x_upper (s);
+      lower=gsl_root_fsolver_x_lower (s);
+      REPORT(upper);
+      REPORT(lower);
+      if(++root_finding_iterations>1000)
+	FATAL_ERROR("too many iterations computing swapping prob");
+    }while(upper-lower> 0.000001);
+    REPORT(root_finding_iterations);
+    double result=gsl_root_fsolver_root(s);
+    gsl_root_fsolver_free(s);
+    return result;
+}
+
+void s_t::set_random_props(){
+  weapons.set_random();
+  armor.set_random();
+  if(plant_fraction>=0)
+    is_plant=(unirand()<plant_fraction);
+  else
+    is_plant=false;
+}

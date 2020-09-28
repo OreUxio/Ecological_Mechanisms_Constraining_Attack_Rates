@@ -1,0 +1,7 @@
+// -*- mode: c++ -*-
+// $Id$
+
+#include "topology_generator.h"
+
+Topology_Generator::Topology_Generator(){};
+Topology_Generator::~Topology_Generator(){};

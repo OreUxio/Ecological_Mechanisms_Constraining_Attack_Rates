@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/polyfit.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - polyfit.cc<span style="font-size: 80%;"> (source / <a href="polyfit.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">92</td>
+            <td class="headerCovTableEntry">177</td>
+            <td class="headerCovTableEntryLo">52.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryLo">55.6 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : </a>
+<span class="lineNum">       2 </span>            : // -*- c++ -*-
+<span class="lineNum">       3 </span>            : //$Id: polyfit.cc 2386 2014-10-08 10:13:51Z axel $
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : #include &lt;sstream&gt;
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : #include &quot;polyfit.h&quot;
+<span class="lineNum">       8 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : // n-th order polynomial fit:
+<span class="lineNum">      11 </span><span class="lineCov">        342 : fitted_function::fitted_function(sequence&lt;double&gt; &amp; x,</span>
+<span class="lineNum">      12 </span>            :                                  sequence&lt;average_meter&gt; &amp; y,
+<span class="lineNum">      13 </span>            :                                  int n, bool re_estimate_co_variances){
+<span class="lineNum">      14 </span><span class="lineCov">       1026 :   ALWAYS_ASSERT(x.size()==y.size());</span>
+<span class="lineNum">      15 </span>            :   ASSERT(n&gt;=1);
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span><span class="lineCov">        342 :   _n=n;</span>
+<span class="lineNum">      18 </span><span class="lineCov">        342 :   _a=gsl_vector_alloc(_n);</span>
+<span class="lineNum">      19 </span><span class="lineCov">        342 :   _COV=gsl_matrix_alloc(_n,_n);</span>
+<span class="lineNum">      20 </span><span class="lineCov">        342 :   if(!_a || !_COV) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span><span class="lineCov">        684 :   if(x.size()==0 || n==0) return;</span>
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            :   // allocate workspace
+<span class="lineNum">      25 </span>            :   gsl_multifit_linear_workspace * workspace = 
+<span class="lineNum">      26 </span><span class="lineCov">        342 :     gsl_multifit_linear_alloc(x.size(),n);</span>
+<span class="lineNum">      27 </span><span class="lineCov">        342 :   if(!workspace) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            :   // prepare the input parameters
+<span class="lineNum">      30 </span><span class="lineCov">        684 :   gsl_matrix * X = gsl_matrix_alloc(x.size(), n);</span>
+<span class="lineNum">      31 </span><span class="lineCov">        684 :   gsl_vector * Y = gsl_vector_alloc(x.size());</span>
+<span class="lineNum">      32 </span>            :   /*weights:*/
+<span class="lineNum">      33 </span><span class="lineCov">        684 :   gsl_vector * W = gsl_vector_alloc(x.size());</span>
+<span class="lineNum">      34 </span><span class="lineCov">        342 :   if(!X || !Y || ! W) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span><span class="lineCov">      10752 :   for(size_t m=0;m&lt;x.size();m++){</span>
+<span class="lineNum">      37 </span><span class="lineCov">       3356 :     if(!(y[m].error_var()&gt;0) || my_isnan(y[m].error_var())){</span>
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :       REPORT(m);</span>
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :       REPORT(y[m].error_var());</span>
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :       throw polyfit_error(&quot;var's no good&quot;);</span>
+<span class="lineNum">      41 </span>            :     }
+<span class="lineNum">      42 </span>            :   }
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span><span class="lineCov">      10752 :   for(size_t i=0;i&lt;x.size();i++){</span>
+<span class="lineNum">      45 </span><span class="lineCov">       3356 :     gsl_vector_set(Y,i,y[i].readout());</span>
+<span class="lineNum">      46 </span><span class="lineCov">       3356 :     gsl_vector_set(W,i,1/y[i].error_var());</span>
+<span class="lineNum">      47 </span>            :     
+<span class="lineNum">      48 </span>            :     double x_pow=1;
+<span class="lineNum">      49 </span><span class="lineCov">      39558 :     for(int j=0;j&lt;n;j++){</span>
+<span class="lineNum">      50 </span><span class="lineCov">      18101 :       gsl_matrix_set(X,i,j,x_pow);</span>
+<span class="lineNum">      51 </span><span class="lineCov">      18101 :       x_pow*=x[i];</span>
+<span class="lineNum">      52 </span>            :     }
+<span class="lineNum">      53 </span>            :   }
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            :   // prepare the output parameters
+<span class="lineNum">      56 </span>            :   double CHISQ;
+<span class="lineNum">      57 </span>            :     
+<span class="lineNum">      58 </span>            :   // do the fitting
+<span class="lineNum">      59 </span><span class="lineCov">        342 :   ALWAYS_ASSERT(!gsl_multifit_wlinear (X,W,Y,_a,_COV,&amp;CHISQ,workspace));</span>
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span><span class="lineCov">        342 :   if(re_estimate_co_variances){</span>
+<span class="lineNum">      62 </span><span class="lineCov">        684 :     gsl_matrix_scale(_COV,CHISQ/(x.size()-n));</span>
+<span class="lineNum">      63 </span>            :   }
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            :   // free everything
+<span class="lineNum">      66 </span><span class="lineCov">        342 :   gsl_vector_free(W);</span>
+<span class="lineNum">      67 </span><span class="lineCov">        342 :   gsl_vector_free(Y);</span>
+<span class="lineNum">      68 </span><span class="lineCov">        342 :   gsl_matrix_free(X);</span>
+<span class="lineNum">      69 </span><span class="lineCov">        342 :   gsl_multifit_linear_free(workspace);</span>
+<span class="lineNum">      70 </span>            : }
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            : // n-variable fit (This is just a slighly modified version of the
+<span class="lineNum">      73 </span>            : // previous function.  We should ideally remove this redundancy, for
+<span class="lineNum">      74 </span>            : // example by expressing the previous function in terms of this
+<span class="lineNum">      75 </span>            : // function.  But I shy away, because it would cost slighly more
+<span class="lineNum">      76 </span>            : // memory and time; unreasonably, I guess.):
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 : fitted_function::fitted_function(sequence&lt; sequence&lt;double&gt; &gt; &amp; x,</span>
+<span class="lineNum">      78 </span>            :                                  sequence&lt;average_meter&gt; &amp; y,
+<span class="lineNum">      79 </span>            :                                  bool re_estimate_co_variances){
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :   int n=x.size();</span>
+<span class="lineNum">      81 </span>            :   ASSERT(n&gt;=1);
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :   _n=n;</span>
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :   _a=gsl_vector_alloc(_n);</span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :   _COV=gsl_matrix_alloc(_n,_n);</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :   if(!_a || !_COV) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :   if(y.size()==0 || n==0) return;</span>
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            :   // allocate workspace
+<span class="lineNum">      91 </span>            :   gsl_multifit_linear_workspace * workspace = 
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :     gsl_multifit_linear_alloc(y.size(),n);</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :   if(!workspace) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            :   // prepare the input parameters
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :   gsl_matrix * X = gsl_matrix_alloc(y.size(), n);</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :   gsl_vector * Y = gsl_vector_alloc(y.size());</span>
+<span class="lineNum">      98 </span>            :   /*weights:*/
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :   gsl_vector * W = gsl_vector_alloc(y.size());</span>
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :   if(!X || !Y || ! W) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :   for(size_t m=0;m&lt;y.size();m++){</span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :     if(!(y[m].error_var()&gt;0) || my_isnan(y[m].error_var())){</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :       REPORT(m);</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :       REPORT(y[m].error_var());</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;var's no good&quot;);</span>
+<span class="lineNum">     107 </span>            :     }
+<span class="lineNum">     108 </span>            :   }
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :   for(size_t i=0;i&lt;y.size();i++){</span>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :     gsl_vector_set(Y,i,y[i].readout());</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :     gsl_vector_set(W,i,1/y[i].error_var());</span>
+<span class="lineNum">     113 </span>            :     
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;n;j++){</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :       gsl_matrix_set(X,i,j,x[j][i]);</span>
+<span class="lineNum">     116 </span>            :     }
+<span class="lineNum">     117 </span>            :   }
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            :   // prepare the output parameters
+<span class="lineNum">     120 </span>            :   double CHISQ;
+<span class="lineNum">     121 </span>            :     
+<span class="lineNum">     122 </span>            :   // do the fitting
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(!gsl_multifit_wlinear (X,W,Y,_a,_COV,&amp;CHISQ,workspace));</span>
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :   if(re_estimate_co_variances){</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :     gsl_matrix_scale(_COV,CHISQ/(y.size()-n));</span>
+<span class="lineNum">     127 </span>            :   }
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            :   // free everything
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   gsl_vector_free(W);</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :   gsl_vector_free(Y);</span>
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :   gsl_matrix_free(X);</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :   gsl_multifit_linear_free(workspace);</span>
+<span class="lineNum">     134 </span>            : }
+<a name="135"><span class="lineNum">     135 </span>            : </a>
+<span class="lineNum">     136 </span>            : // get value as predicted:
+<span class="lineNum">     137 </span><span class="lineCov">        141 : double fitted_function::operator()(double x) const{</span>
+<span class="lineNum">     138 </span><span class="lineCov">        475 :   double sum=0;</span>
+<span class="lineNum">     139 </span><span class="lineCov">        475 :   double x_pow=1;</span>
+<span class="lineNum">     140 </span><span class="lineCov">       3247 :   for(size_t i=0;i&lt;_n;i++){</span>
+<span class="lineNum">     141 </span><span class="lineCov">       2772 :     sum+=gsl_vector_get(_a,i)*x_pow;</span>
+<span class="lineNum">     142 </span><span class="lineCov">       2772 :     x_pow*=x;</span>
+<span class="lineNum">     143 </span>            :   }
+<span class="lineNum">     144 </span><span class="lineCov">        141 :   return sum;</span>
+<span class="lineNum">     145 </span>            : }
+<a name="146"><span class="lineNum">     146 </span>            : </a>
+<span class="lineNum">     147 </span>            : // get value as predicted:
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 : double fitted_function::operator()(sequence&lt; double &gt; x) const{</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :   for(size_t i=0;i&lt;_n;i++){</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :     sum+=gsl_vector_get(_a,i)*x[i];</span>
+<span class="lineNum">     152 </span>            :   }
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :   return sum;</span>
+<a name="154"><span class="lineNum">     154 </span>            : }</a>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineCov">         90 : double fitted_function::cov_at(double x1, double x2) const{</span>
+<span class="lineNum">     157 </span><span class="lineCov">         90 :   double sum=0;</span>
+<span class="lineNum">     158 </span><span class="lineCov">         90 :   double x1_pow=1;</span>
+<span class="lineNum">     159 </span><span class="lineCov">        722 :   for(size_t i=0;i&lt;_n;i++){</span>
+<span class="lineNum">     160 </span>            :     double x2_pow=1;
+<span class="lineNum">     161 </span><span class="lineCov">       9596 :     for(size_t j=0;j&lt;_n;j++){</span>
+<span class="lineNum">     162 </span><span class="lineCov">       4482 :       sum+=gsl_matrix_get(_COV,i,j)*x1_pow*x2_pow;</span>
+<span class="lineNum">     163 </span><span class="lineCov">       4482 :       x2_pow*=x2;</span>
+<span class="lineNum">     164 </span>            :     }
+<span class="lineNum">     165 </span><span class="lineCov">        632 :     x1_pow*=x1;</span>
+<span class="lineNum">     166 </span>            :   }
+<span class="lineNum">     167 </span><span class="lineCov">         90 :   return sum;</span>
+<span class="lineNum">     168 </span>            : }
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 : double fitted_function::cov_at(const sequence&lt;double&gt; &amp;x1, </span>
+<span class="lineNum">     171 </span>            :                                const sequence&lt;double&gt; &amp;x2) const{
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :   for(size_t i=0;i&lt;_n;i++){</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     for(size_t j=0;j&lt;_n;j++){</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :       sum+=gsl_matrix_get(_COV,i,j)*x1[i]*x2[j];</span>
+<span class="lineNum">     176 </span>            :     }
+<span class="lineNum">     177 </span>            :   }
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :   return sum;</span>
+<a name="179"><span class="lineNum">     179 </span>            : }</a>
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span><span class="lineCov">         90 : double fitted_function::var_at(double x) const{</span>
+<span class="lineNum">     182 </span><span class="lineCov">         90 :   return cov_at(x,x);</span>
+<a name="183"><span class="lineNum">     183 </span>            : }</a>
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 : double fitted_function::var_at(const sequence&lt;double&gt; &amp;x) const{</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :   return cov_at(x,x);</span>
+<span class="lineNum">     187 </span>            : }
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            : // polynomial fit, order automatically determined:
+<span class="lineNum">     190 </span><span class="lineCov">          4 : fitted_function::fitted_function(sequence&lt;double&gt; &amp; x,</span>
+<span class="lineNum">     191 </span>            :                                  sequence&lt;average_meter&gt; &amp; y,
+<span class="lineNum">     192 </span>            :                                  bool re_estimate_co_variances){
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span><span class="lineCov">         12 :   ALWAYS_ASSERT(x.size()==y.size());</span>
+<span class="lineNum">     195 </span>            :   ASSERT(x.size()&gt;=2);
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :   double smallest_mean_chi2=DBL_MAX;
+<span class="lineNum">     198 </span>            :   int best_order=1;
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            :   
+<span class="lineNum">     201 </span>            :   //try all orders:
+<span class="lineNum">     202 </span>            :   //(or if x.size()==2 we do a linear fit)
+<span class="lineNum">     203 </span><span class="lineCov">        101 :   for(size_t n=2;n&lt;=x.size()-2;n++){</span>
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            :     //do leave-one-out cross validation:
+<span class="lineNum">     206 </span><span class="lineCov">         31 :     average_meter mean_chi2;</span>
+<span class="lineNum">     207 </span><span class="lineCov">        730 :     for(size_t m=0;m&lt;x.size();m++){</span>
+<span class="lineNum">     208 </span><span class="lineCov">        668 :       sequence&lt;double&gt; x1;</span>
+<span class="lineNum">     209 </span><span class="lineCov">        668 :       sequence&lt;average_meter&gt; y1;</span>
+<span class="lineNum">     210 </span>            :       // copy but leave m-th out:
+<span class="lineNum">     211 </span><span class="lineCov">       3938 :       for(int k=int(x.size()-1);k&gt;=0;k--){</span>
+<span class="lineNum">     212 </span><span class="lineCov">       3604 :         if(k&gt;int(m)){</span>
+<span class="lineNum">     213 </span><span class="lineCov">       1635 :           x1[k-1]=x[k];</span>
+<span class="lineNum">     214 </span><span class="lineCov">       1635 :           y1[k-1]=y[k];</span>
+<span class="lineNum">     215 </span><span class="lineCov">       1969 :         }else if(k&lt;int(m)){</span>
+<span class="lineNum">     216 </span><span class="lineCov">       1635 :           x1[k]=x[k];</span>
+<span class="lineNum">     217 </span><span class="lineCov">       1635 :           y1[k]=y[k];</span>
+<span class="lineNum">     218 </span>            :         }
+<span class="lineNum">     219 </span>            :       }
+<span class="lineNum">     220 </span><span class="lineCov">        668 :       fitted_function f=fitted_function(x1,y1,n,re_estimate_co_variances);</span>
+<span class="lineNum">     221 </span><span class="lineCov">        668 :       double error=f(x[m])-y[m].readout();</span>
+<span class="lineNum">     222 </span><span class="lineCov">        334 :       mean_chi2.sample(error*error/y[m].error_var());</span>
+<span class="lineNum">     223 </span>            :     }
+<span class="lineNum">     224 </span><span class="lineCov">         31 :     if(mean_chi2.readout()&lt;smallest_mean_chi2){</span>
+<span class="lineNum">     225 </span><span class="lineCov">         25 :       smallest_mean_chi2=mean_chi2.readout();</span>
+<span class="lineNum">     226 </span><span class="lineCov">         25 :       best_order=n;</span>
+<span class="lineNum">     227 </span>            :     }
+<span class="lineNum">     228 </span>            :   }
+<span class="lineNum">     229 </span>            :   //std::cout &lt;&lt; &quot;best polynomial order = &quot; &lt;&lt; best_order-1 &lt;&lt; std::endl;
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span><span class="lineCov">          8 :   fitted_function best_fit(x,y,best_order,re_estimate_co_variances);</span>
+<span class="lineNum">     232 </span><span class="lineCov">          4 :   _n=best_order;</span>
+<span class="lineNum">     233 </span><span class="lineCov">          4 :   _a=gsl_vector_alloc(_n);</span>
+<span class="lineNum">     234 </span><span class="lineCov">          4 :   _COV=gsl_matrix_alloc(_n,_n);</span>
+<span class="lineNum">     235 </span><span class="lineCov">          4 :   if(!_a || !_COV) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">     236 </span><span class="lineCov">          4 :   gsl_vector_memcpy(_a,best_fit._a);</span>
+<span class="lineNum">     237 </span><span class="lineCov">          4 :   gsl_matrix_memcpy(_COV,best_fit._COV);</span>
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            :   //REPORT(smallest_mean_chi2);
+<span class="lineNum">     240 </span><span class="lineCov">          4 :   return;</span>
+<a name="241"><span class="lineNum">     241 </span>            : }</a>
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span><span class="lineCov">          4 : fitted_function fitted_function::derivative() const{</span>
+<span class="lineNum">     244 </span><span class="lineCov">          4 :   fitted_function df(_n-1);</span>
+<span class="lineNum">     245 </span>            : 
+<span class="lineNum">     246 </span><span class="lineCov">         32 :   for(int i=1;i&lt;_n;i++){</span>
+<span class="lineNum">     247 </span><span class="lineCov">         28 :     gsl_vector_set(df._a,i-1,i*gsl_vector_get(_a,i));</span>
+<span class="lineNum">     248 </span><span class="lineCov">        424 :     for(int j=1;j&lt;_n;j++){</span>
+<span class="lineNum">     249 </span><span class="lineCov">        198 :       gsl_matrix_set(df._COV,i-1,j-1,i*j*gsl_matrix_get(_COV,i,j));</span>
+<span class="lineNum">     250 </span>            :     }
+<span class="lineNum">     251 </span>            :   }
+<span class="lineNum">     252 </span><span class="lineCov">          4 :   return df;</span>
+<a name="253"><span class="lineNum">     253 </span>            : }</a>
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span><span class="lineCov">          4 : fitted_function::fitted_function(int n){</span>
+<span class="lineNum">     256 </span><span class="lineCov">          4 :   _n=n;</span>
+<span class="lineNum">     257 </span><span class="lineCov">          4 :   _a=gsl_vector_alloc(_n);</span>
+<span class="lineNum">     258 </span><span class="lineCov">          4 :   _COV=gsl_matrix_alloc(_n,_n);</span>
+<span class="lineNum">     259 </span><span class="lineCov">          4 :   if(!_a || !_COV) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<a name="260"><span class="lineNum">     260 </span><span class="lineCov">          4 : }  </span></a>
+<span class="lineNum">     261 </span>            : 
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 : fitted_function::fitted_function(){</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :   _n=1;</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :   _a=gsl_vector_alloc(_n);</span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :   _COV=gsl_matrix_alloc(_n,_n);</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :   if(!_a || !_COV) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<a name="267"><span class="lineNum">     267 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 : fitted_function::fitted_function(const fitted_function &amp; other){</span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :   _n=other._n;</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :   _a=gsl_vector_alloc(_n);</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :   _COV=gsl_matrix_alloc(_n,_n);</span>
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :   if(!_a || !_COV) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :   gsl_vector_memcpy(_a,other._a);</span>
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :   gsl_matrix_memcpy(_COV,other._COV);</span>
+<a name="276"><span class="lineNum">     276 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span><span class="lineCov">        362 : fitted_function::~fitted_function(){</span>
+<span class="lineNum">     279 </span><span class="lineCov">        350 :   gsl_matrix_free(_COV);</span>
+<span class="lineNum">     280 </span><span class="lineCov">        350 :   gsl_vector_free(_a);</span>
+<span class="lineNum">     281 </span><span class="lineCov">         12 : }</span>
+<a name="282"><span class="lineNum">     282 </span>            : </a>
+<span class="lineNum">     283 </span>            : fitted_function const &amp; 
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 : fitted_function::operator= (fitted_function const&amp; other){</span>
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :   if(_n!=other._n){</span>
+<span class="lineNum">     286 </span><span class="lineNoCov">          0 :     _n=other._n;</span>
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :     gsl_matrix_free(_COV);</span>
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :     gsl_vector_free(_a);</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :     _a=gsl_vector_alloc(_n);</span>
+<span class="lineNum">     290 </span><span class="lineNoCov">          0 :     _COV=gsl_matrix_alloc(_n,_n);</span>
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :     if(!_a || !_COV) FATAL_ERROR(&quot;could not allocate memory&quot;);</span>
+<span class="lineNum">     292 </span>            :   }
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :   gsl_vector_memcpy(_a,other._a);</span>
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :   gsl_matrix_memcpy(_COV,other._COV);</span>
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :   return *this;</span>
+<a name="296"><span class="lineNum">     296 </span>            : }  </a>
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 : std::string fitted_function::operator()(const std::string s) const{</span>
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :   std::ostringstream formula;</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :   if(_n&gt;0){</span>
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :     formula &lt;&lt; gsl_vector_get(_a,0) </span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :             &lt;&lt; &quot;(&quot; &lt;&lt; sqrt(gsl_matrix_get(_COV,0,0)) &lt;&lt; &quot;)&quot;;</span>
+<span class="lineNum">     303 </span>            :   }
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :   if(_n&gt;1){</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :     formula &lt;&lt; &quot; + &quot; &lt;&lt; gsl_vector_get(_a,1) </span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :             &lt;&lt; &quot;(&quot; &lt;&lt; sqrt(gsl_matrix_get(_COV,1,1)) &lt;&lt; &quot;)&quot;;</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :     formula &lt;&lt; &quot; * &quot; &lt;&lt; s;</span>
+<span class="lineNum">     308 </span>            :   }
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :   for(int i=2;i&lt;_n;i++){</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :     formula &lt;&lt; &quot; + &quot; &lt;&lt; gsl_vector_get(_a,i) </span>
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :             &lt;&lt; &quot;(&quot; &lt;&lt; sqrt(gsl_matrix_get(_COV,i,i)) &lt;&lt; &quot;)&quot;;</span>
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :     formula &lt;&lt; &quot; * &quot; &lt;&lt; s &lt;&lt; &quot;^&quot; &lt;&lt; i;</span>
+<a name="313"><span class="lineNum">     313 </span>            :   }</a>
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :   return formula.str();</span>
+<span class="lineNum">     315 </span><span class="lineCov">        135 : }</span>
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            : //tester:
+<span class="lineNum">     319 </span>            : /*
+<span class="lineNum">     320 </span>            : #include &quot;cfgList.h&quot;
+<span class="lineNum">     321 </span>            : int main(){
+<span class="lineNum">     322 </span>            :   sequence&lt;double&gt; x;
+<span class="lineNum">     323 </span>            :   sequence&lt;average_meter&gt; y;
+<span class="lineNum">     324 </span>            :   
+<span class="lineNum">     325 </span>            :   x[0]=0;
+<span class="lineNum">     326 </span>            :   x[1]=1;
+<span class="lineNum">     327 </span>            :   x[2]=2;
+<span class="lineNum">     328 </span>            :   x[3]=3;
+<span class="lineNum">     329 </span>            :   y[0].sample(1);
+<span class="lineNum">     330 </span>            :   y[0].sample(2);
+<span class="lineNum">     331 </span>            :   y[0].sample(3);
+<span class="lineNum">     332 </span>            :   y[1].sample(1);
+<span class="lineNum">     333 </span>            :   y[1].sample(1);
+<span class="lineNum">     334 </span>            :   y[1].sample(1.1);
+<span class="lineNum">     335 </span>            :   y[2].sample(10);
+<span class="lineNum">     336 </span>            :   y[2].sample(20);
+<span class="lineNum">     337 </span>            :   y[2].sample(30);
+<span class="lineNum">     338 </span>            :   y[3].sample(10);
+<span class="lineNum">     339 </span>            :   y[3].sample(20);
+<span class="lineNum">     340 </span>            :   y[3].sample(30);
+<span class="lineNum">     341 </span>            :   
+<span class="lineNum">     342 </span>            :   
+<span class="lineNum">     343 </span>            :   fitted_function f=fitted_function(x,y);
+<span class="lineNum">     344 </span>            :   std::cout &lt;&lt; f(0) &lt;&lt; std::endl;
+<span class="lineNum">     345 </span>            :   std::cout &lt;&lt; f(1) &lt;&lt; std::endl;
+<span class="lineNum">     346 </span>            :   std::cout &lt;&lt; f(2) &lt;&lt; std::endl;
+<span class="lineNum">     347 </span>            : }
+<span class="lineNum">     348 </span>            : */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

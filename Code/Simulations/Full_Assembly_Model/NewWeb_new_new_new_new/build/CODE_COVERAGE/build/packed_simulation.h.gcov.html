@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/packed_simulation.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - packed_simulation.h<span style="font-size: 80%;"> (source / <a href="packed_simulation.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">26</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: packed_simulation.h 3 2005-12-01 07:13:32Z cvsrep $
+<span class="lineNum">       3 </span>            : #ifndef _PACKED_SIMULATION_H_
+<span class="lineNum">       4 </span>            : #define _PACKED_SIMULATION_H_
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : //////////////////////////////////////////
+<span class="lineNum">       7 </span>            : // experimental packed simulation state //
+<span class="lineNum">       8 </span>            : //////////////////////////////////////////
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &quot;NewWeb.h&quot;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #ifndef __APPLE__  // Apples gcc does not understand INTEL's assembly code !?
+<span class="lineNum">      13 </span>            : #define TRY_ASSEMBLER_CODE
+<span class="lineNum">      14 </span>            : #endif
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : #define value_block_alignment (2*sizeof(double))
+<span class="lineNum">      17 </span>            : const int packed_simulation_block_size=8;
+<span class="lineNum">      18 </span>            : const int bs=packed_simulation_block_size; //abbreviation
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : class packed_simulation {
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : public:
+<span class="lineNum">      23 </span>            :   typedef double value_t;
+<span class="lineNum">      24 </span>            : private:
+<span class="lineNum">      25 </span>            :   typedef std::vector&lt;int&gt; partition_t;
+<span class="lineNum">      26 </span>            :   typedef value_t aligned_value_t 
+<span class="lineNum">      27 </span>            :   __attribute__ ((__aligned__(value_block_alignment)));
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            :   typedef SortedMatrix::location_t  location_t; 
+<span class="lineNum">      30 </span>            :   typedef SortedVector::location_t  vector_index_t; 
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            :   static partition_t chunkify(int size,int n_threads);
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            :   inline char * aligned_pointer(char * ptr);
+<span class="lineNum">      36 </span>            :   inline aligned_value_t * aligned_value_pointer(char * ptr);
+<span class="lineNum">      37 </span>            :   inline size_t alignement_expand(size_t s);
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            :   // Helper classes to assign locations in allocated memory chunk:
+<span class="lineNum">      40 </span>            :   template &lt; typename T &gt;
+<span class="lineNum">      41 </span>            :   class array_following {
+<span class="lineNum">      42 </span>            :     T * const the_start;
+<span class="lineNum">      43 </span>            :     const size_t the_size;
+<span class="lineNum">      44 </span>            :     array_following(char * mem, const size_t s):
+<span class="lineNum">      45 </span>            :       the_start((T *)mem),
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :       the_size(s){};</span>
+<span class="lineNum">      47 </span>            :     template &lt;typename U&gt;
+<span class="lineNum">      48 </span>            :     array_following(U &amp; u, const size_t s):
+<span class="lineNum">      49 </span>            :       the_start((T *)u.end()),
+<span class="lineNum">      50 </span>            :       the_size(s){}; 
+<span class="lineNum">      51 </span>            :     template &lt;typename U&gt;
+<span class="lineNum">      52 </span>            :     array_following(U &amp; u, const int s):
+<span class="lineNum">      53 </span>            :       the_start((T *)u.end()),
+<a name="54"><span class="lineNum">      54 </span><span class="lineNoCov">          0 :       the_size(s){}; </span></a>
+<span class="lineNum">      55 </span>            :     template &lt;typename U, typename V&gt;
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :     array_following(U &amp; u, V v):</span>
+<span class="lineNum">      57 </span>            :       the_start((T *)u.end()),
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :       the_size(v.size()){</span>
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :       copy(v.begin(),v.end(),the_start);</span>
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :     };</span>
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :     T &amp; operator[](short int i) const {return *(the_start+i);}</span>
+<span class="lineNum">      62 </span>            :     friend class packed_simulation;
+<span class="lineNum">      63 </span>            :   public:
+<span class="lineNum">      64 </span>            :     const T * begin() const {return the_start;}
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :     const T * end() const {return the_start + the_size;}</span>
+<span class="lineNum">      66 </span>            :     size_t size() const {return the_size;}
+<span class="lineNum">      67 </span>            :   };
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :   template &lt; typename T &gt;
+<span class="lineNum">      70 </span>            :   class const_array_following {
+<span class="lineNum">      71 </span>            :     T * const the_start;
+<a name="72"><span class="lineNum">      72 </span>            :     const size_t the_size;</a>
+<span class="lineNum">      73 </span>            :     template &lt;typename U, typename V&gt;
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :     const_array_following(U &amp; u, V v):</span>
+<span class="lineNum">      75 </span>            :       the_start((T *)u.end()),
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :       the_size(v.size()){</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :       copy(v.begin(),v.end(),the_start);</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :     };</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :     const T &amp; operator[](short int i) const {return *(the_start+i);}</span>
+<span class="lineNum">      80 </span>            :     friend class packed_simulation;
+<span class="lineNum">      81 </span>            :   public:
+<span class="lineNum">      82 </span>            :     const T * begin() const {return the_start;}
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :     const T * end() const {return the_start + the_size;}</span>
+<span class="lineNum">      84 </span>            :     size_t size() const {return the_size;}
+<span class="lineNum">      85 </span>            :   };
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            :   // Read data from chunc of memory:
+<span class="lineNum">      88 </span>            :   template&lt; typename T &gt; T postinc(char * __restrict__ &amp; ptr);
+<span class="lineNum">      89 </span>            :   // Write data to memory chunc:
+<span class="lineNum">      90 </span>            :   template&lt; typename T &gt; void push(T val,char * &amp; ptr);
+<span class="lineNum">      91 </span>            :   template&lt; typename T &gt; void push_value_t(T val,char * &amp; ptr);
+<span class="lineNum">      92 </span>            :   
+<span class="lineNum">      93 </span>            :   inline value_t 
+<span class="lineNum">      94 </span>            :   fast_sandwich_product(const value_t * v1,const value_t * v2,value_t factor,
+<span class="lineNum">      95 </span>            :                         char * __restrict__ &amp; tsk);
+<span class="lineNum">      96 </span>            :   inline value_t 
+<span class="lineNum">      97 </span>            :   fast_dot_product(const value_t * v1,value_t factor,
+<span class="lineNum">      98 </span>            :                    char * __restrict__  &amp;tsk);
+<span class="lineNum">      99 </span>            :   
+<span class="lineNum">     100 </span>            :   char * push_sorted_matrix(const SortedMatrix &amp; m,char *&amp; tsk);
+<span class="lineNum">     101 </span>            :   char * push_sorted_vector(const SortedVector &amp; v,char *&amp; tsk);
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :   class do_dynamics_manager_t{
+<span class="lineNum">     104 </span>            :     typedef packed_simulation base_class_t;
+<span class="lineNum">     105 </span>            :   public:
+<span class="lineNum">     106 </span>            :     do_dynamics_manager_t();
+<span class="lineNum">     107 </span>            :     do_dynamics_manager_t(const do_dynamics_manager_t &amp; other);
+<span class="lineNum">     108 </span>            :     do_dynamics_manager_t&amp; operator=(const do_dynamics_manager_t&amp; other);
+<span class="lineNum">     109 </span>            :     ~do_dynamics_manager_t();
+<span class="lineNum">     110 </span>            :     void initialize_threads_maybe(base_class_t * base_class);
+<span class="lineNum">     111 </span>            :     void start_threads(int nthreads,base_class_t * base_class);
+<span class="lineNum">     112 </span>            :     void stop_threads();
+<span class="lineNum">     113 </span>            :     int get_num_threads(){return _num_threads;}
+<span class="lineNum">     114 </span>            :     boost::thread_group  threads;
+<span class="lineNum">     115 </span>            :     struct task_t {
+<span class="lineNum">     116 </span>            :       base_class_t * dispatcher; 
+<span class="lineNum">     117 </span>            :       int index;
+<span class="lineNum">     118 </span>            :       void operator()();
+<span class="lineNum">     119 </span>            :     };
+<span class="lineNum">     120 </span>            :     std::vector&lt; task_t &gt; task;
+<span class="lineNum">     121 </span>            :     boost::mutex mutex;
+<span class="lineNum">     122 </span>            :     boost::mutex B_max_mutex;
+<span class="lineNum">     123 </span>            :     boost::condition condition;
+<span class="lineNum">     124 </span>            :     boost::barrier * barrier;
+<span class="lineNum">     125 </span>            :     std::vector&lt; value_t &gt; common_factor_max;
+<span class="lineNum">     126 </span>            :     static const value_t unset; // some value &lt; 0;
+<span class="lineNum">     127 </span>            :     bool max_not_set(int i){return common_factor_max[i]&lt;0;}
+<span class="lineNum">     128 </span>            :     const ODE_vector * state;
+<span class="lineNum">     129 </span>            :     ODE_vector * time_derivative;
+<span class="lineNum">     130 </span>            :     bool stop_now;
+<span class="lineNum">     131 </span>            :     int threads_ready;
+<span class="lineNum">     132 </span>            :     std::vector&lt; pthread_t &gt; pthread_id;
+<span class="lineNum">     133 </span>            :   private:
+<span class="lineNum">     134 </span>            :     int _num_threads;
+<span class="lineNum">     135 </span>            :   };
+<span class="lineNum">     136 </span>            :   do_dynamics_manager_t do_dynamics_manager;
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            :   inline bool I_am_last_of(int num_threads);
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :   //data:
+<span class="lineNum">     141 </span>            :   int arrival_counter;
+<span class="lineNum">     142 </span>            :   const int n_threads;
+<span class="lineNum">     143 </span>            :   const size_t memory_size;
+<span class="lineNum">     144 </span>            :   char * const memory;
+<span class="lineNum">     145 </span>            :   const NewWeb &amp; web;
+<span class="lineNum">     146 </span>            :   double * turnover_rate;
+<span class="lineNum">     147 </span>            :   const int S;
+<span class="lineNum">     148 </span>            :   const int A;
+<span class="lineNum">     149 </span>            :   const value_t matrix_accuracy;
+<span class="lineNum">     150 </span>            :   const value_t vector_accuracy;
+<span class="lineNum">     151 </span>            :   const int plant_phys_vers;
+<span class="lineNum">     152 </span>            : public:
+<span class="lineNum">     153 </span>            :   value_t B_max;
+<span class="lineNum">     154 </span>            :   value_t common_factor_max;
+<span class="lineNum">     155 </span>            :   array_following&lt;value_t&gt; biomass_B;
+<span class="lineNum">     156 </span>            :   const_array_following&lt;int&gt; biomass_B_chunks;
+<span class="lineNum">     157 </span>            :   array_following&lt;value_t&gt; common_factor;
+<span class="lineNum">     158 </span>            : private:
+<span class="lineNum">     159 </span>            :   array_following&lt;char *&gt; eating_start;
+<span class="lineNum">     160 </span>            :   array_following&lt;int&gt; eating_chunks;
+<span class="lineNum">     161 </span>            :   array_following&lt;char *&gt; plant_start;
+<span class="lineNum">     162 </span>            :   array_following&lt;int&gt; plant_chunks;
+<span class="lineNum">     163 </span>            :   array_following&lt;char *&gt; being_eaten_start;  
+<span class="lineNum">     164 </span>            :   array_following&lt;int&gt; being_eaten_chunks;
+<span class="lineNum">     165 </span>            :   int data_end;
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            :   inline size_t 
+<span class="lineNum">     168 </span>            :   required_size_of_memory(species_list_t &amp; s, NewWeb::precomputed_t &amp; pre);
+<span class="lineNum">     169 </span>            :   packed_simulation(const packed_simulation &amp; other); //forbidden
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            : public:
+<span class="lineNum">     172 </span>            :   packed_simulation(NewWeb &amp; w);
+<span class="lineNum">     173 </span>            :   ~packed_simulation();
+<span class="lineNum">     174 </span>            :   int dynamics(ODE_vector const &amp; state, 
+<span class="lineNum">     175 </span>            :                ODE_vector &amp; time_derivative);
+<span class="lineNum">     176 </span>            :   void do_dynamics(int t,   // thread id
+<span class="lineNum">     177 </span>            :                    ODE_vector const &amp; state, 
+<span class="lineNum">     178 </span>            :                    ODE_vector &amp; time_derivative);
+<span class="lineNum">     179 </span>            :   void do_dynamics1(int t,   // thread id
+<span class="lineNum">     180 </span>            :                     ODE_vector const &amp; state, 
+<span class="lineNum">     181 </span>            :                     ODE_vector &amp; time_derivative);
+<span class="lineNum">     182 </span>            :   void do_dynamics2(int t,   // thread id
+<span class="lineNum">     183 </span>            :                     ODE_vector const &amp; state, 
+<span class="lineNum">     184 </span>            :                     ODE_vector &amp; time_derivative);
+<span class="lineNum">     185 </span>            :   void do_dynamics3(int t,   // thread id
+<span class="lineNum">     186 </span>            :                     ODE_vector const &amp; state, 
+<span class="lineNum">     187 </span>            :                     ODE_vector &amp; time_derivative);
+<span class="lineNum">     188 </span>            :   void precondition(ODE_vector const &amp; state,
+<span class="lineNum">     189 </span>            :                     ODE_vector const &amp; in,
+<span class="lineNum">     190 </span>            :                     ODE_vector &amp; out,
+<span class="lineNum">     191 </span>            :                     realtype gamma );
+<span class="lineNum">     192 </span>            : };
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            : packed_simulation::aligned_value_t * packed_simulation::aligned_value_pointer(char * ptr){
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :   const size_t mask=value_block_alignment-1;</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :   return (aligned_value_t *) ((size_t(ptr)+mask) &amp; ~mask);</span>
+<span class="lineNum">     197 </span>            : }
+<span class="lineNum">     198 </span>            : char * packed_simulation::aligned_pointer(char * ptr){
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :   const size_t mask=value_block_alignment-1;</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :   return (char *) ((size_t(ptr)+mask) &amp; ~mask);</span>
+<span class="lineNum">     201 </span>            : }
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            : size_t packed_simulation::alignement_expand(size_t s){
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :   const size_t mask=value_block_alignment-1;</span>
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :   return (s+mask) &amp; ~mask;</span>
+<span class="lineNum">     206 </span>            : }
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : template&lt; typename T &gt;
+<span class="lineNum">     209 </span>            : T packed_simulation::postinc(char * __restrict__ &amp; ptr){
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :   T val= *(T *) ptr;</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :   ptr+=sizeof(T);</span>
+<span class="lineNum">     212 </span>            :   return val;
+<span class="lineNum">     213 </span>            : };
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            : // Write data to memory chunk:
+<span class="lineNum">     216 </span>            : template&lt; typename T &gt;
+<span class="lineNum">     217 </span>            : void packed_simulation::push(T val,char * &amp; ptr){
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :   *(T *) ptr=val;</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :   ptr+=sizeof(T);</span>
+<span class="lineNum">     220 </span>            : };
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            : // Write data to memory chunk:
+<span class="lineNum">     223 </span>            : template&lt; typename T &gt;
+<span class="lineNum">     224 </span>            : void packed_simulation::push_value_t(T val,char * &amp; ptr){
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :   *(value_t *) ptr=val;</span>
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :   ptr+=sizeof(value_t);</span>
+<span class="lineNum">     227 </span>            : };
+<span class="lineNum">     228 </span>            :   
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            : #endif // _PACKED_SIMULATION_H_
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

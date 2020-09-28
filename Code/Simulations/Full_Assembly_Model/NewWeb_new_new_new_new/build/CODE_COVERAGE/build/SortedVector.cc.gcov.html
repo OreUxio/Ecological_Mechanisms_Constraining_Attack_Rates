@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/SortedVector.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - SortedVector.cc<span style="font-size: 80%;"> (source / <a href="SortedVector.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">62</td>
+            <td class="headerCovTableEntry">88</td>
+            <td class="headerCovTableEntryLo">70.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntryMed">75.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: SortedVector.cc 2011 2010-11-30 23:45:14Z axel $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;SortedVector.h&quot;
+<span class="lineNum">       5 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">       6 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">       7 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">       8 </span>            : #include &lt;boost/preprocessor/repetition.hpp&gt;
+<span class="lineNum">       9 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">      10 </span>            : #include &quot;Statistics.h&quot;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : using namespace std;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : static double vector_accuracy=DBL_EPSILON;
+<span class="lineNum">      15 </span>            : static double vector_truncation_epsilon=0;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : //#define SOVE_MEASURE_EFFICIENCY
+<span class="lineNum">      18 </span>            : #define SOVE_UNROLL_LOOP
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : #ifndef SOVE_ITERATIONS_UNROLLED // number of iterations to unroll
+<span class="lineNum">      21 </span>            : #define SOVE_ITERATIONS_UNROLLED 8
+<span class="lineNum">      22 </span>            : #endif
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : // Manage adjustable parameters:
+<span class="lineNum">      25 </span>            : #include &quot;cfgList.h&quot;
+<span class="lineNum">      26 </span>            : static cfgStruct cfg[] = 
+<span class="lineNum">      27 </span>            : {
+<span class="lineNum">      28 </span>            :   CFGDOUBLE(vector_accuracy),
+<span class="lineNum">      29 </span>            :   CFGDOUBLE(vector_truncation_epsilon),
+<span class="lineNum">      30 </span>            :   {0, CFG_END, 0}
+<span class="lineNum">      31 </span>            : };
+<span class="lineNum">      32 </span><span class="lineCov">         45 : static cfg_add dummy(cfg);</span>
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : double &amp; SortedVector::default_accuracy=vector_accuracy;  
+<span class="lineNum">      36 </span>            : double &amp; SortedVector::default_truncation_epsilon=
+<span class="lineNum">      37 </span>            :   vector_truncation_epsilon;
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span><span class="lineCov">         90 : const SortedVector::entry_t SortedVector::unused_entry=</span>
+<span class="lineNum">      40 </span>            :   entry_t(location_t(-1),0);
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span><span class="lineCov">     239876 : SortedVector::SortedVector():</span>
+<span class="lineNum">      44 </span>            :   _size(0),
+<span class="lineNum">      45 </span>            :   _accuracy(default_accuracy),
+<span class="lineNum">      46 </span>            :   _truncation_epsilon(default_truncation_epsilon),
+<span class="lineNum">      47 </span><span class="lineCov">     719628 :   _clean(true)</span>
+<span class="lineNum">      48 </span>            : {
+<span class="lineNum">      49 </span><span class="lineCov">     239876 : }</span>
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span><span class="lineCov">   16518895 : double SortedVector::get_value(const location_t &amp; loc) const{</span>
+<span class="lineNum">      52 </span><span class="lineCov">   33037790 :   locator_t::iterator li=locator.find(loc);</span>
+<span class="lineNum">      53 </span><span class="lineCov">   33037790 :   if(li==locator.end()){</span>
+<span class="lineNum">      54 </span>            :     return 0;
+<span class="lineNum">      55 </span>            :   }else{
+<span class="lineNum">      56 </span><span class="lineCov">   29398100 :     return _entries[li-&gt;second].value;</span>
+<span class="lineNum">      57 </span>            :   }
+<span class="lineNum">      58 </span>            : }
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineCov">   24761379 : void SortedVector::set_value(double v,const location_t &amp; loc){</span>
+<span class="lineNum">      61 </span><span class="lineCov">   49522758 :   locator_t::iterator li=locator.find(loc);</span>
+<span class="lineNum">      62 </span><span class="lineCov">   49522758 :   if(li!=locator.end()){</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :     entry_t &amp; e=_entries[li-&gt;second];</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :     if(e.value==v)</span>
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :       return;</span>
+<span class="lineNum">      66 </span>            :     // delete entry if it was there already
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :     locator.erase(li);</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :     e=unused_entry;</span>
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 :     _clean=false;</span>
+<span class="lineNum">      70 </span>            :   }
+<span class="lineNum">      71 </span><span class="lineCov">   24761379 :   if(fabs(v)&gt;_truncation_epsilon){</span>
+<span class="lineNum">      72 </span><span class="lineCov">   10195357 :     _entries.push_back(entry_t(loc,v));</span>
+<span class="lineNum">      73 </span><span class="lineCov">   30586054 :     locator[loc]=_entries.size()-1;</span>
+<span class="lineNum">      74 </span><span class="lineCov">   10195342 :     _clean=false;</span>
+<span class="lineNum">      75 </span>            :   }
+<a name="76"><span class="lineNum">      76 </span>            : }</a>
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 : double SortedVector::get(int i){</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :   return operator[](i);</span>
+<span class="lineNum">      80 </span>            : }
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : // inline
+<span class="lineNum">      83 </span>            : // bool 
+<span class="lineNum">      84 </span>            : // SortedVector::larger_value_than::operator()(const entry_t e1,const entry_t e2){
+<span class="lineNum">      85 </span>            : //   if(fabs(e1.value) != fabs(e2.value))
+<span class="lineNum">      86 </span>            : //     return e1.value&gt;e2.value;
+<span class="lineNum">      87 </span>            : //   return e1.row &lt; e2.row;
+<span class="lineNum">      88 </span>            : // }
+<span class="lineNum">      89 </span>            :   
+<span class="lineNum">      90 </span><span class="lineCov">      58523 : void SortedVector::cleanup_helper() const {</span>
+<span class="lineNum">      91 </span><span class="lineCov">     175569 :   sort(_entries.begin(),_entries.end(),larger_value_than());</span>
+<span class="lineNum">      92 </span>            :   
+<span class="lineNum">      93 </span>            :   //erase unused entries
+<span class="lineNum">      94 </span><span class="lineCov">     234092 :   if(_entries.begin()!=_entries.end()){</span>
+<span class="lineNum">      95 </span><span class="lineCov">     175569 :     if(_entries.begin()-&gt;unused()){</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :       _entries.clear();</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :       locator.clear();</span>
+<span class="lineNum">      98 </span>            :     }else{
+<span class="lineNum">      99 </span>            :       _container::iterator l=_entries.end();
+<span class="lineNum">     100 </span><span class="lineCov">     135580 :       while((--l)-&gt;unused() ) </span>
+<span class="lineNum">     101 </span><span class="lineCov">      18534 :         locator.erase(locator.find(*l));</span>
+<span class="lineNum">     102 </span>            :       
+<span class="lineNum">     103 </span><span class="lineCov">     234092 :       _entries.erase(++l,_entries.end());</span>
+<span class="lineNum">     104 </span>            :     }
+<span class="lineNum">     105 </span>            :   }
+<span class="lineNum">     106 </span>            :   
+<span class="lineNum">     107 </span>            :   //     locator.clear(); // This line is expensive.  If this helps to
+<span class="lineNum">     108 </span>            :   //                 // remove the sudden death phenomenon, try to do
+<span class="lineNum">     109 </span>            :   //                 // this more efficient.
+<span class="lineNum">     110 </span><span class="lineCov">   11105878 :   for(int i=0;i&lt;_entries.size();++i){</span>
+<span class="lineNum">     111 </span><span class="lineCov">   10988832 :     locator[_entries[i]]=i;</span>
+<span class="lineNum">     112 </span>            :   }
+<span class="lineNum">     113 </span><span class="lineCov">      58523 :   _clean=true;</span>
+<span class="lineNum">     114 </span><span class="lineCov">      58523 : }</span>
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            : #define SOVE_ONE_ITERATION(z, n, unused)        \
+<span class="lineNum">     118 </span>            : sum+=i-&gt;value*v1[i-&gt;row];                 \
+<span class="lineNum">     119 </span>            : ++i;
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : double 
+<span class="lineNum">     123 </span><span class="lineCov">   35932795 : SortedVector::dot(const double* v1, double max_v1) const {</span>
+<span class="lineNum">     124 </span>            : #ifdef SOVE_MEASURE_EFFICIENCY
+<span class="lineNum">     125 </span>            :   static average_meter av_turns;
+<span class="lineNum">     126 </span>            :   static average_meter av_speedup;
+<span class="lineNum">     127 </span>            :   static average_meter av_error;
+<span class="lineNum">     128 </span>            : #endif
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span><span class="lineCov">   35932940 :   cleanup();</span>
+<span class="lineNum">     131 </span><span class="lineCov">   35932940 :   double sum=0;</span>
+<span class="lineNum">     132 </span><span class="lineCov">   35932940 :   const double max=max_v1;</span>
+<span class="lineNum">     133 </span><span class="lineCov">   35932940 :   const double factor=max*(1.0/_accuracy);</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span><span class="lineCov">  107798820 :   _container::const_iterator i=_entries.begin();</span>
+<span class="lineNum">     136 </span><span class="lineCov">  107798820 :   const _container::const_iterator end=_entries.end();</span>
+<span class="lineNum">     137 </span>            : #ifdef SOVE_MEASURE_EFFICIENCY
+<span class="lineNum">     138 </span>            :   int t=0;
+<span class="lineNum">     139 </span>            : #endif
+<span class="lineNum">     140 </span><span class="lineCov">  249966861 :   while(i!=end){</span>
+<span class="lineNum">     141 </span>            : #ifdef SOVE_UNROLL_LOOP
+<span class="lineNum">     142 </span>            :     //Unroll loop heavily:
+<span class="lineNum">     143 </span><span class="lineCov">  462521022 :     if(i+SOVE_ITERATIONS_UNROLLED&lt;end){</span>
+<span class="lineNum">     144 </span>            : #ifdef SOVE_MEASURE_EFFICIENCY
+<span class="lineNum">     145 </span>            :       t+=SOVE_ITERATIONS_UNROLLED;
+<span class="lineNum">     146 </span>            : #endif
+<span class="lineNum">     147 </span>            :       // Repeated insertion of one iteration at preprocessor stage:
+<span class="lineNum">     148 </span><span class="lineCov"> 1361628272 :       BOOST_PP_REPEAT(SOVE_ITERATIONS_UNROLLED, SOVE_ONE_ITERATION, ~);</span>
+<span class="lineNum">     149 </span>            :     }
+<span class="lineNum">     150 </span>            : #endif
+<span class="lineNum">     151 </span>            : #ifdef SOVE_MEASURE_EFFICIENCY
+<span class="lineNum">     152 </span>            :     t++;
+<span class="lineNum">     153 </span>            : #endif
+<span class="lineNum">     154 </span><span class="lineCov">  231260511 :     const entry_t &amp; e=*i;</span>
+<span class="lineNum">     155 </span><span class="lineCov">  231260511 :     const double val=e.value;</span>
+<span class="lineNum">     156 </span><span class="lineCov">  231260511 :     sum+=val*v1[e.row];</span>
+<span class="lineNum">     157 </span><span class="lineCov">  231260511 :     if(val*factor&lt;sum)</span>
+<span class="lineNum">     158 </span>            :       break;
+<span class="lineNum">     159 </span>            :     ++i;
+<span class="lineNum">     160 </span>            :   }
+<span class="lineNum">     161 </span>            : #ifdef SOVE_MEASURE_EFFICIENCY
+<span class="lineNum">     162 </span>            :   double error=0;
+<span class="lineNum">     163 </span>            :   while(i!=end){
+<span class="lineNum">     164 </span>            :     const entry_t &amp; e=*i;
+<span class="lineNum">     165 </span>            :     const double val=e.value;
+<span class="lineNum">     166 </span>            :     error+=val*v1[e.row];
+<span class="lineNum">     167 </span>            :     ++i;
+<span class="lineNum">     168 </span>            :   }
+<span class="lineNum">     169 </span>            :   if(sum)
+<span class="lineNum">     170 </span>            :     av_error.sample(error/sum);
+<span class="lineNum">     171 </span>            :   av_turns.sample(t);
+<span class="lineNum">     172 </span>            :   if(t)
+<span class="lineNum">     173 </span>            :     av_speedup.sample(_entries.size()/double(t));
+<span class="lineNum">     174 </span>            :   REPORT(_entries.size());
+<span class="lineNum">     175 </span>            :   REPORT(t);
+<span class="lineNum">     176 </span>            :   REPORT(av_turns);
+<span class="lineNum">     177 </span>            :   REPORT(av_speedup);
+<span class="lineNum">     178 </span>            :   REPORT(av_error);
+<span class="lineNum">     179 </span>            : #endif
+<span class="lineNum">     180 </span><span class="lineCov">   35932940 :   return sum;</span>
+<span class="lineNum">     181 </span>            : }
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span>            : //// inlined
+<span class="lineNum">     184 </span>            : // double 
+<span class="lineNum">     185 </span>            : // SortedVector::dot(const vector_with_max &amp; v1)const{
+<span class="lineNum">     186 </span>            : //   return dot(v1.get_data(),v1.get_max());
+<span class="lineNum">     187 </span>            : // }
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 : bool SortedVector::operator==(const SortedVector &amp; other){</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :   cleanup();</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :   other.cleanup();</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :   return this-&gt;_entries==other._entries;</span>
+<span class="lineNum">     193 </span>            : }
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span><span class="lineCov">    2039800 : void SortedVector::resize(int new_size){</span>
+<span class="lineNum">     196 </span><span class="lineCov">    2039800 :   if(new_size&lt;_size){</span>
+<span class="lineNum">     197 </span><span class="lineCov">    1706215 :     for(_container::iterator i=_entries.begin();</span>
+<span class="lineNum">     198 </span><span class="lineCov">    3272654 :       i!=_entries.end();++i){</span>
+<span class="lineNum">     199 </span><span class="lineCov">    1601383 :       if(i-&gt;row &gt;= new_size){</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :         locator.erase(locator.find(*i));</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :         *i=unused_entry;</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :         _clean=false;</span>
+<span class="lineNum">     203 </span>            :       }
+<span class="lineNum">     204 </span>            :     }
+<span class="lineNum">     205 </span>            :   }
+<span class="lineNum">     206 </span><span class="lineCov">    2039800 :   _size=new_size;</span>
+<span class="lineNum">     207 </span><span class="lineCov">    2039800 :   return;</span>
+<span class="lineNum">     208 </span>            : }
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span><span class="lineCov">      75960 : void SortedVector::move(int from,int to){ </span>
+<span class="lineNum">     211 </span><span class="lineCov">      75960 :   if(from==to) return;</span>
+<span class="lineNum">     212 </span><span class="lineCov">    3688318 :   for(_container::iterator i=_entries.begin();</span>
+<span class="lineNum">     213 </span><span class="lineCov">    7072796 :       i!=_entries.end();++i){</span>
+<span class="lineNum">     214 </span><span class="lineCov">    3460438 :     if(i-&gt;row == to){</span>
+<span class="lineNum">     215 </span><span class="lineCov">      27810 :       locator.erase(locator.find(*i));</span>
+<span class="lineNum">     216 </span><span class="lineCov">       9270 :       *i=unused_entry;</span>
+<span class="lineNum">     217 </span><span class="lineCov">       9270 :       _clean=false;</span>
+<span class="lineNum">     218 </span>            :     }else{ 
+<span class="lineNum">     219 </span><span class="lineCov">    3451168 :       if(i-&gt;row == from){</span>
+<span class="lineNum">     220 </span><span class="lineCov">      43500 :         locator.erase(locator.find(*i));</span>
+<span class="lineNum">     221 </span><span class="lineCov">      14500 :         i-&gt;row=to;</span>
+<span class="lineNum">     222 </span><span class="lineCov">      58000 :         locator[*i]=i-_entries.begin();</span>
+<span class="lineNum">     223 </span>            :       }
+<span class="lineNum">     224 </span>            :     }
+<span class="lineNum">     225 </span>            :   }
+<span class="lineNum">     226 </span>            : }
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 : std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, const SortedVector &amp;m){</span>
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :   m.cleanup();</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :   stream &lt;&lt; m._entries.size() &lt;&lt; &quot; entries&quot; &lt;&lt; std::endl;</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :   for(SortedVector::_container::iterator i=m._entries.begin();</span>
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :       i!=m._entries.end();){</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :     stream &lt;&lt; i-&gt;value &lt;&lt; &quot; &quot; </span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :            &lt;&lt; i-&gt;row &lt;&lt; &quot; &quot;;</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :     ++i;</span>
+<span class="lineNum">     236 </span>            :     stream &lt;&lt; std::endl;
+<a name="237"><span class="lineNum">     237 </span>            :   }</a>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :   return stream;</span>
+<span class="lineNum">     239 </span><span class="lineCov">        135 : }</span>
+<span class="lineNum">     240 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

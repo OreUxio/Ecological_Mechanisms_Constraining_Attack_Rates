@@ -1,0 +1,6 @@
+s_t.o s_t.d1 : s_t.cc   \
+   s_t.h \
+ props_t.h binomial_dist.h error.h  \
+   random.h \
+ cfgList.h parsecfg.h evaluate.h CLHEP_Evaluator.h \
+ 

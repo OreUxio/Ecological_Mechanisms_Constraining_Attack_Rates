@@ -1,0 +1,4 @@
+// -*- mode: c++ -*-
+// $Id$
+
+double niche_width_finder(double saturation,int S0,double C0,int ndim);

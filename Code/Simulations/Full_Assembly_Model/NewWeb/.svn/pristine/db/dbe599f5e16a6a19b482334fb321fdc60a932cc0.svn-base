@@ -1,0 +1,27 @@
+# -*- mode: makefile -*-
+# $Id$
+
+BINDIR=/home/axel/NewWeb/build
+
+Xstart.mat Ystart.mat :
+	$(BINDIR)/generate_start_files
+
+Xopt.dat Yopt.dat : Xstart.mat Ystart.mat 
+	$(BINDIR)/optimize
+
+rmin0.dat : optimize.log
+	tac optimize.log | awk '/^minimal y:/{print $$5;}' | head -1 > rmin0.dat
+
+line-%.mat : rmin0.dat XDesc.mat Xstart.mat $(BINDIR)/line-mat
+	$(BINDIR)/line-mat -v field=$* -v npoints=100 < XDesc.mat > $@
+
+pred-%.mat : line-%.mat beta.mat corpar.mat XDesc.mat YDesc.mat
+	cp $< line_X.mat
+	space $(BINDIR)/line.space
+	mv line_Y.mat $@
+
+crossval.mat : beta.mat corpar.mat XDesc.mat YDesc.mat
+	space $(BINDIR)/crossval.space
+
+pred-%.dat : line-%.mat pred-%.mat $(BINDIR)/mat-to-dat.awk
+	$(BINDIR)/mat-to-dat.awk -v field=$* < $< > $@

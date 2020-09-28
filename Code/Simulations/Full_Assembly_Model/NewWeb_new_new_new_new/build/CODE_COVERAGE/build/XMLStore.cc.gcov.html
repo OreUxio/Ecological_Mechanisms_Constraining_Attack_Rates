@@ -1,0 +1,613 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/XMLStore.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - XMLStore.cc<span style="font-size: 80%;"> (source / <a href="XMLStore.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">78</td>
+            <td class="headerCovTableEntry">232</td>
+            <td class="headerCovTableEntryLo">33.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntryLo">30.8 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: XMLStore.cc 2075 2011-03-03 23:40:05Z axel $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #ifndef _XOPEN_SOURCE
+<span class="lineNum">       5 </span>            : #define _XOPEN_SOURCE /* glibc2 needs this for strptime */
+<span class="lineNum">       6 </span>            : #endif
+<span class="lineNum">       7 </span>            : #ifndef _BSD_SOURCE
+<span class="lineNum">       8 </span>            : #define _BSD_SOURCE /* so we can set TZ in struct tm */
+<span class="lineNum">       9 </span>            : #endif
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #include &lt;xercesc/framework/StdOutFormatTarget.hpp&gt;
+<span class="lineNum">      12 </span>            : #include &lt;xercesc/framework/LocalFileFormatTarget.hpp&gt;
+<span class="lineNum">      13 </span>            : #include &lt;xercesc/util/OutOfMemoryException.hpp&gt;
+<span class="lineNum">      14 </span>            : #include &lt;xercesc/sax/InputSource.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;xercesc/util/BinInputStream.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;stdlib.h&gt; // for fopen/fclose
+<span class="lineNum">      17 </span>            : #include &lt;limits.h&gt;
+<span class="lineNum">      18 </span>            : #include &lt;bzlib.h&gt;
+<span class="lineNum">      19 </span>            : #include &lt;sys/stat.h&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &quot;XMLStore.h&quot;
+<span class="lineNum">      22 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : XERCES_CPP_NAMESPACE_USE
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : // reading from pipe:
+<span class="lineNum">      27 </span>            : class pipeInputStream : public BinInputStream {
+<a name="28"><span class="lineNum">      28 </span>            :   FILE * the_pipe;</a>
+<span class="lineNum">      29 </span>            : public:
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :   pipeInputStream(const std::string &amp; command):the_pipe(popen(command.c_str(),&quot;r&quot;)){</span>
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :     if(the_pipe==0) FATAL_ERROR(&quot;could not open the pipe '&quot; &lt;&lt; command &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">      32 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">      33 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<a name="34"><span class="lineNum">      34 </span>            :   virtual unsigned int curPos() const</a>
+<span class="lineNum">      35 </span>            : #else
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :   virtual XMLFilePos curPos() const</span>
+<span class="lineNum">      37 </span>            : #endif
+<span class="lineNum">      38 </span>            :   {
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :     return ftell(the_pipe)/sizeof(XMLByte);</span>
+<span class="lineNum">      40 </span>            :   }
+<span class="lineNum">      41 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<a name="42"><span class="lineNum">      42 </span>            :   virtual unsigned readBytes(XMLByte* const toFill, const unsigned maxToRead)</a>
+<span class="lineNum">      43 </span>            : #else
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :   virtual XMLSize_t readBytes(XMLByte* const toFill, const XMLSize_t maxToRead)</span>
+<span class="lineNum">      45 </span>            : #endif
+<span class="lineNum">      46 </span>            :   {
+<a name="47"><span class="lineNum">      47 </span><span class="lineNoCov">          0 :     return fread(toFill, sizeof(XMLByte), maxToRead, the_pipe);</span></a>
+<a name="48"><span class="lineNum">      48 </span>            :   };</a>
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 :   const XMLCh* getContentType() const{return 0;};</span>
+<span class="lineNum">      50 </span><span class="lineNoCov">          0 :   virtual ~pipeInputStream(){</span>
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :     fclose(the_pipe);</span>
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">      53 </span>            : };
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : class pipeInputSource : public InputSource {
+<a name="56"><span class="lineNum">      56 </span>            :   std::string the_pipe_name;</a>
+<a name="57"><span class="lineNum">      57 </span>            : public:</a>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :   pipeInputSource(const char * pipecommand):the_pipe_name(pipecommand){};</span>
+<a name="59"><span class="lineNum">      59 </span><span class="lineNoCov">          0 :   virtual ~pipeInputSource(){</span></a>
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :   virtual BinInputStream * makeStream() const{</span>
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :     BinInputStream * stream= new pipeInputStream(the_pipe_name);</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :     if(stream==0) FATAL_ERROR(&quot;allocating memory&quot;);</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :     return stream;</span>
+<span class="lineNum">      65 </span>            :   };
+<span class="lineNum">      66 </span>            : };
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : // writing to pipe:
+<span class="lineNum">      69 </span>            : class pipeFormatTarget : public XMLFormatTarget {
+<a name="70"><span class="lineNum">      70 </span>            :   FILE * the_pipe;</a>
+<span class="lineNum">      71 </span>            : public:
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :   pipeFormatTarget(const char * pipecommand):</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :     the_pipe(popen(pipecommand,&quot;w&quot;)){</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :     if(the_pipe==0) </span>
+<a name="75"><span class="lineNum">      75 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;could not open the pipe '&quot; &lt;&lt; pipecommand &lt;&lt; &quot;'&quot;);</span></a>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :   virtual ~pipeFormatTarget(){</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :     fclose(the_pipe);</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">      80 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<span class="lineNum">      81 </span>            :   virtual void writeChars(const XMLByte* const toWrite
+<span class="lineNum">      82 </span>            :                           , const unsigned count
+<a name="83"><span class="lineNum">      83 </span>            :                           , XMLFormatter * const )</a>
+<span class="lineNum">      84 </span>            : #else
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :   virtual void writeChars(const XMLByte* const toWrite</span>
+<span class="lineNum">      86 </span>            :                           , const XMLSize_t count
+<span class="lineNum">      87 </span>            :                           , XMLFormatter * const )
+<span class="lineNum">      88 </span>            : #endif
+<span class="lineNum">      89 </span>            :   {
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     if(count!=fwrite(toWrite, sizeof(XMLByte),  count,  the_pipe))</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;trouble writing to pipe&quot;);</span>
+<a name="92"><span class="lineNum">      92 </span><span class="lineNoCov">          0 :     return;</span></a>
+<span class="lineNum">      93 </span>            :   };
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :   virtual void flushBuffer(){</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :     fflush(the_pipe);</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">      97 </span>            : };
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            : // reading from a bz2 compressed file:
+<span class="lineNum">     100 </span>            : class bz2InputStream : public BinInputStream {
+<span class="lineNum">     101 </span>            :   FILE * f;
+<span class="lineNum">     102 </span>            :   BZFILE * bzf;
+<span class="lineNum">     103 </span>            :   unsigned long int char_position;
+<span class="lineNum">     104 </span>            :   bool eof;
+<a name="105"><span class="lineNum">     105 </span>            :   std::string fname;</a>
+<span class="lineNum">     106 </span>            : public:
+<span class="lineNum">     107 </span><span class="lineCov">         45 :   bz2InputStream(const std::string &amp; filename):</span>
+<span class="lineNum">     108 </span>            :     char_position(0),
+<span class="lineNum">     109 </span>            :     eof(false),
+<span class="lineNum">     110 </span><span class="lineCov">         90 :     fname(filename)</span>
+<span class="lineNum">     111 </span>            :   {
+<span class="lineNum">     112 </span>            :     // First, set mode to unreadable:
+<span class="lineNum">     113 </span><span class="lineCov">         45 :     f=fopen(filename.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">     114 </span><span class="lineCov">         45 :     if(f==0) FATAL_ERROR(&quot;could not open the file '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     115 </span><span class="lineCov">         45 :     int bzerror, verbosity=0, small=0;</span>
+<span class="lineNum">     116 </span><span class="lineCov">         45 :     bzf=BZ2_bzReadOpen(&amp;bzerror,f,verbosity,small,NULL,0);</span>
+<span class="lineNum">     117 </span><span class="lineCov">         45 :     if(bzerror!=BZ_OK){</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;trouble preparing '&quot; &lt;&lt; fname &lt;&lt; &quot;' for compression&quot;);</span>
+<span class="lineNum">     119 </span>            :     }
+<span class="lineNum">     120 </span>            : //     REPORT(bzf);
+<span class="lineNum">     121 </span>            : //     WARNING(&quot;opened&quot;);
+<span class="lineNum">     122 </span><span class="lineCov">         45 :   }</span>
+<span class="lineNum">     123 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<a name="124"><span class="lineNum">     124 </span>            :   virtual unsigned int curPos() const</a>
+<span class="lineNum">     125 </span>            : #else
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :   virtual XMLFilePos curPos() const</span>
+<span class="lineNum">     127 </span>            : #endif
+<span class="lineNum">     128 </span>            :   {
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :     return char_position/sizeof(XMLByte);</span>
+<span class="lineNum">     130 </span>            :   }
+<span class="lineNum">     131 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<a name="132"><span class="lineNum">     132 </span>            :   virtual unsigned readBytes(XMLByte* const toFill, const unsigned maxToRead)</a>
+<span class="lineNum">     133 </span>            : #else
+<span class="lineNum">     134 </span><span class="lineCov">        225 :   virtual XMLSize_t readBytes(XMLByte *const toFill,</span>
+<span class="lineNum">     135 </span>            :                                  const XMLSize_t maxToRead)
+<span class="lineNum">     136 </span>            : #endif
+<span class="lineNum">     137 </span>            :     {
+<span class="lineNum">     138 </span>            : //     REPORT(eof);
+<span class="lineNum">     139 </span><span class="lineCov">        225 :     if(eof) return 0;</span>
+<span class="lineNum">     140 </span>            :     int bzerror;
+<span class="lineNum">     141 </span>            : //     REPORT(bzf);
+<span class="lineNum">     142 </span>            :     int chars_read=
+<span class="lineNum">     143 </span><span class="lineCov">        180 :       BZ2_bzRead(&amp;bzerror, bzf, toFill, sizeof(XMLByte)*maxToRead);</span>
+<span class="lineNum">     144 </span><span class="lineCov">        180 :     ERROR_TEST(bzerror,BZ_PARAM_ERROR);</span>
+<span class="lineNum">     145 </span><span class="lineCov">        180 :     ERROR_TEST(bzerror,BZ_SEQUENCE_ERROR);</span>
+<span class="lineNum">     146 </span><span class="lineCov">        180 :     ERROR_TEST(bzerror,BZ_IO_ERROR);</span>
+<span class="lineNum">     147 </span><span class="lineCov">        180 :     ERROR_TEST(bzerror,BZ_UNEXPECTED_EOF);</span>
+<span class="lineNum">     148 </span><span class="lineCov">        180 :     ERROR_TEST(bzerror,BZ_DATA_ERROR);</span>
+<span class="lineNum">     149 </span><span class="lineCov">        180 :     ERROR_TEST(bzerror,BZ_DATA_ERROR_MAGIC);</span>
+<span class="lineNum">     150 </span><span class="lineCov">        180 :     ERROR_TEST(bzerror,BZ_MEM_ERROR);</span>
+<span class="lineNum">     151 </span><span class="lineCov">        180 :     if(bzerror!=BZ_OK &amp;&amp; bzerror!=BZ_STREAM_END)</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;trouble reading '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     153 </span><span class="lineCov">        180 :     if(bzerror==BZ_STREAM_END)</span>
+<span class="lineNum">     154 </span><span class="lineCov">         45 :       eof=true;</span>
+<span class="lineNum">     155 </span>            :     if( (chars_read%sizeof(XMLByte)) != 0 )
+<span class="lineNum">     156 </span>            :       FATAL_ERROR(&quot;could not read a full XMLByte&quot;);
+<span class="lineNum">     157 </span><span class="lineCov">        180 :     char_position+=chars_read;</span>
+<a name="158"><span class="lineNum">     158 </span><span class="lineCov">        180 :     return chars_read/sizeof(XMLByte);</span></a>
+<a name="159"><span class="lineNum">     159 </span>            :   };</a>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :   const XMLCh* getContentType() const{return 0;};</span>
+<span class="lineNum">     161 </span><span class="lineCov">        180 :   virtual ~bz2InputStream(){</span>
+<span class="lineNum">     162 </span>            :     int bzerror;
+<span class="lineNum">     163 </span><span class="lineCov">         45 :     BZ2_bzReadClose(&amp;bzerror, bzf);</span>
+<span class="lineNum">     164 </span><span class="lineCov">         45 :     if(bzerror!=BZ_OK)</span>
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;trouble closing '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     166 </span><span class="lineCov">         45 :     if(fclose(f)){</span>
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :       perror(&quot;&quot;);</span>
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;trouble closing '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     169 </span>            :     }
+<span class="lineNum">     170 </span>            : //     REPORT(bzf);
+<span class="lineNum">     171 </span>            : //     WARNING(&quot;closed&quot;);
+<span class="lineNum">     172 </span>            : //     WARNING(&quot;bz2InputStream destroyed OK&quot;);
+<span class="lineNum">     173 </span><span class="lineCov">         90 :   };</span>
+<span class="lineNum">     174 </span>            : };
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            : class bz2InputSource : public InputSource {
+<span class="lineNum">     177 </span>            :   std::string the_filename;
+<a name="178"><span class="lineNum">     178 </span>            :   mutable bool produced_stream;</a>
+<span class="lineNum">     179 </span>            : public:
+<span class="lineNum">     180 </span><span class="lineCov">         45 :   bz2InputSource(const char * filename):</span>
+<span class="lineNum">     181 </span>            :     the_filename(filename),
+<a name="182"><span class="lineNum">     182 </span><span class="lineCov">        135 :     produced_stream(false)</span></a>
+<span class="lineNum">     183 </span><span class="lineCov">         45 :   {};</span>
+<span class="lineNum">     184 </span><span class="lineCov">        135 :   virtual ~bz2InputSource(){</span>
+<span class="lineNum">     185 </span><span class="lineCov">         45 :     if(produced_stream)</span>
+<span class="lineNum">     186 </span>            :       ;//WARNING(&quot;bz2InputSource destroyed OK&quot;);
+<span class="lineNum">     187 </span>            :     else
+<a name="188"><span class="lineNum">     188 </span><span class="lineNoCov">          0 :       WARNING(&quot;bz2InputSource destroyed before producing stream&quot;);</span></a>
+<span class="lineNum">     189 </span><span class="lineCov">         45 :   };</span>
+<span class="lineNum">     190 </span><span class="lineCov">         45 :   virtual BinInputStream * makeStream() const{</span>
+<span class="lineNum">     191 </span><span class="lineCov">         45 :     BinInputStream * stream= new bz2InputStream(the_filename);</span>
+<span class="lineNum">     192 </span><span class="lineCov">         45 :     if(stream==0) FATAL_ERROR(&quot;allocating memory&quot;);</span>
+<span class="lineNum">     193 </span><span class="lineCov">         45 :     produced_stream=true;</span>
+<span class="lineNum">     194 </span><span class="lineCov">         45 :     return stream;</span>
+<span class="lineNum">     195 </span>            :   };
+<span class="lineNum">     196 </span>            : };
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            : // writing with bzip2 compression:
+<span class="lineNum">     199 </span>            : class bz2FormatTarget : public XMLFormatTarget {
+<span class="lineNum">     200 </span>            :   FILE * f;
+<span class="lineNum">     201 </span>            :   BZFILE * bzf;
+<a name="202"><span class="lineNum">     202 </span>            :   std::string fname;</a>
+<span class="lineNum">     203 </span>            : public:
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :   bz2FormatTarget(const char * filename):fname(filename){</span>
+<span class="lineNum">     205 </span>            :     // First, set mode to unreadable:
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 :     mode_t old_umask=umask(S_IRUSR | S_IRGRP | S_IROTH | S_IWGRP | S_IWOTH);</span>
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :     f=fopen(filename,&quot;w&quot;);</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :     if(f==0) FATAL_ERROR(&quot;could not open the file '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :     umask(old_umask); // reset old umask</span>
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :     int bzerror,verbosity=0,blockSize100k=9,workFactor=0/*=use default*/;</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :     bzf=BZ2_bzWriteOpen(&amp;bzerror,f,blockSize100k,</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :                         verbosity,workFactor);</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :     if(bzf==0)</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;could not initialize compresssion of '&quot; </span>
+<a name="216"><span class="lineNum">     216 </span><span class="lineNoCov">          0 :                   &lt;&lt; fname &lt;&lt; &quot;'.&quot;);</span></a>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :   virtual ~bz2FormatTarget(){</span>
+<span class="lineNum">     219 </span>            :     int bzerror;
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :     BZ2_bzWriteClose(&amp;bzerror,bzf,0,NULL,NULL);</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :     ERROR_TEST(bzerror,BZ_SEQUENCE_ERROR);</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :     ERROR_TEST(bzerror,BZ_IO_ERROR);</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :     if(bzerror!=BZ_OK){</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;trouble closing '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     225 </span>            :     }
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :     if(fclose(f)){</span>
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :       perror(&quot;&quot;);</span>
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;trouble closing '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     229 </span>            :     }
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :     chmod(fname.c_str(),S_IRUSR|S_IWUSR|S_IRGRP);</span>
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     233 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<span class="lineNum">     234 </span>            :   virtual void writeChars(const XMLByte* const toWrite
+<span class="lineNum">     235 </span>            :                           , const unsigned count
+<a name="236"><span class="lineNum">     236 </span>            :                           , XMLFormatter * const formatter)</a>
+<span class="lineNum">     237 </span>            : #else
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :   virtual void writeChars(const XMLByte* const toWrite</span>
+<span class="lineNum">     239 </span>            :                           , const XMLSize_t count
+<span class="lineNum">     240 </span>            :                           , XMLFormatter * const formatter)
+<span class="lineNum">     241 </span>            : #endif
+<span class="lineNum">     242 </span>            :   {
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :     if((long int)(sizeof(XMLByte)/sizeof(char))*count&gt;INT_MAX){</span>
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :       unsigned int half=count/2;</span>
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :       writeChars(toWrite,half,formatter);</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :       writeChars(toWrite+half,count-half,formatter);</span>
+<span class="lineNum">     247 </span>            :     }else{
+<span class="lineNum">     248 </span>            :       int bzerror;
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :       BZ2_bzWrite(&amp;bzerror,bzf,const_cast&lt;XMLByte *&gt;(toWrite),</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :                   (sizeof(XMLByte)/sizeof(char))*count);</span>
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :       if(bzerror != BZ_OK)</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :         FATAL_ERROR(&quot;trouble writing to '&quot; &lt;&lt; fname &lt;&lt; &quot;'&quot;);</span>
+<span class="lineNum">     253 </span>            :     }
+<a name="254"><span class="lineNum">     254 </span><span class="lineNoCov">          0 :     return;</span></a>
+<span class="lineNum">     255 </span>            :   };
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :   virtual void flushBuffer(){</span>
+<span class="lineNum">     257 </span>            :     // Flushing makes little sense for compressed files.  We could do
+<span class="lineNum">     258 </span>            :     // a close-open combination, but probably this will not give what
+<span class="lineNum">     259 </span>            :     // we want.
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :   };</span>
+<span class="lineNum">     261 </span>            : };
+<span class="lineNum">     262 </span>            : 
+<a name="263"><span class="lineNum">     263 </span>            : const char * XMLStore::the_implementation_descriptor;</a>
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 : XMLStore::XMLStore(){</span>
+<span class="lineNum">     266 </span>            :   try {
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :     XMLPlatformUtils::Initialize();</span>
+<span class="lineNum">     268 </span>            :   }
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :   catch (const XMLException&amp; toCatch) {</span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;could not initialize XERCES&quot;);</span>
+<span class="lineNum">     271 </span>            :   }
+<span class="lineNum">     272 </span>            :   the_implementation = 
+<span class="lineNum">     273 </span>            :     DOMImplementationRegistry::
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :     getDOMImplementation(toXMLCh(the_implementation_descriptor));</span>
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :   if(!the_implementation) throw XMLStoreException(&quot;trouble registring at XERCES&quot;);</span>
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 :   the_doc = the_implementation-&gt;createDocument(0, toXMLCh(&quot;FoodWebData&quot;), 0);</span>
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :   if(!the_doc) throw XMLStoreException(&quot;trouble registring at XERCES&quot;);</span>
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :   parser=0;</span>
+<a name="279"><span class="lineNum">     279 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span><span class="lineCov">         90 : XMLStore::XMLStore(const std::string &amp; fn){</span>
+<span class="lineNum">     282 </span><span class="lineCov">         45 :   const char * filename=fn.c_str();</span>
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :   // check if file readable
+<span class="lineNum">     285 </span>            :   FILE * fd;
+<span class="lineNum">     286 </span><span class="lineCov">         45 :   if(!(fd=fopen(filename,&quot;r&quot;))){</span>
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;cannot read file \&quot;&quot; &lt;&lt; filename &lt;&lt; '&quot;');</span>
+<span class="lineNum">     288 </span>            :   }else{
+<span class="lineNum">     289 </span><span class="lineCov">         45 :     fclose(fd);</span>
+<span class="lineNum">     290 </span>            :   }
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            :   try {
+<span class="lineNum">     293 </span><span class="lineCov">         45 :     XMLPlatformUtils::Initialize();</span>
+<span class="lineNum">     294 </span>            :   }
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :   catch (const XMLException&amp; toCatch) {</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;could not initialize XERCES&quot;);</span>
+<span class="lineNum">     297 </span>            :   }
+<span class="lineNum">     298 </span><span class="lineCov">         45 :   parser = new XercesDOMParser;  //parser is private in XMLStore</span>
+<span class="lineNum">     299 </span><span class="lineCov">        135 :   parser-&gt;useImplementation(toXMLCh(the_implementation_descriptor));</span>
+<span class="lineNum">     300 </span><span class="lineCov">         45 :   parser-&gt;setValidationScheme(XercesDOMParser::Val_Auto);</span>
+<span class="lineNum">     301 </span><span class="lineCov">         45 :   parser-&gt;setDoNamespaces(false);</span>
+<span class="lineNum">     302 </span><span class="lineCov">         45 :   parser-&gt;setDoSchema(false);</span>
+<span class="lineNum">     303 </span><span class="lineCov">         45 :   parser-&gt;setValidationSchemaFullChecking(false);</span>
+<span class="lineNum">     304 </span>            :   //parser-&gt;setCreateEntityReferenceNodes(); // leave at default
+<span class="lineNum">     305 </span>            :   
+<span class="lineNum">     306 </span>            :   try{
+<span class="lineNum">     307 </span><span class="lineCov">         45 :     if(strlen(filename)&gt;3 &amp;&amp; 0==strcmp(filename+strlen(filename)-3,&quot;.gz&quot;)){</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :       const char * gzip = &quot;zcat &quot;;</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :       char * pipecommand = new char[strlen(filename)+strlen(gzip)+1];</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :       pipecommand[0]=0;</span>
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :       strcat(pipecommand,gzip);</span>
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :       strcat(pipecommand,filename);</span>
+<span class="lineNum">     313 </span><span class="lineNoCov">          0 :       pipeInputSource pis(pipecommand);</span>
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :       parser-&gt;parse(pis);</span>
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :       delete[] pipecommand;</span>
+<span class="lineNum">     316 </span><span class="lineCov">         45 :     }else if(strlen(filename)&gt;4 &amp;&amp; 0==strcmp(filename+strlen(filename)-4,&quot;.bz2&quot;)){</span>
+<span class="lineNum">     317 </span>            : #if 0 // dead code
+<span class="lineNum">     318 </span>            :       const char * gzip = &quot;bzcat &quot;;
+<span class="lineNum">     319 </span>            :       char * pipecommand = new char[strlen(filename)+strlen(gzip)+1];
+<span class="lineNum">     320 </span>            :       pipecommand[0]=0;
+<span class="lineNum">     321 </span>            :       strcat(pipecommand,gzip);
+<span class="lineNum">     322 </span>            :       strcat(pipecommand,filename);
+<span class="lineNum">     323 </span>            :       pipeInputSource pis(pipecommand);
+<span class="lineNum">     324 </span>            :       parser-&gt;parse(pis);
+<span class="lineNum">     325 </span>            :       delete[] pipecommand;
+<span class="lineNum">     326 </span>            : #else
+<span class="lineNum">     327 </span><span class="lineCov">         45 :       parser-&gt;parse(bz2InputSource(filename));</span>
+<span class="lineNum">     328 </span>            : #endif
+<span class="lineNum">     329 </span>            :     }else{
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :       parser-&gt;parse(filename);</span>
+<span class="lineNum">     331 </span>            :     }
+<span class="lineNum">     332 </span>            :   }
+<span class="lineNum">     333 </span><span class="lineNoCov">          0 :   catch (const OutOfMemoryException&amp;)</span>
+<span class="lineNum">     334 </span>            :     {
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;out of memmory&quot;);</span>
+<span class="lineNum">     336 </span>            :     }
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :   catch (const XMLException&amp; e)</span>
+<span class="lineNum">     338 </span>            :     {
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :       FATAL_ERROR(tochar(e.getMessage()) &lt;&lt; &quot;(during parsing)&quot;);</span>
+<span class="lineNum">     340 </span>            :     }
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :   catch (const DOMException&amp; e)</span>
+<span class="lineNum">     342 </span>            :     {
+<span class="lineNum">     343 </span><span class="lineNoCov">          0 :       const unsigned int maxChars = 2047;</span>
+<span class="lineNum">     344 </span>            :       XMLCh errText[maxChars + 1];
+<span class="lineNum">     345 </span>            :       
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :       if (!DOMImplementation::loadDOMExceptionMsg(e.code, errText, maxChars))</span>
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :         errText[0]=0;</span>
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :       FATAL_ERROR(tochar(errText) &lt;&lt; &quot; (error code &quot; &lt;&lt; e.code &lt;&lt; &quot;)&quot;);</span>
+<span class="lineNum">     349 </span>            :     }
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :   catch (...){</span>
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;some other error&quot;);</span>
+<span class="lineNum">     352 </span>            :   }
+<span class="lineNum">     353 </span>            :   
+<span class="lineNum">     354 </span><span class="lineCov">         45 :   the_doc = parser-&gt;getDocument();</span>
+<span class="lineNum">     355 </span>            :   // deleting here would cause a segfault:
+<span class="lineNum">     356 </span>            :   //delete parser;  // not deleting here causes a memory leak.
+<span class="lineNum">     357 </span><span class="lineCov">         45 :   the_implementation = 0; //???? how can I get the parsers implementation??</span>
+<a name="358"><span class="lineNum">     358 </span><span class="lineCov">         45 : }</span></a>
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span><span class="lineCov">        135 : XMLStore::~XMLStore(){</span>
+<span class="lineNum">     361 </span>            :   //the_doc-&gt;release();  // this and delete parser together causes a problem
+<span class="lineNum">     362 </span><span class="lineCov">         45 :   if(parser){</span>
+<span class="lineNum">     363 </span><span class="lineCov">         45 :     parser-&gt;resetDocumentPool();</span>
+<span class="lineNum">     364 </span><span class="lineCov">         45 :     delete parser; </span>
+<span class="lineNum">     365 </span>            :   }else{
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 :     the_doc-&gt;release();</span>
+<span class="lineNum">     367 </span>            :   }
+<span class="lineNum">     368 </span><span class="lineCov">         45 :   XMLPlatformUtils::Terminate();</span>
+<a name="369"><span class="lineNum">     369 </span><span class="lineCov">         45 : }</span></a>
+<span class="lineNum">     370 </span>            : 
+<span class="lineNum">     371 </span><span class="lineNoCov">          0 : XMLStore &amp; XMLStore::put(permanent *data, const char * tag){</span>
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :   if(remember(the_doc,the_doc-&gt;getDocumentElement(),rememberWrite)</span>
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :      .sync(tag,data)){</span>
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :     throw XMLStoreException(&quot;problem while putting data&quot;);</span>
+<span class="lineNum">     375 </span>            :   }
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 :   return *this;</span>
+<a name="377"><span class="lineNum">     377 </span>            : }</a>
+<span class="lineNum">     378 </span>            : 
+<span class="lineNum">     379 </span><span class="lineCov">         90 : XMLStore &amp; XMLStore::get(permanent *data, const char * tag){</span>
+<span class="lineNum">     380 </span><span class="lineCov">        180 :   if(remember(the_doc,the_doc-&gt;getDocumentElement(),rememberRead)</span>
+<span class="lineNum">     381 </span><span class="lineCov">        180 :      .sync(tag,data)){</span>
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 :     WARNING(&quot;problem while getting &quot; &lt;&lt; tag);</span>
+<span class="lineNum">     383 </span><span class="lineNoCov">          0 :     throw XMLStoreException(&quot;problem while getting data&quot;);</span>
+<span class="lineNum">     384 </span>            :   }
+<span class="lineNum">     385 </span><span class="lineCov">         90 :   return *this;</span>
+<a name="386"><span class="lineNum">     386 </span>            : }</a>
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span><span class="lineNoCov">          0 : XMLStore &amp; XMLStore::save(const char * filename){</span>
+<span class="lineNum">     389 </span>            :   try
+<span class="lineNum">     390 </span>            :     {
+<span class="lineNum">     391 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<span class="lineNum">     392 </span>            :       DOMWriter *theSerializer = the_implementation-&gt;createDOMWriter();
+<span class="lineNum">     393 </span>            :       // set user specified output encoding
+<span class="lineNum">     394 </span>            :       theSerializer-&gt;setEncoding(0/*gOutputEncoding*/); //default (UTF-8)
+<span class="lineNum">     395 </span>            :       if(theSerializer-&gt;canSetFeature(XMLUni::fgDOMWRTSplitCdataSections,true))
+<span class="lineNum">     396 </span>            :         theSerializer-&gt;setFeature(XMLUni::fgDOMWRTSplitCdataSections,true);
+<span class="lineNum">     397 </span>            :       if(theSerializer-&gt;canSetFeature(XMLUni::fgDOMWRTDiscardDefaultContent,true))
+<span class="lineNum">     398 </span>            :         theSerializer-&gt;setFeature(XMLUni::fgDOMWRTDiscardDefaultContent,true);
+<span class="lineNum">     399 </span>            :       if(theSerializer-&gt;canSetFeature(XMLUni::fgDOMWRTFormatPrettyPrint,true))
+<span class="lineNum">     400 </span>            :         theSerializer-&gt;setFeature(XMLUni::fgDOMWRTFormatPrettyPrint,true);
+<span class="lineNum">     401 </span>            : #else
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :       DOMLSSerializer *theSerializer = the_implementation-&gt;createLSSerializer();</span>
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :       theSerializer-&gt;getDomConfig()</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :         -&gt;setParameter(toXMLCh(&quot;format-pretty-print&quot;),true);</span>
+<span class="lineNum">     405 </span>            : #endif
+<span class="lineNum">     406 </span>            :         
+<span class="lineNum">     407 </span>            :       //
+<span class="lineNum">     408 </span>            :       // Plug in a format target to receive the resultant
+<span class="lineNum">     409 </span>            :       // XML stream from the serializer.
+<span class="lineNum">     410 </span>            :       //
+<span class="lineNum">     411 </span>            :       // StdOutFormatTarget prints the resultant XML stream
+<span class="lineNum">     412 </span>            :       // to stdout once it receives any thing from the serializer.
+<span class="lineNum">     413 </span>            :       //
+<span class="lineNum">     414 </span>            :       XMLFormatTarget *myFormTarget;
+<span class="lineNum">     415 </span><span class="lineNoCov">          0 :       if(strlen(filename)&gt;3 &amp;&amp; 0==strcmp(filename+strlen(filename)-3,&quot;.gz&quot;)){</span>
+<span class="lineNum">     416 </span><span class="lineNoCov">          0 :         const char * gzip = &quot;umask 477;gzip --best &gt; &quot;;</span>
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 :         const char * unlock = &quot;;chmod 640 &quot;;</span>
+<span class="lineNum">     418 </span>            :         char * pipecommand = 
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :           new char[2*strlen(filename)+strlen(gzip)+strlen(unlock)+1];</span>
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 :         pipecommand[0]=0;</span>
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :         strcat(pipecommand,gzip);</span>
+<span class="lineNum">     422 </span><span class="lineNoCov">          0 :         strcat(pipecommand,filename);</span>
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :         strcat(pipecommand,unlock);</span>
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :         strcat(pipecommand,filename);</span>
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :         myFormTarget = new pipeFormatTarget(pipecommand);</span>
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :         delete[] pipecommand;</span>
+<span class="lineNum">     427 </span>            :       }else      
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :         if(strlen(filename)&gt;4 &amp;&amp; 0==strcmp(filename+strlen(filename)-4,&quot;.bz2&quot;)){</span>
+<span class="lineNum">     429 </span>            : #if 0 // dead code
+<span class="lineNum">     430 </span>            :         const char * gzip = &quot;umask 477;bzip2 --best &gt; &quot;;
+<span class="lineNum">     431 </span>            :         const char * unlock = &quot;;chmod 640 &quot;;
+<span class="lineNum">     432 </span>            :         char * pipecommand = 
+<span class="lineNum">     433 </span>            :           new char[2*strlen(filename)+strlen(gzip)+strlen(unlock)+1];
+<span class="lineNum">     434 </span>            :         pipecommand[0]=0;
+<span class="lineNum">     435 </span>            :         strcat(pipecommand,gzip);
+<span class="lineNum">     436 </span>            :         strcat(pipecommand,filename);
+<span class="lineNum">     437 </span>            :         strcat(pipecommand,unlock);
+<span class="lineNum">     438 </span>            :         strcat(pipecommand,filename);
+<span class="lineNum">     439 </span>            :         myFormTarget = new pipeFormatTarget(pipecommand);
+<span class="lineNum">     440 </span>            :         delete[] pipecommand;
+<span class="lineNum">     441 </span>            : #else
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 :         myFormTarget = new bz2FormatTarget(filename);</span>
+<span class="lineNum">     443 </span>            : #endif
+<span class="lineNum">     444 </span>            :       }else{
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 :         myFormTarget = new LocalFileFormatTarget(filename);</span>
+<span class="lineNum">     446 </span>            :       }
+<span class="lineNum">     447 </span>            :       //
+<span class="lineNum">     448 </span>            : #if XERCES_VERSION_MAJOR &lt; 3
+<span class="lineNum">     449 </span>            :       theSerializer-&gt;writeNode(myFormTarget, *the_doc);
+<span class="lineNum">     450 </span>            : #else
+<span class="lineNum">     451 </span><span class="lineNoCov">          0 :       DOMLSOutput * myOutput = the_implementation -&gt; createLSOutput();</span>
+<span class="lineNum">     452 </span><span class="lineNoCov">          0 :       myOutput-&gt;setByteStream(myFormTarget);</span>
+<span class="lineNum">     453 </span><span class="lineNoCov">          0 :       theSerializer-&gt;write(the_doc, myOutput);</span>
+<span class="lineNum">     454 </span><span class="lineNoCov">          0 :       delete myOutput;</span>
+<span class="lineNum">     455 </span>            : #endif  
+<span class="lineNum">     456 </span><span class="lineNoCov">          0 :       delete theSerializer;</span>
+<span class="lineNum">     457 </span>            :       //
+<span class="lineNum">     458 </span>            :       // Filter, formatTarget and error handler
+<span class="lineNum">     459 </span>            :       // are NOT owned by the serializer.
+<span class="lineNum">     460 </span>            :       //
+<span class="lineNum">     461 </span><span class="lineNoCov">          0 :       delete myFormTarget;</span>
+<span class="lineNum">     462 </span>            :         
+<span class="lineNum">     463 </span>            :     }
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :   catch (const OutOfMemoryException&amp;)</span>
+<span class="lineNum">     465 </span>            :     {
+<span class="lineNum">     466 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;out of memory&quot;);</span>
+<span class="lineNum">     467 </span>            :     }
+<span class="lineNum">     468 </span><span class="lineNoCov">          0 :   catch (XMLException&amp; e)</span>
+<span class="lineNum">     469 </span>            :     {
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :       FATAL_ERROR(tochar(e.getMessage()) &lt;&lt; &quot;(during parsing)&quot;);</span>
+<span class="lineNum">     471 </span>            :     }
+<span class="lineNum">     472 </span>            : 
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :   return *this;</span>
+<a name="474"><span class="lineNum">     474 </span>            : }  </a>
+<span class="lineNum">     475 </span>            : 
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 : int XMLStore::node_count(const char * tag) {</span>
+<span class="lineNum">     477 </span><span class="lineNoCov">          0 :   DOMNodeList*    nodeList = the_doc-&gt;getElementsByTagName(toXMLCh(tag));</span>
+<span class="lineNum">     478 </span><span class="lineNoCov">          0 :   return nodeList-&gt;getLength();</span>
+<a name="479"><span class="lineNum">     479 </span>            : };</a>
+<span class="lineNum">     480 </span>            : 
+<span class="lineNum">     481 </span><span class="lineCov">         90 : bool XMLStore::older_than(const char * bug_correction_date){</span>
+<span class="lineNum">     482 </span>            :   // used to make code compatibile with buggy older versions:
+<span class="lineNum">     483 </span><span class="lineCov">         90 :   if(old_compilation_time.size()==0){</span>
+<span class="lineNum">     484 </span>            :     try{
+<span class="lineNum">     485 </span><span class="lineCov">         45 :       this-&gt;get(old_compilation_time,&quot;compilation_time&quot;);</span>
+<span class="lineNum">     486 </span><span class="lineCov">        180 :       REPORT(old_compilation_time);</span>
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :     }catch(XMLStoreException){</span>
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :       WARNING(&quot;could not find compilation_time in XML data&quot;);</span>
+<span class="lineNum">     489 </span>            :     } 
+<span class="lineNum">     490 </span>            :   }
+<span class="lineNum">     491 </span>            :     
+<span class="lineNum">     492 </span>            :   //typical date: May 23 2006, 14:14:16
+<span class="lineNum">     493 </span>            :   struct tm time_data;
+<span class="lineNum">     494 </span>            :   char * strptime_retval;
+<span class="lineNum">     495 </span>            :   strptime_retval=
+<span class="lineNum">     496 </span><span class="lineCov">        180 :     strptime(old_compilation_time.c_str(),&quot;%b %d %Y, %T&quot;,&amp;time_data);</span>
+<span class="lineNum">     497 </span><span class="lineCov">         90 :   if(old_compilation_time.size()&gt;0 &amp;&amp; !strptime_retval) </span>
+<span class="lineNum">     498 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;could not parse compliation time of input web&quot;);</span>
+<span class="lineNum">     499 </span>            :   //and now the time of the bug fix: 2006/08/01 05:45:21 UTC
+<span class="lineNum">     500 </span>            :   struct tm bug_fix_time;
+<span class="lineNum">     501 </span>            :   strptime_retval=
+<span class="lineNum">     502 </span><span class="lineCov">         90 :     strptime(bug_correction_date,&quot;%b %d %Y, %T&quot;,&amp;bug_fix_time);</span>
+<span class="lineNum">     503 </span><span class="lineCov">         90 :   if(!strptime_retval) </span>
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;could not parse bug correction date&quot;);</span>
+<span class="lineNum">     505 </span>            : //   REPORT(mktime(&amp;time_data));
+<span class="lineNum">     506 </span>            : //   REPORT(mktime(&amp;bug_fix_time));
+<span class="lineNum">     507 </span><span class="lineCov">        180 :   if(old_compilation_time.size()==0 || </span>
+<span class="lineNum">     508 </span><span class="lineCov">         90 :      mktime(&amp;time_data)&lt;mktime(&amp;bug_fix_time) ){</span>
+<span class="lineNum">     509 </span>            :     return true;
+<span class="lineNum">     510 </span>            :   }else{
+<a name="511"><span class="lineNum">     511 </span><span class="lineCov">         90 :     return false;</span></a>
+<span class="lineNum">     512 </span>            :   }
+<span class="lineNum">     513 </span><span class="lineCov">         90 : }</span>
+<span class="lineNum">     514 </span>            : 
+<span class="lineNum">     515 </span>            : 
+<span class="lineNum">     516 </span>            : /*
+<span class="lineNum">     517 </span>            : #include &quot;evaluate.h&quot;
+<span class="lineNum">     518 </span>            : #include &quot;random.h&quot;
+<span class="lineNum">     519 </span>            : #include &quot;Statistics.h&quot;
+<span class="lineNum">     520 </span>            : #include &quot;cfgList.h&quot;
+<span class="lineNum">     521 </span>            : #include &quot;attributes.h&quot;
+<span class="lineNum">     522 </span>            : 
+<span class="lineNum">     523 </span>            : int main(void){
+<span class="lineNum">     524 </span>            :   NewWeb web;
+<span class="lineNum">     525 </span>            :   int i;
+<span class="lineNum">     526 </span>            :   XMLStore(&quot;file:///tmp/web.xml&quot;).get(i,&quot;someVariable&quot;);
+<span class="lineNum">     527 </span>            :   XMLStore(&quot;/tmp/web2.xml.gz&quot;).get(&amp;web,&quot;FoodWeb&quot;);
+<span class="lineNum">     528 </span>            :   set_random_seed(123);
+<span class="lineNum">     529 </span>            :   web.speciate();
+<span class="lineNum">     530 </span>            :   web.speciate();
+<span class="lineNum">     531 </span>            :   try{
+<span class="lineNum">     532 </span>            :     XMLStore().put(&amp;web,&quot;FoodWeb&quot;).put(i,&quot;someVariable&quot;).save(&quot;/tmp/web2.xml.gz&quot;);
+<span class="lineNum">     533 </span>            :   }catch(...){
+<span class="lineNum">     534 </span>            :     FATAL_ERROR(&quot;trouble saving&quot;);
+<span class="lineNum">     535 </span>            :   }
+<span class="lineNum">     536 </span>            : }
+<span class="lineNum">     537 </span>            : */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

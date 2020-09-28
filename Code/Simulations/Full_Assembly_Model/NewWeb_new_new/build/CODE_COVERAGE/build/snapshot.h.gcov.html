@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/snapshot.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - snapshot.h<span style="font-size: 80%;"> (source / <a href="snapshot.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: snapshot.h 2318 2013-07-15 00:53:10Z tak $
+<span class="lineNum">       3 </span>            : #ifndef _SNAPSHOT_H_
+<span class="lineNum">       4 </span>            : #define _SNAPSHOT_H_
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #include &quot;sequence.h&quot;
+<span class="lineNum">       7 </span>            : #include &quot;link_strength_matrix.h&quot;
+<span class="lineNum">       8 </span>            : #include &quot;NetworkAnalysis.h&quot;
+<span class="lineNum">       9 </span>            : 
+<a name="10"><span class="lineNum">      10 </span>            : // generic description of a food-web state:</a>
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span><span class="lineCov">        540 : class Snapshot </span>
+<span class="lineNum">      13 </span>            : {
+<span class="lineNum">      14 </span>            :   int S;
+<span class="lineNum">      15 </span>            :   sequence&lt;int&gt; the_bottom;
+<span class="lineNum">      16 </span>            :   sequence&lt;double&gt; the_biomass_B;
+<span class="lineNum">      17 </span>            :   sequence&lt;double&gt; the_bodymass_M;
+<span class="lineNum">      18 </span>            :   sequence&lt;double&gt; the_level;
+<span class="lineNum">      19 </span>            :   sequence&lt;double&gt; the_level0;
+<span class="lineNum">      20 </span>            :   sequence&lt;double&gt; the_level1;
+<span class="lineNum">      21 </span>            :   sequence&lt;double&gt; the_cStar;
+<span class="lineNum">      22 </span>            :   link_strength_matrix the_flow;
+<span class="lineNum">      23 </span>            :   link_strength_matrix the_ifrac;
+<span class="lineNum">      24 </span>            :   Interaction_Matrix the_link;
+<span class="lineNum">      25 </span>            :   double the_area_per_compartment;
+<span class="lineNum">      26 </span>            :   void compute_level_if_required();
+<span class="lineNum">      27 </span>            :   void compute_ifrac_if_required();
+<span class="lineNum">      28 </span>            :   void compute_level0_if_required();
+<span class="lineNum">      29 </span>            :   void compute_level1_if_required();
+<span class="lineNum">      30 </span>            :   void compute_cStar_if_required();
+<span class="lineNum">      31 </span>            :   bool is_plant(int i);
+<span class="lineNum">      32 </span>            :   permutation the_rectification;
+<span class="lineNum">      33 </span>            :  public:
+<span class="lineNum">      34 </span>            :   Snapshot();
+<span class="lineNum">      35 </span>            :   void set_number_of_compartments(int s);
+<span class="lineNum">      36 </span>            :   void set_biomasses(const sequence&lt;double&gt; &amp; B);
+<span class="lineNum">      37 </span>            :   void set_bodymasses(const sequence&lt;double&gt; &amp; M);
+<span class="lineNum">      38 </span>            :   sequence&lt; double &gt; get_biomasses();
+<span class="lineNum">      39 </span>            :   sequence&lt; double &gt; get_bodymasses();
+<span class="lineNum">      40 </span>            :   void set_flows(const link_strength_matrix &amp; flow);
+<span class="lineNum">      41 </span>            :   void set_links(const Interaction_Matrix &amp; link);
+<span class="lineNum">      42 </span>            :   void set_bottom(const sequence&lt;int&gt; &amp; bottom);
+<span class="lineNum">      43 </span>            :   void set_area(double area);
+<span class="lineNum">      44 </span>            :   void adjust_links_given_flows(double threshold);
+<span class="lineNum">      45 </span>            :   void adjust_bottom_given_links();
+<span class="lineNum">      46 </span>            :   const link_strength_matrix &amp; ifrac();
+<span class="lineNum">      47 </span>            :   link_strength_matrix get_ifrac();
+<span class="lineNum">      48 </span>            :   Interaction_Matrix get_im();
+<span class="lineNum">      49 </span>            :   int number_of_species();
+<span class="lineNum">      50 </span>            :   int number_of_plants();
+<span class="lineNum">      51 </span>            :   int number_of_animals();
+<span class="lineNum">      52 </span>            :   int number_of_species_Mthreshold(double Mlowerthreshold, double Mupperthreshold);
+<span class="lineNum">      53 </span>            :   int number_of_species_TLthreshold(double TLlowerthreshold, double TLupperthreshold);
+<span class="lineNum">      54 </span>            :   const link_strength_matrix &amp; get_intake_matrix();  //trash? 
+<span class="lineNum">      55 </span>            :   link_strength_matrix intake_matrix();              //trash?
+<span class="lineNum">      56 </span>            :   void rank_abundance_plot(const char * filename,bool with_plants);
+<span class="lineNum">      57 </span>            :   void size_spectrum(const char * filename,
+<span class="lineNum">      58 </span>            :                      bool with_plants, bool with_animals);
+<span class="lineNum">      59 </span>            :   void biomass_spectrum(const char * filename,
+<span class="lineNum">      60 </span>            :                         bool with_plants, bool with_animals);
+<span class="lineNum">      61 </span>            :   void trophic_level_structure(const char * filename);
+<span class="lineNum">      62 </span>            :   void pajek_graph(const std::string &amp; filename, double threshold);
+<span class="lineNum">      63 </span>            :   void species_table(const char * filename,bool with_plants,double threshold,
+<span class="lineNum">      64 </span>            :                      const sequence&lt;std::string&gt; &amp; additional_headings=sequence&lt;std::string&gt;(),
+<span class="lineNum">      65 </span>            :                      const sequence&lt;std::string&gt; &amp; additional_data=sequence&lt;std::string&gt;());
+<span class="lineNum">      66 </span>            :   void species_table2(const char * filename,bool with_plants,double threshold,
+<span class="lineNum">      67 </span>            :                      const sequence&lt;std::string&gt; &amp; additional_headings=sequence&lt;std::string&gt;(),
+<span class="lineNum">      68 </span>            :                      const sequence&lt;std::string&gt; &amp; additional_data=sequence&lt;std::string&gt;());
+<span class="lineNum">      69 </span>            :   void species_table3(const char * filename,bool with_plants,double threshold,
+<span class="lineNum">      70 </span>            :                      const sequence&lt;std::string&gt; &amp; additional_headings=sequence&lt;std::string&gt;(),
+<span class="lineNum">      71 </span>            :                      const sequence&lt;std::string&gt; &amp; additional_data=sequence&lt;std::string&gt;());
+<span class="lineNum">      72 </span>            :   void link_table(const char * filename, double threshold);
+<span class="lineNum">      73 </span>            :   void link_table2(const char * filename, double threshold);
+<span class="lineNum">      74 </span>            :   void fast_stats();
+<span class="lineNum">      75 </span>            :   permutation rectification();
+<span class="lineNum">      76 </span>            :   double Omega(permutation p,double level_threshold=0);
+<span class="lineNum">      77 </span>            : private:
+<span class="lineNum">      78 </span>            :   double Delta_Omega(const permutation &amp; p,int i,int j); //change permuting i, j
+<span class="lineNum">      79 </span>            : public:
+<span class="lineNum">      80 </span>            :   double Living_Planet_Index(Snapshot &amp; baseline,
+<span class="lineNum">      81 </span>            :                              bool with_plants, bool with_animals);
+<span class="lineNum">      82 </span>            :   double Shanon_diversity_H(bool with_plants, bool with_animals);
+<span class="lineNum">      83 </span>            :   double Shanon_diversity_H_Mthreshold(double Mlowerthreshold, double Mupperthreshold);
+<span class="lineNum">      84 </span>            :   double Shanon_diversity_H_TLthreshold(double TLlowerthreshold, double TLupperthreshold);
+<span class="lineNum">      85 </span>            :   double Simpson_s_diversity_D(bool with_plants, bool with_animals);
+<span class="lineNum">      86 </span>            :   double Simpson_s_diversity_D_Mthreshold(double Mlowerthreshold, double Mupperthreshold);
+<span class="lineNum">      87 </span>            :   double Simpson_s_diversity_D_TLthreshold(double TLlowerthreshold, double TLupperthreshold);
+<span class="lineNum">      88 </span>            :   double MTI_Mthreshold(double Mlowerthreshold, double Mupperthreshold);
+<span class="lineNum">      89 </span>            :   double MTI_TLthreshold(double TLlowerthreshold, double TLupperthreshold);
+<span class="lineNum">      90 </span>            :   double max_level();
+<span class="lineNum">      91 </span>            :   double biomass_weighted_mean_level();
+<span class="lineNum">      92 </span>            :   double mean_level();
+<span class="lineNum">      93 </span>            : };
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : #endif // _SNAPSHOT_H_
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

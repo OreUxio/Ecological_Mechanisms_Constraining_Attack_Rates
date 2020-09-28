@@ -1,0 +1,1396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/debug.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - debug.hpp<span style="font-size: 80%;"> (source / <a href="debug.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">98</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2015 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : // Written by Stanislav Funiak
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : //! \addtogroup debug
+<span class="lineNum">      13 </span>            : //! @{
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : template&lt;typename T&gt;
+<span class="lineNum">      18 </span>            : inline
+<span class="lineNum">      19 </span>            : std::ostream&amp;
+<span class="lineNum">      20 </span>            : arma_stream_err1(std::ostream* user_stream)
+<span class="lineNum">      21 </span>            :   {
+<span class="lineNum">      22 </span>            :   static std::ostream* stream_err1 = &amp;(ARMA_DEFAULT_OSTREAM);
+<span class="lineNum">      23 </span>            :   
+<span class="lineNum">      24 </span>            :   if(user_stream != NULL)
+<span class="lineNum">      25 </span>            :     {
+<span class="lineNum">      26 </span>            :     stream_err1 = user_stream;
+<span class="lineNum">      27 </span>            :     }
+<span class="lineNum">      28 </span>            :   
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 :   return *stream_err1;</span>
+<span class="lineNum">      30 </span>            :   }
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : template&lt;typename T&gt;
+<span class="lineNum">      35 </span>            : inline
+<span class="lineNum">      36 </span>            : std::ostream&amp;
+<span class="lineNum">      37 </span>            : arma_stream_err2(std::ostream* user_stream)
+<span class="lineNum">      38 </span>            :   {
+<span class="lineNum">      39 </span>            :   static std::ostream* stream_err2 = &amp;(ARMA_DEFAULT_OSTREAM);
+<span class="lineNum">      40 </span>            :   
+<span class="lineNum">      41 </span>            :   if(user_stream != NULL)
+<span class="lineNum">      42 </span>            :     {
+<span class="lineNum">      43 </span>            :     stream_err2 = user_stream;
+<span class="lineNum">      44 </span>            :     }
+<span class="lineNum">      45 </span>            :   
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :   return *stream_err2;</span>
+<span class="lineNum">      47 </span>            :   }
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : inline
+<span class="lineNum">      52 </span>            : void
+<span class="lineNum">      53 </span>            : set_stream_err1(std::ostream&amp; user_stream)
+<span class="lineNum">      54 </span>            :   {
+<span class="lineNum">      55 </span>            :   arma_stream_err1&lt;char&gt;(&amp;user_stream);
+<span class="lineNum">      56 </span>            :   }
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : inline
+<span class="lineNum">      61 </span>            : void
+<span class="lineNum">      62 </span>            : set_stream_err2(std::ostream&amp; user_stream)
+<span class="lineNum">      63 </span>            :   {
+<span class="lineNum">      64 </span>            :   arma_stream_err2&lt;char&gt;(&amp;user_stream);
+<span class="lineNum">      65 </span>            :   }
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : inline
+<span class="lineNum">      70 </span>            : std::ostream&amp;
+<span class="lineNum">      71 </span>            : get_stream_err1()
+<span class="lineNum">      72 </span>            :   {
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :   return arma_stream_err1&lt;char&gt;(NULL);</span>
+<span class="lineNum">      74 </span>            :   }
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            : inline
+<span class="lineNum">      79 </span>            : std::ostream&amp;
+<span class="lineNum">      80 </span>            : get_stream_err2()
+<span class="lineNum">      81 </span>            :   {
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   return arma_stream_err2&lt;char&gt;(NULL);</span>
+<span class="lineNum">      83 </span>            :   }
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : //
+<span class="lineNum">      88 </span>            : // arma_stop
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : //! print a message to get_stream_err1() and/or throw a logic_error exception
+<span class="lineNum">      91 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">      92 </span>            : arma_cold
+<span class="lineNum">      93 </span>            : arma_noinline
+<a name="94"><span class="lineNum">      94 </span>            : static</a>
+<span class="lineNum">      95 </span>            : void
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 : arma_stop(const T1&amp; x)</span>
+<span class="lineNum">      97 </span>            :   {
+<span class="lineNum">      98 </span>            :   #if defined(ARMA_PRINT_ERRORS)
+<span class="lineNum">      99 </span>            :     {
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 :     get_stream_err1() &lt;&lt; &quot;\nerror: &quot; &lt;&lt; x &lt;&lt; '\n';</span>
+<span class="lineNum">     101 </span>            :     }
+<span class="lineNum">     102 </span>            :   #endif
+<span class="lineNum">     103 </span>            :   
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :   throw std::logic_error( std::string(x) );</span>
+<span class="lineNum">     105 </span>            :   }
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     110 </span>            : arma_cold
+<span class="lineNum">     111 </span>            : arma_noinline
+<a name="112"><span class="lineNum">     112 </span>            : static</a>
+<span class="lineNum">     113 </span>            : void
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 : arma_stop_bad_alloc(const T1&amp; x)</span>
+<span class="lineNum">     115 </span>            :   {
+<span class="lineNum">     116 </span>            :   #if defined(ARMA_PRINT_ERRORS)
+<span class="lineNum">     117 </span>            :     {
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     get_stream_err2() &lt;&lt; &quot;\nerror: &quot; &lt;&lt; x &lt;&lt; '\n';</span>
+<span class="lineNum">     119 </span>            :     }
+<span class="lineNum">     120 </span>            :   #else
+<span class="lineNum">     121 </span>            :     {
+<span class="lineNum">     122 </span>            :     arma_ignore(x);
+<span class="lineNum">     123 </span>            :     }
+<span class="lineNum">     124 </span>            :   #endif
+<span class="lineNum">     125 </span>            :   
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :   throw std::bad_alloc();</span>
+<span class="lineNum">     127 </span>            :   }
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            : //
+<span class="lineNum">     132 </span>            : // arma_bad
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : //! print a message to get_stream_err2() and/or throw a run-time error exception
+<span class="lineNum">     135 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     136 </span>            : arma_cold
+<span class="lineNum">     137 </span>            : arma_noinline
+<a name="138"><span class="lineNum">     138 </span>            : static</a>
+<span class="lineNum">     139 </span>            : void
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 : arma_bad(const T1&amp; x)</span>
+<span class="lineNum">     141 </span>            :   {
+<span class="lineNum">     142 </span>            :   #if defined(ARMA_PRINT_ERRORS)
+<span class="lineNum">     143 </span>            :     {
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     get_stream_err2() &lt;&lt; &quot;\nerror: &quot; &lt;&lt; x &lt;&lt; '\n';</span>
+<span class="lineNum">     145 </span>            :     }
+<span class="lineNum">     146 </span>            :   #endif
+<span class="lineNum">     147 </span>            :   
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :   throw std::runtime_error( std::string(x) );</span>
+<span class="lineNum">     149 </span>            :   }
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : //
+<span class="lineNum">     154 </span>            : // arma_print
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            : arma_cold
+<span class="lineNum">     158 </span>            : inline
+<span class="lineNum">     159 </span>            : void
+<span class="lineNum">     160 </span>            : arma_print()
+<span class="lineNum">     161 </span>            :   {
+<span class="lineNum">     162 </span>            :   get_stream_err1() &lt;&lt; std::endl;
+<span class="lineNum">     163 </span>            :   }
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     167 </span>            : arma_cold
+<span class="lineNum">     168 </span>            : arma_noinline
+<span class="lineNum">     169 </span>            : static
+<span class="lineNum">     170 </span>            : void
+<span class="lineNum">     171 </span>            : arma_print(const T1&amp; x)
+<span class="lineNum">     172 </span>            :   {
+<span class="lineNum">     173 </span>            :   get_stream_err1() &lt;&lt; x &lt;&lt; std::endl;
+<span class="lineNum">     174 </span>            :   }
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     179 </span>            : arma_cold
+<span class="lineNum">     180 </span>            : arma_noinline
+<span class="lineNum">     181 </span>            : static
+<span class="lineNum">     182 </span>            : void
+<span class="lineNum">     183 </span>            : arma_print(const T1&amp; x, const T2&amp; y)
+<span class="lineNum">     184 </span>            :   {
+<span class="lineNum">     185 </span>            :   get_stream_err1() &lt;&lt; x &lt;&lt; y &lt;&lt; std::endl;
+<span class="lineNum">     186 </span>            :   }
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            : template&lt;typename T1, typename T2, typename T3&gt;
+<span class="lineNum">     191 </span>            : arma_cold
+<span class="lineNum">     192 </span>            : arma_noinline
+<span class="lineNum">     193 </span>            : static
+<span class="lineNum">     194 </span>            : void
+<span class="lineNum">     195 </span>            : arma_print(const T1&amp; x, const T2&amp; y, const T3&amp; z)
+<span class="lineNum">     196 </span>            :   {
+<span class="lineNum">     197 </span>            :   get_stream_err1() &lt;&lt; x &lt;&lt; y &lt;&lt; z &lt;&lt; std::endl;
+<span class="lineNum">     198 </span>            :   }
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            : //
+<span class="lineNum">     206 </span>            : // arma_sigprint
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : //! print a message the the log stream with a preceding @ character.
+<span class="lineNum">     209 </span>            : //! by default the log stream is cout.
+<span class="lineNum">     210 </span>            : //! used for printing the signature of a function
+<span class="lineNum">     211 </span>            : //! (see the arma_extra_debug_sigprint macro) 
+<span class="lineNum">     212 </span>            : inline
+<span class="lineNum">     213 </span>            : void
+<span class="lineNum">     214 </span>            : arma_sigprint(const char* x)
+<span class="lineNum">     215 </span>            :   {
+<span class="lineNum">     216 </span>            :   get_stream_err1() &lt;&lt; &quot;@ &quot; &lt;&lt; x;
+<span class="lineNum">     217 </span>            :   }
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            : //
+<span class="lineNum">     222 </span>            : // arma_bktprint
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            : inline
+<span class="lineNum">     226 </span>            : void
+<span class="lineNum">     227 </span>            : arma_bktprint()
+<span class="lineNum">     228 </span>            :   {
+<span class="lineNum">     229 </span>            :   get_stream_err1() &lt;&lt; std::endl;
+<span class="lineNum">     230 </span>            :   }
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     234 </span>            : inline
+<span class="lineNum">     235 </span>            : void
+<span class="lineNum">     236 </span>            : arma_bktprint(const T1&amp; x)
+<span class="lineNum">     237 </span>            :   {
+<span class="lineNum">     238 </span>            :   get_stream_err1() &lt;&lt; &quot; [&quot; &lt;&lt; x &lt;&lt; ']' &lt;&lt; std::endl;
+<span class="lineNum">     239 </span>            :   }
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     244 </span>            : inline
+<span class="lineNum">     245 </span>            : void
+<span class="lineNum">     246 </span>            : arma_bktprint(const T1&amp; x, const T2&amp; y)
+<span class="lineNum">     247 </span>            :   {
+<span class="lineNum">     248 </span>            :   get_stream_err1() &lt;&lt; &quot; [&quot; &lt;&lt; x &lt;&lt; y &lt;&lt; ']' &lt;&lt; std::endl;
+<span class="lineNum">     249 </span>            :   }
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            : //
+<span class="lineNum">     257 </span>            : // arma_thisprint
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            : inline
+<span class="lineNum">     260 </span>            : void
+<span class="lineNum">     261 </span>            : arma_thisprint(const void* this_ptr)
+<span class="lineNum">     262 </span>            :   {
+<span class="lineNum">     263 </span>            :   get_stream_err1() &lt;&lt; &quot; [this = &quot; &lt;&lt; this_ptr &lt;&lt; ']' &lt;&lt; std::endl;
+<span class="lineNum">     264 </span>            :   }
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : //
+<span class="lineNum">     269 </span>            : // arma_warn
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : //! print a message to the warn stream
+<span class="lineNum">     273 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     274 </span>            : arma_cold
+<span class="lineNum">     275 </span>            : arma_noinline
+<a name="276"><span class="lineNum">     276 </span>            : static</a>
+<span class="lineNum">     277 </span>            : void
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 : arma_warn(const T1&amp; x)</span>
+<span class="lineNum">     279 </span>            :   {
+<span class="lineNum">     280 </span>            :   #if defined(ARMA_PRINT_ERRORS)
+<span class="lineNum">     281 </span>            :     {
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :     get_stream_err2() &lt;&lt; &quot;\nwarning: &quot; &lt;&lt; x &lt;&lt; '\n';</span>
+<span class="lineNum">     283 </span>            :     }
+<span class="lineNum">     284 </span>            :   #else
+<span class="lineNum">     285 </span>            :     {
+<span class="lineNum">     286 </span>            :     arma_ignore(x);
+<span class="lineNum">     287 </span>            :     }
+<span class="lineNum">     288 </span>            :   #endif
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     293 </span>            : arma_cold
+<span class="lineNum">     294 </span>            : arma_noinline
+<span class="lineNum">     295 </span>            : static
+<span class="lineNum">     296 </span>            : void
+<span class="lineNum">     297 </span>            : arma_warn(const T1&amp; x, const T2&amp; y)
+<span class="lineNum">     298 </span>            :   {
+<span class="lineNum">     299 </span>            :   #if defined(ARMA_PRINT_ERRORS)
+<span class="lineNum">     300 </span>            :     {
+<span class="lineNum">     301 </span>            :     get_stream_err2() &lt;&lt; &quot;\nwarning: &quot; &lt;&lt; x &lt;&lt; y &lt;&lt; '\n';
+<span class="lineNum">     302 </span>            :     }
+<span class="lineNum">     303 </span>            :   #else
+<span class="lineNum">     304 </span>            :     {
+<span class="lineNum">     305 </span>            :     arma_ignore(x);
+<span class="lineNum">     306 </span>            :     arma_ignore(y);
+<span class="lineNum">     307 </span>            :     }
+<span class="lineNum">     308 </span>            :   #endif
+<span class="lineNum">     309 </span>            :   }
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            : template&lt;typename T1, typename T2, typename T3&gt;
+<span class="lineNum">     313 </span>            : arma_cold
+<span class="lineNum">     314 </span>            : arma_noinline
+<a name="315"><span class="lineNum">     315 </span>            : static</a>
+<span class="lineNum">     316 </span>            : void
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 : arma_warn(const T1&amp; x, const T2&amp; y, const T3&amp; z)</span>
+<span class="lineNum">     318 </span>            :   {
+<span class="lineNum">     319 </span>            :   #if defined(ARMA_PRINT_ERRORS)
+<span class="lineNum">     320 </span>            :     {
+<span class="lineNum">     321 </span><span class="lineNoCov">          0 :     get_stream_err2() &lt;&lt; &quot;\nwarning: &quot; &lt;&lt; x &lt;&lt; y &lt;&lt; z &lt;&lt; '\n';</span>
+<span class="lineNum">     322 </span>            :     }
+<span class="lineNum">     323 </span>            :   #else
+<span class="lineNum">     324 </span>            :     {
+<span class="lineNum">     325 </span>            :     arma_ignore(x);
+<span class="lineNum">     326 </span>            :     arma_ignore(y);
+<span class="lineNum">     327 </span>            :     arma_ignore(z);
+<span class="lineNum">     328 </span>            :     }
+<span class="lineNum">     329 </span>            :   #endif
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            : //
+<span class="lineNum">     335 </span>            : // arma_check
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span>            : //! if state is true, abort program
+<span class="lineNum">     338 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     339 </span>            : arma_hot
+<a name="340"><span class="lineNum">     340 </span>            : inline</a>
+<span class="lineNum">     341 </span>            : void
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 : arma_check(const bool state, const T1&amp; x)</span>
+<span class="lineNum">     343 </span>            :   {
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :   if(state==true)</span>
+<span class="lineNum">     345 </span>            :     {
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :     arma_stop(arma_str::str_wrapper(x));</span>
+<span class="lineNum">     347 </span>            :     }
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            : 
+<span class="lineNum">     351 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     352 </span>            : arma_hot
+<span class="lineNum">     353 </span>            : inline
+<span class="lineNum">     354 </span>            : void
+<span class="lineNum">     355 </span>            : arma_check(const bool state, const T1&amp; x, const T2&amp; y)
+<span class="lineNum">     356 </span>            :   {
+<span class="lineNum">     357 </span>            :   if(state==true)
+<span class="lineNum">     358 </span>            :     {
+<span class="lineNum">     359 </span>            :     arma_stop( std::string(x) + std::string(y) );
+<span class="lineNum">     360 </span>            :     }
+<span class="lineNum">     361 </span>            :   }
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     365 </span>            : arma_hot
+<span class="lineNum">     366 </span>            : inline
+<span class="lineNum">     367 </span>            : void
+<span class="lineNum">     368 </span>            : arma_check_bad_alloc(const bool state, const T1&amp; x)
+<span class="lineNum">     369 </span>            :   {
+<span class="lineNum">     370 </span><span class="lineNoCov">          0 :   if(state==true)</span>
+<span class="lineNum">     371 </span>            :     {
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :     arma_stop_bad_alloc(x);</span>
+<span class="lineNum">     373 </span>            :     }
+<span class="lineNum">     374 </span>            :   }
+<span class="lineNum">     375 </span>            : 
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            : 
+<span class="lineNum">     378 </span>            : //
+<span class="lineNum">     379 </span>            : // arma_set_error
+<span class="lineNum">     380 </span>            : 
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span>            : arma_hot
+<span class="lineNum">     383 </span>            : arma_inline
+<span class="lineNum">     384 </span>            : void
+<span class="lineNum">     385 </span>            : arma_set_error(bool&amp; err_state, char*&amp; err_msg, const bool expression, const char* message)
+<span class="lineNum">     386 </span>            :   {
+<span class="lineNum">     387 </span><span class="lineNoCov">          0 :   if(expression == true)</span>
+<span class="lineNum">     388 </span>            :     {
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 :     err_state = true;</span>
+<span class="lineNum">     390 </span><span class="lineNoCov">          0 :     err_msg   = const_cast&lt;char*&gt;(message);</span>
+<span class="lineNum">     391 </span>            :     }
+<span class="lineNum">     392 </span>            :   }
+<span class="lineNum">     393 </span>            : 
+<span class="lineNum">     394 </span>            : 
+<span class="lineNum">     395 </span>            : 
+<span class="lineNum">     396 </span>            : 
+<span class="lineNum">     397 </span>            : //
+<span class="lineNum">     398 </span>            : // functions for generating strings indicating size errors
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            : arma_cold
+<span class="lineNum">     401 </span>            : arma_noinline
+<a name="402"><span class="lineNum">     402 </span>            : static</a>
+<span class="lineNum">     403 </span>            : std::string
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 : arma_incompat_size_string(const uword A_n_rows, const uword A_n_cols, const uword B_n_rows, const uword B_n_cols, const char* x)</span>
+<span class="lineNum">     405 </span>            :   {
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :   std::stringstream tmp;</span>
+<span class="lineNum">     407 </span>            :   
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :   tmp &lt;&lt; x &lt;&lt; &quot;: incompatible matrix dimensions: &quot; &lt;&lt; A_n_rows &lt;&lt; 'x' &lt;&lt; A_n_cols &lt;&lt; &quot; and &quot; &lt;&lt; B_n_rows &lt;&lt; 'x' &lt;&lt; B_n_cols;</span>
+<span class="lineNum">     409 </span>            :   
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :   return tmp.str();</span>
+<span class="lineNum">     411 </span>            :   }
+<span class="lineNum">     412 </span>            : 
+<span class="lineNum">     413 </span>            : 
+<span class="lineNum">     414 </span>            : 
+<span class="lineNum">     415 </span>            : arma_cold
+<span class="lineNum">     416 </span>            : arma_noinline
+<span class="lineNum">     417 </span>            : static
+<span class="lineNum">     418 </span>            : std::string
+<span class="lineNum">     419 </span>            : arma_incompat_size_string(const uword A_n_rows, const uword A_n_cols, const uword A_n_slices, const uword B_n_rows, const uword B_n_cols, const uword B_n_slices, const char* x)
+<span class="lineNum">     420 </span>            :   {
+<span class="lineNum">     421 </span>            :   std::stringstream tmp;
+<span class="lineNum">     422 </span>            :   
+<span class="lineNum">     423 </span>            :   tmp &lt;&lt; x &lt;&lt; &quot;: incompatible cube dimensions: &quot; &lt;&lt; A_n_rows &lt;&lt; 'x' &lt;&lt; A_n_cols &lt;&lt; 'x' &lt;&lt; A_n_slices &lt;&lt; &quot; and &quot; &lt;&lt; B_n_rows &lt;&lt; 'x' &lt;&lt; B_n_cols &lt;&lt; 'x' &lt;&lt; B_n_slices;
+<span class="lineNum">     424 </span>            :   
+<span class="lineNum">     425 </span>            :   return tmp.str();
+<span class="lineNum">     426 </span>            :   }
+<span class="lineNum">     427 </span>            : 
+<span class="lineNum">     428 </span>            : 
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     431 </span>            : arma_cold
+<span class="lineNum">     432 </span>            : arma_noinline
+<span class="lineNum">     433 </span>            : static
+<span class="lineNum">     434 </span>            : std::string
+<span class="lineNum">     435 </span>            : arma_incompat_size_string(const subview_cube&lt;eT&gt;&amp; Q, const Mat&lt;eT&gt;&amp; A, const char* x)
+<span class="lineNum">     436 </span>            :   {
+<span class="lineNum">     437 </span>            :   std::stringstream tmp;
+<span class="lineNum">     438 </span>            :   
+<span class="lineNum">     439 </span>            :   tmp &lt;&lt; x
+<span class="lineNum">     440 </span>            :       &lt;&lt; &quot;: interpreting matrix as cube with dimensions: &quot;
+<span class="lineNum">     441 </span>            :       &lt;&lt; A.n_rows &lt;&lt; 'x' &lt;&lt; A.n_cols &lt;&lt; 'x' &lt;&lt; 1
+<span class="lineNum">     442 </span>            :       &lt;&lt; &quot; or &quot;
+<span class="lineNum">     443 </span>            :       &lt;&lt; A.n_rows &lt;&lt; 'x' &lt;&lt; 1        &lt;&lt; 'x' &lt;&lt; A.n_cols
+<span class="lineNum">     444 </span>            :       &lt;&lt; &quot; or &quot;
+<span class="lineNum">     445 </span>            :       &lt;&lt; 1        &lt;&lt; 'x' &lt;&lt; A.n_rows &lt;&lt; 'x' &lt;&lt; A.n_cols
+<span class="lineNum">     446 </span>            :       &lt;&lt; &quot; is incompatible with cube dimensions: &quot;
+<span class="lineNum">     447 </span>            :       &lt;&lt; Q.n_rows &lt;&lt; 'x' &lt;&lt; Q.n_cols &lt;&lt; 'x' &lt;&lt; Q.n_slices;
+<span class="lineNum">     448 </span>            :       
+<span class="lineNum">     449 </span>            :   return tmp.str();
+<span class="lineNum">     450 </span>            :   }
+<span class="lineNum">     451 </span>            : 
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            : //
+<span class="lineNum">     455 </span>            : // functions for checking whether two dense matrices have the same dimensions
+<span class="lineNum">     456 </span>            : 
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span>            : 
+<span class="lineNum">     459 </span>            : arma_inline
+<span class="lineNum">     460 </span>            : arma_hot
+<span class="lineNum">     461 </span>            : void
+<span class="lineNum">     462 </span>            : arma_assert_same_size(const uword A_n_rows, const uword A_n_cols, const uword B_n_rows, const uword B_n_cols, const char* x)
+<span class="lineNum">     463 </span>            :   {
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )</span>
+<span class="lineNum">     465 </span>            :     {
+<span class="lineNum">     466 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );</span>
+<span class="lineNum">     467 </span>            :     }
+<span class="lineNum">     468 </span>            :   }
+<span class="lineNum">     469 </span>            : 
+<span class="lineNum">     470 </span>            : 
+<span class="lineNum">     471 </span>            : 
+<span class="lineNum">     472 </span>            : //! stop if given matrices have different sizes
+<span class="lineNum">     473 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     474 </span>            : arma_hot
+<a name="475"><span class="lineNum">     475 </span>            : inline</a>
+<span class="lineNum">     476 </span>            : void
+<span class="lineNum">     477 </span><span class="lineNoCov">          0 : arma_assert_same_size(const Mat&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const char* x)</span>
+<span class="lineNum">     478 </span>            :   {
+<span class="lineNum">     479 </span><span class="lineNoCov">          0 :   const uword A_n_rows = A.n_rows;</span>
+<span class="lineNum">     480 </span><span class="lineNoCov">          0 :   const uword A_n_cols = A.n_cols;</span>
+<span class="lineNum">     481 </span>            :   
+<span class="lineNum">     482 </span><span class="lineNoCov">          0 :   const uword B_n_rows = B.n_rows;</span>
+<span class="lineNum">     483 </span><span class="lineNoCov">          0 :   const uword B_n_cols = B.n_cols;</span>
+<span class="lineNum">     484 </span>            :   
+<span class="lineNum">     485 </span><span class="lineNoCov">          0 :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )</span>
+<span class="lineNum">     486 </span>            :     {
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );</span>
+<span class="lineNum">     488 </span>            :     }
+<span class="lineNum">     489 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     490 </span>            : 
+<span class="lineNum">     491 </span>            : 
+<span class="lineNum">     492 </span>            : 
+<span class="lineNum">     493 </span>            : //! stop if given proxies have different sizes
+<span class="lineNum">     494 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     495 </span>            : arma_hot
+<a name="496"><span class="lineNum">     496 </span>            : inline</a>
+<span class="lineNum">     497 </span>            : void
+<span class="lineNum">     498 </span><span class="lineNoCov">          0 : arma_assert_same_size(const Proxy&lt;eT1&gt;&amp; A, const Proxy&lt;eT2&gt;&amp; B, const char* x)</span>
+<span class="lineNum">     499 </span>            :   {
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :   const uword A_n_rows = A.get_n_rows();</span>
+<span class="lineNum">     501 </span><span class="lineNoCov">          0 :   const uword A_n_cols = A.get_n_cols();</span>
+<span class="lineNum">     502 </span>            :   
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :   const uword B_n_rows = B.get_n_rows();</span>
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :   const uword B_n_cols = B.get_n_cols();</span>
+<span class="lineNum">     505 </span>            :   
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )</span>
+<span class="lineNum">     507 </span>            :     {
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );</span>
+<span class="lineNum">     509 </span>            :     }
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     511 </span>            : 
+<span class="lineNum">     512 </span>            : 
+<span class="lineNum">     513 </span>            : 
+<span class="lineNum">     514 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     515 </span>            : arma_hot
+<a name="516"><span class="lineNum">     516 </span>            : inline</a>
+<span class="lineNum">     517 </span>            : void
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 : arma_assert_same_size(const subview&lt;eT1&gt;&amp; A, const subview&lt;eT2&gt;&amp; B, const char* x)</span>
+<span class="lineNum">     519 </span>            :   {
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :   const uword A_n_rows = A.n_rows;</span>
+<span class="lineNum">     521 </span><span class="lineNoCov">          0 :   const uword A_n_cols = A.n_cols;</span>
+<span class="lineNum">     522 </span>            :   
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :   const uword B_n_rows = B.n_rows;</span>
+<span class="lineNum">     524 </span><span class="lineNoCov">          0 :   const uword B_n_cols = B.n_cols;</span>
+<span class="lineNum">     525 </span>            :   
+<span class="lineNum">     526 </span><span class="lineNoCov">          0 :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )</span>
+<span class="lineNum">     527 </span>            :     {
+<span class="lineNum">     528 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );</span>
+<span class="lineNum">     529 </span>            :     }
+<span class="lineNum">     530 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     531 </span>            : 
+<span class="lineNum">     532 </span>            : 
+<span class="lineNum">     533 </span>            : 
+<span class="lineNum">     534 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     535 </span>            : arma_hot
+<span class="lineNum">     536 </span>            : inline
+<span class="lineNum">     537 </span>            : void
+<span class="lineNum">     538 </span>            : arma_assert_same_size(const Mat&lt;eT1&gt;&amp; A, const subview&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     539 </span>            :   {
+<span class="lineNum">     540 </span>            :   const uword A_n_rows = A.n_rows;
+<span class="lineNum">     541 </span>            :   const uword A_n_cols = A.n_cols;
+<span class="lineNum">     542 </span>            :   
+<span class="lineNum">     543 </span>            :   const uword B_n_rows = B.n_rows;
+<span class="lineNum">     544 </span>            :   const uword B_n_cols = B.n_cols;
+<span class="lineNum">     545 </span>            :   
+<span class="lineNum">     546 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )
+<span class="lineNum">     547 </span>            :     {
+<span class="lineNum">     548 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );
+<span class="lineNum">     549 </span>            :     }
+<span class="lineNum">     550 </span>            :   }
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span>            : 
+<span class="lineNum">     553 </span>            : 
+<span class="lineNum">     554 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     555 </span>            : arma_hot
+<span class="lineNum">     556 </span>            : inline
+<span class="lineNum">     557 </span>            : void
+<span class="lineNum">     558 </span>            : arma_assert_same_size(const subview&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     559 </span>            :   {
+<span class="lineNum">     560 </span>            :   const uword A_n_rows = A.n_rows;
+<span class="lineNum">     561 </span>            :   const uword A_n_cols = A.n_cols;
+<span class="lineNum">     562 </span>            :   
+<span class="lineNum">     563 </span>            :   const uword B_n_rows = B.n_rows;
+<span class="lineNum">     564 </span>            :   const uword B_n_cols = B.n_cols;
+<span class="lineNum">     565 </span>            :   
+<span class="lineNum">     566 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )
+<span class="lineNum">     567 </span>            :     {
+<span class="lineNum">     568 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );
+<span class="lineNum">     569 </span>            :     }
+<span class="lineNum">     570 </span>            :   }
+<span class="lineNum">     571 </span>            : 
+<span class="lineNum">     572 </span>            : 
+<span class="lineNum">     573 </span>            : 
+<span class="lineNum">     574 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     575 </span>            : arma_hot
+<span class="lineNum">     576 </span>            : inline
+<span class="lineNum">     577 </span>            : void
+<span class="lineNum">     578 </span>            : arma_assert_same_size(const Mat&lt;eT1&gt;&amp; A, const Proxy&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     579 </span>            :   {
+<span class="lineNum">     580 </span>            :   const uword A_n_rows = A.n_rows;
+<span class="lineNum">     581 </span>            :   const uword A_n_cols = A.n_cols;
+<span class="lineNum">     582 </span>            :   
+<span class="lineNum">     583 </span>            :   const uword B_n_rows = B.get_n_rows();
+<span class="lineNum">     584 </span>            :   const uword B_n_cols = B.get_n_cols();
+<span class="lineNum">     585 </span>            :   
+<span class="lineNum">     586 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )
+<span class="lineNum">     587 </span>            :     {
+<span class="lineNum">     588 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );
+<span class="lineNum">     589 </span>            :     }
+<span class="lineNum">     590 </span>            :   }
+<span class="lineNum">     591 </span>            : 
+<span class="lineNum">     592 </span>            : 
+<span class="lineNum">     593 </span>            : 
+<span class="lineNum">     594 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     595 </span>            : arma_hot
+<span class="lineNum">     596 </span>            : inline
+<span class="lineNum">     597 </span>            : void
+<span class="lineNum">     598 </span>            : arma_assert_same_size(const Proxy&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     599 </span>            :   {
+<span class="lineNum">     600 </span>            :   const uword A_n_rows = A.get_n_rows();
+<span class="lineNum">     601 </span>            :   const uword A_n_cols = A.get_n_cols();
+<span class="lineNum">     602 </span>            :   
+<span class="lineNum">     603 </span>            :   const uword B_n_rows = B.n_rows;
+<span class="lineNum">     604 </span>            :   const uword B_n_cols = B.n_cols;
+<span class="lineNum">     605 </span>            :   
+<span class="lineNum">     606 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )
+<span class="lineNum">     607 </span>            :     {
+<span class="lineNum">     608 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );
+<span class="lineNum">     609 </span>            :     }
+<span class="lineNum">     610 </span>            :   }
+<span class="lineNum">     611 </span>            : 
+<span class="lineNum">     612 </span>            : 
+<span class="lineNum">     613 </span>            : 
+<span class="lineNum">     614 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     615 </span>            : arma_hot
+<span class="lineNum">     616 </span>            : inline
+<span class="lineNum">     617 </span>            : void
+<span class="lineNum">     618 </span>            : arma_assert_same_size(const Proxy&lt;eT1&gt;&amp; A, const subview&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     619 </span>            :   {
+<span class="lineNum">     620 </span>            :   const uword A_n_rows = A.get_n_rows();
+<span class="lineNum">     621 </span>            :   const uword A_n_cols = A.get_n_cols();
+<span class="lineNum">     622 </span>            :   
+<span class="lineNum">     623 </span>            :   const uword B_n_rows = B.n_rows;
+<span class="lineNum">     624 </span>            :   const uword B_n_cols = B.n_cols;
+<span class="lineNum">     625 </span>            :   
+<span class="lineNum">     626 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )
+<span class="lineNum">     627 </span>            :     {
+<span class="lineNum">     628 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );
+<span class="lineNum">     629 </span>            :     }
+<span class="lineNum">     630 </span>            :   }
+<span class="lineNum">     631 </span>            : 
+<span class="lineNum">     632 </span>            : 
+<span class="lineNum">     633 </span>            : 
+<span class="lineNum">     634 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     635 </span>            : arma_hot
+<a name="636"><span class="lineNum">     636 </span>            : inline</a>
+<span class="lineNum">     637 </span>            : void
+<span class="lineNum">     638 </span><span class="lineNoCov">          0 : arma_assert_same_size(const subview&lt;eT1&gt;&amp; A, const Proxy&lt;eT2&gt;&amp; B, const char* x)</span>
+<span class="lineNum">     639 </span>            :   {
+<span class="lineNum">     640 </span><span class="lineNoCov">          0 :   const uword A_n_rows = A.n_rows;</span>
+<span class="lineNum">     641 </span><span class="lineNoCov">          0 :   const uword A_n_cols = A.n_cols;</span>
+<span class="lineNum">     642 </span>            :   
+<span class="lineNum">     643 </span><span class="lineNoCov">          0 :   const uword B_n_rows = B.get_n_rows();</span>
+<span class="lineNum">     644 </span><span class="lineNoCov">          0 :   const uword B_n_cols = B.get_n_cols();</span>
+<span class="lineNum">     645 </span>            :   
+<span class="lineNum">     646 </span><span class="lineNoCov">          0 :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )</span>
+<span class="lineNum">     647 </span>            :     {
+<span class="lineNum">     648 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );</span>
+<span class="lineNum">     649 </span>            :     }
+<span class="lineNum">     650 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     651 </span>            : 
+<span class="lineNum">     652 </span>            : 
+<span class="lineNum">     653 </span>            : 
+<span class="lineNum">     654 </span>            : //
+<span class="lineNum">     655 </span>            : // functions for checking whether two sparse matrices have the same dimensions
+<span class="lineNum">     656 </span>            : 
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span>            : 
+<span class="lineNum">     659 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     660 </span>            : arma_hot
+<span class="lineNum">     661 </span>            : inline
+<span class="lineNum">     662 </span>            : void
+<span class="lineNum">     663 </span>            : arma_assert_same_size(const SpMat&lt;eT1&gt;&amp; A, const SpMat&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     664 </span>            :   {
+<span class="lineNum">     665 </span>            :   const uword A_n_rows = A.n_rows;
+<span class="lineNum">     666 </span>            :   const uword A_n_cols = A.n_cols;
+<span class="lineNum">     667 </span>            :   
+<span class="lineNum">     668 </span>            :   const uword B_n_rows = B.n_rows;
+<span class="lineNum">     669 </span>            :   const uword B_n_cols = B.n_cols;
+<span class="lineNum">     670 </span>            :   
+<span class="lineNum">     671 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) )
+<span class="lineNum">     672 </span>            :     {
+<span class="lineNum">     673 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );
+<span class="lineNum">     674 </span>            :     }
+<span class="lineNum">     675 </span>            :   }
+<span class="lineNum">     676 </span>            : 
+<span class="lineNum">     677 </span>            : 
+<span class="lineNum">     678 </span>            : 
+<span class="lineNum">     679 </span>            : //
+<span class="lineNum">     680 </span>            : // functions for checking whether two cubes have the same dimensions
+<span class="lineNum">     681 </span>            : 
+<span class="lineNum">     682 </span>            : 
+<span class="lineNum">     683 </span>            : 
+<span class="lineNum">     684 </span>            : arma_hot
+<span class="lineNum">     685 </span>            : inline
+<span class="lineNum">     686 </span>            : void
+<span class="lineNum">     687 </span>            : arma_assert_same_size(const uword A_n_rows, const uword A_n_cols, const uword A_n_slices, const uword B_n_rows, const uword B_n_cols, const uword B_n_slices, const char* x)
+<span class="lineNum">     688 </span>            :   {
+<span class="lineNum">     689 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) || (A_n_slices != B_n_slices) )
+<span class="lineNum">     690 </span>            :     {
+<span class="lineNum">     691 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, A_n_slices, B_n_rows, B_n_cols, B_n_slices, x) );
+<span class="lineNum">     692 </span>            :     }
+<span class="lineNum">     693 </span>            :   }
+<span class="lineNum">     694 </span>            : 
+<span class="lineNum">     695 </span>            : 
+<span class="lineNum">     696 </span>            : 
+<span class="lineNum">     697 </span>            : //! stop if given cubes have different sizes
+<span class="lineNum">     698 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     699 </span>            : arma_hot
+<span class="lineNum">     700 </span>            : inline
+<span class="lineNum">     701 </span>            : void
+<span class="lineNum">     702 </span>            : arma_assert_same_size(const Cube&lt;eT1&gt;&amp; A, const Cube&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     703 </span>            :   {
+<span class="lineNum">     704 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (A.n_slices != B.n_slices) )
+<span class="lineNum">     705 </span>            :     {
+<span class="lineNum">     706 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, A.n_slices, B.n_rows, B.n_cols, B.n_slices, x) );
+<span class="lineNum">     707 </span>            :     }
+<span class="lineNum">     708 </span>            :   }
+<span class="lineNum">     709 </span>            : 
+<span class="lineNum">     710 </span>            : 
+<span class="lineNum">     711 </span>            : 
+<span class="lineNum">     712 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     713 </span>            : arma_hot
+<span class="lineNum">     714 </span>            : inline
+<span class="lineNum">     715 </span>            : void
+<span class="lineNum">     716 </span>            : arma_assert_same_size(const Cube&lt;eT1&gt;&amp; A, const subview_cube&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     717 </span>            :   {
+<span class="lineNum">     718 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (A.n_slices != B.n_slices) )
+<span class="lineNum">     719 </span>            :     {
+<span class="lineNum">     720 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, A.n_slices, B.n_rows, B.n_cols, B.n_slices, x) );
+<span class="lineNum">     721 </span>            :     }
+<span class="lineNum">     722 </span>            :   }
+<span class="lineNum">     723 </span>            : 
+<span class="lineNum">     724 </span>            : 
+<span class="lineNum">     725 </span>            : 
+<span class="lineNum">     726 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     727 </span>            : arma_hot
+<span class="lineNum">     728 </span>            : inline
+<span class="lineNum">     729 </span>            : void
+<span class="lineNum">     730 </span>            : arma_assert_same_size(const subview_cube&lt;eT1&gt;&amp; A, const Cube&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     731 </span>            :   {
+<span class="lineNum">     732 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (A.n_slices != B.n_slices) )
+<span class="lineNum">     733 </span>            :     {
+<span class="lineNum">     734 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, A.n_slices, B.n_rows, B.n_cols, B.n_slices, x) );
+<span class="lineNum">     735 </span>            :     }
+<span class="lineNum">     736 </span>            :   }
+<span class="lineNum">     737 </span>            : 
+<span class="lineNum">     738 </span>            : 
+<span class="lineNum">     739 </span>            : 
+<span class="lineNum">     740 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     741 </span>            : arma_hot
+<span class="lineNum">     742 </span>            : inline
+<span class="lineNum">     743 </span>            : void
+<span class="lineNum">     744 </span>            : arma_assert_same_size(const subview_cube&lt;eT1&gt;&amp; A, const subview_cube&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     745 </span>            :   {
+<span class="lineNum">     746 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (A.n_slices != B.n_slices))
+<span class="lineNum">     747 </span>            :     {
+<span class="lineNum">     748 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, A.n_slices, B.n_rows, B.n_cols, B.n_slices, x) );
+<span class="lineNum">     749 </span>            :     }
+<span class="lineNum">     750 </span>            :   }
+<span class="lineNum">     751 </span>            : 
+<span class="lineNum">     752 </span>            : 
+<span class="lineNum">     753 </span>            : 
+<span class="lineNum">     754 </span>            : //! stop if given cube proxies have different sizes
+<span class="lineNum">     755 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     756 </span>            : arma_hot
+<span class="lineNum">     757 </span>            : inline
+<span class="lineNum">     758 </span>            : void
+<span class="lineNum">     759 </span>            : arma_assert_same_size(const ProxyCube&lt;eT1&gt;&amp; A, const ProxyCube&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     760 </span>            :   {
+<span class="lineNum">     761 </span>            :   const uword A_n_rows   = A.get_n_rows();
+<span class="lineNum">     762 </span>            :   const uword A_n_cols   = A.get_n_cols();
+<span class="lineNum">     763 </span>            :   const uword A_n_slices = A.get_n_slices();
+<span class="lineNum">     764 </span>            :   
+<span class="lineNum">     765 </span>            :   const uword B_n_rows   = B.get_n_rows();
+<span class="lineNum">     766 </span>            :   const uword B_n_cols   = B.get_n_cols();
+<span class="lineNum">     767 </span>            :   const uword B_n_slices = B.get_n_slices();
+<span class="lineNum">     768 </span>            :   
+<span class="lineNum">     769 </span>            :   if( (A_n_rows != B_n_rows) || (A_n_cols != B_n_cols) || (A_n_slices != B_n_slices))
+<span class="lineNum">     770 </span>            :     {
+<span class="lineNum">     771 </span>            :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, A_n_slices, B_n_rows, B_n_cols, B_n_slices, x) );
+<span class="lineNum">     772 </span>            :     }
+<span class="lineNum">     773 </span>            :   }
+<span class="lineNum">     774 </span>            : 
+<span class="lineNum">     775 </span>            : 
+<span class="lineNum">     776 </span>            : 
+<span class="lineNum">     777 </span>            : //
+<span class="lineNum">     778 </span>            : // functions for checking whether a cube or subcube can be interpreted as a matrix (i.e. single slice)
+<span class="lineNum">     779 </span>            : 
+<span class="lineNum">     780 </span>            : 
+<span class="lineNum">     781 </span>            : 
+<span class="lineNum">     782 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     783 </span>            : arma_hot
+<span class="lineNum">     784 </span>            : inline
+<span class="lineNum">     785 </span>            : void
+<span class="lineNum">     786 </span>            : arma_assert_same_size(const Cube&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     787 </span>            :   {
+<span class="lineNum">     788 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (A.n_slices != 1) )
+<span class="lineNum">     789 </span>            :     {
+<span class="lineNum">     790 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, A.n_slices, B.n_rows, B.n_cols, 1, x) );
+<span class="lineNum">     791 </span>            :     }
+<span class="lineNum">     792 </span>            :   }
+<span class="lineNum">     793 </span>            : 
+<span class="lineNum">     794 </span>            : 
+<span class="lineNum">     795 </span>            : 
+<span class="lineNum">     796 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     797 </span>            : arma_hot
+<span class="lineNum">     798 </span>            : inline
+<span class="lineNum">     799 </span>            : void
+<span class="lineNum">     800 </span>            : arma_assert_same_size(const Mat&lt;eT1&gt;&amp; A, const Cube&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     801 </span>            :   {
+<span class="lineNum">     802 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (1 != B.n_slices) )
+<span class="lineNum">     803 </span>            :     {
+<span class="lineNum">     804 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, 1, B.n_rows, B.n_cols, B.n_slices, x) );
+<span class="lineNum">     805 </span>            :     }
+<span class="lineNum">     806 </span>            :   }
+<span class="lineNum">     807 </span>            : 
+<span class="lineNum">     808 </span>            : 
+<span class="lineNum">     809 </span>            : 
+<span class="lineNum">     810 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     811 </span>            : arma_hot
+<span class="lineNum">     812 </span>            : inline
+<span class="lineNum">     813 </span>            : void
+<span class="lineNum">     814 </span>            : arma_assert_same_size(const subview_cube&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     815 </span>            :   {
+<span class="lineNum">     816 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (A.n_slices != 1) )
+<span class="lineNum">     817 </span>            :     {
+<span class="lineNum">     818 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, A.n_slices, B.n_rows, B.n_cols, 1, x) );
+<span class="lineNum">     819 </span>            :     }
+<span class="lineNum">     820 </span>            :   }
+<span class="lineNum">     821 </span>            : 
+<span class="lineNum">     822 </span>            : 
+<span class="lineNum">     823 </span>            : 
+<span class="lineNum">     824 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">     825 </span>            : arma_hot
+<span class="lineNum">     826 </span>            : inline
+<span class="lineNum">     827 </span>            : void
+<span class="lineNum">     828 </span>            : arma_assert_same_size(const Mat&lt;eT1&gt;&amp; A, const subview_cube&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">     829 </span>            :   {
+<span class="lineNum">     830 </span>            :   if( (A.n_rows != B.n_rows) || (A.n_cols != B.n_cols) || (1 != B.n_slices) )
+<span class="lineNum">     831 </span>            :     {
+<span class="lineNum">     832 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, 1, B.n_rows, B.n_cols, B.n_slices, x) );
+<span class="lineNum">     833 </span>            :     }
+<span class="lineNum">     834 </span>            :   }
+<span class="lineNum">     835 </span>            : 
+<span class="lineNum">     836 </span>            : 
+<span class="lineNum">     837 </span>            : 
+<span class="lineNum">     838 </span>            : template&lt;typename eT, typename T1&gt;
+<span class="lineNum">     839 </span>            : inline
+<span class="lineNum">     840 </span>            : void
+<span class="lineNum">     841 </span>            : arma_assert_cube_as_mat(const Mat&lt;eT&gt;&amp; M, const T1&amp; Q, const char* x, const bool check_compat_size)
+<span class="lineNum">     842 </span>            :   {
+<span class="lineNum">     843 </span>            :   const uword Q_n_rows   = Q.n_rows;
+<span class="lineNum">     844 </span>            :   const uword Q_n_cols   = Q.n_cols;
+<span class="lineNum">     845 </span>            :   const uword Q_n_slices = Q.n_slices;
+<span class="lineNum">     846 </span>            :   
+<span class="lineNum">     847 </span>            :   const uword M_vec_state = M.vec_state;
+<span class="lineNum">     848 </span>            :   
+<span class="lineNum">     849 </span>            :   if(M_vec_state == 0)
+<span class="lineNum">     850 </span>            :     {
+<span class="lineNum">     851 </span>            :     if( ( (Q_n_rows == 1) || (Q_n_cols == 1) || (Q_n_slices == 1) ) == false )
+<span class="lineNum">     852 </span>            :       {
+<span class="lineNum">     853 </span>            :       std::stringstream tmp;
+<span class="lineNum">     854 </span>            :         
+<span class="lineNum">     855 </span>            :       tmp &lt;&lt; x
+<span class="lineNum">     856 </span>            :           &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     857 </span>            :           &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices 
+<span class="lineNum">     858 </span>            :           &lt;&lt; &quot; as a matrix; one of the dimensions must be 1&quot;;
+<span class="lineNum">     859 </span>            :       
+<span class="lineNum">     860 </span>            :       arma_stop( tmp.str() );
+<span class="lineNum">     861 </span>            :       }
+<span class="lineNum">     862 </span>            :     }
+<span class="lineNum">     863 </span>            :   else
+<span class="lineNum">     864 </span>            :     {
+<span class="lineNum">     865 </span>            :     if(Q_n_slices == 1)
+<span class="lineNum">     866 </span>            :       {
+<span class="lineNum">     867 </span>            :       if( (M_vec_state == 1) &amp;&amp; (Q_n_cols != 1) )
+<span class="lineNum">     868 </span>            :         {
+<span class="lineNum">     869 </span>            :         std::stringstream tmp;
+<span class="lineNum">     870 </span>            :         
+<span class="lineNum">     871 </span>            :         tmp &lt;&lt; x
+<span class="lineNum">     872 </span>            :             &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     873 </span>            :             &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices
+<span class="lineNum">     874 </span>            :             &lt;&lt; &quot; as a column vector&quot;;
+<span class="lineNum">     875 </span>            :         
+<span class="lineNum">     876 </span>            :         arma_stop( tmp.str() );
+<span class="lineNum">     877 </span>            :         }
+<span class="lineNum">     878 </span>            :       
+<span class="lineNum">     879 </span>            :       if( (M_vec_state == 2) &amp;&amp; (Q_n_rows != 1) )
+<span class="lineNum">     880 </span>            :         {
+<span class="lineNum">     881 </span>            :         std::stringstream tmp;
+<span class="lineNum">     882 </span>            :         
+<span class="lineNum">     883 </span>            :         tmp &lt;&lt; x
+<span class="lineNum">     884 </span>            :             &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     885 </span>            :             &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices
+<span class="lineNum">     886 </span>            :             &lt;&lt; &quot; as a row vector&quot;;
+<span class="lineNum">     887 </span>            :         
+<span class="lineNum">     888 </span>            :         arma_stop( tmp.str() );
+<span class="lineNum">     889 </span>            :         }
+<span class="lineNum">     890 </span>            :       }
+<span class="lineNum">     891 </span>            :     else
+<span class="lineNum">     892 </span>            :       {
+<span class="lineNum">     893 </span>            :       if( (Q_n_cols != 1) &amp;&amp; (Q_n_rows != 1) )
+<span class="lineNum">     894 </span>            :         {
+<span class="lineNum">     895 </span>            :         std::stringstream tmp;
+<span class="lineNum">     896 </span>            :         
+<span class="lineNum">     897 </span>            :         tmp &lt;&lt; x
+<span class="lineNum">     898 </span>            :             &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     899 </span>            :             &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices
+<span class="lineNum">     900 </span>            :             &lt;&lt; &quot; as a vector&quot;;
+<span class="lineNum">     901 </span>            :         
+<span class="lineNum">     902 </span>            :         arma_stop( tmp.str() );
+<span class="lineNum">     903 </span>            :         }
+<span class="lineNum">     904 </span>            :       }
+<span class="lineNum">     905 </span>            :     }
+<span class="lineNum">     906 </span>            :   
+<span class="lineNum">     907 </span>            :   
+<span class="lineNum">     908 </span>            :   if(check_compat_size == true)
+<span class="lineNum">     909 </span>            :     {
+<span class="lineNum">     910 </span>            :     const uword M_n_rows = M.n_rows;
+<span class="lineNum">     911 </span>            :     const uword M_n_cols = M.n_cols;
+<span class="lineNum">     912 </span>            :     
+<span class="lineNum">     913 </span>            :     if(M_vec_state == 0)
+<span class="lineNum">     914 </span>            :       {
+<span class="lineNum">     915 </span>            :       if(
+<span class="lineNum">     916 </span>            :           (
+<span class="lineNum">     917 </span>            :           ( (Q_n_rows == M_n_rows) &amp;&amp; (Q_n_cols   == M_n_cols) )
+<span class="lineNum">     918 </span>            :           ||
+<span class="lineNum">     919 </span>            :           ( (Q_n_rows == M_n_rows) &amp;&amp; (Q_n_slices == M_n_cols) )
+<span class="lineNum">     920 </span>            :           ||
+<span class="lineNum">     921 </span>            :           ( (Q_n_cols == M_n_rows) &amp;&amp; (Q_n_slices == M_n_cols) )
+<span class="lineNum">     922 </span>            :           )
+<span class="lineNum">     923 </span>            :           == false
+<span class="lineNum">     924 </span>            :         )
+<span class="lineNum">     925 </span>            :         {
+<span class="lineNum">     926 </span>            :         std::stringstream tmp;
+<span class="lineNum">     927 </span>            :         
+<span class="lineNum">     928 </span>            :         tmp &lt;&lt; x
+<span class="lineNum">     929 </span>            :             &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     930 </span>            :             &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices
+<span class="lineNum">     931 </span>            :             &lt;&lt; &quot; as a matrix with dimensions &quot;
+<span class="lineNum">     932 </span>            :             &lt;&lt; M_n_rows &lt;&lt; 'x' &lt;&lt; M_n_cols;
+<span class="lineNum">     933 </span>            :         
+<span class="lineNum">     934 </span>            :         arma_stop( tmp.str() );
+<span class="lineNum">     935 </span>            :         }
+<span class="lineNum">     936 </span>            :       }
+<span class="lineNum">     937 </span>            :     else
+<span class="lineNum">     938 </span>            :       {
+<span class="lineNum">     939 </span>            :       if(Q_n_slices == 1)
+<span class="lineNum">     940 </span>            :         {
+<span class="lineNum">     941 </span>            :         if( (M_vec_state == 1) &amp;&amp; (Q_n_rows != M_n_rows) )
+<span class="lineNum">     942 </span>            :           {
+<span class="lineNum">     943 </span>            :           std::stringstream tmp;
+<span class="lineNum">     944 </span>            :           
+<span class="lineNum">     945 </span>            :           tmp &lt;&lt; x
+<span class="lineNum">     946 </span>            :               &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     947 </span>            :               &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices
+<span class="lineNum">     948 </span>            :               &lt;&lt; &quot; as a column vector with dimensions &quot;
+<span class="lineNum">     949 </span>            :               &lt;&lt; M_n_rows &lt;&lt; 'x' &lt;&lt; M_n_cols;
+<span class="lineNum">     950 </span>            :           
+<span class="lineNum">     951 </span>            :           arma_stop( tmp.str() );
+<span class="lineNum">     952 </span>            :           }
+<span class="lineNum">     953 </span>            :         
+<span class="lineNum">     954 </span>            :         if( (M_vec_state == 2) &amp;&amp; (Q_n_cols != M_n_cols) )
+<span class="lineNum">     955 </span>            :           {
+<span class="lineNum">     956 </span>            :           std::stringstream tmp;
+<span class="lineNum">     957 </span>            :           
+<span class="lineNum">     958 </span>            :           tmp &lt;&lt; x
+<span class="lineNum">     959 </span>            :               &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     960 </span>            :               &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices
+<span class="lineNum">     961 </span>            :               &lt;&lt; &quot; as a row vector with dimensions &quot;
+<span class="lineNum">     962 </span>            :               &lt;&lt; M_n_rows &lt;&lt; 'x' &lt;&lt; M_n_cols;
+<span class="lineNum">     963 </span>            :           
+<span class="lineNum">     964 </span>            :           arma_stop( tmp.str() );
+<span class="lineNum">     965 </span>            :           }
+<span class="lineNum">     966 </span>            :         }
+<span class="lineNum">     967 </span>            :       else
+<span class="lineNum">     968 </span>            :         {
+<span class="lineNum">     969 </span>            :         if( ( (M_n_cols == Q_n_slices) || (M_n_rows == Q_n_slices) ) == false )
+<span class="lineNum">     970 </span>            :           {
+<span class="lineNum">     971 </span>            :           std::stringstream tmp;
+<span class="lineNum">     972 </span>            :           
+<span class="lineNum">     973 </span>            :           tmp &lt;&lt; x
+<span class="lineNum">     974 </span>            :               &lt;&lt; &quot;: can't interpret cube with dimensions &quot;
+<span class="lineNum">     975 </span>            :               &lt;&lt; Q_n_rows &lt;&lt; 'x' &lt;&lt; Q_n_cols &lt;&lt; 'x' &lt;&lt; Q_n_slices
+<span class="lineNum">     976 </span>            :               &lt;&lt; &quot; as a vector with dimensions &quot;
+<span class="lineNum">     977 </span>            :               &lt;&lt; M_n_rows &lt;&lt; 'x' &lt;&lt; M_n_cols;
+<span class="lineNum">     978 </span>            :           
+<span class="lineNum">     979 </span>            :           arma_stop( tmp.str() );
+<span class="lineNum">     980 </span>            :           }
+<span class="lineNum">     981 </span>            :         }
+<span class="lineNum">     982 </span>            :       }
+<span class="lineNum">     983 </span>            :     }
+<span class="lineNum">     984 </span>            :   }
+<span class="lineNum">     985 </span>            : 
+<span class="lineNum">     986 </span>            : 
+<span class="lineNum">     987 </span>            : 
+<span class="lineNum">     988 </span>            : //
+<span class="lineNum">     989 </span>            : // functions for checking whether two matrices have dimensions that are compatible with the matrix multiply operation
+<span class="lineNum">     990 </span>            : 
+<span class="lineNum">     991 </span>            : 
+<span class="lineNum">     992 </span>            : 
+<span class="lineNum">     993 </span>            : arma_hot
+<a name="994"><span class="lineNum">     994 </span>            : inline</a>
+<span class="lineNum">     995 </span>            : void
+<span class="lineNum">     996 </span><span class="lineNoCov">          0 : arma_assert_mul_size(const uword A_n_rows, const uword A_n_cols, const uword B_n_rows, const uword B_n_cols, const char* x)</span>
+<span class="lineNum">     997 </span>            :   {
+<span class="lineNum">     998 </span><span class="lineNoCov">          0 :   if(A_n_cols != B_n_rows)</span>
+<span class="lineNum">     999 </span>            :     {
+<span class="lineNum">    1000 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(A_n_rows, A_n_cols, B_n_rows, B_n_cols, x) );</span>
+<span class="lineNum">    1001 </span>            :     }
+<span class="lineNum">    1002 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1003 </span>            : 
+<span class="lineNum">    1004 </span>            : 
+<span class="lineNum">    1005 </span>            : 
+<span class="lineNum">    1006 </span>            : //! stop if given matrices are incompatible for multiplication
+<span class="lineNum">    1007 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">    1008 </span>            : arma_hot
+<span class="lineNum">    1009 </span>            : inline
+<span class="lineNum">    1010 </span>            : void
+<span class="lineNum">    1011 </span>            : arma_assert_mul_size(const Mat&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">    1012 </span>            :   {
+<span class="lineNum">    1013 </span>            :   const uword A_n_cols = A.n_cols;
+<span class="lineNum">    1014 </span>            :   const uword B_n_rows = B.n_rows;
+<span class="lineNum">    1015 </span>            :   
+<span class="lineNum">    1016 </span>            :   if(A_n_cols != B_n_rows)
+<span class="lineNum">    1017 </span>            :     {
+<span class="lineNum">    1018 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A_n_cols, B_n_rows, B.n_cols, x) );
+<span class="lineNum">    1019 </span>            :     }
+<span class="lineNum">    1020 </span>            :   }
+<span class="lineNum">    1021 </span>            : 
+<span class="lineNum">    1022 </span>            : 
+<span class="lineNum">    1023 </span>            : 
+<span class="lineNum">    1024 </span>            : //! stop if given matrices are incompatible for multiplication
+<span class="lineNum">    1025 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">    1026 </span>            : arma_hot
+<a name="1027"><span class="lineNum">    1027 </span>            : inline</a>
+<span class="lineNum">    1028 </span>            : void
+<span class="lineNum">    1029 </span><span class="lineNoCov">          0 : arma_assert_mul_size(const Mat&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const bool do_trans_A, const bool do_trans_B, const char* x)</span>
+<span class="lineNum">    1030 </span>            :   {
+<span class="lineNum">    1031 </span><span class="lineNoCov">          0 :   const uword final_A_n_cols = (do_trans_A == false) ? A.n_cols : A.n_rows;</span>
+<span class="lineNum">    1032 </span><span class="lineNoCov">          0 :   const uword final_B_n_rows = (do_trans_B == false) ? B.n_rows : B.n_cols;</span>
+<span class="lineNum">    1033 </span>            :     
+<span class="lineNum">    1034 </span><span class="lineNoCov">          0 :   if(final_A_n_cols != final_B_n_rows)</span>
+<span class="lineNum">    1035 </span>            :     {
+<span class="lineNum">    1036 </span><span class="lineNoCov">          0 :     const uword final_A_n_rows = (do_trans_A == false) ? A.n_rows : A.n_cols;</span>
+<span class="lineNum">    1037 </span><span class="lineNoCov">          0 :     const uword final_B_n_cols = (do_trans_B == false) ? B.n_cols : B.n_rows;</span>
+<span class="lineNum">    1038 </span>            :     
+<span class="lineNum">    1039 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(final_A_n_rows, final_A_n_cols, final_B_n_rows, final_B_n_cols, x) );</span>
+<span class="lineNum">    1040 </span>            :     }
+<span class="lineNum">    1041 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1042 </span>            : 
+<span class="lineNum">    1043 </span>            : 
+<span class="lineNum">    1044 </span>            : 
+<span class="lineNum">    1045 </span>            : template&lt;const bool do_trans_A, const bool do_trans_B&gt;
+<span class="lineNum">    1046 </span>            : arma_hot
+<a name="1047"><span class="lineNum">    1047 </span>            : inline</a>
+<span class="lineNum">    1048 </span>            : void
+<span class="lineNum">    1049 </span><span class="lineNoCov">          0 : arma_assert_trans_mul_size(const uword A_n_rows, const uword A_n_cols, const uword B_n_rows, const uword B_n_cols, const char* x)</span>
+<span class="lineNum">    1050 </span>            :   {
+<span class="lineNum">    1051 </span><span class="lineNoCov">          0 :   const uword final_A_n_cols = (do_trans_A == false) ? A_n_cols : A_n_rows;</span>
+<span class="lineNum">    1052 </span><span class="lineNoCov">          0 :   const uword final_B_n_rows = (do_trans_B == false) ? B_n_rows : B_n_cols;</span>
+<span class="lineNum">    1053 </span>            :     
+<span class="lineNum">    1054 </span><span class="lineNoCov">          0 :   if(final_A_n_cols != final_B_n_rows)</span>
+<span class="lineNum">    1055 </span>            :     {
+<span class="lineNum">    1056 </span><span class="lineNoCov">          0 :     const uword final_A_n_rows = (do_trans_A == false) ? A_n_rows : A_n_cols;</span>
+<span class="lineNum">    1057 </span><span class="lineNoCov">          0 :     const uword final_B_n_cols = (do_trans_B == false) ? B_n_cols : B_n_rows;</span>
+<span class="lineNum">    1058 </span>            :     
+<span class="lineNum">    1059 </span><span class="lineNoCov">          0 :     arma_stop( arma_incompat_size_string(final_A_n_rows, final_A_n_cols, final_B_n_rows, final_B_n_cols, x) );</span>
+<span class="lineNum">    1060 </span>            :     }
+<span class="lineNum">    1061 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1062 </span>            : 
+<span class="lineNum">    1063 </span>            : 
+<span class="lineNum">    1064 </span>            : 
+<span class="lineNum">    1065 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">    1066 </span>            : arma_hot
+<span class="lineNum">    1067 </span>            : inline
+<span class="lineNum">    1068 </span>            : void
+<span class="lineNum">    1069 </span>            : arma_assert_mul_size(const Mat&lt;eT1&gt;&amp; A, const subview&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">    1070 </span>            :   {
+<span class="lineNum">    1071 </span>            :   if(A.n_cols != B.n_rows)
+<span class="lineNum">    1072 </span>            :     {
+<span class="lineNum">    1073 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, B.n_rows, B.n_cols, x) );
+<span class="lineNum">    1074 </span>            :     }
+<span class="lineNum">    1075 </span>            :   }
+<span class="lineNum">    1076 </span>            : 
+<span class="lineNum">    1077 </span>            : 
+<span class="lineNum">    1078 </span>            : 
+<span class="lineNum">    1079 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">    1080 </span>            : arma_hot
+<span class="lineNum">    1081 </span>            : inline
+<span class="lineNum">    1082 </span>            : void
+<span class="lineNum">    1083 </span>            : arma_assert_mul_size(const subview&lt;eT1&gt;&amp; A, const Mat&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">    1084 </span>            :   {
+<span class="lineNum">    1085 </span>            :   if(A.n_cols != B.n_rows)
+<span class="lineNum">    1086 </span>            :     {
+<span class="lineNum">    1087 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, B.n_rows, B.n_cols, x) );
+<span class="lineNum">    1088 </span>            :     }
+<span class="lineNum">    1089 </span>            :   }
+<span class="lineNum">    1090 </span>            : 
+<span class="lineNum">    1091 </span>            : 
+<span class="lineNum">    1092 </span>            : 
+<span class="lineNum">    1093 </span>            : template&lt;typename eT1, typename eT2&gt;
+<span class="lineNum">    1094 </span>            : arma_hot
+<span class="lineNum">    1095 </span>            : inline
+<span class="lineNum">    1096 </span>            : void
+<span class="lineNum">    1097 </span>            : arma_assert_mul_size(const subview&lt;eT1&gt;&amp; A, const subview&lt;eT2&gt;&amp; B, const char* x)
+<span class="lineNum">    1098 </span>            :   {
+<span class="lineNum">    1099 </span>            :   if(A.n_cols != B.n_rows)
+<span class="lineNum">    1100 </span>            :     {
+<span class="lineNum">    1101 </span>            :     arma_stop( arma_incompat_size_string(A.n_rows, A.n_cols, B.n_rows, B.n_cols, x) );
+<span class="lineNum">    1102 </span>            :     }
+<span class="lineNum">    1103 </span>            :   }
+<span class="lineNum">    1104 </span>            : 
+<span class="lineNum">    1105 </span>            : 
+<span class="lineNum">    1106 </span>            : 
+<span class="lineNum">    1107 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">    1108 </span>            : arma_hot
+<span class="lineNum">    1109 </span>            : inline
+<span class="lineNum">    1110 </span>            : void
+<span class="lineNum">    1111 </span>            : arma_assert_blas_size(const T1&amp; A)
+<span class="lineNum">    1112 </span>            :   {
+<span class="lineNum">    1113 </span>            :   if(sizeof(uword) &gt;= sizeof(blas_int))
+<span class="lineNum">    1114 </span>            :     {
+<span class="lineNum">    1115 </span>            :     bool overflow;
+<span class="lineNum">    1116 </span>            :     
+<span class="lineNum">    1117 </span><span class="lineNoCov">          0 :     overflow = (A.n_rows &gt; ARMA_MAX_BLAS_INT);</span>
+<span class="lineNum">    1118 </span><span class="lineNoCov">          0 :     overflow = (A.n_cols &gt; ARMA_MAX_BLAS_INT) || overflow;</span>
+<span class="lineNum">    1119 </span>            :     
+<span class="lineNum">    1120 </span><span class="lineNoCov">          0 :     if(overflow)</span>
+<span class="lineNum">    1121 </span>            :       {
+<span class="lineNum">    1122 </span><span class="lineNoCov">          0 :       arma_bad(&quot;integer overflow: matrix dimensions are too large for integer type used by BLAS and LAPACK&quot;);</span>
+<span class="lineNum">    1123 </span>            :       }
+<span class="lineNum">    1124 </span>            :     }
+<span class="lineNum">    1125 </span>            :   }
+<span class="lineNum">    1126 </span>            : 
+<span class="lineNum">    1127 </span>            : 
+<span class="lineNum">    1128 </span>            : 
+<span class="lineNum">    1129 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">    1130 </span>            : arma_hot
+<a name="1131"><span class="lineNum">    1131 </span>            : inline</a>
+<span class="lineNum">    1132 </span>            : void
+<span class="lineNum">    1133 </span><span class="lineNoCov">          0 : arma_assert_blas_size(const T1&amp; A, const T2&amp; B)</span>
+<span class="lineNum">    1134 </span>            :   {
+<span class="lineNum">    1135 </span>            :   if(sizeof(uword) &gt;= sizeof(blas_int))
+<span class="lineNum">    1136 </span>            :     {
+<span class="lineNum">    1137 </span>            :     bool overflow;
+<span class="lineNum">    1138 </span>            :     
+<span class="lineNum">    1139 </span><span class="lineNoCov">          0 :     overflow = (A.n_rows &gt; ARMA_MAX_BLAS_INT);</span>
+<span class="lineNum">    1140 </span><span class="lineNoCov">          0 :     overflow = (A.n_cols &gt; ARMA_MAX_BLAS_INT) || overflow;</span>
+<span class="lineNum">    1141 </span><span class="lineNoCov">          0 :     overflow = (B.n_rows &gt; ARMA_MAX_BLAS_INT) || overflow;</span>
+<span class="lineNum">    1142 </span><span class="lineNoCov">          0 :     overflow = (B.n_cols &gt; ARMA_MAX_BLAS_INT) || overflow;</span>
+<span class="lineNum">    1143 </span>            :     
+<span class="lineNum">    1144 </span><span class="lineNoCov">          0 :     if(overflow)</span>
+<span class="lineNum">    1145 </span>            :       {
+<span class="lineNum">    1146 </span><span class="lineNoCov">          0 :       arma_bad(&quot;integer overflow: matrix dimensions are too large for integer type used by BLAS and LAPACK&quot;);</span>
+<span class="lineNum">    1147 </span>            :       }
+<span class="lineNum">    1148 </span>            :     }
+<span class="lineNum">    1149 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1150 </span>            : 
+<span class="lineNum">    1151 </span>            : 
+<span class="lineNum">    1152 </span>            : 
+<span class="lineNum">    1153 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">    1154 </span>            : arma_hot
+<span class="lineNum">    1155 </span>            : inline
+<span class="lineNum">    1156 </span>            : void
+<span class="lineNum">    1157 </span>            : arma_assert_atlas_size(const T1&amp; A)
+<span class="lineNum">    1158 </span>            :   {
+<span class="lineNum">    1159 </span>            :   if(sizeof(uword) &gt;= sizeof(int))
+<span class="lineNum">    1160 </span>            :     {
+<span class="lineNum">    1161 </span>            :     bool overflow;
+<span class="lineNum">    1162 </span>            :     
+<span class="lineNum">    1163 </span>            :     overflow = (A.n_rows &gt; INT_MAX);
+<span class="lineNum">    1164 </span>            :     overflow = (A.n_cols &gt; INT_MAX) || overflow;
+<span class="lineNum">    1165 </span>            :     
+<span class="lineNum">    1166 </span>            :     if(overflow)
+<span class="lineNum">    1167 </span>            :       {
+<span class="lineNum">    1168 </span>            :       arma_bad(&quot;integer overflow: matrix dimensions are too large for integer type used by ATLAS&quot;);
+<span class="lineNum">    1169 </span>            :       }
+<span class="lineNum">    1170 </span>            :     }
+<span class="lineNum">    1171 </span>            :   }
+<span class="lineNum">    1172 </span>            : 
+<span class="lineNum">    1173 </span>            : 
+<span class="lineNum">    1174 </span>            : 
+<span class="lineNum">    1175 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">    1176 </span>            : arma_hot
+<span class="lineNum">    1177 </span>            : inline
+<span class="lineNum">    1178 </span>            : void
+<span class="lineNum">    1179 </span>            : arma_assert_atlas_size(const T1&amp; A, const T2&amp; B)
+<span class="lineNum">    1180 </span>            :   {
+<span class="lineNum">    1181 </span>            :   if(sizeof(uword) &gt;= sizeof(int))
+<span class="lineNum">    1182 </span>            :     {
+<span class="lineNum">    1183 </span>            :     bool overflow;
+<span class="lineNum">    1184 </span>            :     
+<span class="lineNum">    1185 </span>            :     overflow = (A.n_rows &gt; INT_MAX);
+<span class="lineNum">    1186 </span>            :     overflow = (A.n_cols &gt; INT_MAX) || overflow;
+<span class="lineNum">    1187 </span>            :     overflow = (B.n_rows &gt; INT_MAX) || overflow;
+<span class="lineNum">    1188 </span>            :     overflow = (B.n_cols &gt; INT_MAX) || overflow;
+<span class="lineNum">    1189 </span>            :     
+<span class="lineNum">    1190 </span>            :     if(overflow)
+<span class="lineNum">    1191 </span>            :       {
+<span class="lineNum">    1192 </span>            :       arma_bad(&quot;integer overflow: matrix dimensions are too large for integer type used by ATLAS&quot;);
+<span class="lineNum">    1193 </span>            :       }
+<span class="lineNum">    1194 </span>            :     }
+<span class="lineNum">    1195 </span>            :   }
+<span class="lineNum">    1196 </span>            : 
+<span class="lineNum">    1197 </span>            : 
+<span class="lineNum">    1198 </span>            : 
+<span class="lineNum">    1199 </span>            : //
+<span class="lineNum">    1200 </span>            : // macros
+<span class="lineNum">    1201 </span>            : 
+<span class="lineNum">    1202 </span>            : 
+<span class="lineNum">    1203 </span>            : // #define ARMA_STRING1(x) #x
+<span class="lineNum">    1204 </span>            : // #define ARMA_STRING2(x) ARMA_STRING1(x)
+<span class="lineNum">    1205 </span>            : // #define ARMA_FILELINE  __FILE__ &quot;: &quot; ARMA_STRING2(__LINE__)
+<span class="lineNum">    1206 </span>            : 
+<span class="lineNum">    1207 </span>            : 
+<span class="lineNum">    1208 </span>            : #if defined(ARMA_NO_DEBUG)
+<span class="lineNum">    1209 </span>            :   
+<span class="lineNum">    1210 </span>            :   #undef ARMA_EXTRA_DEBUG
+<span class="lineNum">    1211 </span>            :   
+<span class="lineNum">    1212 </span>            :   #define arma_debug_print                   true ? (void)0 : arma_print
+<span class="lineNum">    1213 </span>            :   #define arma_debug_warn                    true ? (void)0 : arma_warn
+<span class="lineNum">    1214 </span>            :   #define arma_debug_check                   true ? (void)0 : arma_check
+<span class="lineNum">    1215 </span>            :   #define arma_debug_set_error               true ? (void)0 : arma_set_error
+<span class="lineNum">    1216 </span>            :   #define arma_debug_assert_same_size        true ? (void)0 : arma_assert_same_size
+<span class="lineNum">    1217 </span>            :   #define arma_debug_assert_mul_size         true ? (void)0 : arma_assert_mul_size
+<span class="lineNum">    1218 </span>            :   #define arma_debug_assert_trans_mul_size   true ? (void)0 : arma_assert_trans_mul_size
+<span class="lineNum">    1219 </span>            :   #define arma_debug_assert_cube_as_mat      true ? (void)0 : arma_assert_cube_as_mat
+<span class="lineNum">    1220 </span>            :   #define arma_debug_assert_blas_size        true ? (void)0 : arma_assert_blas_size
+<span class="lineNum">    1221 </span>            :   #define arma_debug_assert_atlas_size       true ? (void)0 : arma_assert_atlas_size
+<span class="lineNum">    1222 </span>            :   
+<span class="lineNum">    1223 </span>            : #else
+<span class="lineNum">    1224 </span>            :   
+<span class="lineNum">    1225 </span>            :   #define arma_debug_print                 arma_print
+<span class="lineNum">    1226 </span>            :   #define arma_debug_warn                  arma_warn
+<span class="lineNum">    1227 </span>            :   #define arma_debug_check                 arma_check
+<span class="lineNum">    1228 </span>            :   #define arma_debug_set_error             arma_set_error
+<span class="lineNum">    1229 </span>            :   #define arma_debug_assert_same_size      arma_assert_same_size
+<span class="lineNum">    1230 </span>            :   #define arma_debug_assert_mul_size       arma_assert_mul_size
+<span class="lineNum">    1231 </span>            :   #define arma_debug_assert_trans_mul_size arma_assert_trans_mul_size
+<span class="lineNum">    1232 </span>            :   #define arma_debug_assert_cube_as_mat    arma_assert_cube_as_mat
+<span class="lineNum">    1233 </span>            :   #define arma_debug_assert_blas_size      arma_assert_blas_size
+<span class="lineNum">    1234 </span>            :   #define arma_debug_assert_atlas_size     arma_assert_atlas_size
+<span class="lineNum">    1235 </span>            :   
+<span class="lineNum">    1236 </span>            : #endif
+<span class="lineNum">    1237 </span>            : 
+<span class="lineNum">    1238 </span>            : 
+<span class="lineNum">    1239 </span>            : 
+<span class="lineNum">    1240 </span>            : #if defined(ARMA_EXTRA_DEBUG)
+<span class="lineNum">    1241 </span>            :   
+<span class="lineNum">    1242 </span>            :   #define arma_extra_debug_sigprint       arma_sigprint(ARMA_FNSIG); arma_bktprint
+<span class="lineNum">    1243 </span>            :   #define arma_extra_debug_sigprint_this  arma_sigprint(ARMA_FNSIG); arma_thisprint
+<span class="lineNum">    1244 </span>            :   #define arma_extra_debug_print          arma_print
+<span class="lineNum">    1245 </span>            :   #define arma_extra_debug_warn           arma_warn
+<span class="lineNum">    1246 </span>            :   #define arma_extra_debug_check          arma_check
+<span class="lineNum">    1247 </span>            : 
+<span class="lineNum">    1248 </span>            : #else
+<span class="lineNum">    1249 </span>            :   
+<span class="lineNum">    1250 </span>            :   #define arma_extra_debug_sigprint        true ? (void)0 : arma_bktprint
+<span class="lineNum">    1251 </span>            :   #define arma_extra_debug_sigprint_this   true ? (void)0 : arma_thisprint
+<span class="lineNum">    1252 </span>            :   #define arma_extra_debug_print           true ? (void)0 : arma_print
+<span class="lineNum">    1253 </span>            :   #define arma_extra_debug_warn            true ? (void)0 : arma_warn
+<span class="lineNum">    1254 </span>            :   #define arma_extra_debug_check           true ? (void)0 : arma_check
+<span class="lineNum">    1255 </span>            :  
+<span class="lineNum">    1256 </span>            : #endif
+<span class="lineNum">    1257 </span>            : 
+<span class="lineNum">    1258 </span>            : 
+<span class="lineNum">    1259 </span>            : 
+<span class="lineNum">    1260 </span>            : 
+<span class="lineNum">    1261 </span>            : #if defined(ARMA_EXTRA_DEBUG)
+<span class="lineNum">    1262 </span>            : 
+<span class="lineNum">    1263 </span>            :   namespace junk
+<span class="lineNum">    1264 </span>            :     {
+<span class="lineNum">    1265 </span>            :     class arma_first_extra_debug_message
+<span class="lineNum">    1266 </span>            :       {
+<span class="lineNum">    1267 </span>            :       public:
+<span class="lineNum">    1268 </span>            :       
+<span class="lineNum">    1269 </span>            :       inline
+<span class="lineNum">    1270 </span>            :       arma_first_extra_debug_message()
+<span class="lineNum">    1271 </span>            :         {
+<span class="lineNum">    1272 </span>            :         union
+<span class="lineNum">    1273 </span>            :           {
+<span class="lineNum">    1274 </span>            :           unsigned short a;
+<span class="lineNum">    1275 </span>            :           unsigned char  b[sizeof(unsigned short)];
+<span class="lineNum">    1276 </span>            :           } endian_test;
+<span class="lineNum">    1277 </span>            :           
+<span class="lineNum">    1278 </span>            :         endian_test.a = 1;
+<span class="lineNum">    1279 </span>            :         
+<span class="lineNum">    1280 </span>            :         const bool  little_endian = (endian_test.b[0] == 1);
+<span class="lineNum">    1281 </span>            :         const char* nickname      = ARMA_VERSION_NAME;
+<span class="lineNum">    1282 </span>            :         
+<span class="lineNum">    1283 </span>            :         std::ostream&amp; out = get_stream_err1();
+<span class="lineNum">    1284 </span>            :         
+<span class="lineNum">    1285 </span>            :         out &lt;&lt; &quot;@ ---&quot; &lt;&lt; '\n';
+<span class="lineNum">    1286 </span>            :         out &lt;&lt; &quot;@ Armadillo &quot;
+<span class="lineNum">    1287 </span>            :             &lt;&lt; arma_version::major &lt;&lt; '.' &lt;&lt; arma_version::minor &lt;&lt; '.' &lt;&lt; arma_version::patch
+<span class="lineNum">    1288 </span>            :             &lt;&lt; &quot; (&quot; &lt;&lt; nickname &lt;&lt; &quot;)\n&quot;;
+<span class="lineNum">    1289 </span>            :         
+<span class="lineNum">    1290 </span>            :         out &lt;&lt; &quot;@ arma_config::use_wrapper  = &quot; &lt;&lt; arma_config::use_wrapper  &lt;&lt; '\n';
+<span class="lineNum">    1291 </span>            :         out &lt;&lt; &quot;@ arma_config::use_cxx11    = &quot; &lt;&lt; arma_config::use_cxx11    &lt;&lt; '\n';
+<span class="lineNum">    1292 </span>            :         out &lt;&lt; &quot;@ arma_config::openmp       = &quot; &lt;&lt; arma_config::openmp       &lt;&lt; '\n';
+<span class="lineNum">    1293 </span>            :         out &lt;&lt; &quot;@ arma_config::lapack       = &quot; &lt;&lt; arma_config::lapack       &lt;&lt; '\n';
+<span class="lineNum">    1294 </span>            :         out &lt;&lt; &quot;@ arma_config::blas         = &quot; &lt;&lt; arma_config::blas         &lt;&lt; '\n';
+<span class="lineNum">    1295 </span>            :         out &lt;&lt; &quot;@ arma_config::arpack       = &quot; &lt;&lt; arma_config::arpack       &lt;&lt; '\n';
+<span class="lineNum">    1296 </span>            :         out &lt;&lt; &quot;@ arma_config::superlu      = &quot; &lt;&lt; arma_config::superlu      &lt;&lt; '\n';
+<span class="lineNum">    1297 </span>            :         out &lt;&lt; &quot;@ arma_config::atlas        = &quot; &lt;&lt; arma_config::atlas        &lt;&lt; '\n';
+<span class="lineNum">    1298 </span>            :         out &lt;&lt; &quot;@ arma_config::hdf5         = &quot; &lt;&lt; arma_config::hdf5         &lt;&lt; '\n';
+<span class="lineNum">    1299 </span>            :         out &lt;&lt; &quot;@ arma_config::good_comp    = &quot; &lt;&lt; arma_config::good_comp    &lt;&lt; '\n';
+<span class="lineNum">    1300 </span>            :         out &lt;&lt; &quot;@ arma_config::extra_code   = &quot; &lt;&lt; arma_config::extra_code   &lt;&lt; '\n';
+<span class="lineNum">    1301 </span>            :         out &lt;&lt; &quot;@ arma_config::mat_prealloc = &quot; &lt;&lt; arma_config::mat_prealloc &lt;&lt; '\n';
+<span class="lineNum">    1302 </span>            :         out &lt;&lt; &quot;@ sizeof(void*)    = &quot; &lt;&lt; sizeof(void*)    &lt;&lt; '\n';
+<span class="lineNum">    1303 </span>            :         out &lt;&lt; &quot;@ sizeof(int)      = &quot; &lt;&lt; sizeof(int)      &lt;&lt; '\n';
+<span class="lineNum">    1304 </span>            :         out &lt;&lt; &quot;@ sizeof(long)     = &quot; &lt;&lt; sizeof(long)     &lt;&lt; '\n';
+<span class="lineNum">    1305 </span>            :         out &lt;&lt; &quot;@ sizeof(uword)    = &quot; &lt;&lt; sizeof(uword)    &lt;&lt; '\n';
+<span class="lineNum">    1306 </span>            :         out &lt;&lt; &quot;@ sizeof(blas_int) = &quot; &lt;&lt; sizeof(blas_int) &lt;&lt; '\n';
+<span class="lineNum">    1307 </span>            :         out &lt;&lt; &quot;@ little_endian    = &quot; &lt;&lt; little_endian    &lt;&lt; '\n';
+<span class="lineNum">    1308 </span>            :         out &lt;&lt; &quot;@ ---&quot; &lt;&lt; std::endl;
+<span class="lineNum">    1309 </span>            :         }
+<span class="lineNum">    1310 </span>            :       
+<span class="lineNum">    1311 </span>            :       };
+<span class="lineNum">    1312 </span>            :     
+<span class="lineNum">    1313 </span>            :     static arma_first_extra_debug_message arma_first_extra_debug_message_run;
+<span class="lineNum">    1314 </span>            :     }
+<span class="lineNum">    1315 </span>            : 
+<span class="lineNum">    1316 </span>            : #endif
+<span class="lineNum">    1317 </span>            : 
+<span class="lineNum">    1318 </span>            : 
+<span class="lineNum">    1319 </span>            : 
+<span class="lineNum">    1320 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

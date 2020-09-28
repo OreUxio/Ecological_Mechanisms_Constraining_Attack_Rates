@@ -1,0 +1,10 @@
+NetworkAnalysis.o NetworkAnalysis.d1 : NetworkAnalysis.cc  \
+ NetworkAnalysis.h error.h   \
+  random.h \
+ CMatrix.h  sequence.h  \
+  simple_vector.h \
+ NewMatrix.h   \
+  NetworkHelpers.h \
+ Statistics.h   \
+  pqtree.h  \
+ pqnode.h setTemplates.h

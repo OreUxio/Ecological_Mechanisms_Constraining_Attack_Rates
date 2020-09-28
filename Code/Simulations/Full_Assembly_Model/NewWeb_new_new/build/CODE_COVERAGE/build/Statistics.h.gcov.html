@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/Statistics.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - Statistics.h<span style="font-size: 80%;"> (source / <a href="Statistics.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntryLo">12.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: Statistics.h 2466 2016-05-01 23:27:44Z axel $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : /// \file Classes useful for statistical analyses.
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef __STATISTICS__
+<span class="lineNum">       7 </span>            : #define __STATISTICS__
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : // #include &lt;CLHEP/Matrix/Matrix.h&gt;
+<span class="lineNum">      10 </span>            : // #include &lt;CLHEP/Matrix/Vector.h&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;NewMatrix.h&quot;
+<span class="lineNum">      13 </span>            : #include &quot;simple_vector.h&quot;
+<span class="lineNum">      14 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : /// Abstract base class to estimate distributions from samples.
+<span class="lineNum">      17 </span>            : /** This is technical overkill!?! Perhaps.  But very often you start
+<span class="lineNum">      18 </span>            :     doing a historgram, and later decide you might try something
+<span class="lineNum">      19 </span>            :     better.*/
+<span class="lineNum">      20 </span>            : class Distribution_Estimator{
+<span class="lineNum">      21 </span>            :  protected:
+<span class="lineNum">      22 </span>            :   int N; // number of samples
+<span class="lineNum">      23 </span>            :  public:
+<span class="lineNum">      24 </span><span class="lineNoCov">          0 :   Distribution_Estimator():N(0){};</span>
+<span class="lineNum">      25 </span>            :   virtual void sample(double x)=0;
+<span class="lineNum">      26 </span>            :   // !! this gives a density in units of 1/[unit of x] !!
+<span class="lineNum">      27 </span>            :   virtual double estimate_density(double x)=0;
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :   virtual ~Distribution_Estimator(){};</span>
+<span class="lineNum">      29 </span>            : };
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : /// Compute a histogram from samples.
+<span class="lineNum">      32 </span>            : class Histogram_Estimator : public Distribution_Estimator {
+<span class="lineNum">      33 </span>            :   std::simple_vector&lt;int&gt; the_histogram;
+<span class="lineNum">      34 </span>            :   double the_lowest_x_included;
+<span class="lineNum">      35 </span>            :   double the_bin_width;
+<span class="lineNum">      36 </span>            :  public:
+<span class="lineNum">      37 </span>            :   Histogram_Estimator(double min, double max, int N);
+<span class="lineNum">      38 </span>            :   Histogram_Estimator(double min, double width);
+<span class="lineNum">      39 </span>            :   int the_number_of_bins(){
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :     return the_histogram.size();</span>
+<span class="lineNum">      41 </span>            :   }
+<span class="lineNum">      42 </span>            :   void sample(double x);
+<span class="lineNum">      43 </span>            :   void save(const char * filename);
+<span class="lineNum">      44 </span>            :   double estimate_density(double x);
+<span class="lineNum">      45 </span>            :   virtual ~Histogram_Estimator();
+<span class="lineNum">      46 </span>            : };
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : /* class average_meter{ */
+<span class="lineNum">      49 </span>            : /*   int samples; */
+<span class="lineNum">      50 </span>            : /*   double sum; */
+<span class="lineNum">      51 </span>            : /*   double square_sum; */
+<span class="lineNum">      52 </span>            : /* public: */
+<span class="lineNum">      53 </span>            : /*   average_meter() { */
+<span class="lineNum">      54 </span>            : /*     samples=0; */
+<span class="lineNum">      55 </span>            : /*     sum=0; */
+<span class="lineNum">      56 </span>            : /*     square_sum=0; */
+<span class="lineNum">      57 </span>            : /*   }; */
+<span class="lineNum">      58 </span>            : /*   void sample(double x){ */
+<span class="lineNum">      59 </span>            : /*     sum+=x; */
+<span class="lineNum">      60 </span>            : /*     square_sum+=x*x; */
+<span class="lineNum">      61 </span>            : /*     samples++; */
+<span class="lineNum">      62 </span>            : /*   } */
+<span class="lineNum">      63 </span>            : /*   double readout(){ */
+<span class="lineNum">      64 </span>            : /*     return sum/samples; */
+<span class="lineNum">      65 </span>            : /*   } */
+<span class="lineNum">      66 </span>            : /*   double var(){ */
+<span class="lineNum">      67 </span>            : /*     return (square_sum-sum*sum/samples)/(samples-1); */
+<span class="lineNum">      68 </span>            : /*   } */
+<span class="lineNum">      69 </span>            : /*   int n(){ */
+<span class="lineNum">      70 </span>            : /*     return samples; */
+<span class="lineNum">      71 </span>            : /*   } */
+<span class="lineNum">      72 </span>            : /* }; */
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : /// Collects samples (with weights) to compute their average.
+<span class="lineNum">      75 </span>            : class weighted_average_meter{
+<span class="lineNum">      76 </span>            :  protected:
+<span class="lineNum">      77 </span>            :   long double samples;
+<span class="lineNum">      78 </span>            :   long double sum;
+<span class="lineNum">      79 </span>            :   long double square_sum;
+<span class="lineNum">      80 </span>            :  public:
+<span class="lineNum">      81 </span><span class="lineCov">        408 :   weighted_average_meter():samples(0),sum(0),square_sum(0){};</span>
+<span class="lineNum">      82 </span>            :   weighted_average_meter(const double x):samples(1),sum(x),square_sum(x*x){};
+<span class="lineNum">      83 </span>            :   weighted_average_meter(const double x,const double varx):
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :     samples(1),sum(x),square_sum(varx+x*x){};</span>
+<span class="lineNum">      85 </span>            :   void sample(double x,double weight);
+<span class="lineNum">      86 </span>            :   double readout() const;
+<span class="lineNum">      87 </span>            :   double sample_var() const;
+<span class="lineNum">      88 </span>            :   double sample_std() const;
+<span class="lineNum">      89 </span>            :   weighted_average_meter  &amp; 
+<span class="lineNum">      90 </span>            :   operator+=(const weighted_average_meter &amp; other){
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :     samples+=other.samples;</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :     sum+=other.sum;</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :     square_sum+=other.square_sum;</span>
+<span class="lineNum">      94 </span>            :     return *this;
+<span class="lineNum">      95 </span>            :   }
+<span class="lineNum">      96 </span>            :   weighted_average_meter  &amp; 
+<span class="lineNum">      97 </span>            :   operator+=(const double y){
+<span class="lineNum">      98 </span>            :     square_sum+=2*y*sum+y*y*samples;
+<span class="lineNum">      99 </span>            :     sum+=y*samples;
+<span class="lineNum">     100 </span>            :     return *this;
+<span class="lineNum">     101 </span>            :   }
+<span class="lineNum">     102 </span>            :   weighted_average_meter  &amp; 
+<span class="lineNum">     103 </span>            :   operator-=(const double y){
+<span class="lineNum">     104 </span>            :     return operator+=(-y);
+<span class="lineNum">     105 </span>            :   }
+<span class="lineNum">     106 </span>            :   operator double(){
+<span class="lineNum">     107 </span><span class="lineNoCov">          0 :     return readout();</span>
+<span class="lineNum">     108 </span>            :   }
+<span class="lineNum">     109 </span>            : };
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : /// Collects samples to compute their average.
+<span class="lineNum">     112 </span>            : class average_meter : public weighted_average_meter {
+<span class="lineNum">     113 </span>            :  public:
+<span class="lineNum">     114 </span><span class="lineCov">        824 :   average_meter():weighted_average_meter(){};</span>
+<span class="lineNum">     115 </span>            :   average_meter(const double x):weighted_average_meter(x){};
+<span class="lineNum">     116 </span>            :   average_meter(const weighted_average_meter m):weighted_average_meter(m){};
+<span class="lineNum">     117 </span>            :   void sample(double x);
+<span class="lineNum">     118 </span>            :   void sample(double x,double weight);// produces error message
+<span class="lineNum">     119 </span>            :   double var() const;
+<span class="lineNum">     120 </span>            :   double std() const;
+<span class="lineNum">     121 </span>            :   double error() const;
+<span class="lineNum">     122 </span>            :   double error_var() const;
+<span class="lineNum">     123 </span>            :   int n();
+<span class="lineNum">     124 </span>            :   average_meter &amp; operator+=(const double x){
+<span class="lineNum">     125 </span>            :     sample(x);
+<span class="lineNum">     126 </span>            :     return *this;
+<span class="lineNum">     127 </span>            :   }
+<span class="lineNum">     128 </span>            :   average_meter  &amp; 
+<span class="lineNum">     129 </span>            :   operator+=(const average_meter &amp; other){
+<span class="lineNum">     130 </span>            :     this-&gt;weighted_average_meter::operator+=(other);
+<span class="lineNum">     131 </span>            :     return *this;
+<span class="lineNum">     132 </span>            :   }
+<span class="lineNum">     133 </span>            : };
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            : std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, 
+<span class="lineNum">     136 </span>            :                           const average_meter &amp; av);
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            : inline average_meter operator+(average_meter &amp; a, double x){
+<span class="lineNum">     139 </span>            :   average_meter b;
+<span class="lineNum">     140 </span>            :   b+=a;
+<span class="lineNum">     141 </span>            :   b+=x;
+<span class="lineNum">     142 </span>            :   return b;
+<span class="lineNum">     143 </span>            : }
+<a name="144"><span class="lineNum">     144 </span>            : </a>
+<span class="lineNum">     145 </span>            : /// Samples vectors to estimate their multivariate normal distribution.
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 : class multinormal_distribution {</span>
+<span class="lineNum">     147 </span>            : public:
+<span class="lineNum">     148 </span>            :   NewVector mean;
+<span class="lineNum">     149 </span>            :   NewMatrix cov;
+<span class="lineNum">     150 </span>            :   multinormal_distribution():mean(),cov(){};
+<span class="lineNum">     151 </span>            :   multinormal_distribution(NewVector &amp;m, NewMatrix &amp;c);
+<span class="lineNum">     152 </span>            :   std::simple_vector&lt;double&gt; main_axis()const;
+<span class="lineNum">     153 </span>            :   std::simple_vector&lt;double&gt; raw_main_axis()const;
+<span class="lineNum">     154 </span>            :   void save(const char * name)const;
+<span class="lineNum">     155 </span>            :   void load(const char * name);
+<span class="lineNum">     156 </span>            :   double var_of_sum();
+<span class="lineNum">     157 </span>            : };
+<span class="lineNum">     158 </span>            :   
+<a name="159"><span class="lineNum">     159 </span>            : </a>
+<span class="lineNum">     160 </span>            : /// Used to test if empirical data is consistent with Monte-Carlo simulations.
+<span class="lineNum">     161 </span><span class="lineNoCov">          0 : class chi_square_meter {</span>
+<span class="lineNum">     162 </span>            :   const std::simple_vector&lt;bool&gt; _selection;
+<span class="lineNum">     163 </span>            :   int _size;
+<span class="lineNum">     164 </span>            :   int _n_samples;
+<span class="lineNum">     165 </span>            :   NewVector _sum;
+<span class="lineNum">     166 </span>            :   NewMatrix _square_sum;
+<span class="lineNum">     167 </span>            :   void _initialize_selection_given();
+<span class="lineNum">     168 </span>            :   void postfix(std::simple_vector&lt;double&gt; const &amp; data,std::simple_vector&lt;bool&gt; const &amp; fix,
+<span class="lineNum">     169 </span>            :                NewVector &amp; data_star, NewVector &amp; m_star, 
+<a name="170"><span class="lineNum">     170 </span>            :                NewMatrix &amp; cov_star, NewMatrix &amp; icov_star) const;</a>
+<span class="lineNum">     171 </span>            : public:
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :   explicit chi_square_meter(std::simple_vector&lt;bool&gt; sel) :</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :     _selection(sel), _n_samples(0){</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     _initialize_selection_given();</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     176 </span>            :   explicit chi_square_meter(int size) :
+<span class="lineNum">     177 </span>            :     _selection(size,true), _n_samples(0){
+<span class="lineNum">     178 </span>            :     _initialize_selection_given();
+<span class="lineNum">     179 </span>            :   }
+<span class="lineNum">     180 </span>            :   void sample(std::simple_vector&lt;double&gt; data);
+<span class="lineNum">     181 </span>            :   std::simple_vector&lt;double&gt; mean() const;
+<span class="lineNum">     182 </span>            :   double chi_square_old(std::simple_vector&lt;double&gt; data) const;
+<span class="lineNum">     183 </span>            :   double chi_square(std::simple_vector&lt;double&gt; const &amp; data,
+<span class="lineNum">     184 </span>            :                     std::simple_vector&lt;bool&gt; const &amp; fix=std::simple_vector&lt;bool&gt;(0)) const;
+<span class="lineNum">     185 </span>            :   double chi_square(double * log_det_cov,
+<span class="lineNum">     186 </span>            :                     std::simple_vector&lt;double&gt; const &amp; data,
+<span class="lineNum">     187 </span>            :                     std::simple_vector&lt;bool&gt; const &amp; fix=std::simple_vector&lt;bool&gt;(0)) const;
+<span class="lineNum">     188 </span>            :   std::simple_vector&lt;weighted_average_meter&gt;
+<span class="lineNum">     189 </span>            :   mean_and_var(std::simple_vector&lt;double&gt; const &amp; data,
+<span class="lineNum">     190 </span>            :                std::simple_vector&lt;bool&gt; const &amp; fix=std::simple_vector&lt;bool&gt;(0)) const;
+<span class="lineNum">     191 </span>            :   std::simple_vector&lt;double&gt; 
+<span class="lineNum">     192 </span>            :   deviation_old(std::simple_vector&lt;double&gt; const &amp; data) const;
+<span class="lineNum">     193 </span>            :   std::simple_vector&lt;double&gt; 
+<span class="lineNum">     194 </span>            :   deviation(std::simple_vector&lt;double&gt; const &amp; data,
+<span class="lineNum">     195 </span>            :                               std::simple_vector&lt;bool&gt; const &amp; fix
+<span class="lineNum">     196 </span>            :                               =std::simple_vector&lt;bool&gt;(0)) const;
+<span class="lineNum">     197 </span>            :   multinormal_distribution
+<span class="lineNum">     198 </span>            :   estimate(std::simple_vector&lt;double&gt; const &amp; data=std::simple_vector&lt;double&gt;(0),
+<span class="lineNum">     199 </span>            :            std::simple_vector&lt;bool&gt; const &amp; fix=std::simple_vector&lt;bool&gt;(0));
+<span class="lineNum">     200 </span>            : };
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            : // save/load empirical data:
+<span class="lineNum">     203 </span>            : void save(std::simple_vector&lt;double&gt; const &amp; data,
+<span class="lineNum">     204 </span>            :           std::simple_vector&lt;bool&gt; const &amp; select,
+<span class="lineNum">     205 </span>            :           std::simple_vector&lt;bool&gt; const &amp; fix,
+<span class="lineNum">     206 </span>            :           const char * name);
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : void load(NewVector &amp; data,
+<span class="lineNum">     209 </span>            :           const char * name);
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            : #endif // __STATISTICS__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,1184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/hotspots.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - hotspots.cc<span style="font-size: 80%;"> (source / <a href="hotspots.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">211</td>
+            <td class="headerCovTableEntry">488</td>
+            <td class="headerCovTableEntryLo">43.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntryLo">55.2 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // $Id: hotspots.cc 2504 2017-02-28 10:54:54Z axel $</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : /// \file: The computation intensive parts of NewWeb simulation.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : //**** fast exponential *****//
+<span class="lineNum">       6 </span>            : /* Source: A Fast, Compact Approximation of the Exponential Function
+<span class="lineNum">       7 </span>            : to appear in Neural Computation 11(4) Technical Report IDSIA-07-98
+<span class="lineNum">       8 </span>            : Nicol N. Schraudolph A, Corso Elveznic@idsia.ch
+<span class="lineNum">       9 </span>            : */
+<span class="lineNum">      10 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">      11 </span>            : #ifndef LITTLE_ENDIAN
+<span class="lineNum">      12 </span>            : #define LITTLE_ENDIAN
+<span class="lineNum">      13 </span>            : #endif
+<span class="lineNum">      14 </span>            : static union eco
+<span class="lineNum">      15 </span>            : {
+<span class="lineNum">      16 </span>            :   double d;
+<span class="lineNum">      17 </span>            :   struct 
+<span class="lineNum">      18 </span>            :   {
+<span class="lineNum">      19 </span>            : #ifdef LITTLE_ENDIAN
+<span class="lineNum">      20 </span>            :     int j, i;
+<span class="lineNum">      21 </span>            : #else
+<span class="lineNum">      22 </span>            :     int i, j;
+<span class="lineNum">      23 </span>            : #endif
+<span class="lineNum">      24 </span>            :   } n;
+<span class="lineNum">      25 </span>            : } _eco;
+<span class="lineNum">      26 </span>            : #define EXP_A (1048576/M_LN2)
+<span class="lineNum">      27 </span>            : #define EXP_C 60801
+<span class="lineNum">      28 </span>            : /* use 1512775 for integer version */
+<span class="lineNum">      29 </span>            : /* see text for choice of c values */
+<span class="lineNum">      30 </span>            : inline double quickEXP(double y){
+<span class="lineNum">      31 </span>            :   eco _eco;
+<span class="lineNum">      32 </span>            :   _eco.n.i = EXP_A*(y) + (1072693248 - EXP_C);
+<span class="lineNum">      33 </span>            :   return _eco.d;
+<span class="lineNum">      34 </span>            : }
+<span class="lineNum">      35 </span>            : //**** end of fast exponential *****//
+<span class="lineNum">      36 </span>            :   
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : #define myEXP exp  // Make this quickEXP to give it a try.
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : #include &quot;NewWeb.h&quot;
+<span class="lineNum">      41 </span>            : #include &quot;SortedMatrix.h&quot;
+<span class="lineNum">      42 </span>            : #include &quot;Integrator.h&quot;
+<span class="lineNum">      43 </span>            : #include &quot;packed_simulation.h&quot;
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : static double relative_yearly_modulation=0;///&lt; not implemented
+<span class="lineNum">      46 </span>            : static int multithreading_only_fit=0;
+<span class="lineNum">      47 </span>            : static double averaging_time=10; // in years FIXME: use 'eval(&quot;10*year&quot;)'
+<span class="lineNum">      48 </span>            : static int max_invasion_attempts=9999;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : // Manage adjustable parameters:
+<span class="lineNum">      51 </span>            : #include &quot;cfgList.h&quot;
+<span class="lineNum">      52 </span>            : static cfgStruct cfg[] = 
+<span class="lineNum">      53 </span>            : {
+<span class="lineNum">      54 </span>            :   CFGDOUBLE(relative_yearly_modulation),
+<span class="lineNum">      55 </span>            :   CFGINT(multithreading_only_fit),
+<span class="lineNum">      56 </span>            :   CFGINT(max_invasion_attempts),
+<span class="lineNum">      57 </span>            :   CFGDOUBLE(averaging_time),
+<span class="lineNum">      58 </span>            :   {0, CFG_END, 0}
+<span class="lineNum">      59 </span>            : };
+<span class="lineNum">      60 </span><span class="lineCov">         45 : static cfg_add dummy(cfg);</span>
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : const double log_DBL_MAX=5*log(DBL_MAX)/7.0; ///&lt; we added some safety margin
+<span class="lineNum">      63 </span>            : const double log_DBL_MIN=5*log(DBL_MIN)/7.0; ///&lt; we added some safety margin
+<span class="lineNum">      64 </span>            : int max_num_threads=1; ///&lt; maximal number of allowed threads (changed
+<span class="lineNum">      65 </span>            :                        ///by main())
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : const double NewWeb::do_dynamics_manager_t::unset=-1;
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : 
+<a name="70"><span class="lineNum">      70 </span>            : /// This is just a diagnostic helper function, not needed for</a>
+<span class="lineNum">      71 </span>            : /// population dynamics.
+<span class="lineNum">      72 </span><span class="lineCov">        360 : int NewWeb::compute_flows(const ODE_vector &amp; state,bool initialize){</span>
+<span class="lineNum">      73 </span><span class="lineCov">        720 :   ODE_vector time_derivative(number_of_variables());</span>
+<span class="lineNum">      74 </span>            :   bool initialized;
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            :   // sets common_factor and biomass_B as a side effect:
+<span class="lineNum">      77 </span><span class="lineCov">        360 :   if(dynamics_for_side_effects(state,time_derivative)!=0) return 1;</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :   
+<span class="lineNum">      80 </span><span class="lineCov">        360 :   if(do_switching){</span>
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :     if(initialize){</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :       compute_flows_csc=</span>
+<span class="lineNum">      84 </span>            :         std::vector&lt; compute_flows_csc_matrix_t &gt;
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :         (s.n_animals,</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :          compute_flows_csc_matrix_t(s.size()) );</span>
+<span class="lineNum">      87 </span>            :       
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :       for(int k=s.n_animals;k--&gt;0;){</span>
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :         for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :           double sum=0;</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :           for(int j=s.size();j--&gt;0;){</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :             compute_flows_csc[k][i][j]=</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :               precomputed[k].c[i]*</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :               s(i).switching_similarity_to(s(j),</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :                                            s(k).prey_similarity_width())*</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :               precomputed[k].c[j];</span>
+<span class="lineNum">      97 </span>            :           }
+<span class="lineNum">      98 </span>            :         }
+<span class="lineNum">      99 </span>            :       }
+<span class="lineNum">     100 </span>            :       initialized = true;
+<span class="lineNum">     101 </span>            :     }else{//User claims this is initialized, let's double check!
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :       if(compute_flows_csc.size()!=s.n_animals or</span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :          (s.n_animals and compute_flows_csc[0].size()!=s.size()) ){</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :         WARNING(&quot;compute_flows is not initialized.&quot;);</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :         WARNING(&quot;This computation will take less space but up to O(S^3) time!&quot;);</span>
+<span class="lineNum">     106 </span>            :         initialized = false;
+<span class="lineNum">     107 </span>            :       }else{
+<span class="lineNum">     108 </span>            :         initialized = true;
+<span class="lineNum">     109 </span>            :       }
+<span class="lineNum">     110 </span>            :     }
+<span class="lineNum">     111 </span>            :     
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :     if(initialized){</span>
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 :       for(int k=s.n_animals;k--&gt;0;){</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :         for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :           fx(i,k)=biomass_B(i)*common_factor(k)*</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :             compute_flows_csc[k][i].dot(biomass_B);</span>
+<span class="lineNum">     117 </span>            :         }
+<span class="lineNum">     118 </span>            :       }
+<span class="lineNum">     119 </span>            :     }else{
+<span class="lineNum">     120 </span>            : #if 0 //// I need to remove prior computation of the switching matrix
+<span class="lineNum">     121 </span>            :       // here and below to accommodate variable switching
+<span class="lineNum">     122 </span>            :       // similarities.  If speed is a problem we have to do combined
+<span class="lineNum">     123 </span>            :       // the new and the old version of the code here.  We did not
+<span class="lineNum">     124 </span>            :       // initialize.  Try to be as fast as possible anyway.
+<span class="lineNum">     125 </span>            :       link_strength_matrix similarity;
+<span class="lineNum">     126 </span>            :       similarity.resize(s.size());
+<span class="lineNum">     127 </span>            :       for(int i=s.size();i--&gt;0;){
+<span class="lineNum">     128 </span>            :         similarity[i][i]=s(i).switching_similarity_to(s(i));
+<span class="lineNum">     129 </span>            :         for(int j=i;j--&gt;0;){
+<span class="lineNum">     130 </span>            :           similarity[i][j]=similarity[j][i]=s(i).switching_similarity_to(s(j));
+<span class="lineNum">     131 </span>            :         }
+<span class="lineNum">     132 </span>            :       }
+<span class="lineNum">     133 </span>            : #endif
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :       for(int k=s.n_animals;k--&gt;0;){</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :         for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :           fx(i,k)=0;</span>
+<span class="lineNum">     137 </span>            :         }
+<span class="lineNum">     138 </span>            :       }
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :       std::vector&lt; double &gt; availability(s.size());</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :       std::vector&lt; int &gt; available_prey(s.size());</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :       for(int k=s.n_animals;k--&gt;0;){</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :         int n_prey=0;</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :         for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :           if(precomputed[k].c[i]&gt;0){</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :             availability[i]=biomass_B(i)*precomputed[k].c[i];</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :             available_prey[n_prey]=i;</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :             n_prey++;</span>
+<span class="lineNum">     148 </span>            :           }
+<span class="lineNum">     149 </span>            :         }
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :         for(int ii=n_prey;ii--&gt;0;){</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :           int i=available_prey[ii];</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :           double sa_sum=0;</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :           for(int jj=n_prey;jj--&gt;0;){</span>
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :             int j=available_prey[jj];</span>
+<span class="lineNum">     155 </span>            :             sa_sum+=
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :               s(i).switching_similarity_to(s(j),s(k).prey_similarity_width())*</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :               availability[j];</span>
+<span class="lineNum">     158 </span>            :           }
+<span class="lineNum">     159 </span>            :           //      sa_sum*=  // What the hell was this line good for?
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :           fx(i,k)=availability[i]*sa_sum*common_factor(k);</span>
+<span class="lineNum">     161 </span>            :         }
+<span class="lineNum">     162 </span>            :       }
+<span class="lineNum">     163 </span>            :     }
+<span class="lineNum">     164 </span>            :   }else{// no switching
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineCov">        360 :     for(int k=s.n_animals;k--&gt;0;){</span>
+<span class="lineNum">     167 </span><span class="lineCov">    5097030 :       for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     168 </span><span class="lineCov">   45415584 :         fx(i,k)=precomputed[k].c[i]*biomass_B(i)*common_factor(k);</span>
+<span class="lineNum">     169 </span>            :       }
+<span class="lineNum">     170 </span>            :     }
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            :   }
+<span class="lineNum">     173 </span>            :   fix_fx();
+<span class="lineNum">     174 </span>            :   return 0; // OK
+<span class="lineNum">     175 </span>            : }
+<span class="lineNum">     176 </span>            : 
+<a name="177"><span class="lineNum">     177 </span>            : /// This is just a diagnostic helper function, not needed for</a>
+<span class="lineNum">     178 </span>            : /// population dynamics.
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 : void NewWeb::get_diet(int k /*predator*/,sequence&lt; double &gt; &amp; diet){</span>
+<span class="lineNum">     180 </span>            :   // This code closely follows correspondig code in compute_flows
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :   std::vector&lt; double &gt; availability(s.size());</span>
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :   std::vector&lt; int &gt; available_prey(s.size());</span>
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :   int n_prey=0;</span>
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :   for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :     diet[i]=0;</span>
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :     if(precomputed[k].c[i]&gt;0){</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :       availability[i]=biomass_B(i)*precomputed[k].c[i];</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :       available_prey[n_prey]=i;</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :       n_prey++;</span>
+<span class="lineNum">     190 </span>            :     }
+<span class="lineNum">     191 </span>            :   }
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :   for(int ii=n_prey;ii--&gt;0;){</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :     int i=available_prey[ii];</span>
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :     double sa_sum=0;</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :     for(int jj=n_prey;jj--&gt;0;){</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :       int j=available_prey[jj];</span>
+<span class="lineNum">     197 </span>            :       sa_sum+=
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :         s(i).switching_similarity_to(s(j),s(k).prey_similarity_width())*</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :         availability[j];</span>
+<span class="lineNum">     200 </span>            :     }
+<span class="lineNum">     201 </span>            :     //    sa_sum*=  // What the hell was this line good for?
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :     diet[i]=availability[i]*sa_sum;</span>
+<span class="lineNum">     203 </span>            :   }
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :   diet/=sum(diet);</span>
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :   return;</span>
+<span class="lineNum">     206 </span>            : }  
+<a name="207"><span class="lineNum">     207 </span>            : </a>
+<span class="lineNum">     208 </span>            : 
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 : void NewWeb::fix_fx(){</span>
+<span class="lineNum">     210 </span><span class="lineCov">        720 :   for(int k=s.size();k--&gt;s.n_animals;){</span>
+<span class="lineNum">     211 </span><span class="lineCov">    8993291 :     for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     212 </span><span class="lineCov">   17896252 :       fx(i,k)=0;</span>
+<span class="lineNum">     213 </span>            :     }
+<span class="lineNum">     214 </span>            :   }
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            : //#define NAN_DIAGNOSTIC //comment this out to hunt nan and inf
+<span class="lineNum">     218 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     219 </span>            : static void nantest(ODE_vector &amp; dt){
+<span class="lineNum">     220 </span>            :   for(int i=dt.size();i--&gt;0;){
+<span class="lineNum">     221 </span>            :     if(dt[i]==dt[i]+1){
+<span class="lineNum">     222 </span>            :       WARNING(dt);
+<span class="lineNum">     223 </span>            :       abort();
+<span class="lineNum">     224 </span>            :     }
+<span class="lineNum">     225 </span>            :   }
+<span class="lineNum">     226 </span>            : }
+<span class="lineNum">     227 </span>            : #endif
+<span class="lineNum">     228 </span>            : 
+<a name="229"><span class="lineNum">     229 </span>            : </a>
+<span class="lineNum">     230 </span>            : /// helper thread to compute dynamics()
+<span class="lineNum">     231 </span><span class="lineCov">      91273 : void NewWeb::do_dynamics(int offset,</span>
+<span class="lineNum">     232 </span>            :                          ODE_vector const &amp; state, 
+<span class="lineNum">     233 </span>            :                          ODE_vector &amp; time_derivative){
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span><span class="lineCov">      91273 :   const int num_threads=do_dynamics_manager.get_num_threads();</span>
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            :   // Maximum common_factor computed in this thread.
+<span class="lineNum">     238 </span><span class="lineCov">      91273 :   double common_factor_thread_max=0;</span>
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     241 </span>            :   if(time_derivative.size()==0){
+<span class="lineNum">     242 </span>            :     abort();
+<span class="lineNum">     243 </span>            :   }
+<span class="lineNum">     244 </span>            :   for(int i=time_derivative.size();i--&gt;0;){
+<span class="lineNum">     245 </span>            :     time_derivative[i]=0;
+<span class="lineNum">     246 </span>            :   }
+<span class="lineNum">     247 </span>            :   nantest(time_derivative);
+<span class="lineNum">     248 </span>            : #endif
+<span class="lineNum">     249 </span>            :   
+<span class="lineNum">     250 </span>            :   // animal population growth:
+<span class="lineNum">     251 </span><span class="lineCov">      91273 :   if(do_switching){</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :     for(int k=offset;k&lt;s.n_animals;k+=num_threads){</span>
+<span class="lineNum">     253 </span>            :       // This is an efficint implementation of the functional response
+<span class="lineNum">     254 </span>            :       // (and the resulting consumer dynamics) described in the draft
+<span class="lineNum">     255 </span>            :       // vanLeeuwen2008.pdf
+<span class="lineNum">     256 </span>            :       const double sand=
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :         precomputed[k].csc_eating.sandwich_product(biomass_B,biomass_B);</span>
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :       const double halfsat=precomputed[k].c.dot(biomass_B);</span>
+<span class="lineNum">     259 </span>            :       const double fact0=
+<span class="lineNum">     260 </span>            :         (halfsat&gt;0
+<span class="lineNum">     261 </span>            :          ?
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :          1/(halfsat+s(k).handling_time_T()*s(k).attack_rate_a()*sand)</span>
+<span class="lineNum">     263 </span>            :          :
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :          0 );</span>
+<span class="lineNum">     265 </span>            :       
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :       double cf=biomass_B[k]*s(k).attack_rate_a()*fact0;</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :       common_factor[k]=cf;</span>
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :       common_factor_thread_max=std::max(common_factor_thread_max,cf);</span>
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :       time_derivative[k]=</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :         s(k).conversion_efficiency_eps()*s(k).attack_rate_a()*sand*fact0;</span>
+<span class="lineNum">     272 </span>            :       
+<span class="lineNum">     273 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     274 </span>            :       if(time_derivative[k]==time_derivative[k]+1){
+<span class="lineNum">     275 </span>            :         time_derivative[k];
+<span class="lineNum">     276 </span>            :         REPORT(sand);
+<span class="lineNum">     277 </span>            :         REPORT(halfsat);
+<span class="lineNum">     278 </span>            :         REPORT(fact0);
+<span class="lineNum">     279 </span>            :         REPORT(biomass_B[k]);
+<span class="lineNum">     280 </span>            :         FATAL_ERROR(&quot;nan results&quot;);
+<span class="lineNum">     281 </span>            :       }
+<span class="lineNum">     282 </span>            : #endif
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 :       time_derivative[k]-=s(k).turnover_rate_r();</span>
+<span class="lineNum">     285 </span>            :         
+<span class="lineNum">     286 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     287 </span>            :       if(time_derivative[k]==time_derivative[k]+1){
+<span class="lineNum">     288 </span>            :         time_derivative[k];
+<span class="lineNum">     289 </span>            :         FATAL_ERROR(&quot;nan results&quot;);
+<span class="lineNum">     290 </span>            :       }
+<span class="lineNum">     291 </span>            : #endif
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            :       // Compute diagnostics if requested:
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :       if(compute_diagnostics){</span>
+<span class="lineNum">     295 </span>            :         const double u=
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :           s(k).handling_time_T()*s(k).attack_rate_a()*sand/halfsat;</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :         s(k).the_saturation_strength=u/(1+u);</span>
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :         s(k).the_GP=</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :           time_derivative[k]*biomass_B(k);</span>
+<span class="lineNum">     301 </span>            :       }
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            :     }
+<span class="lineNum">     304 </span>            :   }else{ // no switching
+<span class="lineNum">     305 </span><span class="lineCov">   13063247 :     for(int k=offset;k&lt;s.n_animals;k+=num_threads){</span>
+<span class="lineNum">     306 </span><span class="lineCov">    6485987 :       const double halfsat=1;</span>
+<span class="lineNum">     307 </span>            :       const double total_availability=
+<span class="lineNum">     308 </span><span class="lineCov">   19457961 :         precomputed[k].c.dot(biomass_B);</span>
+<span class="lineNum">     309 </span>            :       const double fact0=
+<span class="lineNum">     310 </span><span class="lineCov">   25943948 :         1/(halfsat+s(k).handling_time_T()*s(k).attack_rate_a()</span>
+<span class="lineNum">     311 </span><span class="lineCov">   12971974 :            *total_availability);</span>
+<span class="lineNum">     312 </span>            :       
+<span class="lineNum">     313 </span><span class="lineCov">   19457961 :       double cf=biomass_B[k]*s(k).attack_rate_a()*fact0;</span>
+<span class="lineNum">     314 </span><span class="lineCov">   12971974 :       common_factor[k]=cf;</span>
+<span class="lineNum">     315 </span><span class="lineCov">    6485987 :       common_factor_thread_max=std::max(common_factor_thread_max,cf);</span>
+<span class="lineNum">     316 </span>            :       
+<span class="lineNum">     317 </span><span class="lineCov">   12971974 :       time_derivative[k]=</span>
+<span class="lineNum">     318 </span><span class="lineCov">   19457961 :         s(k).conversion_efficiency_eps()*s(k).attack_rate_a()</span>
+<span class="lineNum">     319 </span><span class="lineCov">    6485987 :         *total_availability*fact0;</span>
+<span class="lineNum">     320 </span>            :       
+<span class="lineNum">     321 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     322 </span>            :       if(time_derivative[k]==time_derivative[k]+1){
+<span class="lineNum">     323 </span>            :         time_derivative[k];
+<span class="lineNum">     324 </span>            :         REPORT(sand);
+<span class="lineNum">     325 </span>            :         REPORT(halfsat);
+<span class="lineNum">     326 </span>            :         REPORT(fact0);
+<span class="lineNum">     327 </span>            :         REPORT(biomass_B[k]);
+<span class="lineNum">     328 </span>            :         FATAL_ERROR(&quot;nan results&quot;);
+<span class="lineNum">     329 </span>            :       }
+<span class="lineNum">     330 </span>            : #endif
+<span class="lineNum">     331 </span>            :       
+<span class="lineNum">     332 </span>            :       // Compute diagnostics if requested:
+<span class="lineNum">     333 </span><span class="lineCov">    6485987 :       if(compute_diagnostics){</span>
+<span class="lineNum">     334 </span>            :         const double u=
+<span class="lineNum">     335 </span><span class="lineCov">   19457961 :           s(k).handling_time_T()*s(k).attack_rate_a()*total_availability/</span>
+<span class="lineNum">     336 </span><span class="lineCov">    6485987 :           halfsat;</span>
+<span class="lineNum">     337 </span><span class="lineCov">   12971974 :         s(k).the_saturation_strength=u/(1+u);</span>
+<span class="lineNum">     338 </span><span class="lineCov">   19457961 :         s(k).the_GP=time_derivative[k]*biomass_B[k];</span>
+<span class="lineNum">     339 </span>            :       }
+<span class="lineNum">     340 </span>            : 
+<span class="lineNum">     341 </span><span class="lineCov">   19457961 :       time_derivative[k]-=s(k).turnover_rate_r();</span>
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     344 </span>            :       if(time_derivative[k]==time_derivative[k]+1){
+<span class="lineNum">     345 </span>            :         time_derivative[k];
+<span class="lineNum">     346 </span>            :         FATAL_ERROR(&quot;nan results&quot;);
+<span class="lineNum">     347 </span>            :       }
+<span class="lineNum">     348 </span>            : #endif
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            :     }
+<span class="lineNum">     351 </span>            :   }
+<span class="lineNum">     352 </span>            : 
+<span class="lineNum">     353 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     354 </span>            :   nantest(time_derivative);
+<span class="lineNum">     355 </span>            : #endif
+<span class="lineNum">     356 </span>            : 
+<span class="lineNum">     357 </span>            :   // Threads with odd offset write their max common_factor here
+<span class="lineNum">     358 </span>            :   // already to reduce delays in computation of overall max later.
+<span class="lineNum">     359 </span><span class="lineCov">      91273 :   if((offset &amp; 1)){</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :     do_dynamics_manager.common_factor_max[offset]=</span>
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :       common_factor_thread_max;</span>
+<span class="lineNum">     362 </span>            :   }
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            :   
+<span class="lineNum">     365 </span>            :   // Plant population growth:
+<span class="lineNum">     366 </span><span class="lineCov">   23127984 :   for(int i=s.n_animals+offset;i&lt;s.size();i+=num_threads){</span>
+<span class="lineNum">     367 </span>            :     // See Rossberg et al. (2008) Ecology 89:567–580 for the underlying ideas.
+<span class="lineNum">     368 </span>            :     
+<span class="lineNum">     369 </span>            :     // saturation effects:
+<span class="lineNum">     370 </span><span class="lineCov">   34418157 :     double shadowing_sum=precomputed[i].c.dot(biomass_B);</span>
+<span class="lineNum">     371 </span>            :     double light;
+<span class="lineNum">     372 </span><span class="lineCov">   11472719 :     if(plant_physiology_version!=3){</span>
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :       light=myEXP(-shadowing_sum);</span>
+<span class="lineNum">     374 </span>            :     }else{
+<span class="lineNum">     375 </span><span class="lineCov">   11472719 :       light=1-shadowing_sum;</span>
+<span class="lineNum">     376 </span>            :     }
+<span class="lineNum">     377 </span>            :     
+<span class="lineNum">     378 </span><span class="lineCov">   11472719 :     if(compute_diagnostics){</span>
+<span class="lineNum">     379 </span>            :       // !!!  These parts need re-implementation:
+<span class="lineNum">     380 </span>            :       //        s[i].the_top_down_strength=being_eaten/
+<span class="lineNum">     381 </span>            :       //          (s(i).the_plant_growth_rate_sigma*s(i).the_loss_rate_over_max_production_rate_r
+<span class="lineNum">     382 </span>            :       //           *biomass_B(i) );
+<span class="lineNum">     383 </span>            :       //s[i].the_competition_strength=
+<span class="lineNum">     384 </span>            :       //         1-biomass_B(i)*c(i,i)/light_losses;
+<span class="lineNum">     385 </span><span class="lineCov">   11472719 :       if(plant_physiology_version==3){</span>
+<span class="lineNum">     386 </span><span class="lineCov">   22945438 :         s[i].the_saturation_strength=light;</span>
+<span class="lineNum">     387 </span><span class="lineCov">   22945438 :         s[i].the_light_strength=light;</span>
+<span class="lineNum">     388 </span><span class="lineCov">   57363595 :         s[i].the_GP=s(i).plant_growth_rate_sigma()*light*biomass_B(i);</span>
+<span class="lineNum">     389 </span><span class="lineCov">   22945438 :         s[i].the_competition_strength=</span>
+<span class="lineNum">     390 </span><span class="lineCov">   57363595 :           shadowing_sum-precomputed[i].c[i]*biomass_B[i];</span>
+<span class="lineNum">     391 </span>            :       }else{
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :         s[i].the_saturation_strength=light;</span>
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :         s[i].the_light_strength=light;</span>
+<span class="lineNum">     394 </span><span class="lineNoCov">          0 :         s[i].the_GP=</span>
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :           s(i).plant_growth_rate_sigma()*</span>
+<span class="lineNum">     396 </span><span class="lineNoCov">          0 :           (1-s(i).get_loss_rate_over_max_production_rate_r())*</span>
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :           biomass_B(i);</span>
+<span class="lineNum">     398 </span>            :       }
+<span class="lineNum">     399 </span>            :     }
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span><span class="lineCov">   11472719 :     if(plant_physiology_version==3){</span>
+<span class="lineNum">     402 </span><span class="lineCov">   45890876 :       time_derivative[i]=s(i).plant_growth_rate_sigma()*(light+s(i).env_effect());</span>
+<span class="lineNum">     403 </span>            :     }else{
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :       time_derivative[i]=s(i).plant_growth_rate_sigma()*</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :         (light-s(i).get_loss_rate_over_max_production_rate_r());</span>
+<span class="lineNum">     406 </span>            :     }
+<span class="lineNum">     407 </span>            :     
+<span class="lineNum">     408 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     409 </span>            :     if(time_derivative[i]==time_derivative[i]+1){
+<span class="lineNum">     410 </span>            :       time_derivative[i];
+<span class="lineNum">     411 </span>            :       REPORT(light);
+<span class="lineNum">     412 </span>            :       REPORT(biomass_B[i]);
+<span class="lineNum">     413 </span>            :       FATAL_ERROR(&quot;nan results&quot;);
+<span class="lineNum">     414 </span>            :     }
+<span class="lineNum">     415 </span>            : #endif
+<span class="lineNum">     416 </span>            : 
+<span class="lineNum">     417 </span>            :   }
+<span class="lineNum">     418 </span>            :   
+<span class="lineNum">     419 </span>            :   // Parallel computation of maximum of common_factor.  Implicitly
+<span class="lineNum">     420 </span>            :   // this is also a barrier for all threads.
+<span class="lineNum">     421 </span><span class="lineCov">      91273 :   int other_bit=1;</span>
+<span class="lineNum">     422 </span>            :   // Threads with index divisible by 2^n compute max of the
+<span class="lineNum">     423 </span>            :   // common_factor entries it computed itself, and those of 2^n-1
+<span class="lineNum">     424 </span>            :   // following thread indices.  This leads to a hierarchy of thread
+<span class="lineNum">     425 </span>            :   // dependencies, which is implemented by the shifting bit mask
+<span class="lineNum">     426 </span>            :   // other_bit.
+<span class="lineNum">     427 </span><span class="lineCov">      91273 :   if((offset &amp; 1)==0){</span>
+<span class="lineNum">     428 </span>            :     // threads with odd offset have written their max already
+<span class="lineNum">     429 </span>            :     do{
+<span class="lineNum">     430 </span><span class="lineCov">      91273 :       if( (offset | other_bit)&gt;=num_threads )</span>
+<span class="lineNum">     431 </span>            :         break;
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :       while(do_dynamics_manager.max_not_set(offset | other_bit)){</span>
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :         boost::this_thread::yield();</span>
+<span class="lineNum">     434 </span>            :       }
+<span class="lineNum">     435 </span>            :       common_factor_thread_max=
+<span class="lineNum">     436 </span>            :         std::max(common_factor_thread_max,
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :                  do_dynamics_manager.common_factor_max[offset | other_bit] );</span>
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :       other_bit &lt;&lt;= 1;</span>
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :     }while((offset &amp; other_bit)==0);</span>
+<span class="lineNum">     440 </span>            :   }
+<span class="lineNum">     441 </span><span class="lineCov">      91273 :   if(offset){</span>
+<span class="lineNum">     442 </span>            :     // Save the max this thread is responsible for:
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :     do_dynamics_manager.common_factor_max[offset]=</span>
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :       common_factor_thread_max;</span>
+<span class="lineNum">     445 </span>            :     // Wait for overall max to be finished:
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :     do_dynamics_manager.barrier-&gt;wait();</span>
+<span class="lineNum">     447 </span>            :   }else{
+<span class="lineNum">     448 </span><span class="lineCov">     182546 :     common_factor.set_max(common_factor_thread_max);</span>
+<span class="lineNum">     449 </span>            :     // Overall max is finished:
+<span class="lineNum">     450 </span><span class="lineCov">      91273 :     do_dynamics_manager.barrier-&gt;wait();</span>
+<span class="lineNum">     451 </span>            :   }
+<span class="lineNum">     452 </span>            :   //... finished computation of maximum common_factor.
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            : 
+<span class="lineNum">     455 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     456 </span>            :   nantest(time_derivative);
+<span class="lineNum">     457 </span>            : #endif
+<span class="lineNum">     458 </span>            :   
+<span class="lineNum">     459 </span>            :   // Predation/consumption mortality for all species:
+<span class="lineNum">     460 </span><span class="lineCov">   54058664 :   for(int i=offset;i&lt;s.size();i+=num_threads){</span>
+<span class="lineNum">     461 </span>            :     double being_eaten;
+<span class="lineNum">     462 </span><span class="lineCov">   17958706 :     if(do_switching){</span>
+<span class="lineNum">     463 </span>            :       being_eaten=
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :         precomputed[i].csc_being_eaten.</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :         sandwich_product(biomass_B,common_factor);</span>
+<span class="lineNum">     466 </span>            :     }else{
+<span class="lineNum">     467 </span>            :       being_eaten=
+<span class="lineNum">     468 </span><span class="lineCov">   35917412 :         precomputed[i].cT.dot(common_factor);</span>
+<span class="lineNum">     469 </span>            :     }      
+<span class="lineNum">     470 </span>            :     
+<span class="lineNum">     471 </span><span class="lineCov">   35917412 :     time_derivative[i]-=being_eaten;</span>
+<span class="lineNum">     472 </span>            :     
+<span class="lineNum">     473 </span><span class="lineCov">   17958706 :     if(compute_diagnostics){</span>
+<span class="lineNum">     474 </span><span class="lineCov">   17958706 :       if(is_plant(i)){</span>
+<span class="lineNum">     475 </span><span class="lineCov">   11472719 :         if(plant_physiology_version==3){</span>
+<span class="lineNum">     476 </span><span class="lineCov">   34418157 :           s[i].the_top_down_strength=being_eaten/</span>
+<span class="lineNum">     477 </span><span class="lineCov">   34418157 :             s(i).plant_growth_rate_sigma();</span>
+<span class="lineNum">     478 </span>            :         }else{
+<span class="lineNum">     479 </span><span class="lineNoCov">          0 :           s[i].the_top_down_strength=being_eaten/</span>
+<span class="lineNum">     480 </span><span class="lineNoCov">          0 :             (s(i).plant_growth_rate_sigma()*</span>
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :              (1-s(i).get_loss_rate_over_max_production_rate_r()));</span>
+<span class="lineNum">     482 </span>            :         }
+<span class="lineNum">     483 </span>            :       }else{
+<span class="lineNum">     484 </span><span class="lineCov">   19457961 :         s[i].the_top_down_strength=being_eaten/</span>
+<span class="lineNum">     485 </span><span class="lineCov">   19457961 :           (s[i].turnover_rate_r());</span>
+<span class="lineNum">     486 </span>            :       }
+<span class="lineNum">     487 </span>            :     }
+<span class="lineNum">     488 </span>            :     //     REPORT(precomputed[i].csc_being_eaten);
+<span class="lineNum">     489 </span>            :     //     REPORT(log(s[i].the_mean_bodymass_M/eval(&quot;1*kilogram&quot;))/log(10));
+<span class="lineNum">     490 </span>            :     //     REPORT(being_eaten*eval(&quot;1*year*meter^2&quot;)/area_per_compartment);
+<span class="lineNum">     491 </span>            : 
+<span class="lineNum">     492 </span>            :     /// PATCH TO AVOID EXTINCTIONS (don't use -z option, works great!):
+<span class="lineNum">     493 </span>            :     //time_derivative[i]+=100*s(i).turnover_rate_r()*s(i).get_threshold_biomass_B()/biomass_B(i);
+<span class="lineNum">     494 </span>            :   }
+<span class="lineNum">     495 </span>            : #ifdef NAN_DIAGNOSTIC
+<span class="lineNum">     496 </span>            :   nantest(time_derivative);
+<span class="lineNum">     497 </span>            : #endif
+<span class="lineNum">     498 </span><span class="lineCov">      91273 : }</span>
+<span class="lineNum">     499 </span>            : 
+<a name="500"><span class="lineNum">     500 </span>            : </a>
+<span class="lineNum">     501 </span>            : /// Main function for spawned threads:
+<span class="lineNum">     502 </span><span class="lineNoCov">          0 : void NewWeb::do_dynamics_manager_t::task_t::operator()(){</span>
+<span class="lineNum">     503 </span>            : 
+<span class="lineNum">     504 </span>            :   NewWeb::do_dynamics_manager_t &amp; mgr=
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :     dispatcher-&gt;do_dynamics_manager;</span>
+<span class="lineNum">     506 </span>            : 
+<span class="lineNum">     507 </span>            : 
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :   while(true){</span>
+<span class="lineNum">     509 </span>            : 
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :     {boost::mutex::scoped_lock lock(mgr.mutex);</span>
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :       mgr.common_factor_max[index]=do_dynamics_manager_t::unset;  </span>
+<span class="lineNum">     512 </span>            : 
+<span class="lineNum">     513 </span><span class="lineNoCov">          0 :       mgr.threads_ready++;</span>
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :       mgr.condition.wait(mgr.mutex);</span>
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :       mgr.threads_ready--;</span>
+<span class="lineNum">     516 </span>            :     }
+<span class="lineNum">     517 </span>            :     
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :     if(mgr.stop_now){</span>
+<span class="lineNum">     519 </span><span class="lineNoCov">          0 :       return;</span>
+<span class="lineNum">     520 </span>            :     }else{
+<span class="lineNum">     521 </span><span class="lineNoCov">          0 :       dispatcher-&gt;do_dynamics(index,</span>
+<span class="lineNum">     522 </span><span class="lineNoCov">          0 :                               *mgr.state,</span>
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :                               *mgr.time_derivative);</span>
+<span class="lineNum">     524 </span>            :     }
+<span class="lineNum">     525 </span>            :   }
+<a name="526"><span class="lineNum">     526 </span>            : }  </a>
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span><span class="lineCov">         90 : NewWeb::do_dynamics_manager_t::do_dynamics_manager_t():</span>
+<span class="lineNum">     529 </span><span class="lineCov">        360 :   _num_threads(1),threads_ready(0),common_factor_max(1),barrier(new boost::barrier(1))</span>
+<span class="lineNum">     530 </span>            : {
+<span class="lineNum">     531 </span><span class="lineCov">         90 : }</span>
+<a name="532"><span class="lineNum">     532 </span>            : </a>
+<span class="lineNum">     533 </span>            : /// Don't copy do_dynamics_manager_t when copying NewWeb:
+<span class="lineNum">     534 </span><span class="lineNoCov">          0 : NewWeb::do_dynamics_manager_t::</span>
+<span class="lineNum">     535 </span>            : do_dynamics_manager_t(const do_dynamics_manager_t &amp; other):
+<span class="lineNum">     536 </span><span class="lineNoCov">          0 :   _num_threads(1),threads_ready(0),common_factor_max(1),barrier(new boost::barrier(1)) {</span>
+<span class="lineNum">     537 </span><span class="lineNoCov">          0 : }</span>
+<a name="538"><span class="lineNum">     538 </span>            : </a>
+<span class="lineNum">     539 </span>            : /// Don't assign to do_dynamics_manager_t when assigning to NewWeb:
+<span class="lineNum">     540 </span><span class="lineNoCov">          0 : NewWeb::do_dynamics_manager_t&amp; NewWeb::do_dynamics_manager_t::</span>
+<span class="lineNum">     541 </span>            : operator=(const NewWeb::do_dynamics_manager_t&amp; other){
+<a name="542"><span class="lineNum">     542 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     543 </span>            :   
+<span class="lineNum">     544 </span><span class="lineCov">      91273 : void NewWeb::do_dynamics_manager_t::</span>
+<span class="lineNum">     545 </span>            : initialize_threads_maybe(NewWeb * base_web){
+<span class="lineNum">     546 </span><span class="lineCov">      91273 :   const int S=base_web-&gt;number_of_species();</span>
+<span class="lineNum">     547 </span>            :   const int threading_threshold=
+<span class="lineNum">     548 </span><span class="lineCov">      91273 :     (do_switching ? 250 : 500);</span>
+<span class="lineNum">     549 </span><span class="lineCov">      91273 :   if(S &lt; threading_threshold){</span>
+<span class="lineNum">     550 </span><span class="lineCov">      91273 :     if(_num_threads&gt;1){</span>
+<span class="lineNum">     551 </span><span class="lineNoCov">          0 :       WARNING(&quot;Stopping multithreading.&quot;);</span>
+<span class="lineNum">     552 </span><span class="lineNoCov">          0 :       stop_threads();</span>
+<span class="lineNum">     553 </span>            :     }
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :   }else if(S &gt; threading_threshold){</span>
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :     if(_num_threads &lt;= 1 &amp;&amp; max_num_threads &gt; 1){</span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :       WARNING(&quot;Starting multithreading with &quot; </span>
+<span class="lineNum">     557 </span><span class="lineNoCov">          0 :               &lt;&lt; max_num_threads &lt;&lt; &quot; threads.&quot;);</span>
+<span class="lineNum">     558 </span><span class="lineNoCov">          0 :       start_threads(max_num_threads,base_web);</span>
+<span class="lineNum">     559 </span>            :     }
+<span class="lineNum">     560 </span>            :   }
+<a name="561"><span class="lineNum">     561 </span><span class="lineCov">      91273 : }</span></a>
+<span class="lineNum">     562 </span>            : 
+<span class="lineNum">     563 </span><span class="lineNoCov">          0 : void NewWeb::do_dynamics_manager_t::start_threads(int n,NewWeb * base_web){</span>
+<span class="lineNum">     564 </span><span class="lineNoCov">          0 :   if(n!=_num_threads){</span>
+<span class="lineNum">     565 </span><span class="lineNoCov">          0 :     stop_threads();</span>
+<span class="lineNum">     566 </span><span class="lineNoCov">          0 :     _num_threads=n;</span>
+<span class="lineNum">     567 </span><span class="lineNoCov">          0 :     task.resize(_num_threads-1);</span>
+<span class="lineNum">     568 </span><span class="lineNoCov">          0 :     delete barrier;</span>
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 :     barrier=new boost::barrier(_num_threads);</span>
+<span class="lineNum">     570 </span><span class="lineNoCov">          0 :     common_factor_max.resize(_num_threads);</span>
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :     stop_now=false;</span>
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :     for(int i=_num_threads-1;i--&gt;0;){</span>
+<span class="lineNum">     573 </span><span class="lineNoCov">          0 :       task[i].dispatcher=base_web;</span>
+<span class="lineNum">     574 </span><span class="lineNoCov">          0 :       task[i].index=i+1;</span>
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 :       threads.create_thread(task[i]);</span>
+<span class="lineNum">     576 </span>            :     }
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :     while(threads_ready&lt;_num_threads-1){</span>
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :       boost::this_thread::yield();</span>
+<span class="lineNum">     579 </span>            :     }
+<span class="lineNum">     580 </span>            :   }
+<a name="581"><span class="lineNum">     581 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     582 </span>            : 
+<span class="lineNum">     583 </span><span class="lineCov">         90 : void NewWeb::do_dynamics_manager_t::stop_threads(){</span>
+<span class="lineNum">     584 </span><span class="lineCov">         90 :   if(_num_threads&gt;1){</span>
+<span class="lineNum">     585 </span><span class="lineNoCov">          0 :     stop_now=true;</span>
+<span class="lineNum">     586 </span>            : 
+<span class="lineNum">     587 </span><span class="lineNoCov">          0 :     {boost::mutex::scoped_lock lock(mutex);</span>
+<span class="lineNum">     588 </span><span class="lineNoCov">          0 :       condition.notify_all();</span>
+<span class="lineNum">     589 </span>            :     }
+<span class="lineNum">     590 </span><span class="lineNoCov">          0 :     threads.join_all();</span>
+<span class="lineNum">     591 </span><span class="lineNoCov">          0 :     delete barrier;</span>
+<span class="lineNum">     592 </span><span class="lineNoCov">          0 :     barrier=new boost::barrier(1);</span>
+<span class="lineNum">     593 </span><span class="lineNoCov">          0 :     _num_threads=1;</span>
+<span class="lineNum">     594 </span><span class="lineNoCov">          0 :     common_factor_max.resize(_num_threads);</span>
+<span class="lineNum">     595 </span><span class="lineNoCov">          0 :     task.resize(0);</span>
+<span class="lineNum">     596 </span>            :   }
+<a name="597"><span class="lineNum">     597 </span><span class="lineCov">         90 : }</span></a>
+<span class="lineNum">     598 </span>            : 
+<span class="lineNum">     599 </span><span class="lineCov">        360 : NewWeb::do_dynamics_manager_t::~do_dynamics_manager_t(){</span>
+<span class="lineNum">     600 </span><span class="lineCov">         90 :   stop_threads();</span>
+<span class="lineNum">     601 </span><span class="lineCov">         90 :   delete barrier;</span>
+<span class="lineNum">     602 </span><span class="lineCov">         90 : }</span>
+<a name="603"><span class="lineNum">     603 </span>            : </a>
+<span class="lineNum">     604 </span>            : 
+<span class="lineNum">     605 </span><span class="lineNoCov">          0 : int NewWeb::</span>
+<span class="lineNum">     606 </span>            : dynamics_for_side_effects(ODE_vector const &amp; state, 
+<span class="lineNum">     607 </span>            :                           ODE_vector &amp; time_derivative){
+<span class="lineNum">     608 </span><span class="lineCov">        405 :   int ups=use_packed_simulation;</span>
+<span class="lineNum">     609 </span><span class="lineCov">        405 :   packed_simulation * da=dynamics_accelerator;</span>
+<span class="lineNum">     610 </span><span class="lineCov">        405 :   use_packed_simulation=0;</span>
+<span class="lineNum">     611 </span><span class="lineCov">        405 :   dynamics_accelerator=0;</span>
+<span class="lineNum">     612 </span>            :   int result=
+<span class="lineNum">     613 </span><span class="lineCov">        405 :    dynamics(state,time_derivative);</span>
+<span class="lineNum">     614 </span><span class="lineCov">        405 :   use_packed_simulation=ups;</span>
+<span class="lineNum">     615 </span><span class="lineCov">        405 :   dynamics_accelerator=da;</span>
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :   return result;</span>
+<a name="617"><span class="lineNum">     617 </span>            : }</a>
+<span class="lineNum">     618 </span>            : 
+<span class="lineNum">     619 </span><span class="lineCov">      91273 : int NewWeb::dynamics(ODE_vector const &amp; state, </span>
+<span class="lineNum">     620 </span>            :                      ODE_vector &amp; time_derivative)
+<span class="lineNum">     621 </span>            : 
+<span class="lineNum">     622 </span>            : {  
+<span class="lineNum">     623 </span><span class="lineCov">      91273 :   if(dynamics_accelerator){</span>
+<span class="lineNum">     624 </span>            :     return dynamics_accelerator-&gt;
+<span class="lineNum">     625 </span><span class="lineNoCov">          0 :       dynamics(state,time_derivative);</span>
+<span class="lineNum">     626 </span>            :   }
+<span class="lineNum">     627 </span>            : 
+<span class="lineNum">     628 </span><span class="lineCov">      91273 :   if(state.size()==0) return 1;</span>
+<span class="lineNum">     629 </span>            : 
+<span class="lineNum">     630 </span><span class="lineCov">      91273 :   do_dynamics_manager_t &amp; mgr = do_dynamics_manager;</span>
+<span class="lineNum">     631 </span>            : 
+<span class="lineNum">     632 </span><span class="lineCov">      91273 :   mgr.initialize_threads_maybe(this);</span>
+<span class="lineNum">     633 </span>            : 
+<span class="lineNum">     634 </span><span class="lineCov">     273819 :   biomass_B.resize(s.size());</span>
+<span class="lineNum">     635 </span><span class="lineCov">     182546 :   common_factor.resize(s.n_animals+1);</span>
+<span class="lineNum">     636 </span>            :   
+<span class="lineNum">     637 </span>            :   // Check if state in reasonable range:
+<span class="lineNum">     638 </span><span class="lineCov">      91273 :   bool failure=false;</span>
+<span class="lineNum">     639 </span><span class="lineCov">   18141252 :   for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     640 </span><span class="lineCov">   53876118 :     if(state[i] &gt; log_DBL_MAX/2 /*the '2' here is the assumed</span>
+<span class="lineNum">     641 </span><span class="lineCov">   35917412 :                                   switching exponent!*/  ||</span>
+<span class="lineNum">     642 </span><span class="lineCov">   17958706 :        state[i] &lt; log_DBL_MIN/2){</span>
+<span class="lineNum">     643 </span><span class="lineNoCov">          0 :       WARNING(&quot;state[&quot; &lt;&lt; i &lt;&lt; &quot;] = &quot; &lt;&lt; state[i]);</span>
+<span class="lineNum">     644 </span><span class="lineNoCov">          0 :       REPORT(assigned_column[i]);</span>
+<span class="lineNum">     645 </span><span class="lineNoCov">          0 :       REPORT(s(i).turnover_rate_r());</span>
+<span class="lineNum">     646 </span><span class="lineNoCov">          0 :       REPORT(s(i).get_trade_off_multiplier());</span>
+<span class="lineNum">     647 </span><span class="lineNoCov">          0 :       REPORT(s(i).plant_growth_rate_sigma());</span>
+<span class="lineNum">     648 </span><span class="lineNoCov">          0 :       failure=true;</span>
+<span class="lineNum">     649 </span><span class="lineNoCov">          0 :       break;</span>
+<span class="lineNum">     650 </span>            :     }else{
+<span class="lineNum">     651 </span>            :       // In principle, these exps could also be computed in parallel,
+<span class="lineNum">     652 </span>            :       // but the cost of meeting at a barrier afterwards is too
+<span class="lineNum">     653 </span>            :       // high (and it is linear in problem size!).
+<span class="lineNum">     654 </span><span class="lineCov">   35917412 :       biomass_B[i]=myEXP(state[i]);</span>
+<span class="lineNum">     655 </span>            :     }
+<span class="lineNum">     656 </span>            :   }
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span><span class="lineCov">      91273 :   biomass_B.fix_max();</span>
+<span class="lineNum">     659 </span>            : 
+<span class="lineNum">     660 </span><span class="lineCov">      91273 :   if(failure){</span>
+<span class="lineNum">     661 </span><span class="lineNoCov">          0 :     newton_failure=1;</span>
+<span class="lineNum">     662 </span><span class="lineNoCov">          0 :     return 1; // recoverable failure calculating dynamics</span>
+<span class="lineNum">     663 </span>            :   }
+<span class="lineNum">     664 </span>            :   
+<span class="lineNum">     665 </span>            :   // Pass data to other threads:
+<span class="lineNum">     666 </span><span class="lineCov">      91273 :   mgr.state=&amp;state;</span>
+<span class="lineNum">     667 </span><span class="lineCov">      91273 :   mgr.time_derivative=&amp;time_derivative;</span>
+<span class="lineNum">     668 </span>            : 
+<span class="lineNum">     669 </span><span class="lineCov">      91273 :   mgr.common_factor_max[0] = do_dynamics_manager_t::unset;</span>
+<span class="lineNum">     670 </span>            : 
+<span class="lineNum">     671 </span>            :   // Run parallel computation:
+<span class="lineNum">     672 </span><span class="lineCov">     273819 :   {boost::mutex::scoped_lock lock(mgr.mutex);</span>
+<span class="lineNum">     673 </span><span class="lineCov">      91273 :     mgr.condition.notify_all();</span>
+<span class="lineNum">     674 </span>            :   }
+<span class="lineNum">     675 </span><span class="lineCov">      91273 :   do_dynamics(0,state,time_derivative);</span>
+<span class="lineNum">     676 </span>            : 
+<span class="lineNum">     677 </span>            :   // Wait until all threads are ready to start the next iteration
+<span class="lineNum">     678 </span>            :   // (this serves also as exit barrier for do_dynamics).  One should
+<span class="lineNum">     679 </span>            :   // try to wait for all threads to become ready before, rather than
+<span class="lineNum">     680 </span>            :   // after doing computations.  But then an extra exit barrier would
+<span class="lineNum">     681 </span>            :   // be needed.
+<span class="lineNum">     682 </span><span class="lineCov">     182546 :   while(mgr.threads_ready&lt;</span>
+<span class="lineNum">     683 </span><span class="lineCov">      91273 :         mgr.get_num_threads()-1){</span>
+<span class="lineNum">     684 </span><span class="lineNoCov">          0 :     boost::this_thread::yield();</span>
+<span class="lineNum">     685 </span>            :   }
+<span class="lineNum">     686 </span>            : 
+<span class="lineNum">     687 </span>            :   return 0; // success calculating dynamics
+<span class="lineNum">     688 </span>            : }
+<span class="lineNum">     689 </span>            : 
+<span class="lineNum">     690 </span>            : // ///////////////////////////////////////////////////////////// 
+<span class="lineNum">     691 </span>            : // 
+<span class="lineNum">     692 </span>            : // The remainder of this file is for fitness computations.  The
+<span class="lineNum">     693 </span>            : // computations here must be adjusted if the computations in
+<span class="lineNum">     694 </span>            : // &quot;do_dynamics(...)&quot; above change.
+<span class="lineNum">     695 </span>            : 
+<a name="696"><span class="lineNum">     696 </span>            : /// Compute the linear growth rate of the species pointed to by sp.</a>
+<span class="lineNum">     697 </span>            : /// This species is not yet included in the species list s.
+<span class="lineNum">     698 </span><span class="lineNoCov">          0 : double NewWeb::fast_linear_fitness(NewSpecies * sp){</span>
+<span class="lineNum">     699 </span>            :   // ATTENTION: 
+<span class="lineNum">     700 </span>            :   // this function assumes common_factor and biomass_B to be set!!
+<span class="lineNum">     701 </span>            : 
+<span class="lineNum">     702 </span>            :   // This should be computationally cheapest for momentary linear
+<span class="lineNum">     703 </span>            :   // growth rate. For time averaging use version with pre-computed
+<span class="lineNum">     704 </span>            :   // coefficients below.
+<span class="lineNum">     705 </span>            :   
+<span class="lineNum">     706 </span><span class="lineNoCov">          0 :   const int S=s.size();</span>
+<span class="lineNum">     707 </span>            :   double time_derivative;
+<span class="lineNum">     708 </span><span class="lineNoCov">          0 :   double matrix_truncation_epsilon=SortedMatrix().truncation_epsilon();</span>
+<span class="lineNum">     709 </span>            :   
+<span class="lineNum">     710 </span><span class="lineNoCov">          0 :   if(sp-&gt;is_a_plant()){</span>
+<span class="lineNum">     711 </span><span class="lineNoCov">          0 :     double shadowing_sum=0;</span>
+<span class="lineNum">     712 </span><span class="lineNoCov">          0 :     for(int i=s.size();i--&gt;s.n_animals;){</span>
+<span class="lineNum">     713 </span>            :       shadowing_sum+=
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :         sp-&gt;plant_hampering_by(s(i))*</span>
+<span class="lineNum">     715 </span><span class="lineNoCov">          0 :         biomass_B[i];</span>
+<span class="lineNum">     716 </span>            :     }
+<span class="lineNum">     717 </span><span class="lineNoCov">          0 :     if(plant_physiology_version==3){</span>
+<span class="lineNum">     718 </span>            :       time_derivative=
+<span class="lineNum">     719 </span><span class="lineNoCov">          0 :         sp-&gt;plant_growth_rate_sigma()*(1-shadowing_sum+sp-&gt;env_effect());</span>
+<span class="lineNum">     720 </span>            :     }else{
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :       const double light=myEXP(-shadowing_sum);</span>
+<span class="lineNum">     722 </span><span class="lineNoCov">          0 :       time_derivative=sp-&gt;plant_growth_rate_sigma()*</span>
+<span class="lineNum">     723 </span><span class="lineNoCov">          0 :         (light - sp-&gt;get_loss_rate_over_max_production_rate_r());</span>
+<span class="lineNum">     724 </span>            :     }
+<span class="lineNum">     725 </span>            :   }else{
+<span class="lineNum">     726 </span>            :     // *sp is animal:
+<span class="lineNum">     727 </span>            :     double functional_response;
+<span class="lineNum">     728 </span><span class="lineNoCov">          0 :     if(do_switching) {</span>
+<span class="lineNum">     729 </span><span class="lineNoCov">          0 :       double Asum=0; // same as &quot;total_availability&quot; below</span>
+<span class="lineNum">     730 </span><span class="lineNoCov">          0 :       double csc_sum=0;</span>
+<span class="lineNum">     731 </span><span class="lineNoCov">          0 :       std::vector&lt; int &gt; prey(s.size()); // list of prey of a predator</span>
+<span class="lineNum">     732 </span><span class="lineNoCov">          0 :       std::vector&lt; double &gt; A(s.size()); // Availability</span>
+<span class="lineNum">     733 </span><span class="lineNoCov">          0 :       int Z=0;</span>
+<span class="lineNum">     734 </span>            :       
+<span class="lineNum">     735 </span><span class="lineNoCov">          0 :       for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     736 </span><span class="lineNoCov">          0 :         double cc=sp-&gt;foraging_strength_c_on(s(i));</span>
+<span class="lineNum">     737 </span><span class="lineNoCov">          0 :         if(cc &gt; matrix_truncation_epsilon){</span>
+<span class="lineNum">     738 </span><span class="lineNoCov">          0 :           double AA=cc*biomass_B[i];</span>
+<span class="lineNum">     739 </span><span class="lineNoCov">          0 :           Asum+=AA;</span>
+<span class="lineNum">     740 </span><span class="lineNoCov">          0 :           A[Z]=AA;</span>
+<span class="lineNum">     741 </span><span class="lineNoCov">          0 :           prey[Z]=i;</span>
+<span class="lineNum">     742 </span><span class="lineNoCov">          0 :           csc_sum+=AA*AA;//contribution from diagonal term</span>
+<span class="lineNum">     743 </span>            :                          //(similarity==1)
+<span class="lineNum">     744 </span><span class="lineNoCov">          0 :           for(int jj=Z;jj--&gt;0;){</span>
+<span class="lineNum">     745 </span>            :             // we make use of the symmetry here!
+<span class="lineNum">     746 </span><span class="lineNoCov">          0 :             int j=prey[jj];</span>
+<span class="lineNum">     747 </span><span class="lineNoCov">          0 :             double contribution=AA*A[jj]*</span>
+<span class="lineNum">     748 </span><span class="lineNoCov">          0 :               s(i).switching_similarity_to(s(j),sp-&gt;prey_similarity_width());</span>
+<span class="lineNum">     749 </span><span class="lineNoCov">          0 :             csc_sum+=2*contribution;// also the transposed element</span>
+<span class="lineNum">     750 </span>            :           }
+<span class="lineNum">     751 </span><span class="lineNoCov">          0 :           Z++;</span>
+<span class="lineNum">     752 </span>            :         }
+<span class="lineNum">     753 </span>            :       }
+<span class="lineNum">     754 </span>            :       
+<span class="lineNum">     755 </span><span class="lineNoCov">          0 :       csc_sum*=sp-&gt;attack_rate_a();</span>
+<span class="lineNum">     756 </span>            :       functional_response=
+<span class="lineNum">     757 </span>            :         csc_sum/
+<span class="lineNum">     758 </span><span class="lineNoCov">          0 :         (Asum+sp-&gt;handling_time_T()*csc_sum);</span>
+<span class="lineNum">     759 </span>            :     }else{ // no switching
+<span class="lineNum">     760 </span><span class="lineNoCov">          0 :       double total_availability=0;</span>
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :       for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     762 </span><span class="lineNoCov">          0 :         double cc=sp-&gt;foraging_strength_c_on(s(i));</span>
+<span class="lineNum">     763 </span><span class="lineNoCov">          0 :         if(cc &gt; matrix_truncation_epsilon){</span>
+<span class="lineNum">     764 </span><span class="lineNoCov">          0 :           total_availability+=cc*biomass_B[i];</span>
+<span class="lineNum">     765 </span>            :         }
+<span class="lineNum">     766 </span>            :       }
+<span class="lineNum">     767 </span>            :       
+<span class="lineNum">     768 </span><span class="lineNoCov">          0 :       total_availability*=sp-&gt;attack_rate_a();</span>
+<span class="lineNum">     769 </span>            :       functional_response=
+<span class="lineNum">     770 </span>            :         total_availability/
+<span class="lineNum">     771 </span><span class="lineNoCov">          0 :         (1+sp-&gt;handling_time_T()*total_availability);</span>
+<span class="lineNum">     772 </span>            :     }
+<span class="lineNum">     773 </span>            :     
+<span class="lineNum">     774 </span>            :     time_derivative=
+<span class="lineNum">     775 </span><span class="lineNoCov">          0 :       sp-&gt;conversion_efficiency_eps()*functional_response-</span>
+<span class="lineNum">     776 </span><span class="lineNoCov">          0 :       sp-&gt;turnover_rate_r();</span>
+<span class="lineNum">     777 </span>            :   }
+<span class="lineNum">     778 </span>            :   
+<span class="lineNum">     779 </span>            :   // finally, the being-eaten term:
+<span class="lineNum">     780 </span><span class="lineNoCov">          0 :   double being_eaten=0;</span>
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :   if(do_switching) {</span>
+<span class="lineNum">     782 </span>            :     // compute pr.csc_being_eaten
+<span class="lineNum">     783 </span><span class="lineNoCov">          0 :     std::vector&lt; double &gt; pressure_on_sp_by(s.n_animals);</span>
+<span class="lineNum">     784 </span><span class="lineNoCov">          0 :     std::vector&lt; int &gt; predator(s.size()); // list of predators of sp</span>
+<span class="lineNum">     785 </span><span class="lineNoCov">          0 :     int Z=0;</span>
+<span class="lineNum">     786 </span>            :     
+<span class="lineNum">     787 </span><span class="lineNoCov">          0 :     for(int j=s.n_animals;j--&gt;0;){</span>
+<span class="lineNum">     788 </span><span class="lineNoCov">          0 :       double cc=s(j).foraging_strength_c_on(*sp);</span>
+<span class="lineNum">     789 </span><span class="lineNoCov">          0 :       if(cc &gt; matrix_truncation_epsilon){</span>
+<span class="lineNum">     790 </span><span class="lineNoCov">          0 :         pressure_on_sp_by[Z]=cc*common_factor[j];</span>
+<span class="lineNum">     791 </span><span class="lineNoCov">          0 :         predator[Z++]=j;</span>
+<span class="lineNum">     792 </span>            :       }
+<span class="lineNum">     793 </span>            :     }
+<span class="lineNum">     794 </span>            :     
+<span class="lineNum">     795 </span><span class="lineNoCov">          0 :     for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     796 </span><span class="lineNoCov">          0 :       for(int jj=Z;jj--&gt;0;){</span>
+<span class="lineNum">     797 </span><span class="lineNoCov">          0 :         int j=predator[jj];</span>
+<span class="lineNum">     798 </span><span class="lineNoCov">          0 :         double contribution=precomputed[j].c[i]*</span>
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :           pressure_on_sp_by[jj]*</span>
+<span class="lineNum">     800 </span><span class="lineNoCov">          0 :           sp-&gt;switching_similarity_to(s(i),s(j).prey_similarity_width())*</span>
+<span class="lineNum">     801 </span><span class="lineNoCov">          0 :           biomass_B[i];</span>
+<span class="lineNum">     802 </span><span class="lineNoCov">          0 :         being_eaten+=contribution;</span>
+<span class="lineNum">     803 </span>            :       }
+<span class="lineNum">     804 </span>            :     }  
+<span class="lineNum">     805 </span>            :   } else{
+<span class="lineNum">     806 </span><span class="lineNoCov">          0 :     for(int j=s.n_animals;j--&gt;0;){</span>
+<span class="lineNum">     807 </span>            :       being_eaten += 
+<span class="lineNum">     808 </span><span class="lineNoCov">          0 :         common_factor[j]*s(j).foraging_strength_c_on(*sp);</span>
+<span class="lineNum">     809 </span>            :     }
+<span class="lineNum">     810 </span>            :   }
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :   time_derivative-=being_eaten;</span>
+<span class="lineNum">     812 </span>            : 
+<span class="lineNum">     813 </span><span class="lineNoCov">          0 :   return time_derivative;</span>
+<span class="lineNum">     814 </span>            : }
+<a name="815"><span class="lineNum">     815 </span>            : </a>
+<span class="lineNum">     816 </span>            : 
+<span class="lineNum">     817 </span><span class="lineCov">        698 : void NewWeb::precompute(NewSpecies * sp,precomputed_entry_t &amp; pr){</span>
+<span class="lineNum">     818 </span><span class="lineCov">        698 :   double matrix_truncation_epsilon=SortedMatrix().truncation_epsilon();</span>
+<span class="lineNum">     819 </span><span class="lineCov">       1396 :   int S=s.size();</span>
+<span class="lineNum">     820 </span><span class="lineCov">        698 :   pr.c.resize(S);</span>
+<span class="lineNum">     821 </span><span class="lineCov">        698 :   pr.cT.resize(S);</span>
+<span class="lineNum">     822 </span><span class="lineCov">        698 :   pr.csc_eating.resize(S);</span>
+<span class="lineNum">     823 </span><span class="lineCov">        698 :   pr.csc_being_eaten.resize(S);</span>
+<span class="lineNum">     824 </span>            : 
+<span class="lineNum">     825 </span><span class="lineCov">        698 :   if(sp-&gt;is_a_plant()){</span>
+<span class="lineNum">     826 </span><span class="lineNoCov">          0 :     for(int i=s.size();i--&gt;s.n_animals;){</span>
+<span class="lineNum">     827 </span><span class="lineNoCov">          0 :       pr.c[i]=sp-&gt;plant_hampering_by(s(i));</span>
+<span class="lineNum">     828 </span>            :     }
+<span class="lineNum">     829 </span>            :   }else{
+<span class="lineNum">     830 </span><span class="lineCov">       2662 :     std::vector&lt; int &gt; prey(s.size()); // list of prey of a predator</span>
+<span class="lineNum">     831 </span><span class="lineCov">        568 :     int Z=0;</span>
+<span class="lineNum">     832 </span><span class="lineCov">       1136 :     for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     833 </span><span class="lineCov">     271962 :       double cc=sp-&gt;foraging_strength_c_on(s(i));</span>
+<span class="lineNum">     834 </span><span class="lineCov">     136763 :       if(cc &gt; matrix_truncation_epsilon){</span>
+<span class="lineNum">     835 </span><span class="lineCov">     263210 :         pr.c[i]=cc;</span>
+<span class="lineNum">     836 </span><span class="lineCov">      87302 :         if(do_switching){</span>
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :           prey[Z]=i;</span>
+<span class="lineNum">     838 </span><span class="lineNoCov">          0 :           for(int jj=Z+1;jj--&gt;0;){</span>
+<span class="lineNum">     839 </span>            :             // we make use of the symmetry here!
+<span class="lineNum">     840 </span><span class="lineNoCov">          0 :             int j=prey[jj];</span>
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 :             double entry=cc*pr.c[j]*</span>
+<span class="lineNum">     842 </span><span class="lineNoCov">          0 :               s(i).switching_similarity_to(s(j),sp-&gt;prey_similarity_width());</span>
+<span class="lineNum">     843 </span><span class="lineNoCov">          0 :             if(entry &gt; matrix_truncation_epsilon){</span>
+<span class="lineNum">     844 </span><span class="lineNoCov">          0 :               pr.csc_eating[i][j]=entry;</span>
+<span class="lineNum">     845 </span>            :             }
+<span class="lineNum">     846 </span>            :           }
+<span class="lineNum">     847 </span>            :           Z++;
+<span class="lineNum">     848 </span>            :         }
+<span class="lineNum">     849 </span>            :       }
+<span class="lineNum">     850 </span>            :     }
+<span class="lineNum">     851 </span>            :   }
+<span class="lineNum">     852 </span>            : 
+<span class="lineNum">     853 </span><span class="lineCov">        698 :   if(do_switching){</span>
+<span class="lineNum">     854 </span>            :     // compute pr.csc_being_eaten
+<span class="lineNum">     855 </span><span class="lineNoCov">          0 :     std::vector&lt; double &gt; c_on_sp_by(s.n_animals);</span>
+<span class="lineNum">     856 </span><span class="lineNoCov">          0 :     std::vector&lt; int &gt; predator(s.size()); // list of predators of sp</span>
+<span class="lineNum">     857 </span><span class="lineNoCov">          0 :     int Z=0;</span>
+<span class="lineNum">     858 </span><span class="lineNoCov">          0 :     for(int i=s.n_animals;i--&gt;0;){</span>
+<span class="lineNum">     859 </span><span class="lineNoCov">          0 :       double cc=s(i).foraging_strength_c_on(*sp);</span>
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 :       if(cc &gt; matrix_truncation_epsilon){</span>
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :         c_on_sp_by[Z]=cc;</span>
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 :         predator[Z++]=i;</span>
+<span class="lineNum">     863 </span>            :       }
+<span class="lineNum">     864 </span>            :     }
+<span class="lineNum">     865 </span>            :     
+<span class="lineNum">     866 </span><span class="lineNoCov">          0 :     for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     867 </span><span class="lineNoCov">          0 :       for(int jj=Z;jj--&gt;0;){</span>
+<span class="lineNum">     868 </span><span class="lineNoCov">          0 :         int j=predator[jj];</span>
+<span class="lineNum">     869 </span><span class="lineNoCov">          0 :         double entry=precomputed[j].c[i]*</span>
+<span class="lineNum">     870 </span><span class="lineNoCov">          0 :           c_on_sp_by[jj]*</span>
+<span class="lineNum">     871 </span><span class="lineNoCov">          0 :           sp-&gt;switching_similarity_to(s(i),s(j).prey_similarity_width());</span>
+<span class="lineNum">     872 </span><span class="lineNoCov">          0 :         if(entry &gt; matrix_truncation_epsilon){</span>
+<span class="lineNum">     873 </span><span class="lineNoCov">          0 :           pr.csc_being_eaten[i][j]=entry;</span>
+<span class="lineNum">     874 </span>            :         }
+<span class="lineNum">     875 </span>            :       }
+<span class="lineNum">     876 </span>            :     }
+<span class="lineNum">     877 </span>            :   }else{// not switching
+<span class="lineNum">     878 </span><span class="lineCov">      49701 :     for(int i=s.n_animals;i--&gt;0;){</span>
+<span class="lineNum">     879 </span><span class="lineCov">     196030 :       pr.cT[i]=s(i).foraging_strength_c_on(*sp);</span>
+<span class="lineNum">     880 </span>            :     }
+<span class="lineNum">     881 </span>            :   }
+<span class="lineNum">     882 </span><span class="lineCov">        690 : }</span>
+<a name="883"><span class="lineNum">     883 </span>            : </a>
+<span class="lineNum">     884 </span>            : /// High level function
+<span class="lineNum">     885 </span><span class="lineCov">        669 : double NewWeb::linear_fitness(NewSpecies * sp){</span>
+<span class="lineNum">     886 </span>            :   // ATTENTION: 
+<span class="lineNum">     887 </span>            :   // this function assumes common_factor and biomass_B to be set!!
+<span class="lineNum">     888 </span>            : 
+<span class="lineNum">     889 </span>            :   // This does in principle the same as fast_linear_fitness(..)
+<span class="lineNum">     890 </span>            :   // above, but goes through the same approximations as used for full
+<span class="lineNum">     891 </span>            :   // simulations, and is therefore more reliable in predicting
+<span class="lineNum">     892 </span>            :   // invadibility in simulations.
+<span class="lineNum">     893 </span>            : 
+<span class="lineNum">     894 </span><span class="lineCov">       1338 :   precomputed_entry_t pr;</span>
+<span class="lineNum">     895 </span><span class="lineCov">        669 :   precompute(sp,pr);</span>
+<span class="lineNum">     896 </span><span class="lineCov">       1338 :   return linear_fitness(sp,biomass_B,common_factor,pr);</span>
+<span class="lineNum">     897 </span>            : }
+<a name="898"><span class="lineNum">     898 </span>            : </a>
+<span class="lineNum">     899 </span>            : /// Low level function
+<span class="lineNum">     900 </span><span class="lineCov">       8697 : double NewWeb::linear_fitness(NewSpecies * sp,</span>
+<span class="lineNum">     901 </span>            :                               const vector_with_max &amp;biomass_B,
+<span class="lineNum">     902 </span>            :                               const vector_with_max &amp;common_factor,
+<span class="lineNum">     903 </span>            :                               const precomputed_entry_t &amp; pr ){
+<span class="lineNum">     904 </span>            :   // Compute the linear growth rate of the species pointed to by sp.
+<span class="lineNum">     905 </span>            :   // This species is not yet included in the species list s.
+<span class="lineNum">     906 </span>            :   
+<span class="lineNum">     907 </span>            :   
+<span class="lineNum">     908 </span><span class="lineCov">      17394 :   const int S=s.size();</span>
+<span class="lineNum">     909 </span>            :   double time_derivative;
+<span class="lineNum">     910 </span>            : 
+<span class="lineNum">     911 </span><span class="lineCov">       8697 :   if(sp-&gt;is_a_plant()){</span>
+<span class="lineNum">     912 </span>            :     // *sp is plant:
+<span class="lineNum">     913 </span><span class="lineCov">         34 :     double shadowing_sum=pr.c.dot(biomass_B);</span>
+<span class="lineNum">     914 </span><span class="lineCov">         34 :     if(plant_physiology_version==3){</span>
+<span class="lineNum">     915 </span>            :       time_derivative=
+<span class="lineNum">     916 </span><span class="lineCov">         34 :         sp-&gt;plant_growth_rate_sigma()*(1-shadowing_sum+sp-&gt;env_effect());</span>
+<span class="lineNum">     917 </span>            :     }else{
+<span class="lineNum">     918 </span><span class="lineNoCov">          0 :       const double light=myEXP(-shadowing_sum);</span>
+<span class="lineNum">     919 </span><span class="lineNoCov">          0 :       time_derivative=sp-&gt;plant_growth_rate_sigma()*</span>
+<span class="lineNum">     920 </span><span class="lineNoCov">          0 :         (light-sp-&gt;get_loss_rate_over_max_production_rate_r());</span>
+<span class="lineNum">     921 </span>            :     }
+<span class="lineNum">     922 </span>            :   }else{
+<span class="lineNum">     923 </span>            :     // *sp is animal:
+<span class="lineNum">     924 </span>            :     double functional_response;
+<span class="lineNum">     925 </span><span class="lineCov">       8697 :     if(do_switching) {</span>
+<span class="lineNum">     926 </span><span class="lineNoCov">          0 :       double Asum=pr.c.dot(biomass_B);</span>
+<span class="lineNum">     927 </span><span class="lineCov">        118 :       double csc_sum=pr.csc_eating.sandwich_product(biomass_B,biomass_B);</span>
+<span class="lineNum">     928 </span>            :     
+<span class="lineNum">     929 </span><span class="lineCov">        118 :       csc_sum*=sp-&gt;attack_rate_a();</span>
+<span class="lineNum">     930 </span>            :       functional_response=
+<span class="lineNum">     931 </span>            :         csc_sum/
+<span class="lineNum">     932 </span><span class="lineCov">        118 :         (Asum+sp-&gt;handling_time_T()*csc_sum);</span>
+<span class="lineNum">     933 </span>            :     } else{
+<span class="lineNum">     934 </span><span class="lineCov">      17235 :       double total_availability=pr.c.dot(biomass_B);</span>
+<span class="lineNum">     935 </span>            :     
+<span class="lineNum">     936 </span><span class="lineCov">       8538 :       total_availability*=sp-&gt;attack_rate_a();</span>
+<span class="lineNum">     937 </span>            :       functional_response=
+<span class="lineNum">     938 </span>            :         total_availability/
+<span class="lineNum">     939 </span><span class="lineCov">       8538 :         (1+sp-&gt;handling_time_T()*total_availability);</span>
+<span class="lineNum">     940 </span>            :     }
+<span class="lineNum">     941 </span>            :     
+<span class="lineNum">     942 </span>            :     time_derivative=
+<span class="lineNum">     943 </span><span class="lineCov">       8656 :       sp-&gt;conversion_efficiency_eps()*functional_response-</span>
+<span class="lineNum">     944 </span><span class="lineCov">      17312 :       sp-&gt;turnover_rate_r();</span>
+<span class="lineNum">     945 </span>            :   }
+<span class="lineNum">     946 </span>            :   
+<span class="lineNum">     947 </span>            :   // finally, the being-eaten term:
+<span class="lineNum">     948 </span>            :   double being_eaten;
+<span class="lineNum">     949 </span><span class="lineCov">       8690 :   if(do_switching) {</span>
+<span class="lineNum">     950 </span>            :     being_eaten=pr.
+<span class="lineNum">     951 </span><span class="lineNoCov">          0 :       csc_being_eaten.sandwich_product(biomass_B,common_factor);</span>
+<span class="lineNum">     952 </span>            :   }else{
+<span class="lineNum">     953 </span>            :     being_eaten= 
+<span class="lineNum">     954 </span><span class="lineCov">      17380 :       pr.cT.dot(common_factor);</span>
+<span class="lineNum">     955 </span>            :   }
+<span class="lineNum">     956 </span><span class="lineCov">       8812 :   time_derivative-=being_eaten;</span>
+<span class="lineNum">     957 </span>            : 
+<span class="lineNum">     958 </span><span class="lineCov">       8812 :   return time_derivative;</span>
+<a name="959"><span class="lineNum">     959 </span>            : }</a>
+<span class="lineNum">     960 </span>            : 
+<span class="lineNum">     961 </span><span class="lineCov">        698 : double NewWeb::invasion_fitness(NewSpecies * sp){</span>
+<span class="lineNum">     962 </span><span class="lineCov">       1396 :   if(steady_state.size()&lt;=1){</span>
+<span class="lineNum">     963 </span><span class="lineCov">        669 :     double f=linear_fitness(sp);</span>
+<span class="lineNum">     964 </span>            :     return f;
+<span class="lineNum">     965 </span>            :   }
+<span class="lineNum">     966 </span>            :   
+<span class="lineNum">     967 </span><span class="lineCov">         58 :   precomputed_entry_t pr;</span>
+<span class="lineNum">     968 </span><span class="lineCov">         29 :   precompute(sp,pr);</span>
+<span class="lineNum">     969 </span>            : 
+<span class="lineNum">     970 </span>            :   double growth_rate;
+<span class="lineNum">     971 </span><span class="lineCov">         58 :   sequence&lt;double *&gt; gr;</span>
+<span class="lineNum">     972 </span><span class="lineCov">         29 :   gr[0]=&amp;growth_rate;</span>
+<span class="lineNum">     973 </span>            :   {
+<span class="lineNum">     974 </span><span class="lineCov">         58 :     Integrator gr_integrator(gr);</span>
+<span class="lineNum">     975 </span>            : 
+<span class="lineNum">     976 </span><span class="lineCov">        121 :     steady_state_t::iterator start=steady_state.begin();</span>
+<span class="lineNum">     977 </span>            : 
+<span class="lineNum">     978 </span><span class="lineCov">         92 :     if(steady_state.size() &gt; max_steady_state_size){</span>
+<span class="lineNum">     979 </span><span class="lineNoCov">          0 :       start+=steady_state.size()-max_steady_state_size;</span>
+<span class="lineNum">     980 </span>            :     }
+<span class="lineNum">     981 </span><span class="lineCov">      16222 :     for(steady_state_t::iterator i=start;</span>
+<span class="lineNum">     982 </span><span class="lineCov">      24291 :         i!=steady_state.end();</span>
+<span class="lineNum">     983 </span>            :         ++i){
+<span class="lineNum">     984 </span>            :       
+<span class="lineNum">     985 </span><span class="lineCov">       8069 :       const saved_state &amp; s=*i;</span>
+<span class="lineNum">     986 </span>            :       growth_rate=
+<span class="lineNum">     987 </span><span class="lineCov">       8069 :         linear_fitness(sp,s.biomass_B,s.common_factor,pr);</span>
+<span class="lineNum">     988 </span><span class="lineCov">       8138 :       gr_integrator.sample(i-&gt;t);</span>
+<span class="lineNum">     989 </span>            :     }
+<span class="lineNum">     990 </span>            :     
+<span class="lineNum">     991 </span><span class="lineCov">         84 :     gr_integrator*=1/(steady_state.back().t-steady_state.front().t);</span>
+<span class="lineNum">     992 </span>            :   }// write back of growth_rate at destruction of gr_integrator:
+<span class="lineNum">     993 </span><span class="lineCov">         29 :   return growth_rate;</span>
+<span class="lineNum">     994 </span>            : }
+<span class="lineNum">     995 </span>            : 
+<span class="lineNum">     996 </span>            : 
+<span class="lineNum">     997 </span>            : // Machinery to find fit species by repeatedly creating species and
+<span class="lineNum">     998 </span>            : // measuring fitness.  Each cycle is called an &quot;attempt&quot;.  If
+<span class="lineNum">     999 </span>            : // multithreading_only_fit==true, uses multithreading.  In this case,
+<span class="lineNum">    1000 </span>            : // output is undetermined, because of concurrent usage of the random
+<span class="lineNum">    1001 </span>            : // number generator.  
+<span class="lineNum">    1002 </span>            : 
+<span class="lineNum">    1003 </span>            : /// If multithreading_only_fit, all threads communicate via
+<span class="lineNum">    1004 </span>            : /// attempts_left.  A positive value means continue.  If a thread
+<span class="lineNum">    1005 </span>            : /// finished one attempt, it will decrement the variable.  A negative
+<span class="lineNum">    1006 </span>            : /// value means that a fit species was found with abs(attempts_left)
+<span class="lineNum">    1007 </span>            : /// attempts left, and its address is written to new_species.  A value
+<span class="lineNum">    1008 </span>            : /// of zero means we have to stop trying.  The thread that sets
+<span class="lineNum">    1009 </span>            : /// attempts_left to zero, writes the address of its current candidate
+<span class="lineNum">    1010 </span>            : /// to new_species.  Mutex_random serves to prevent race conditions
+<span class="lineNum">    1011 </span>            : /// for random-number generation.  We need to check thread-safety of
+<span class="lineNum">    1012 </span>            : /// random number generators declared in random.h to ensure we can do
+<span class="lineNum">    1013 </span>            : /// without mutex_random.
+<span class="lineNum">    1014 </span><span class="lineCov">         45 : static boost::mutex mutex_attempts_left, mutex_random;</span>
+<span class="lineNum">    1015 </span>            : static int attempts_left;
+<span class="lineNum">    1016 </span>            : static NewSpecies * new_species;
+<span class="lineNum">    1017 </span>            : static NewWeb * fitness_thread_dispatcher;
+<span class="lineNum">    1018 </span>            : static NewWeb::finder_function_t finder_function;
+<span class="lineNum">    1019 </span>            : 
+<span class="lineNum">    1020 </span>            : /// This defines the task for a thread that repeatedly lookings for a
+<span class="lineNum">    1021 </span>            : /// fit species (usage of global variables is a bit messy at the
+<span class="lineNum">    1022 </span>            : /// moment):
+<a name="1023"><span class="lineNum">    1023 </span>            : struct find_fit_task{</a>
+<span class="lineNum">    1024 </span>            :   double plant_fraction;
+<span class="lineNum">    1025 </span><span class="lineCov">        177 :   void operator()(){</span>
+<span class="lineNum">    1026 </span><span class="lineCov">         49 :     do{</span>
+<span class="lineNum">    1027 </span>            :       NewSpecies * my_new_species;
+<span class="lineNum">    1028 </span>            : 
+<span class="lineNum">    1029 </span><span class="lineCov">        458 :       {boost::mutex::scoped_lock lock(mutex_random);</span>
+<span class="lineNum">    1030 </span>            :         my_new_species=
+<span class="lineNum">    1031 </span><span class="lineCov">        229 :           (fitness_thread_dispatcher-&gt;*finder_function)(plant_fraction);</span>
+<span class="lineNum">    1032 </span>            :       }
+<span class="lineNum">    1033 </span>            : 
+<span class="lineNum">    1034 </span><span class="lineCov">        229 :       double fit=fitness_thread_dispatcher-&gt;invasion_fitness(my_new_species);</span>
+<span class="lineNum">    1035 </span>            :       
+<span class="lineNum">    1036 </span><span class="lineCov">        278 :       {boost::mutex::scoped_lock lock(mutex_attempts_left);</span>
+<span class="lineNum">    1037 </span><span class="lineCov">        229 :         if(attempts_left &lt;= 0){</span>
+<span class="lineNum">    1038 </span>            :           /* Nothing left to be done, forget what you found     */
+<span class="lineNum">    1039 </span><span class="lineCov">        135 :           delete my_new_species;</span>
+<span class="lineNum">    1040 </span><span class="lineCov">        180 :           break;</span>
+<span class="lineNum">    1041 </span>            :         }else{
+<span class="lineNum">    1042 </span><span class="lineCov">         94 :           if(fit&gt;=0){</span>
+<span class="lineNum">    1043 </span>            :             /* Success! Pass my_new_species back and make other
+<span class="lineNum">    1044 </span>            :                threads stop:*/
+<span class="lineNum">    1045 </span><span class="lineCov">         45 :             new_species=my_new_species;</span>
+<span class="lineNum">    1046 </span><span class="lineCov">         45 :             attempts_left=-attempts_left;</span>
+<span class="lineNum">    1047 </span><span class="lineCov">         45 :             break;</span>
+<span class="lineNum">    1048 </span>            :           }else{
+<span class="lineNum">    1049 </span>            :             /* Failure! Continue searching...*/
+<span class="lineNum">    1050 </span><span class="lineCov">         49 :             attempts_left--;</span>
+<span class="lineNum">    1051 </span><span class="lineCov">         49 :             if(!attempts_left){</span>
+<span class="lineNum">    1052 </span>            :               /*... but only if attempts_left.*/
+<span class="lineNum">    1053 </span><span class="lineNoCov">          0 :               new_species=my_new_species;</span>
+<span class="lineNum">    1054 </span><span class="lineNoCov">          0 :               break;</span>
+<span class="lineNum">    1055 </span>            :             }
+<span class="lineNum">    1056 </span><span class="lineCov">         49 :             delete my_new_species;</span>
+<span class="lineNum">    1057 </span>            :           }
+<span class="lineNum">    1058 </span>            :         }
+<span class="lineNum">    1059 </span>            :       }// end of mutex_attempts_left lock
+<span class="lineNum">    1060 </span>            : 
+<span class="lineNum">    1061 </span>            :     }while(true);
+<span class="lineNum">    1062 </span><span class="lineCov">        180 :   }</span>
+<a name="1063"><span class="lineNum">    1063 </span>            : };</a>
+<span class="lineNum">    1064 </span>            : 
+<span class="lineNum">    1065 </span><span class="lineCov">         45 : NewSpecies * NewWeb::find_only_fit(double plant_fraction, finder_function_t f){</span>
+<span class="lineNum">    1066 </span><span class="lineCov">         45 :   const int max_attempts=max_invasion_attempts;</span>
+<span class="lineNum">    1067 </span><span class="lineCov">         45 :   new_species=0;</span>
+<span class="lineNum">    1068 </span><span class="lineCov">         45 :   attempts_left=max_attempts;</span>
+<span class="lineNum">    1069 </span><span class="lineCov">         90 :   ODE_vector state(number_of_variables()),dummy(number_of_variables());</span>
+<span class="lineNum">    1070 </span><span class="lineCov">         45 :   write_state_to(state);</span>
+<span class="lineNum">    1071 </span><span class="lineCov">         45 :   dynamics_for_side_effects(state,dummy);/* called for side effects */</span>
+<span class="lineNum">    1072 </span><span class="lineCov">         45 :   if(!multithreading_only_fit || max_num_threads &lt;= 1){</span>
+<span class="lineNum">    1073 </span>            :     do{
+<span class="lineNum">    1074 </span><span class="lineNoCov">          0 :       new_species=(this-&gt;*f)(plant_fraction);</span>
+<span class="lineNum">    1075 </span><span class="lineNoCov">          0 :       double f=invasion_fitness(new_species);</span>
+<span class="lineNum">    1076 </span>            :       TRACE(f,DYNAMICS);
+<span class="lineNum">    1077 </span><span class="lineNoCov">          0 :       if(f&gt;=0 ||</span>
+<span class="lineNum">    1078 </span><span class="lineNoCov">          0 :          --attempts_left &lt;=0 ) break;</span>
+<span class="lineNum">    1079 </span><span class="lineNoCov">          0 :       delete new_species;</span>
+<span class="lineNum">    1080 </span>            :     }while(true);
+<span class="lineNum">    1081 </span>            :   }else{/*multithreading implementation:*/
+<span class="lineNum">    1082 </span><span class="lineCov">         45 :     fitness_thread_dispatcher=this;</span>
+<span class="lineNum">    1083 </span><span class="lineCov">         45 :     finder_function=f;</span>
+<span class="lineNum">    1084 </span><span class="lineCov">         90 :     boost::thread_group threads;</span>
+<span class="lineNum">    1085 </span><span class="lineCov">        135 :     std::vector&lt; find_fit_task &gt; task(max_num_threads);</span>
+<span class="lineNum">    1086 </span><span class="lineCov">        225 :     for(int i=0; i&lt;max_num_threads; i++){</span>
+<span class="lineNum">    1087 </span><span class="lineCov">        360 :       task[i].plant_fraction=plant_fraction;</span>
+<span class="lineNum">    1088 </span><span class="lineCov">        180 :       threads.create_thread(task[i]);</span>
+<span class="lineNum">    1089 </span>            :     }
+<span class="lineNum">    1090 </span><span class="lineCov">         45 :     threads.join_all();</span>
+<span class="lineNum">    1091 </span><span class="lineCov">         45 :     if(attempts_left&lt;0) attempts_left=-attempts_left;</span>
+<span class="lineNum">    1092 </span>            :   }
+<span class="lineNum">    1093 </span><span class="lineCov">         45 :   if(attempts_left &lt;= 0){</span>
+<span class="lineNum">    1094 </span><span class="lineNoCov">          0 :     WARNING(&quot;adding unfit &quot;</span>
+<span class="lineNum">    1095 </span><span class="lineNoCov">          0 :             &lt;&lt; (new_species-&gt;is_a_plant()?&quot;plant&quot;:&quot;animal&quot;));</span>
+<span class="lineNum">    1096 </span>            :   }
+<span class="lineNum">    1097 </span><span class="lineCov">         45 :   int failed_invasion_attempts=max_attempts-attempts_left;</span>
+<span class="lineNum">    1098 </span><span class="lineCov">        135 :   REPORT(failed_invasion_attempts);</span>
+<span class="lineNum">    1099 </span><span class="lineCov">         45 :   ALWAYS_ASSERT(new_species);</span>
+<span class="lineNum">    1100 </span><span class="lineCov">         90 :   return new_species;</span>
+<a name="1101"><span class="lineNum">    1101 </span>            : }</a>
+<a name="1102"><span class="lineNum">    1102 </span>            : </a>
+<a name="1103"><span class="lineNum">    1103 </span><span class="lineNoCov">          0 : NewSpecies * NewWeb::invade_only_fit(double plant_fraction){ return find_only_fit(plant_fraction,&amp;NewWeb::invade); };</span></a>
+<a name="1104"><span class="lineNum">    1104 </span><span class="lineCov">         45 : NewSpecies * NewWeb::speciate_only_fit(double plant_fraction){ return find_only_fit(plant_fraction,&amp;NewWeb::speciate); };</span></a>
+<a name="1105"><span class="lineNum">    1105 </span><span class="lineNoCov">          0 : NewSpecies * NewWeb::speciate_selected_only_fit(double plant_fraction){ return find_only_fit(plant_fraction,&amp;NewWeb::speciate_selected); };</span></a>
+<a name="1106"><span class="lineNum">    1106 </span><span class="lineNoCov">          0 : NewSpecies * NewWeb::invade_or_speciate_only_fit(double plant_fraction){ return find_only_fit(plant_fraction,&amp;NewWeb::invade_or_speciate); };</span></a>
+<span class="lineNum">    1107 </span><span class="lineNoCov">          0 : NewSpecies * NewWeb::invade_or_speciate_any_only_fit(double plant_fraction){ return find_only_fit(plant_fraction,&amp;NewWeb::invade_or_speciate_any); };</span>
+<span class="lineNum">    1108 </span><span class="lineCov">        135 : NewSpecies * NewWeb::invade_or_speciate_any_by_biomass_only_fit(double plant_fraction){ return find_only_fit(plant_fraction,&amp;NewWeb::invade_or_speciate_any_by_biomass); };</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

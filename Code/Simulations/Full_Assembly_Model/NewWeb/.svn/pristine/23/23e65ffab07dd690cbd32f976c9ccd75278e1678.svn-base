@@ -1,0 +1,654 @@
+// $Id$
+/***************************************************************************
+ *   Copyright (C) 2004 by Virginia Tech                                   *
+ *   ggrothau@vt.edu                                                       *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *                                                                         *
+ *   The following class is based on the paper entitled "Testing for the   *
+ *   Consecutive Onces Property, Interval Graphs, and Graph Planarity      *
+ *   Using PQ-Tree Algorithms" by Kellog S. Booth and George S. Lueker in  *
+ *   the Jounral of Computer and System Sciences 13, 335-379 (1976)        *
+ *                                                                         *
+ *   Some of the comments and variable names are verbatim from the Booth   *
+ *   and Lueker paper where this algorithm was first described.            *
+ ***************************************************************************/
+#ifndef PQNODE_H
+#define PQNODE_H
+
+/**
+Internal class used by pqtree to represent individual nodes in the pqtree.
+
+@author Virginia Tech
+*/
+
+#include<list>
+#include<map>
+#include<set>
+#include<vector>
+using namespace std;
+
+//declaration of enum types that can be used
+enum pqnode_types {leaf, pnode, qnode};
+enum pqnode_marks {unmarked, queued, blocked, unblocked};
+enum pqnode_labels {empty,full,partial};
+
+//Note that this class is entirely public due to the fact that
+//it does not appear possible to declare friends that are templated
+template <class T> class pqnode
+{
+	public:
+
+
+  void check_parent(){
+    if(!parent) return;
+    if(parent->mark>unblocked
+       ||
+       parent->type>qnode){
+      WARNING("parent is garbage");
+      throw AnalysisBug();
+    }
+  }
+
+  void endmost_children_check(){
+    pqnode<T> *last=NULL;
+    pqnode<T> *cur=endmost_children[0];
+    while(cur!=NULL)
+      {
+	pqnode<T> *next=cur->qNextChild(last);
+	last=cur;
+	cur=next;
+      }
+    if(last!=endmost_children[1]){
+      WARNING("endmost_children broken");
+      throw AnalysisBug();
+    }
+  }
+
+  void endmost_children_fix(){
+    pqnode<T> *last=NULL;
+    pqnode<T> *cur=endmost_children[0];
+    while(cur!=NULL)
+      {
+	pqnode<T> *next=cur->qNextChild(last);
+	last=cur;
+	cur=next;
+      }
+    endmost_children[1]=last;
+  }
+  void child_labels(){
+    pqnode<T> *last=NULL;
+    pqnode<T> *cur=endmost_children[0];
+    while(cur!=NULL)
+      {
+	cout << cur->label;
+	pqnode<T> *next=cur->qNextChild(last);
+	last=cur;
+	cur=next;
+      }
+    cout << endl;
+    endmost_children[1]=last;
+  }
+
+
+	////////////////////////////////////////////////////
+	//Used by P Nodes only
+	///////////////////////////////////////////////////
+	
+	//a set of links which form the children of a p-node into a 
+	//doubly linked circular list; the order of the list is arbitrary.
+	list<pqnode<T> *> circular_link;
+	
+	//a count of the number of children used by a node
+	//int child_count; use circular_link.size instead
+	int child_count();
+	
+	////////////////////////////////////////////////////
+	//Used by Q Nodes only
+	///////////////////////////////////////////////////
+	
+	//A set containing the two endmost children of a Q-node
+	pqnode<T> *endmost_children[2];
+	pqnode<T> *pseudo_neighbors[2];
+
+	//boolean indicating whether or not this is a pseudonode/child
+	bool pseudonode,pseudochild;
+	
+	////////////////////////////////////////////////////
+	//Used by Both Node Types
+	///////////////////////////////////////////////////
+	
+	//A set containing all the children of a node currently
+	//known to be full
+	set<pqnode<T> *> full_children;
+	
+	//A set containing all the children of a node currently
+	//known to be partial
+	set<pqnode<T> *> partial_children;
+	
+	//A set containing exactly 0,1,or 2 nodes
+	//Only children of Q nodes have more than 0 immediate siblings
+	set<pqnode<T> *> immediate_siblings;
+	
+	//label is an indication of whether the node is empty, full, or partial
+	enum pqnode_labels label;
+	
+	//mark is a designation used during the first pass of the reduction
+	//algorithm.  Every node is initially unmarked.  It is marked
+	//queued when it is placed onto the queue during the bubbling up.
+	//It is marked either blocked or unblocked when it is processed.  Blocked
+	//nodes can become unblocked if their siblings become unblocked.
+	enum pqnode_marks mark;
+
+	//type is a designation telling whether the node is a leaf, P, or Q.
+	enum pqnode_types type;
+
+	//the immediate ancestor of a node.  This field is always
+	//valid for children of P-nodes and for endmost children of Q-nodes
+	pqnode<T> *parent;
+
+	//A count of the number of pertinent children currently possessed by a node
+	int pertinent_child_count;
+
+	//A count of the number of pertinent leaves currently possessed by a node
+	int pertinent_leaf_count;
+
+	//the value of the pqnode if it is a leaf
+	T leafValue;
+
+	//makes a deep copy of a node given a pointer to it
+	pqnode<T>* makeCopy(const pqnode<T>& toCopy);
+	
+	//deep copy constructor
+	pqnode(const pqnode<T>& toCopy);
+		
+	//deep assignment operator
+	const pqnode<T>& operator=(const pqnode<T>& toCopy);
+	
+	//return the next child in the immediate_siblings chain given a last pointer
+	//if last pointer is null, will return the first sibling
+	pqnode<T>* qNextChild(pqnode<T> *last);
+	
+	//removes this node from a q-parent and puts toInsert in it's place
+	void swapQ(pqnode<T> *toInsert);
+	
+	//declare a leaf pqnode
+	pqnode(T value);
+	
+	//declare a non-leaf pqnode
+	pqnode();
+	
+	//deep destructor
+	~pqnode();
+	
+	//walks the tree to build a map of leaf locations
+	void findLeaves(map<T,pqnode<T>*> &leafAddress);
+	
+	//walks the tree to find it's frontier
+	void findFrontier(list<T> &ordering);
+	
+	//resets a bunch of temporary variables after the reduce walks
+	void reset();
+	
+	//walks the tree from the top and displays the tree structure
+	//in a rough format.  Used mostly for debugging purposes
+	void print(int numtabs=0);
+};
+
+#endif
+
+//Due to the peculiar nature of templates, the implementation
+//details must also be included in the header file, hence the functions
+//below
+
+//a count of the number of children used by a node
+//int child_count; use circular_link.size instead
+template <class T>
+int pqnode<T>::child_count()
+{
+	return circular_link.size();
+}
+
+template <class T>
+pqnode<T>* pqnode<T>::makeCopy(const pqnode<T>& toCopy)
+{
+	pqnode<T>* temp = new pqnode<T>(toCopy);
+	temp->parent=this;
+	temp->check_parent();
+	return temp;
+}
+
+//deep copy constructor
+template <class T>
+pqnode<T>::pqnode(const pqnode<T>& toCopy)
+{
+	//copy some of the easy stuff
+	leafValue=toCopy.leafValue;
+	pertinent_leaf_count=toCopy.pertinent_leaf_count;
+	pertinent_child_count=toCopy.pertinent_child_count;
+	type=toCopy.type;
+	mark=toCopy.mark;
+	label=toCopy.label;
+	pseudonode=toCopy.pseudonode;
+	pseudochild=toCopy.pseudochild;
+
+	//make sure that this stuff is empty
+	immediate_siblings.clear();
+	partial_children.clear();
+	full_children.clear();
+	parent=NULL;
+	circular_link.clear();
+	endmost_children[0]=NULL;
+	endmost_children[1]=NULL;
+
+	//copy the nodes in circular link for pnodes
+	//if it is not a pnode, it will be empty, so it doesnt matter
+	for(typename list<pqnode<T> *>::const_iterator i=toCopy.circular_link.begin();i!=toCopy.circular_link.end();i++)
+		circular_link.push_back(makeCopy(**i));
+
+	//copy the sibling chain for qnodes
+	if(type==qnode)
+	{
+		//get the first child
+		pqnode<T> *cur,*last;
+		pqnode<T> *curCopy,*lastCopy,*nextCopy;	//pointers to nodes we are going to copy
+		endmost_children[0]=makeCopy(*toCopy.endmost_children[0]);
+		curCopy=toCopy.endmost_children[0];
+		lastCopy=NULL;
+		last=endmost_children[0];
+		
+		//get all the intermediate children
+		nextCopy=curCopy->qNextChild(lastCopy);
+		while(nextCopy!=NULL)
+		{
+			lastCopy=curCopy;
+			curCopy=nextCopy;
+			cur=makeCopy(*curCopy);
+			cur->immediate_siblings.insert(last);
+			last->immediate_siblings.insert(cur);
+			last=cur;
+
+			nextCopy=curCopy->qNextChild(lastCopy);
+		}
+
+		//now set our last endmost_children pointer to our last child
+		endmost_children[1]=cur;
+	}
+}
+
+//deep assignment operator
+template <class T>
+const pqnode<T>& pqnode<T>::operator=(const pqnode<T>& toCopy)
+{
+	//make sure we aren't copying ourself
+	if(*toCopy==this)
+		return *this;
+	
+	//this is cut and paste from the copy constructor
+	//but I'm not smart enough to know how to avoid that
+	pqnode<T>* temp;	//a pointer to use for making copies
+		
+	//copy some of the easy stuff
+	leafValue=toCopy.leafValue;
+	pertinent_leaf_count=toCopy.pertinent_leaf_count;
+	pertinent_child_count=toCopy.pertinent_child_count;
+	type=toCopy.type;
+	mark=toCopy.mark;
+	label=toCopy.label;
+	pseudonode=toCopy.pseudonode;
+	pseudochild=toCopy.pseudochild;
+		
+	//make sure that this stuff is empty
+	immediate_siblings.clear();
+	partial_children.clear();
+	full_children.clear();
+	parent=NULL;
+	circular_link.clear();
+	endmost_children[0]=NULL;
+	endmost_children[1]=NULL;
+
+	//copy the nodes in circular link for pnodes
+	for(typename list<pqnode<T> *>::iterator i=toCopy.circular_link.begin();i!=toCopy.circular_link.end();i++)
+		circular_link.push_back(makeCopy(*i));
+
+	//copy the sibling chain for qnodes
+	if(type==qnode)
+	{
+		//get the first child
+		pqnode<T> *cur,*last;
+		pqnode<T> *curCopy,*lastCopy,*nextCopy;	//pointers to nodes we are going to copy
+		endmost_children[0]=makeCopy(toCopy.endmost_children[0]);
+		curCopy=toCopy.endmost_children[0];
+		lastCopy=NULL;
+		last=endmost_children[0];
+		
+		//get all the intermediate children
+		nextCopy=cur->qNextChild(lastCopy);
+		while(nextCopy!=NULL)
+		{
+			lastCopy=curCopy;
+			cur=makeCopy(*nextCopy);
+			curCopy=nextCopy;
+			cur->immediate_siblings.insert(last);
+			last->immediate_siblings.insert(cur);
+
+			nextCopy=cur->qNextChild(lastCopy);
+		}
+
+		//now set our last endmost_children pointer to our last child
+		endmost_children[1]=cur;
+	}
+
+		
+	//return ourself so that we can chain operations
+	return this;
+}
+
+//return the next child in the immediate_siblings chain given a last pointer
+//if last pointer is null, will return the first sibling
+template <class T>
+pqnode<T>* pqnode<T>::qNextChild(pqnode<T> *last)
+{
+  if(immediate_siblings.size()==0){
+    WARNING(" " << this << " has empty immediate_siblings");
+    int side=0;
+    while(side<2){
+      if(parent->endmost_children[side]==this)
+	break;
+      side++;
+    }
+    if(side==2){
+      WARNING("COULD NOT FIX IT: node not on edge");
+      throw AnalysisBug();
+    }else{
+      // Fix it:
+      const int other_side=1-side;
+      if(parent->endmost_children[other_side]==this){
+	WARNING(" "<< this << " is single child of " << this->parent);
+	WARNING("this might be ok");
+	return NULL;
+      }
+      pqnode<T> *last=NULL;
+      pqnode<T> *cur=parent->endmost_children[other_side];
+      while(cur!=NULL && cur!=this)
+	{
+	  pqnode<T> *next=cur->qNextChild(last);
+	  last=cur;
+	  cur=next;
+	}
+      if(cur==this){
+	WARNING("FIXING: sibling is " << last);
+	immediate_siblings.insert(last);
+      }else{
+	WARNING("COULD NOT FIX IT: reverse endpoint elsewhere");
+	return NULL;
+      }	
+    }
+  }
+  // from here on there is at least one immediate_sibling:
+  if(*(immediate_siblings.begin())==last)
+    {
+      if(immediate_siblings.size()==1)
+	return NULL;
+      else
+	return *(++immediate_siblings.begin());
+    }
+  else
+    {
+      if(last!=NULL && *(++immediate_siblings.begin())!=last){
+	//exit(0);
+	FATAL_ERROR("immediate_siblings inconsistent!");
+      }
+      //last is not either of our siblings
+      //this occurs when we are on the edge of a pseudonode
+      if(last==NULL && immediate_siblings.size()==2)
+	{
+	  WARNING("immediate_siblings garbled");
+	  cout<<(*(immediate_siblings.begin()))<<endl;
+	  cout<<((*(immediate_siblings.begin()))->label==empty)<<endl;
+	  if((*(immediate_siblings.begin()))->label!=empty)
+	    return *(immediate_siblings.begin());
+	  return *(++immediate_siblings.begin());
+	}
+      return *(immediate_siblings.begin());
+    }
+}
+
+	
+//removes this node from a q-parent and puts toInsert in it's place
+template <class T>
+void pqnode<T>::swapQ(pqnode<T> *toInsert)
+{
+	toInsert->pseudochild=pseudochild;
+	if(parent->endmost_children[0]==this)
+                parent->endmost_children[0]=toInsert;
+	else if(parent->endmost_children[1]==this)
+	  	parent->endmost_children[1]=toInsert;
+	
+	toInsert->immediate_siblings.clear();
+	for(typename set<pqnode<T> *>::iterator i=immediate_siblings.begin();i!=immediate_siblings.end();i++)
+	{
+		toInsert->immediate_siblings.insert(*i);
+		(*i)->immediate_siblings.erase(this);
+		(*i)->immediate_siblings.insert(toInsert);
+	}
+	immediate_siblings.clear();
+	parent=NULL;
+}
+		
+	
+//declare a leaf pqnode
+template <class T>
+pqnode<T>::pqnode(T value)
+{
+	leafValue=value;
+
+	label=empty;
+	mark=unmarked;
+	type=leaf;
+	// WHAT WOULD THIS BE GOOD FOR??
+	//	pqnode<T> *parent=NULL;
+	pertinent_child_count=0;
+	pertinent_leaf_count=0;
+	parent=NULL;
+	endmost_children[0]=NULL;
+	endmost_children[1]=NULL;
+}
+	
+//declare a non-leaf pqnode
+template <class T>
+pqnode<T>::pqnode()
+{
+	parent=NULL;
+	pseudonode=false;
+	label=empty;
+	mark=unmarked;
+	pertinent_child_count=0;
+	pertinent_leaf_count=0;
+	endmost_children[0]=NULL;
+	endmost_children[1]=NULL;
+}
+
+//deep destructor
+template <class T>
+pqnode<T>::~pqnode()
+{
+	if(type==qnode)
+	{
+		pqnode<T> *last=NULL;
+		pqnode<T> *cur=endmost_children[0];
+		while(cur!=NULL)
+		{
+			pqnode<T> *next=cur->qNextChild(last);
+			delete last;
+			last=cur;
+			cur=next;
+		}
+		if(last)
+			delete last;
+	}
+	else if(type==pnode)
+	{	
+		for(typename list<pqnode<T> *>::iterator i=circular_link.begin();i!=circular_link.end();i++)
+			delete *i;
+		circular_link.clear();
+	}
+}
+
+
+//walks the tree to build a map of leaf locations
+template <class T>
+void pqnode<T>::findLeaves(map<T,pqnode<T>*> &leafAddress)
+{
+	//apparently my version of gcc has some bug related to const enums in a templated class
+	//specifically type.  By accessing type in any way here, i get a segfault.  instead
+	//we determine the type using other member variables, which is inconvenient at best
+	//if(type==leaf)
+	if(endmost_children[0]==NULL && circular_link.size()==0)
+		leafAddress[leafValue]=this;
+	//else if(type==pnode)
+	else if(!circular_link.empty())
+		for(typename list<pqnode<T> *>::iterator i=circular_link.begin();i!=circular_link.end();i++)
+			(*i)->findLeaves(leafAddress);
+	else if(endmost_children[0]!=NULL)
+	{
+		pqnode<T> *last=NULL;
+		pqnode<T> *cur=endmost_children[0];
+		while(cur!=NULL)
+		{
+			cur->findLeaves(leafAddress);
+			pqnode<T> *next=cur->qNextChild(last);
+			last=cur;
+			cur=next;
+		}
+	}
+}
+	
+//walks the tree to find it's frontier
+template <class T>
+void pqnode<T>::findFrontier(list<T> &ordering)
+{
+	//apparently my version of gcc has some bug related to const enums in a templated class
+	//specifically type.  By accessing type in any way here, i get a segfault.  instead
+	//we determine the type using other member variables, which is inconvenient at best
+	//if(type==leaf)
+	if(endmost_children[0]==NULL && circular_link.size()==0)
+		ordering.push_back(leafValue);
+	//else if(type==pnode)
+	else if(!circular_link.empty())
+		for(typename list<pqnode<T> *>::iterator i=circular_link.begin();i!=circular_link.end();i++)
+			(*i)->findFrontier(ordering);
+	else if(endmost_children[0]!=NULL)
+	{
+		pqnode<T> *last=NULL;
+		pqnode<T> *cur=endmost_children[0];
+		while(cur!=NULL)
+		{
+			cur->findFrontier(ordering);
+			pqnode<T> *next=cur->qNextChild(last);
+			last=cur;
+			cur=next;
+		}
+	}
+}
+		
+//resets a bunch of temporary variables after the reduce walks
+template <class T>
+void pqnode<T>::reset()
+{
+	//do the recursing	
+	if(!circular_link.empty())	//we have a p-node
+	{
+		for(typename list<pqnode<T> *>::iterator i=circular_link.begin();i!=circular_link.end();i++){
+			(*i)->reset();}
+	}
+	else if(endmost_children[0]!=NULL) //we have a q-node
+	{
+		pqnode<T> *last=NULL;
+		pqnode<T> *cur=endmost_children[0];
+		while(cur!=NULL)
+		{
+			cur->reset();
+			pqnode<T> *next=cur->qNextChild(last);
+			last=cur;
+			cur=next;
+			
+		}
+	}
+	
+	//do the resetting
+	full_children.clear();
+	partial_children.clear();
+	label=empty;
+	mark=unmarked;
+	pertinent_child_count=0;
+	pertinent_leaf_count=0;
+	pseudochild=false;
+	pseudonode=false;
+}
+
+//walks the tree from the top and displays the tree structure
+//in a rough format.  Used mostly for debugging purposes
+template <class T>
+void pqnode<T>::print(int numtabs)
+{
+	if(immediate_siblings.size()>2)
+	{
+		cerr<<"Too Many sigblings: "<<this<<endl;
+		exit(0);
+	}
+
+	for(int i=0;i<numtabs;i++)
+		cerr<<"    ";
+	
+	if(type==leaf)
+	{
+		cerr<<leafValue<<" "<<this;
+		cerr<<" p"<<parent<<" ";
+		for(typename set<pqnode<T> *>::iterator i=immediate_siblings.begin();i!=immediate_siblings.end();i++)
+			cerr<<" -"<<*i;
+		cerr<<endl;	
+	}
+	if(type==pnode)
+	{
+		cerr<<"P "<<this;
+		cerr<<" p"<<parent<<" ";
+		for(typename set<pqnode<T> *>::iterator i=immediate_siblings.begin();i!=immediate_siblings.end();i++)
+			cerr<<" -"<<*i;
+		
+		cerr<<endl;	
+		for(typename list<pqnode<T> *>::iterator i=circular_link.begin();i!=circular_link.end();i++)
+		{
+			(*i)->print(numtabs+1);
+		}
+	}
+	if(type==qnode)
+	{
+		cerr<<"Q "<<this<<" |"<<endmost_children[0]<<" |"<<endmost_children[1]<<endl;
+		pqnode<T> *last=NULL;
+		pqnode<T> *cur=endmost_children[0];
+		while(cur!=NULL)
+		{
+			cur->print(numtabs+1);
+			pqnode<T> *next=cur->qNextChild(last);
+			last=cur;
+			cur=next;
+		}
+		if(last!=endmost_children[1]){
+		  WARNING("endmost_children garbled");
+		}
+	}
+}

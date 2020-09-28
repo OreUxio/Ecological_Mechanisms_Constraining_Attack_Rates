@@ -1,0 +1,5 @@
+// -*- mode: c++ -*-
+// $Id$
+
+#include "index_set.h"
+

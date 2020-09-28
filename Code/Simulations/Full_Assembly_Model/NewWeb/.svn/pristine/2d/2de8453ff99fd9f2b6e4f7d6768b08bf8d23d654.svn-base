@@ -1,0 +1,23 @@
+// -*- mode: c++ -*-
+// $Id$
+
+#include <string.h>
+#include "vector_with_max.h"
+
+vector_with_max& vector_with_max::operator=(const vector_with_max& other){
+  max=other.max;
+  std::vector<double>::resize(other.size());
+  memcpy(&std::vector<double>::operator[](0),&other[0],
+	 other.size()*sizeof(double));
+  return *this;
+};
+
+void vector_with_max::fix_max(){
+  double m=0;
+  for(int i=size();i-->0;){
+    if(fabs(operator[](i))>m){
+      m=fabs(operator[](i));
+    }
+  }
+  max=m;
+}

@@ -1,0 +1,147 @@
+// -*- mode: c++ -*-
+// $Id$
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <strstream>
+
+#include "tlf.h"
+#include "error.h"
+#include "evaluate.h"
+
+using namespace std;
+
+bool got_a(char c,istream & is){
+  if(is.eof()) return false;
+  if(is.get()==c){
+    return true;
+  }else{
+    is.unget();
+    return false;
+  }
+}
+
+double read_utf_eng_num(istream & is){
+  double mant=0,expo=0,sig=1,esig=1;
+  while(got_a(' ',is));
+  if(got_a(1,is)) sig=-1;
+  is >> mant;
+  while(got_a(' ',is));
+  if(!got_a(4,is)){
+    return sig*mant;
+  }
+  while(got_a(' ',is));
+  ALWAYS_ASSERT(is.get()=='1');
+  ALWAYS_ASSERT(is.get()=='0');
+  if(got_a(1,is)) esig=-1;
+  is >> expo;
+  return sig*mant*pow(10,esig*expo);
+}
+
+static my_evaluator_t eval_here;
+const double bodymass_unit=eval_here("1*kilogram");
+const double abundance_unit=eval_here("1/meter^3");
+const double pelagic_depth=eval_here("2.7*meter");
+
+void read_tlf_file(const char * file_name, 
+		   Snapshot & data){
+  sequence<int> Id;
+  sequence<string> name;
+  sequence<char> category;
+  sequence<double> bodymass_value;
+  sequence<double> abundance_value;
+  sequence<int> trophic_species;
+  sequence<double> trophic_height;
+  sequence< sequence<int> > trophic_species_list;
+
+  ifstream f(file_name);
+  
+  if(f.fail()){
+    FATAL_ERROR("could not open file " << file_name << " for reading.");
+  }
+  
+  string line;
+ 
+  // get first header line
+  getline(f,line);
+  ALWAYS_ASSERT(!f.fail());
+  ALWAYS_ASSERT(line[0]=='#');
+
+  // read species data
+  int i=0;
+  while(true){
+    getline(f,line);
+    if(f.fail()) break;
+    if(line[0]=='#') break;
+    istringstream l(line);
+    l >> Id[i];
+    l.seekg(1); //skip trailing space
+    getline(l,name[i],'(');
+    l >> category[i];
+    ALWAYS_ASSERT(l.get()==')');
+    bodymass_value[i]=read_utf_eng_num(l);
+    abundance_value[i]=read_utf_eng_num(l);
+    if(category[i]=='Z')
+      abundance_value[i]*=6;
+    while(got_a(' ',l));
+    if(l.eof()) 
+      trophic_species[i]==0;
+    else
+      l >> trophic_species[i];
+    while(got_a(' ',l));
+    if(l.eof()) 
+      trophic_height[i]==1;
+    else
+      l >> trophic_height[i];
+    trophic_species_list[trophic_species[i]].prepend(i);
+//     cout 
+//       << Id[i] << "\t"
+//       << category[i] << "\t"
+//       << bodymass_value[i] << "\t"
+//       << abundance_value[i] << "\t"
+//       << trophic_species[i] << "\t"
+//       << trophic_height[i] << endl;
+    i++;
+  }
+  // get food web matrix
+  const int TS=trophic_species_list.size();
+  const int S=i;
+  Interaction_Matrix im(S);
+  for(int i=S;i-->0;){
+    for(int j=S;j-->0;){
+      im[i][j]=NetworkAnalysis::none;
+    }
+  }
+  for(int i=1;i<TS;i++){
+    getline(f,line);
+    ALWAYS_ASSERT(!f.fail());
+    istringstream l(line);
+    for(int j=1;j<TS;j++){
+      while(got_a(' ',l));
+      if(l.get()=='1'){
+	//trophic species link, record individual links:
+	for(int il=trophic_species_list[i].size();il-->0;){
+	  for(int jl=trophic_species_list[j].size();jl-->0;){
+	    im[trophic_species_list[j][jl]]
+	      [trophic_species_list[i][il]]=
+	      NetworkAnalysis::eats;
+	  }
+	}
+      }
+    }
+  }
+  bodymass_value*=bodymass_unit;
+  const double area=eval_here("0.79*ha");
+  WARNING("Assuming area of 0.79*ha");
+  abundance_value*=abundance_unit*pelagic_depth*area;
+  sequence<double> biomass_B=bodymass_value*abundance_value;
+  data.set_number_of_compartments(S);
+  data.set_area(area);
+  data.set_bodymasses(bodymass_value);
+  data.set_biomasses(biomass_B);
+  data.set_links(im);
+  data.adjust_bottom_given_links();
+}
+
+

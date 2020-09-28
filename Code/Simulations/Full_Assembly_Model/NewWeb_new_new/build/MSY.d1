@@ -1,0 +1,17 @@
+MSY.o MSY.d1 : MSY.cc  error.h  \
+  isres-variant.h \
+  MSY.h  \
+ NewMatrix.h   \
+  evaluate.h \
+ CLHEP_Evaluator.h NewWeb.h  \
+  NetworkAnalysis.h random.h \
+  CMatrix.h sequence.h \
+ simple_vector.h  \
+  NetworkHelpers.h ODE.h \
+  NewSpecies.h remember.h \
+  md5.h \
+ link_strength_matrix.h snapshot.h otherwebs.h \
+  Statistics.h SortedVector.h \
+  vector_with_max.h \
+ SortedMatrix.h relax.h ptr_vector.h CompMatrix.h mass_integrator.h \
+ cfgList.h parsecfg.h

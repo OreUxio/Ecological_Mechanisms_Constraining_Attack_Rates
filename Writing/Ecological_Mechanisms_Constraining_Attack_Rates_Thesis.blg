@@ -1,0 +1,89 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.aux
+The style file: ecol_let.bst
+Database file #1: zbb-abbrev-local.bib
+I was expecting a `,' or a `}'---line 4769 of file zbb-abbrev-local.bib
+ :  
+ :  [Deng, Zhi-Liang] Heilongjiang Univ, Sch Math Sci, Harbin 150080, Peoples R China.;author-email=fuchuli@lzu.edu.cn\00
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+"" immediately follows an entry type---line 4769 of file zbb-abbrev-local.bib
+ :  [Deng, Zhi-Liang] Heilongjiang Univ, Sch Math Sci, Harbin 150080, Peoples R China.;author-email=fuchuli@lzu.edu.cn\00
+ :                                                                                                                       
+I'm skipping whatever remains of this entry
+I was expecting a `{' or a `('---line 4771 of file zbb-abbrev-local.bib
+ :  
+ :  fengxl05@163.com\00\00
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+You're missing an entry type---line 4771 of file zbb-abbrev-local.bib
+ :  fengxl05@
+ :           163.com\00\00
+I'm skipping whatever remains of this entry
+You're missing an entry type---line 4772 of file zbb-abbrev-local.bib
+ :  doufang566@
+ :             163.com;doc-delivery-number=499DD;funding-acknowledgement=National Natural Science Foundation of China [10671085];funding-text=This project was supported by the National Natural Science Foundation\00`
+I'm skipping whatever remains of this entry
+Database file #2: yo_latest_2.bib
+Repeated entry---line 1135 of file yo_latest_2.bib
+ : @article{Abrams1986
+ :                    ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 1174 of file yo_latest_2.bib
+ : @article{Yawata2014
+ :                    ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 2514 of file yo_latest_2.bib
+ : @article{Johansson2013
+ :                       ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 2886 of file yo_latest_2.bib
+ : @incollection{Rossberg2013
+ :                           ,
+I'm skipping whatever remains of this entry
+Warning--empty journal in Johansson2013
+Warning--missing publisher in Rossberg2013
+Warning--missing publisher in Sodhi2014
+You've used 133 entries,
+            2997 wiz_defined-function locations,
+            1474 strings with 26959 characters,
+and the built_in function-call counts, 77977 in all, are:
+= -- 6506
+> -- 3378
+< -- 87
++ -- 1305
+- -- 1167
+* -- 5956
+:= -- 12744
+add.period$ -- 404
+call.type$ -- 133
+change.case$ -- 1058
+chr.to.int$ -- 132
+cite$ -- 136
+duplicate$ -- 5304
+empty$ -- 5484
+format.name$ -- 1526
+if$ -- 14920
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 1179
+newline$ -- 674
+num.names$ -- 532
+pop$ -- 1930
+preamble$ -- 1
+purify$ -- 921
+quote$ -- 0
+skip$ -- 1609
+stack$ -- 0
+substring$ -- 4446
+swap$ -- 2877
+text.length$ -- 9
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 1182
+warning$ -- 3
+while$ -- 637
+width$ -- 0
+write$ -- 1734
+(There were 9 error messages)

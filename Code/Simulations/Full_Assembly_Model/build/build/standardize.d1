@@ -1,0 +1,9 @@
+standardize.o standardize.d1 : standardize.cc  \
+ NetworkAnalysis.h error.h   \
+  random.h \
+ CMatrix.h  sequence.h  \
+  simple_vector.h \
+ NewMatrix.h   \
+  NetworkHelpers.h \
+ cfgList.h parsecfg.h evaluate.h CLHEP_Evaluator.h \
+ 

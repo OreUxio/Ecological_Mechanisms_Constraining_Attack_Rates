@@ -1,0 +1,361 @@
+// -*- mode: c++ -*-
+// $Id$
+
+#include "SortedMatrix.h"
+#include <iostream>
+#include <algorithm>
+#include <math.h>
+#include <boost/preprocessor/repetition.hpp>
+#include "error.h"
+#include "Statistics.h"
+
+using namespace std;
+
+static double matrix_accuracy=DBL_EPSILON;
+static double matrix_truncation_epsilon=0;
+
+//#define SOMA_MEASURE_EFFICIENCY
+#define SOMA_UNROLL_LOOP
+
+#ifndef SOMA_ITERATIONS_UNROLLED // number of iterations to unroll
+#define SOMA_ITERATIONS_UNROLLED 8
+#endif
+
+// Manage adjustable parameters:
+#include "cfgList.h"
+static cfgStruct cfg[] = 
+{
+  CFGDOUBLE(matrix_accuracy),
+  CFGDOUBLE(matrix_truncation_epsilon),
+  {0, CFG_END, 0}
+};
+static cfg_add dummy(cfg);
+
+
+double & SortedMatrix::default_accuracy=matrix_accuracy;  
+double & SortedMatrix::default_truncation_epsilon=
+  matrix_truncation_epsilon;
+
+const SortedMatrix::entry_t SortedMatrix::unused_entry=
+  entry_t(location_t(-1,-1),0);
+
+
+SortedMatrix::SortedMatrix(symmetry_t s):
+  _size(0),
+  _accuracy(default_accuracy),
+  _truncation_epsilon(default_truncation_epsilon),
+  _symmetry(s),
+  _clean(true)
+{
+}
+
+double SortedMatrix::active_reference_t::get_value() const{
+  locator_t::iterator li;
+  if(origin._symmetry==symmetric && loc.row!=loc.column){
+    if(loc.row>loc.column){
+      li=origin.locator.find(loc);
+    }else{
+      li=origin.locator.find(location_t(loc.column,loc.row));
+    }
+    if(li==origin.locator.end()){
+      return 0;
+    }else{
+      return origin._entries[li->second].value*0.5;
+    }
+  }else{
+    li=origin.locator.find(loc);
+    if(li==origin.locator.end()){
+      return 0;
+    }else{
+      return origin._entries[li->second].value;
+    }
+  }
+}
+
+void SortedMatrix::active_reference_t::set_value(double v) const{
+  location_t loc1=(origin._symmetry==symmetric && loc.row<loc.column ?
+		   location_t(loc.column,loc.row) :
+		   location_t(loc.row,loc.column) );
+  locator_t::iterator li=
+    origin.locator.find(loc1);
+  double saved_v=v;
+  if(origin._symmetry==symmetric && loc.row!=loc.column){
+    saved_v*=2;
+  }
+  
+  if(li!=origin.locator.end()){
+    entry_t & e=origin._entries[li->second];
+    if(e.value==saved_v)
+      return;
+    // delete entry if it was there already
+    origin.locator.erase(li);
+    e=unused_entry;
+    origin._clean=false;
+  }
+  if(fabs(v)>origin._truncation_epsilon){
+    origin._entries.push_back(entry_t(loc1,saved_v));
+    origin.locator[loc1]=origin._entries.size()-1;
+    origin._clean=false;
+  }
+}
+
+void SortedMatrix_tester(){
+  SortedMatrix M;
+  M[3][2]=3.2;
+  M[1][2]=1.2;
+  cout << M[0][7] << endl;
+  cout << M[3][2] << endl;
+  M[3][2]=3.0;
+  cout << M[3][2] << endl;
+  cout << M[1][2] << endl;
+  cout << M[1][2]+M[3][2]+M[7][7] << endl;
+
+  const double v1[]={1.0,2.0,3.0,4.0};
+  const double v2[]={10.0,20.0,30.0,40.0};
+ 
+  vector_with_max V1;
+  vector_with_max V2;
+  
+  for(int i=sizeof(v1);i-->0;){
+    V1(i)=v1[i];
+  }
+
+  for(int i=sizeof(v2);i-->0;){
+    V2(i)=v2[i];
+  }
+
+  cout << M.sandwich_product(V1,V2) << endl;
+
+  exit(0);
+}
+  
+void
+SortedMatrix::cleanup_helper() const {
+  sort(_entries.begin(),_entries.end(),larger_value_than());
+  
+  
+  //erase unused entries
+  if(_entries.begin()!=_entries.end()){
+    if(_entries.begin()->unused()){
+      _entries.clear();
+      locator.clear();
+    }else{
+      _container::iterator l=_entries.end();
+      while((--l)->unused() ) 
+	locator.erase(locator.find(*l));
+      
+      _entries.erase(++l,_entries.end());
+    }
+  }
+  
+//     locator.clear(); // This line is expensive.  If this helps to
+// 		     // remove the sudden death phenomenon, try to do
+// 		     // this more efficient.
+  for(int i=0;i<_entries.size();++i){
+    locator[_entries[i]]=i;
+  }
+  _clean=true;
+}
+
+// #define SOMA_MEASURE_EFFICIENCY
+#ifdef SOMA_MEASURE_EFFICIENCY
+#include "random.h"
+#endif
+#define SOMA_ONE_ITERATION(z, n, unused)	\
+sum+=i->value*v1[i->row]*v2[i->column];		\
+++i;
+
+
+double 
+SortedMatrix::sandwich_product(const double* v1, double max_v1, 
+			       const double* v2, double max_v2) const {
+#ifdef SOMA_MEASURE_EFFICIENCY
+  static average_meter av_turns;
+  static average_meter av_speedup;
+  static average_meter av_error;
+#endif
+
+  cleanup();
+  double sum=0;
+  const double max=max_v1*max_v2;
+  const double factor=max*(1.0/_accuracy);
+#ifdef SOMA_MEASURE_EFFICIENCY
+  double val2=0.0;
+#endif
+
+  _container::const_iterator i=_entries.begin();
+  const _container::const_iterator end=_entries.end();
+#ifdef SOMA_MEASURE_EFFICIENCY
+  int t=0;
+#endif
+  while(i!=end){
+#ifdef SOMA_UNROLL_LOOP
+    //Unroll loop heavily:
+    if(i+SOMA_ITERATIONS_UNROLLED<end){
+#ifdef SOMA_MEASURE_EFFICIENCY
+      t+=SOMA_ITERATIONS_UNROLLED;
+#endif
+      // Repeated insertion of one iteration at preprocessor stage:
+      BOOST_PP_REPEAT(SOMA_ITERATIONS_UNROLLED, SOMA_ONE_ITERATION, ~);
+    }
+#endif
+#ifdef SOMA_MEASURE_EFFICIENCY
+    t++;
+#endif
+    const entry_t & e=*i;
+    const double val=e.value;
+#ifdef SOMA_MEASURE_EFFICIENCY
+    if(val>0)
+      val2=e.value;
+    //REPORT(val2);
+#endif
+    sum+=val*v1[e.row]*v2[e.column];
+    if(val*factor<sum)
+      break;
+    ++i;
+  }
+#ifdef SOMA_MEASURE_EFFICIENCY
+  // val2 is last non-zero value added to sum;
+  // If val2=0, then all terms in above sum are zero and 
+  // we set val2 to a high value which helps in analyzing
+  // output to find smallest non-zero val2
+  double last_accepted_value=
+    (val2==0 ?
+     100000 :
+     val2 );
+  //double first_ignored_value=
+  //(i!=end ?
+  //i->value :
+  //val2 );
+  //DBL_MIN );
+  //if(unirand()<0.01)
+  //REPORT(first_ignored_value);
+  REPORT(last_accepted_value);
+  double error=0;
+  while(i!=end){
+    const entry_t & e=*i;
+    const double val=e.value;
+    error+=val*v1[e.row]*v2[e.column];
+    ++i;
+  }
+  if(sum)
+    av_error.sample(error/sum);
+  av_turns.sample(t);
+  if(t)
+    av_speedup.sample(_entries.size()/double(t));
+  REPORT(_entries.size());
+  REPORT(t);
+  REPORT(av_turns);
+  REPORT(av_speedup);
+  REPORT(av_error);
+#endif
+  return sum;
+}
+
+//// inlined
+// double 
+// SortedMatrix::sandwich_product(const vector_with_max & v1,
+// 			       const vector_with_max & v2)const{
+//   return sandwich_product(v1.get_data(),v1.get_max(),
+// 			  v2.get_data(),v2.get_max());
+// }
+
+#if 1
+
+bool SortedMatrix::operator==(const SortedMatrix & other){
+  cleanup();
+  other.cleanup();
+  return this->_entries==other._entries;
+}
+
+#else 
+
+bool SortedMatrix::operator==(const SortedMatrix & other){
+  cleanup();
+  other.cleanup();
+  if(_entries.size()!=other._entries.size()){
+    REPORT(_entries.size());
+    REPORT(other._entries.size());
+    return false;
+  }
+  _container::iterator i=_entries.begin();
+  _container::iterator j=other._entries.begin();
+  while(i!=_entries.end()){
+    if(!(*i++==*j++)){
+      REPORT(i->value-j->value);
+      REPORT(i->row-j->row);
+      REPORT(i->column-j->column);
+      return false;
+    }
+  }
+  return true;
+}
+
+#endif
+
+void SortedMatrix::resize(int new_size){
+  if(new_size<_size){
+    for(_container::iterator i=_entries.begin();
+      i!=_entries.end();++i){
+      if(i->row >= new_size or
+	 i->column >= new_size){
+	locator.erase(locator.find(*i));
+	*i=unused_entry;
+	_clean=false;
+      }
+    }
+  }
+  _size=new_size;
+  return;
+}
+
+void SortedMatrix::move(index_t from,index_t to){ 
+  if(from==to) return;
+  for(_container::iterator i=_entries.begin();
+      i!=_entries.end();++i){
+    if(i->row == to or
+       i->column == to){
+      locator.erase(locator.find(*i));
+      *i=unused_entry;
+      _clean=false;
+    }else{ 
+      if(i->row == from or i->column == from){
+	locator.erase(locator.find(*i));	
+	if(i->row == from){
+	  if(_symmetry == symmetric && to < i->column){
+	    i->row=i->column;
+	    if(i->row == from) i->row=to;
+	    i->column=to;
+	  }else{
+	    i->row=to;
+	  }
+	}
+	if(i->column == from){
+	  if(_symmetry==symmetric && to > i->row){
+	    i->column=i->row;
+	    i->row=to;
+	  }else{
+	    i->column=to;
+	  }
+	}
+	locator[*i]=i-_entries.begin();
+      }
+    }
+  }
+}
+
+
+std::ostream & operator<<(std::ostream &stream, const SortedMatrix &m){
+  m.cleanup();
+  stream << m._entries.size() << " entries" << std::endl;
+  for(SortedMatrix::_container::iterator i=m._entries.begin();
+      i!=m._entries.end();){
+    stream << i->value << " " 
+	   << i->row << " "
+	   << i->column << " ";
+    if(++i!=m._entries.end())
+      stream << std::endl;
+  }
+  return stream;
+}
+

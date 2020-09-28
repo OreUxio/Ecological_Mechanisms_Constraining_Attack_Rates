@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/Base_bones.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - Base_bones.hpp<span style="font-size: 80%;"> (source / <a href="Base_bones.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2014 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : //! \addtogroup Base
+<span class="lineNum">      12 </span>            : //! @{
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      17 </span>            : struct Base_inv_yes
+<span class="lineNum">      18 </span>            :   {
+<span class="lineNum">      19 </span>            :   arma_inline const Op&lt;derived,op_inv&gt; i() const;   //!&lt; matrix inverse
+<span class="lineNum">      20 </span>            :   
+<span class="lineNum">      21 </span>            :   arma_inline const Op&lt;derived,op_inv&gt; i(const bool ) const;   //!&lt; kept only for compatibility with old user code
+<span class="lineNum">      22 </span>            :   arma_inline const Op&lt;derived,op_inv&gt; i(const char*) const;   //!&lt; kept only for compatibility with old user code
+<span class="lineNum">      23 </span>            :   };
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      27 </span>            : struct Base_inv_no
+<span class="lineNum">      28 </span>            :   {
+<span class="lineNum">      29 </span>            :   };
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : template&lt;typename derived, bool condition&gt;
+<span class="lineNum">      33 </span>            : struct Base_inv {};
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      36 </span>            : struct Base_inv&lt;derived, true&gt;  { typedef Base_inv_yes&lt;derived&gt; result; };
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      39 </span>            : struct Base_inv&lt;derived, false&gt; { typedef Base_inv_no&lt;derived&gt;  result; };
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : template&lt;typename elem_type, typename derived&gt;
+<span class="lineNum">      44 </span>            : struct Base_eval_Mat
+<span class="lineNum">      45 </span>            :   {
+<span class="lineNum">      46 </span>            :   arma_inline const derived&amp; eval() const;
+<span class="lineNum">      47 </span>            :   };
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : template&lt;typename elem_type, typename derived&gt;
+<span class="lineNum">      51 </span>            : struct Base_eval_expr
+<span class="lineNum">      52 </span>            :   {
+<span class="lineNum">      53 </span>            :   arma_inline Mat&lt;elem_type&gt; eval() const;   //!&lt; force the immediate evaluation of a delayed expression
+<span class="lineNum">      54 </span>            :   };
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : template&lt;typename elem_type, typename derived, bool condition&gt;
+<span class="lineNum">      58 </span>            : struct Base_eval {};
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : template&lt;typename elem_type, typename derived&gt;
+<span class="lineNum">      61 </span>            : struct Base_eval&lt;elem_type, derived, true&gt;  { typedef Base_eval_Mat&lt;elem_type, derived&gt;  result; };
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            : template&lt;typename elem_type, typename derived&gt;
+<span class="lineNum">      64 </span>            : struct Base_eval&lt;elem_type, derived, false&gt; { typedef Base_eval_expr&lt;elem_type, derived&gt; result; };
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      69 </span>            : struct Base_trans_cx
+<span class="lineNum">      70 </span>            :   {
+<span class="lineNum">      71 </span>            :   arma_inline const Op&lt;derived,op_htrans&gt;  t() const;
+<span class="lineNum">      72 </span>            :   arma_inline const Op&lt;derived,op_htrans&gt; ht() const;
+<span class="lineNum">      73 </span>            :   arma_inline const Op&lt;derived,op_strans&gt; st() const;  // simple transpose: no complex conjugates
+<span class="lineNum">      74 </span>            :   };
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      78 </span>            : struct Base_trans_default
+<span class="lineNum">      79 </span>            :   {
+<span class="lineNum">      80 </span>            :   arma_inline const Op&lt;derived,op_htrans&gt;  t() const;
+<span class="lineNum">      81 </span>            :   arma_inline const Op&lt;derived,op_htrans&gt; ht() const;
+<span class="lineNum">      82 </span>            :   arma_inline const Op&lt;derived,op_htrans&gt; st() const;  // return op_htrans instead of op_strans, as it's handled better by matrix multiplication code
+<span class="lineNum">      83 </span>            :   };
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : template&lt;typename derived, bool condition&gt;
+<span class="lineNum">      87 </span>            : struct Base_trans {};
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      90 </span>            : struct Base_trans&lt;derived, true&gt;  { typedef Base_trans_cx&lt;derived&gt;      result; };
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : template&lt;typename derived&gt;
+<span class="lineNum">      93 </span>            : struct Base_trans&lt;derived, false&gt; { typedef Base_trans_default&lt;derived&gt; result; };
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : //! Class for static polymorphism, modelled after the &quot;Curiously Recurring Template Pattern&quot; (CRTP).
+<span class="lineNum">      98 </span>            : //! Used for type-safe downcasting in functions that restrict their input(s) to be classes that are
+<span class="lineNum">      99 </span>            : //! derived from Base (e.g. Mat, Op, Glue, diagview, subview).
+<span class="lineNum">     100 </span>            : //! A Base object can be converted to a Mat object by the unwrap class.
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            : template&lt;typename elem_type, typename derived&gt;
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 : struct Base</span>
+<span class="lineNum">     104 </span>            :   : public Base_inv&lt;derived, is_supported_blas_type&lt;elem_type&gt;::value&gt;::result
+<span class="lineNum">     105 </span>            :   , public Base_eval&lt;elem_type, derived, is_Mat&lt;derived&gt;::value&gt;::result
+<span class="lineNum">     106 </span>            :   , public Base_trans&lt;derived, is_cx&lt;elem_type&gt;::value&gt;::result
+<span class="lineNum">     107 </span>            :   {
+<span class="lineNum">     108 </span>            :   arma_inline const derived&amp; get_ref() const;
+<span class="lineNum">     109 </span>            :   
+<span class="lineNum">     110 </span>            :   inline void print(                           const std::string extra_text = &quot;&quot;) const;
+<span class="lineNum">     111 </span>            :   inline void print(std::ostream&amp; user_stream, const std::string extra_text = &quot;&quot;) const;
+<span class="lineNum">     112 </span>            :   
+<span class="lineNum">     113 </span>            :   inline void raw_print(                           const std::string extra_text = &quot;&quot;) const;
+<span class="lineNum">     114 </span>            :   inline void raw_print(std::ostream&amp; user_stream, const std::string extra_text = &quot;&quot;) const;
+<span class="lineNum">     115 </span>            :   
+<span class="lineNum">     116 </span>            :   inline arma_warn_unused elem_type min() const;
+<span class="lineNum">     117 </span>            :   inline arma_warn_unused elem_type max() const;
+<span class="lineNum">     118 </span>            :   
+<span class="lineNum">     119 </span>            :   inline elem_type min(uword&amp; index_of_min_val) const;
+<span class="lineNum">     120 </span>            :   inline elem_type max(uword&amp; index_of_max_val) const;
+<span class="lineNum">     121 </span>            :   
+<span class="lineNum">     122 </span>            :   inline elem_type min(uword&amp; row_of_min_val, uword&amp; col_of_min_val) const;
+<span class="lineNum">     123 </span>            :   inline elem_type max(uword&amp; row_of_max_val, uword&amp; col_of_max_val) const;
+<span class="lineNum">     124 </span>            :   };
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

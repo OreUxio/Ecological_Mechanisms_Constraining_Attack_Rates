@@ -1,0 +1,60 @@
+// -*- mode: c++ -*-
+// $Id: xy_graph.h 1431 2009-05-04 12:22:40Z axel $
+#ifndef _GRAPH_H_
+#define _GRAPH_H_
+
+// a graph is a pair of lists of numbers of equal length (x and y coordinate):
+
+#include "sequence.h"
+#include <iostream>
+
+/// Representation of a graph of points.
+class xy_graph 
+{
+ protected:
+  sequence<double> the_x;
+  sequence<double> the_y;
+  friend std::ostream & operator<<(std::ostream &stream, const xy_graph &s);
+  friend std::istream & operator>>(std::istream &stream, xy_graph &s);
+ protected:
+  double &x(int i){
+    return the_x[i];
+  }
+  double &y(int i){
+    return the_y[i];
+  }
+ public:
+  xy_graph(){};
+  xy_graph(const sequence<double> & x,const sequence<double> &y):
+    the_x(x),the_y(y){
+  }
+  ~xy_graph(){};
+  void save(const char * filename);
+  void load(const char * filename);
+  double get_x(int i) const{
+    return the_x[i];
+  }
+  double get_y(int i) const{
+    return the_y[i];
+  }
+  int size() const;
+  xy_graph log_xy();
+};
+
+std::ostream & operator<<(std::ostream &stream, const xy_graph &s);
+std::istream & operator>>(std::istream &stream, xy_graph &s);
+
+/// A "spectrum" computed from an xy_graph
+/** This is a spectrum in the sense of a "biomass spectrum" or
+    an "abundance spectrum" in ecology. */
+class log_spectrum:public xy_graph{
+ private:
+  double the_lower_end;
+ public:
+  log_spectrum(const xy_graph & data,double bin_factor=10.0);
+  double lower_end(){
+    return the_lower_end;
+  }
+};
+	  
+#endif // _GRAPH_H_

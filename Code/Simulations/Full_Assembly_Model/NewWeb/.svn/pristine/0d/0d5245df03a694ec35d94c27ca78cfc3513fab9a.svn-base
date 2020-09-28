@@ -1,0 +1,6 @@
+#!/usr/bin/awk -f
+# $Id$
+# extracts the lines containing data in space matrix file
+
+hrules==2 {print;}
+/^--/ {hrules++;}

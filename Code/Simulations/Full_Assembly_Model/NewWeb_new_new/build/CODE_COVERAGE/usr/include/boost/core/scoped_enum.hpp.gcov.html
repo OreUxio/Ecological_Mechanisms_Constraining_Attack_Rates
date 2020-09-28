@@ -1,0 +1,268 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/boost/core/scoped_enum.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/core</a> - scoped_enum.hpp<span style="font-size: 80%;"> (source / <a href="scoped_enum.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //  scoped_enum.hpp  ---------------------------------------------------------//</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : //  Copyright Beman Dawes, 2009
+<span class="lineNum">       4 </span>            : //  Copyright (C) 2011-2012 Vicente J. Botet Escriba
+<span class="lineNum">       5 </span>            : //  Copyright (C) 2012 Anthony Williams
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : //  Distributed under the Boost Software License, Version 1.0.
+<span class="lineNum">       8 </span>            : //  See http://www.boost.org/LICENSE_1_0.txt
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #ifndef BOOST_CORE_SCOPED_ENUM_HPP
+<span class="lineNum">      11 </span>            : #define BOOST_CORE_SCOPED_ENUM_HPP
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #ifdef BOOST_HAS_PRAGMA_ONCE
+<span class="lineNum">      16 </span>            : #pragma once
+<span class="lineNum">      17 </span>            : #endif
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : namespace boost
+<span class="lineNum">      20 </span>            : {
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #ifdef BOOST_NO_CXX11_SCOPED_ENUMS
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            :   /**
+<span class="lineNum">      25 </span>            :    * Meta-function to get the native enum type associated to an enum class or its emulation.
+<span class="lineNum">      26 </span>            :    */
+<span class="lineNum">      27 </span>            :   template &lt;typename EnumType&gt;
+<span class="lineNum">      28 </span>            :   struct native_type
+<span class="lineNum">      29 </span>            :   {
+<span class="lineNum">      30 </span>            :     /**
+<span class="lineNum">      31 </span>            :      * The member typedef type names the native enum type associated to the scoped enum,
+<span class="lineNum">      32 </span>            :      * which is it self if the compiler supports scoped enums or EnumType::enum_type if it is an emulated scoped enum.
+<span class="lineNum">      33 </span>            :      */
+<span class="lineNum">      34 </span>            :     typedef typename EnumType::enum_type type;
+<span class="lineNum">      35 </span>            :   };
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :   /**
+<span class="lineNum">      38 </span>            :    * Casts a scoped enum to its underlying type.
+<span class="lineNum">      39 </span>            :    *
+<span class="lineNum">      40 </span>            :    * This function is useful when working with scoped enum classes, which doens't implicitly convert to the underlying type.
+<span class="lineNum">      41 </span>            :    * @param v A scoped enum.
+<span class="lineNum">      42 </span>            :    * @returns The underlying type.
+<span class="lineNum">      43 </span>            :    * @throws No-throws.
+<span class="lineNum">      44 </span>            :    */
+<span class="lineNum">      45 </span>            :   template &lt;typename UnderlyingType, typename EnumType&gt;
+<span class="lineNum">      46 </span>            :   UnderlyingType underlying_cast(EnumType v)
+<span class="lineNum">      47 </span>            :   {
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :     return v.get_underlying_value_();</span>
+<span class="lineNum">      49 </span>            :   }
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            :   /**
+<span class="lineNum">      52 </span>            :    * Casts a scoped enum to its native enum type.
+<span class="lineNum">      53 </span>            :    *
+<span class="lineNum">      54 </span>            :    * This function is useful to make programs portable when the scoped enum emulation can not be use where native enums can.
+<span class="lineNum">      55 </span>            :    *
+<span class="lineNum">      56 </span>            :    * EnumType the scoped enum type
+<span class="lineNum">      57 </span>            :    *
+<span class="lineNum">      58 </span>            :    * @param v A scoped enum.
+<span class="lineNum">      59 </span>            :    * @returns The native enum value.
+<span class="lineNum">      60 </span>            :    * @throws No-throws.
+<span class="lineNum">      61 </span>            :    */
+<span class="lineNum">      62 </span>            :   template &lt;typename EnumType&gt;
+<span class="lineNum">      63 </span>            :   inline
+<span class="lineNum">      64 </span>            :   typename EnumType::enum_type native_value(EnumType e)
+<span class="lineNum">      65 </span>            :   {
+<span class="lineNum">      66 </span>            :     return e.get_native_value_();
+<span class="lineNum">      67 </span>            :   }
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : #else  // BOOST_NO_CXX11_SCOPED_ENUMS
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :   template &lt;typename EnumType&gt;
+<span class="lineNum">      72 </span>            :   struct native_type
+<span class="lineNum">      73 </span>            :   {
+<span class="lineNum">      74 </span>            :     typedef EnumType type;
+<span class="lineNum">      75 </span>            :   };
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            :   template &lt;typename UnderlyingType, typename EnumType&gt;
+<span class="lineNum">      78 </span>            :   UnderlyingType underlying_cast(EnumType v)
+<span class="lineNum">      79 </span>            :   {
+<span class="lineNum">      80 </span>            :     return static_cast&lt;UnderlyingType&gt;(v);
+<span class="lineNum">      81 </span>            :   }
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :   template &lt;typename EnumType&gt;
+<span class="lineNum">      84 </span>            :   inline
+<span class="lineNum">      85 </span>            :   EnumType native_value(EnumType e)
+<span class="lineNum">      86 </span>            :   {
+<span class="lineNum">      87 </span>            :     return e;
+<span class="lineNum">      88 </span>            :   }
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : #endif // BOOST_NO_CXX11_SCOPED_ENUMS
+<span class="lineNum">      91 </span>            : }
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : #ifdef BOOST_NO_CXX11_SCOPED_ENUMS
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : #ifndef BOOST_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : #define BOOST_SCOPED_ENUM_UT_DECLARE_CONVERSION_OPERATOR \
+<span class="lineNum">      99 </span>            :      explicit operator underlying_type() const BOOST_NOEXCEPT { return get_underlying_value_(); }
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : #else
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : #define BOOST_SCOPED_ENUM_UT_DECLARE_CONVERSION_OPERATOR
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : #endif
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : /**
+<span class="lineNum">     108 </span>            :  * Start a declaration of a scoped enum.
+<span class="lineNum">     109 </span>            :  *
+<span class="lineNum">     110 </span>            :  * @param EnumType The new scoped enum.
+<span class="lineNum">     111 </span>            :  * @param UnderlyingType The underlying type.
+<span class="lineNum">     112 </span>            :  */
+<span class="lineNum">     113 </span>            : #define BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(EnumType, UnderlyingType)    \
+<span class="lineNum">     114 </span>            :     struct EnumType {                                                   \
+<span class="lineNum">     115 </span>            :         typedef void is_boost_scoped_enum_tag;                          \
+<span class="lineNum">     116 </span>            :         typedef UnderlyingType underlying_type;                         \
+<span class="lineNum">     117 </span>            :         EnumType() BOOST_NOEXCEPT {}                                    \
+<span class="lineNum">     118 </span>            :         explicit EnumType(underlying_type v) BOOST_NOEXCEPT : v_(v) {}                 \
+<span class="lineNum">     119 </span>            :         underlying_type get_underlying_value_() const BOOST_NOEXCEPT { return v_; }    \
+<span class="lineNum">     120 </span>            :         BOOST_SCOPED_ENUM_UT_DECLARE_CONVERSION_OPERATOR                \
+<span class="lineNum">     121 </span>            :     private:                                                            \
+<span class="lineNum">     122 </span>            :         underlying_type v_;                                             \
+<span class="lineNum">     123 </span>            :         typedef EnumType self_type;                                     \
+<span class="lineNum">     124 </span>            :     public:                                                             \
+<span class="lineNum">     125 </span>            :         enum enum_type
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : #define BOOST_SCOPED_ENUM_DECLARE_END2() \
+<span class="lineNum">     128 </span>            :         enum_type get_native_value_() const BOOST_NOEXCEPT { return enum_type(v_); } \
+<span class="lineNum">     129 </span>            :         friend bool operator ==(self_type lhs, self_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)==enum_type(rhs.v_); } \
+<span class="lineNum">     130 </span>            :         friend bool operator ==(self_type lhs, enum_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)==rhs; } \
+<span class="lineNum">     131 </span>            :         friend bool operator ==(enum_type lhs, self_type rhs) BOOST_NOEXCEPT { return lhs==enum_type(rhs.v_); } \
+<span class="lineNum">     132 </span>            :         friend bool operator !=(self_type lhs, self_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)!=enum_type(rhs.v_); } \
+<span class="lineNum">     133 </span>            :         friend bool operator !=(self_type lhs, enum_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)!=rhs; } \
+<span class="lineNum">     134 </span>            :         friend bool operator !=(enum_type lhs, self_type rhs) BOOST_NOEXCEPT { return lhs!=enum_type(rhs.v_); } \
+<span class="lineNum">     135 </span>            :         friend bool operator &lt;(self_type lhs, self_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&lt;enum_type(rhs.v_); } \
+<span class="lineNum">     136 </span>            :         friend bool operator &lt;(self_type lhs, enum_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&lt;rhs; } \
+<span class="lineNum">     137 </span>            :         friend bool operator &lt;(enum_type lhs, self_type rhs) BOOST_NOEXCEPT { return lhs&lt;enum_type(rhs.v_); } \
+<span class="lineNum">     138 </span>            :         friend bool operator &lt;=(self_type lhs, self_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&lt;=enum_type(rhs.v_); } \
+<span class="lineNum">     139 </span>            :         friend bool operator &lt;=(self_type lhs, enum_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&lt;=rhs; } \
+<span class="lineNum">     140 </span>            :         friend bool operator &lt;=(enum_type lhs, self_type rhs) BOOST_NOEXCEPT { return lhs&lt;=enum_type(rhs.v_); } \
+<span class="lineNum">     141 </span>            :         friend bool operator &gt;(self_type lhs, self_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&gt;enum_type(rhs.v_); } \
+<span class="lineNum">     142 </span>            :         friend bool operator &gt;(self_type lhs, enum_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&gt;rhs; } \
+<span class="lineNum">     143 </span>            :         friend bool operator &gt;(enum_type lhs, self_type rhs) BOOST_NOEXCEPT { return lhs&gt;enum_type(rhs.v_); } \
+<span class="lineNum">     144 </span>            :         friend bool operator &gt;=(self_type lhs, self_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&gt;=enum_type(rhs.v_); } \
+<span class="lineNum">     145 </span>            :         friend bool operator &gt;=(self_type lhs, enum_type rhs) BOOST_NOEXCEPT { return enum_type(lhs.v_)&gt;=rhs; } \
+<span class="lineNum">     146 </span>            :         friend bool operator &gt;=(enum_type lhs, self_type rhs) BOOST_NOEXCEPT { return lhs&gt;=enum_type(rhs.v_); } \
+<span class="lineNum">     147 </span>            :     };
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : #define BOOST_SCOPED_ENUM_DECLARE_END(EnumType) \
+<span class="lineNum">     150 </span>            :     ; \
+<span class="lineNum">     151 </span>            :     EnumType(enum_type v) BOOST_NOEXCEPT : v_(v) {}                 \
+<span class="lineNum">     152 </span>            :     BOOST_SCOPED_ENUM_DECLARE_END2()
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            : /**
+<span class="lineNum">     155 </span>            :  * Starts a declaration of a scoped enum with the default int underlying type.
+<span class="lineNum">     156 </span>            :  *
+<span class="lineNum">     157 </span>            :  * @param EnumType The new scoped enum.
+<span class="lineNum">     158 </span>            :  */
+<span class="lineNum">     159 </span>            : #define BOOST_SCOPED_ENUM_DECLARE_BEGIN(EnumType) \
+<span class="lineNum">     160 </span>            :   BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(EnumType,int)
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : /**
+<span class="lineNum">     163 </span>            :  * Name of the native enum type.
+<span class="lineNum">     164 </span>            :  *
+<span class="lineNum">     165 </span>            :  * @param EnumType The new scoped enum.
+<span class="lineNum">     166 </span>            :  */
+<span class="lineNum">     167 </span>            : #define BOOST_SCOPED_ENUM_NATIVE(EnumType) EnumType::enum_type
+<span class="lineNum">     168 </span>            : /**
+<span class="lineNum">     169 </span>            :  * Forward declares an scoped enum.
+<span class="lineNum">     170 </span>            :  *
+<span class="lineNum">     171 </span>            :  * @param EnumType The scoped enum.
+<span class="lineNum">     172 </span>            :  */
+<span class="lineNum">     173 </span>            : #define BOOST_SCOPED_ENUM_FORWARD_DECLARE(EnumType) struct EnumType
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            : #else  // BOOST_NO_CXX11_SCOPED_ENUMS
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            : #define BOOST_SCOPED_ENUM_UT_DECLARE_BEGIN(EnumType,UnderlyingType) enum class EnumType : UnderlyingType
+<span class="lineNum">     178 </span>            : #define BOOST_SCOPED_ENUM_DECLARE_BEGIN(EnumType) enum class EnumType
+<span class="lineNum">     179 </span>            : #define BOOST_SCOPED_ENUM_DECLARE_END2()
+<span class="lineNum">     180 </span>            : #define BOOST_SCOPED_ENUM_DECLARE_END(EnumType) ;
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span>            : #define BOOST_SCOPED_ENUM_NATIVE(EnumType) EnumType
+<span class="lineNum">     183 </span>            : #define BOOST_SCOPED_ENUM_FORWARD_DECLARE(EnumType) enum class EnumType
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            : #endif  // BOOST_NO_CXX11_SCOPED_ENUMS
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            : // Deprecated macros
+<span class="lineNum">     188 </span>            : #define BOOST_SCOPED_ENUM_START(name) BOOST_SCOPED_ENUM_DECLARE_BEGIN(name)
+<span class="lineNum">     189 </span>            : #define BOOST_SCOPED_ENUM_END BOOST_SCOPED_ENUM_DECLARE_END2()
+<span class="lineNum">     190 </span>            : #define BOOST_SCOPED_ENUM(name) BOOST_SCOPED_ENUM_NATIVE(name)
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            : #endif  // BOOST_CORE_SCOPED_ENUM_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

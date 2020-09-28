@@ -1,0 +1,153 @@
+// -*- mode: c++ -*-
+// $Id$
+
+#include "remember.h"
+
+XERCES_CPP_NAMESPACE_USE
+
+int remember::sync(const char * node_name,permanent * p){
+  DOMElement* child=0;
+  switch(read_or_write()){
+  case rememberWrite:
+    {
+      child = the_doc->createElement(toXMLCh(node_name));
+      the_parent_node->appendChild(child);
+      remember rem(the_doc,child,read_or_write());
+      p->fix(&rem);
+      p->data_mapping();
+    }
+    break;
+  case rememberRead:
+    {
+      //find the relevant data
+      DOMNodeList * children =
+	the_parent_node->getChildNodes();
+      for(unsigned int i=0;i<children->getLength();i++){
+	//	std::cout << tochar(children->item(i)->getNodeName()) << std::endl;
+	if(children->item(i)->getNodeType()==DOMNode::ELEMENT_NODE)
+	  child=
+	    static_cast<DOMElement*>(children->item(i));
+	else
+	  child=0;
+	if(child && 0==strcmp(tochar(child->getNodeName()),node_name))
+	  break;
+	else
+	  child=0;
+      }
+      if(!child){
+	return 1;
+      }
+
+      // remove all non-element grand-children (such as blank space,
+      // comments), since they will slow down browsing:
+      DOMNode * grandchild=child->getFirstChild();
+      while(grandchild){
+// 	std::cout << " -> " << tochar(the_parent_node->getNodeName());
+// 	std::cout << " -> " << tochar(child->getNodeName());
+// 	std::cout << " -> " << tochar(grandchild->getNodeName()) << std::endl;
+	if(grandchild->getNodeType()!=DOMNode::ELEMENT_NODE || 
+	   !strcmp(tochar(grandchild->getNodeName()),"#text") ){
+// 	  std::cout << "deleting " << std::endl;
+	  DOMNode * nextgrandchild=grandchild->getNextSibling();
+	  child->removeChild(grandchild)->release();
+	  grandchild=nextgrandchild;
+	}else{
+	  grandchild=grandchild->getNextSibling();
+	}
+      }
+      
+
+      //recurse into the data
+      remember rem(the_doc,child,read_or_write());
+      p->fix(&rem);
+      p->data_mapping();
+      
+#ifdef DEBUGGING
+      //check if we got everything
+      children = child->getChildNodes();
+      bool warning_done=false;
+      for(unsigned int i=0;i<children->getLength();i++){
+	DOMElement *e;
+	if(children->item(i)->getNodeType()==DOMNode::ELEMENT_NODE)
+	  e=
+	    static_cast<DOMElement*>(children->item(i));
+	else
+	  e=0;
+	if(e){
+	  if(!warning_done){
+	    WARNING("the following elements are ignored:");
+	    warning_done=true;
+	  }
+	  WARNING(tochar(e->getTagName()));
+	}
+      }
+#endif
+      
+      //delete this node
+      the_parent_node->removeChild(child);
+      child->release();
+    }
+    break;
+  default:
+    FATAL_ERROR("wrong remember direction");
+  }
+  return 0;
+};
+
+// a special version for strings:
+int remember::sync(const char * node_name,std::string & x){
+  XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* child=0;
+  switch(read_or_write()){
+  case rememberWrite:
+    {
+      child = the_doc->createElement(toXMLCh(node_name));
+      the_parent_node->appendChild(child);
+      std::ostringstream os;
+      os << std::setprecision(20) << x;
+      XERCES_CPP_NAMESPACE_QUALIFIER DOMText * contents;
+      contents = the_doc->createTextNode(toXMLCh(os.str().c_str()));
+      child->appendChild(contents);
+    }
+    break;
+  case rememberRead:
+    {
+        //find the relevant data
+      XERCES_CPP_NAMESPACE_QUALIFIER DOMNodeList * children =
+	the_parent_node->getChildNodes();
+      for(unsigned int i=0;i<children->getLength();i++){
+	//std::cout << tochar(children->item(i)->getNodeName()) << std::endl;
+	if(children->item(i)->getNodeType()==XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ELEMENT_NODE)
+	  child=
+	    static_cast<XERCES_CPP_NAMESPACE_QUALIFIER DOMElement*>(children->item(i));
+	else
+	  child=0;
+	if(child && 0==strcmp(tochar(child->getNodeName()),node_name))
+	  break;
+	else
+	  child=0;
+      }
+      if(!child){
+	return 1;
+      }
+
+      XERCES_CPP_NAMESPACE_QUALIFIER DOMNode * contents=
+	child->getFirstChild();
+      if(!contents){
+	return 1;
+      }
+      if(contents->getNodeType()!=
+	 XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TEXT_NODE)
+	FATAL_ERROR("syntax_error");
+      XERCES_CPP_NAMESPACE_QUALIFIER DOMText * text=
+	(XERCES_CPP_NAMESPACE_QUALIFIER DOMText *) contents;
+      std::istringstream is;
+      x=std::string(tochar(text->getData()));
+      the_parent_node->removeChild(child);
+      child->release();
+    }
+    break;
+  default:
+    FATAL_ERROR("wrong remember direction");
+  }
+  return 0;
+};

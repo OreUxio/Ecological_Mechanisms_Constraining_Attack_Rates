@@ -1,0 +1,972 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/glue_times_meat.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - glue_times_meat.hpp<span style="font-size: 80%;"> (source / <a href="glue_times_meat.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">121</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2015 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : //! \addtogroup glue_times
+<span class="lineNum">      12 </span>            : //! @{
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : template&lt;bool do_inv_detect&gt;
+<span class="lineNum">      17 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">      18 </span>            : arma_hot
+<a name="19"><span class="lineNum">      19 </span>            : inline</a>
+<span class="lineNum">      20 </span>            : void
+<span class="lineNum">      21 </span><span class="lineNoCov">          0 : glue_times_redirect2_helper&lt;do_inv_detect&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt;T1,T2,glue_times&gt;&amp; X)</span>
+<span class="lineNum">      22 </span>            :   {
+<span class="lineNum">      23 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      24 </span>            :   
+<span class="lineNum">      25 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">      26 </span>            :   
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 :   const partial_unwrap&lt;T1&gt; tmp1(X.A);</span>
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :   const partial_unwrap&lt;T2&gt; tmp2(X.B);</span>
+<span class="lineNum">      29 </span>            :   
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :   const typename partial_unwrap&lt;T1&gt;::stored_type&amp; A = tmp1.M;</span>
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :   const typename partial_unwrap&lt;T2&gt;::stored_type&amp; B = tmp2.M;</span>
+<span class="lineNum">      32 </span>            :   
+<span class="lineNum">      33 </span><span class="lineNoCov">          0 :   const bool use_alpha = partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times;</span>
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :   const eT       alpha = use_alpha ? (tmp1.get_val() * tmp2.get_val()) : eT(0);</span>
+<span class="lineNum">      35 </span>            :   
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :   const bool alias = tmp1.is_alias(out) || tmp2.is_alias(out);</span>
+<span class="lineNum">      37 </span>            :   
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :   if(alias == false)</span>
+<span class="lineNum">      39 </span>            :     {
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :     glue_times::apply</span>
+<span class="lineNum">      41 </span>            :       &lt;
+<span class="lineNum">      42 </span>            :       eT,
+<span class="lineNum">      43 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">      44 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">      45 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times)
+<span class="lineNum">      46 </span>            :       &gt;
+<span class="lineNum">      47 </span>            :       (out, A, B, alpha);
+<span class="lineNum">      48 </span>            :     }
+<span class="lineNum">      49 </span>            :   else
+<span class="lineNum">      50 </span>            :     {
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :     Mat&lt;eT&gt; tmp;</span>
+<span class="lineNum">      52 </span>            :     
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 :     glue_times::apply</span>
+<span class="lineNum">      54 </span>            :       &lt;
+<span class="lineNum">      55 </span>            :       eT,
+<span class="lineNum">      56 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">      57 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">      58 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times)
+<span class="lineNum">      59 </span>            :       &gt;
+<span class="lineNum">      60 </span>            :       (tmp, A, B, alpha);
+<span class="lineNum">      61 </span>            :     
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :     out.steal_mem(tmp);</span>
+<span class="lineNum">      63 </span>            :     }
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">      69 </span>            : arma_hot
+<span class="lineNum">      70 </span>            : inline
+<span class="lineNum">      71 </span>            : void
+<span class="lineNum">      72 </span>            : glue_times_redirect2_helper&lt;true&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt;T1,T2,glue_times&gt;&amp; X)
+<span class="lineNum">      73 </span>            :   {
+<span class="lineNum">      74 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      75 </span>            :   
+<span class="lineNum">      76 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">      77 </span>            :   
+<span class="lineNum">      78 </span>            :   if(strip_inv&lt;T1&gt;::do_inv == true)
+<span class="lineNum">      79 </span>            :     {
+<span class="lineNum">      80 </span>            :     // replace inv(A)*B with solve(A,B)
+<span class="lineNum">      81 </span>            :     
+<span class="lineNum">      82 </span>            :     arma_extra_debug_print(&quot;glue_times_redirect&lt;2&gt;::apply(): detected inv(A)*B&quot;);
+<span class="lineNum">      83 </span>            :     
+<span class="lineNum">      84 </span>            :     const strip_inv&lt;T1&gt; A_strip(X.A);
+<span class="lineNum">      85 </span>            :     
+<span class="lineNum">      86 </span>            :     Mat&lt;eT&gt; A = A_strip.M;
+<span class="lineNum">      87 </span>            :     
+<span class="lineNum">      88 </span>            :     arma_debug_check( (A.is_square() == false), &quot;inv(): given matrix must be square sized&quot; );
+<span class="lineNum">      89 </span>            :     
+<span class="lineNum">      90 </span>            :     const unwrap_check&lt;T2&gt; B_tmp(X.B, out);
+<span class="lineNum">      91 </span>            :     const Mat&lt;eT&gt;&amp; B = B_tmp.M;
+<span class="lineNum">      92 </span>            :     
+<span class="lineNum">      93 </span>            :     arma_debug_assert_mul_size(A, B, &quot;matrix multiplication&quot;);
+<span class="lineNum">      94 </span>            :     
+<span class="lineNum">      95 </span>            :     const bool status = auxlib::solve_square_fast(out, A, B);
+<span class="lineNum">      96 </span>            :     
+<span class="lineNum">      97 </span>            :     if(status == false)
+<span class="lineNum">      98 </span>            :       {
+<span class="lineNum">      99 </span>            :       out.reset();
+<span class="lineNum">     100 </span>            :       arma_bad(&quot;matrix multiplication: inverse of singular matrix; suggest to use solve() instead&quot;);
+<span class="lineNum">     101 </span>            :       }
+<span class="lineNum">     102 </span>            :     
+<span class="lineNum">     103 </span>            :     return;
+<span class="lineNum">     104 </span>            :     }
+<span class="lineNum">     105 </span>            :   
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :   glue_times_redirect2_helper&lt;false&gt;::apply(out, X);</span>
+<span class="lineNum">     107 </span>            :   }
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : template&lt;bool do_inv_detect&gt;
+<span class="lineNum">     112 </span>            : template&lt;typename T1, typename T2, typename T3&gt;
+<span class="lineNum">     113 </span>            : arma_hot
+<a name="114"><span class="lineNum">     114 </span>            : inline</a>
+<span class="lineNum">     115 </span>            : void
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 : glue_times_redirect3_helper&lt;do_inv_detect&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt; Glue&lt;T1,T2,glue_times&gt;, T3, glue_times&gt;&amp; X)</span>
+<span class="lineNum">     117 </span>            :   {
+<span class="lineNum">     118 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     119 </span>            :   
+<span class="lineNum">     120 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     121 </span>            :   
+<span class="lineNum">     122 </span>            :   // we have exactly 3 objects
+<span class="lineNum">     123 </span>            :   // hence we can safely expand X as X.A.A, X.A.B and X.B
+<span class="lineNum">     124 </span>            :   
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :   const partial_unwrap&lt;T1&gt; tmp1(X.A.A);</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :   const partial_unwrap&lt;T2&gt; tmp2(X.A.B);</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :   const partial_unwrap&lt;T3&gt; tmp3(X.B  );</span>
+<span class="lineNum">     128 </span>            :   
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :   const typename partial_unwrap&lt;T1&gt;::stored_type&amp; A = tmp1.M;</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   const typename partial_unwrap&lt;T2&gt;::stored_type&amp; B = tmp2.M;</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 :   const typename partial_unwrap&lt;T3&gt;::stored_type&amp; C = tmp3.M;</span>
+<span class="lineNum">     132 </span>            :   
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :   const bool use_alpha = partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times;</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   const eT       alpha = use_alpha ? (tmp1.get_val() * tmp2.get_val() * tmp3.get_val()) : eT(0);</span>
+<span class="lineNum">     135 </span>            :   
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :   const bool alias = tmp1.is_alias(out) || tmp2.is_alias(out) || tmp3.is_alias(out);</span>
+<span class="lineNum">     137 </span>            :   
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :   if(alias == false)</span>
+<span class="lineNum">     139 </span>            :     {
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :     glue_times::apply</span>
+<span class="lineNum">     141 </span>            :       &lt;
+<span class="lineNum">     142 </span>            :       eT,
+<span class="lineNum">     143 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">     144 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">     145 </span>            :       partial_unwrap&lt;T3&gt;::do_trans,
+<span class="lineNum">     146 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times)
+<span class="lineNum">     147 </span>            :       &gt;
+<span class="lineNum">     148 </span>            :       (out, A, B, C, alpha);
+<span class="lineNum">     149 </span>            :     }
+<span class="lineNum">     150 </span>            :   else
+<span class="lineNum">     151 </span>            :     {
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :     Mat&lt;eT&gt; tmp;</span>
+<span class="lineNum">     153 </span>            :     
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :     glue_times::apply</span>
+<span class="lineNum">     155 </span>            :       &lt;
+<span class="lineNum">     156 </span>            :       eT,
+<span class="lineNum">     157 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">     158 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">     159 </span>            :       partial_unwrap&lt;T3&gt;::do_trans,
+<span class="lineNum">     160 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times)
+<span class="lineNum">     161 </span>            :       &gt;
+<span class="lineNum">     162 </span>            :       (tmp, A, B, C, alpha);
+<span class="lineNum">     163 </span>            :     
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :     out.steal_mem(tmp);</span>
+<span class="lineNum">     165 </span>            :     }
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            : template&lt;typename T1, typename T2, typename T3&gt;
+<span class="lineNum">     171 </span>            : arma_hot
+<span class="lineNum">     172 </span>            : inline
+<span class="lineNum">     173 </span>            : void
+<span class="lineNum">     174 </span>            : glue_times_redirect3_helper&lt;true&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt; Glue&lt;T1,T2,glue_times&gt;, T3, glue_times&gt;&amp; X)
+<span class="lineNum">     175 </span>            :   {
+<span class="lineNum">     176 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     177 </span>            :   
+<span class="lineNum">     178 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     179 </span>            :   
+<span class="lineNum">     180 </span>            :   if(strip_inv&lt;T1&gt;::do_inv == true)
+<span class="lineNum">     181 </span>            :     {
+<span class="lineNum">     182 </span>            :     // replace inv(A)*B*C with solve(A,B*C);
+<span class="lineNum">     183 </span>            :     
+<span class="lineNum">     184 </span>            :     arma_extra_debug_print(&quot;glue_times_redirect&lt;3&gt;::apply(): detected inv(A)*B*C&quot;);
+<span class="lineNum">     185 </span>            :     
+<span class="lineNum">     186 </span>            :     const strip_inv&lt;T1&gt; A_strip(X.A.A);
+<span class="lineNum">     187 </span>            :     
+<span class="lineNum">     188 </span>            :     Mat&lt;eT&gt; A = A_strip.M;
+<span class="lineNum">     189 </span>            :     
+<span class="lineNum">     190 </span>            :     arma_debug_check( (A.is_square() == false), &quot;inv(): given matrix must be square sized&quot; );
+<span class="lineNum">     191 </span>            :     
+<span class="lineNum">     192 </span>            :     const partial_unwrap&lt;T2&gt; tmp2(X.A.B);
+<span class="lineNum">     193 </span>            :     const partial_unwrap&lt;T3&gt; tmp3(X.B  );
+<span class="lineNum">     194 </span>            :     
+<span class="lineNum">     195 </span>            :     const typename partial_unwrap&lt;T2&gt;::stored_type&amp; B = tmp2.M;
+<span class="lineNum">     196 </span>            :     const typename partial_unwrap&lt;T3&gt;::stored_type&amp; C = tmp3.M;
+<span class="lineNum">     197 </span>            :     
+<span class="lineNum">     198 </span>            :     const bool use_alpha = partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times;
+<span class="lineNum">     199 </span>            :     const eT       alpha = use_alpha ? (tmp2.get_val() * tmp3.get_val()) : eT(0);
+<span class="lineNum">     200 </span>            :     
+<span class="lineNum">     201 </span>            :     Mat&lt;eT&gt; BC;
+<span class="lineNum">     202 </span>            :     
+<span class="lineNum">     203 </span>            :     glue_times::apply
+<span class="lineNum">     204 </span>            :       &lt;
+<span class="lineNum">     205 </span>            :       eT,
+<span class="lineNum">     206 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">     207 </span>            :       partial_unwrap&lt;T3&gt;::do_trans,
+<span class="lineNum">     208 </span>            :       (partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times)
+<span class="lineNum">     209 </span>            :       &gt;
+<span class="lineNum">     210 </span>            :       (BC, B, C, alpha);
+<span class="lineNum">     211 </span>            :     
+<span class="lineNum">     212 </span>            :     arma_debug_assert_mul_size(A, BC, &quot;matrix multiplication&quot;);
+<span class="lineNum">     213 </span>            :     
+<span class="lineNum">     214 </span>            :     const bool status = auxlib::solve_square_fast(out, A, BC);
+<span class="lineNum">     215 </span>            :     
+<span class="lineNum">     216 </span>            :     if(status == false)
+<span class="lineNum">     217 </span>            :       {
+<span class="lineNum">     218 </span>            :       out.reset();
+<span class="lineNum">     219 </span>            :       arma_bad(&quot;matrix multiplication: inverse of singular matrix; suggest to use solve() instead&quot;);
+<span class="lineNum">     220 </span>            :       }
+<span class="lineNum">     221 </span>            :     
+<span class="lineNum">     222 </span>            :     return;
+<span class="lineNum">     223 </span>            :     }
+<span class="lineNum">     224 </span>            :   
+<span class="lineNum">     225 </span>            :   
+<span class="lineNum">     226 </span>            :   if(strip_inv&lt;T2&gt;::do_inv == true)
+<span class="lineNum">     227 </span>            :     {
+<span class="lineNum">     228 </span>            :     // replace A*inv(B)*C with A*solve(B,C)
+<span class="lineNum">     229 </span>            :     
+<span class="lineNum">     230 </span>            :     arma_extra_debug_print(&quot;glue_times_redirect&lt;3&gt;::apply(): detected A*inv(B)*C&quot;);
+<span class="lineNum">     231 </span>            :     
+<span class="lineNum">     232 </span>            :     const strip_inv&lt;T2&gt; B_strip(X.A.B);
+<span class="lineNum">     233 </span>            :     
+<span class="lineNum">     234 </span>            :     Mat&lt;eT&gt; B = B_strip.M;
+<span class="lineNum">     235 </span>            :     
+<span class="lineNum">     236 </span>            :     arma_debug_check( (B.is_square() == false), &quot;inv(): given matrix must be square sized&quot; );
+<span class="lineNum">     237 </span>            :     
+<span class="lineNum">     238 </span>            :     const unwrap&lt;T3&gt; C_tmp(X.B);
+<span class="lineNum">     239 </span>            :     const Mat&lt;eT&gt;&amp; C = C_tmp.M;
+<span class="lineNum">     240 </span>            :     
+<span class="lineNum">     241 </span>            :     arma_debug_assert_mul_size(B, C, &quot;matrix multiplication&quot;);
+<span class="lineNum">     242 </span>            :     
+<span class="lineNum">     243 </span>            :     Mat&lt;eT&gt; solve_result;
+<span class="lineNum">     244 </span>            :     
+<span class="lineNum">     245 </span>            :     const bool status = auxlib::solve_square_fast(solve_result, B, C);
+<span class="lineNum">     246 </span>            :     
+<span class="lineNum">     247 </span>            :     if(status == false)
+<span class="lineNum">     248 </span>            :       {
+<span class="lineNum">     249 </span>            :       out.reset();
+<span class="lineNum">     250 </span>            :       arma_bad(&quot;matrix multiplication: inverse of singular matrix; suggest to use solve() instead&quot;);
+<span class="lineNum">     251 </span>            :       return;
+<span class="lineNum">     252 </span>            :       }
+<span class="lineNum">     253 </span>            :     
+<span class="lineNum">     254 </span>            :     const partial_unwrap_check&lt;T1&gt; tmp1(X.A.A, out);
+<span class="lineNum">     255 </span>            :     
+<span class="lineNum">     256 </span>            :     const typename partial_unwrap_check&lt;T1&gt;::stored_type&amp; A = tmp1.M;
+<span class="lineNum">     257 </span>            :     
+<span class="lineNum">     258 </span>            :     const bool use_alpha = partial_unwrap_check&lt;T1&gt;::do_times;
+<span class="lineNum">     259 </span>            :     const eT       alpha = use_alpha ? tmp1.get_val() : eT(0);
+<span class="lineNum">     260 </span>            :     
+<span class="lineNum">     261 </span>            :     glue_times::apply
+<span class="lineNum">     262 </span>            :       &lt;
+<span class="lineNum">     263 </span>            :       eT,
+<span class="lineNum">     264 </span>            :       partial_unwrap_check&lt;T1&gt;::do_trans,
+<span class="lineNum">     265 </span>            :       false,
+<span class="lineNum">     266 </span>            :       partial_unwrap_check&lt;T1&gt;::do_times
+<span class="lineNum">     267 </span>            :       &gt;
+<span class="lineNum">     268 </span>            :       (out, A, solve_result, alpha);
+<span class="lineNum">     269 </span>            :     
+<span class="lineNum">     270 </span>            :     return;
+<span class="lineNum">     271 </span>            :     }
+<span class="lineNum">     272 </span>            :   
+<span class="lineNum">     273 </span>            :   
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :   glue_times_redirect3_helper&lt;false&gt;::apply(out, X);</span>
+<span class="lineNum">     275 </span>            :   }
+<span class="lineNum">     276 </span>            : 
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            : template&lt;uword N&gt;
+<span class="lineNum">     280 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     281 </span>            : arma_hot
+<span class="lineNum">     282 </span>            : inline
+<span class="lineNum">     283 </span>            : void
+<span class="lineNum">     284 </span>            : glue_times_redirect&lt;N&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt;T1,T2,glue_times&gt;&amp; X)
+<span class="lineNum">     285 </span>            :   {
+<span class="lineNum">     286 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     287 </span>            :   
+<span class="lineNum">     288 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     289 </span>            :   
+<span class="lineNum">     290 </span>            :   const partial_unwrap&lt;T1&gt; tmp1(X.A);
+<span class="lineNum">     291 </span>            :   const partial_unwrap&lt;T2&gt; tmp2(X.B);
+<span class="lineNum">     292 </span>            :   
+<span class="lineNum">     293 </span>            :   const typename partial_unwrap&lt;T1&gt;::stored_type&amp; A = tmp1.M;
+<span class="lineNum">     294 </span>            :   const typename partial_unwrap&lt;T2&gt;::stored_type&amp; B = tmp2.M;
+<span class="lineNum">     295 </span>            :   
+<span class="lineNum">     296 </span>            :   const bool use_alpha = partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times;
+<span class="lineNum">     297 </span>            :   const eT       alpha = use_alpha ? (tmp1.get_val() * tmp2.get_val()) : eT(0);
+<span class="lineNum">     298 </span>            :   
+<span class="lineNum">     299 </span>            :   const bool alias = tmp1.is_alias(out) || tmp2.is_alias(out);
+<span class="lineNum">     300 </span>            :   
+<span class="lineNum">     301 </span>            :   if(alias == false)
+<span class="lineNum">     302 </span>            :     {
+<span class="lineNum">     303 </span>            :     glue_times::apply
+<span class="lineNum">     304 </span>            :       &lt;
+<span class="lineNum">     305 </span>            :       eT,
+<span class="lineNum">     306 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">     307 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">     308 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times)
+<span class="lineNum">     309 </span>            :       &gt;
+<span class="lineNum">     310 </span>            :       (out, A, B, alpha);
+<span class="lineNum">     311 </span>            :     }
+<span class="lineNum">     312 </span>            :   else
+<span class="lineNum">     313 </span>            :     {
+<span class="lineNum">     314 </span>            :     Mat&lt;eT&gt; tmp;
+<span class="lineNum">     315 </span>            :     
+<span class="lineNum">     316 </span>            :     glue_times::apply
+<span class="lineNum">     317 </span>            :       &lt;
+<span class="lineNum">     318 </span>            :       eT,
+<span class="lineNum">     319 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">     320 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">     321 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times)
+<span class="lineNum">     322 </span>            :       &gt;
+<span class="lineNum">     323 </span>            :       (tmp, A, B, alpha);
+<span class="lineNum">     324 </span>            :     
+<span class="lineNum">     325 </span>            :     out.steal_mem(tmp);
+<span class="lineNum">     326 </span>            :     }
+<span class="lineNum">     327 </span>            :   }
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     332 </span>            : arma_hot
+<span class="lineNum">     333 </span>            : inline
+<span class="lineNum">     334 </span>            : void
+<span class="lineNum">     335 </span>            : glue_times_redirect&lt;2&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt;T1,T2,glue_times&gt;&amp; X)
+<span class="lineNum">     336 </span>            :   {
+<span class="lineNum">     337 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     338 </span>            :   
+<span class="lineNum">     339 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     340 </span>            :   
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :   glue_times_redirect2_helper&lt; is_supported_blas_type&lt;eT&gt;::value &gt;::apply(out, X);</span>
+<span class="lineNum">     342 </span>            :   }
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : template&lt;typename T1, typename T2, typename T3&gt;
+<span class="lineNum">     347 </span>            : arma_hot
+<span class="lineNum">     348 </span>            : inline
+<span class="lineNum">     349 </span>            : void
+<span class="lineNum">     350 </span>            : glue_times_redirect&lt;3&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt; Glue&lt;T1,T2,glue_times&gt;, T3, glue_times&gt;&amp; X)
+<span class="lineNum">     351 </span>            :   {
+<span class="lineNum">     352 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     353 </span>            :   
+<span class="lineNum">     354 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     355 </span>            :   
+<span class="lineNum">     356 </span><span class="lineNoCov">          0 :   glue_times_redirect3_helper&lt; is_supported_blas_type&lt;eT&gt;::value &gt;::apply(out, X);</span>
+<span class="lineNum">     357 </span>            :   }
+<span class="lineNum">     358 </span>            : 
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span>            : 
+<span class="lineNum">     361 </span>            : template&lt;typename T1, typename T2, typename T3, typename T4&gt;
+<span class="lineNum">     362 </span>            : arma_hot
+<span class="lineNum">     363 </span>            : inline
+<span class="lineNum">     364 </span>            : void
+<span class="lineNum">     365 </span>            : glue_times_redirect&lt;4&gt;::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt; Glue&lt; Glue&lt;T1,T2,glue_times&gt;, T3, glue_times&gt;, T4, glue_times&gt;&amp; X)
+<span class="lineNum">     366 </span>            :   {
+<span class="lineNum">     367 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     368 </span>            :   
+<span class="lineNum">     369 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     370 </span>            :   
+<span class="lineNum">     371 </span>            :   // there is exactly 4 objects
+<span class="lineNum">     372 </span>            :   // hence we can safely expand X as X.A.A.A, X.A.A.B, X.A.B and X.B
+<span class="lineNum">     373 </span>            :   
+<span class="lineNum">     374 </span>            :   const partial_unwrap&lt;T1&gt; tmp1(X.A.A.A);
+<span class="lineNum">     375 </span>            :   const partial_unwrap&lt;T2&gt; tmp2(X.A.A.B);
+<span class="lineNum">     376 </span>            :   const partial_unwrap&lt;T3&gt; tmp3(X.A.B  );
+<span class="lineNum">     377 </span>            :   const partial_unwrap&lt;T4&gt; tmp4(X.B    );
+<span class="lineNum">     378 </span>            :   
+<span class="lineNum">     379 </span>            :   const typename partial_unwrap&lt;T1&gt;::stored_type&amp; A = tmp1.M;
+<span class="lineNum">     380 </span>            :   const typename partial_unwrap&lt;T2&gt;::stored_type&amp; B = tmp2.M;
+<span class="lineNum">     381 </span>            :   const typename partial_unwrap&lt;T3&gt;::stored_type&amp; C = tmp3.M;
+<span class="lineNum">     382 </span>            :   const typename partial_unwrap&lt;T4&gt;::stored_type&amp; D = tmp4.M;
+<span class="lineNum">     383 </span>            :   
+<span class="lineNum">     384 </span>            :   const bool use_alpha = partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times || partial_unwrap&lt;T4&gt;::do_times;
+<span class="lineNum">     385 </span>            :   const eT       alpha = use_alpha ? (tmp1.get_val() * tmp2.get_val() * tmp3.get_val() * tmp4.get_val()) : eT(0);
+<span class="lineNum">     386 </span>            :   
+<span class="lineNum">     387 </span>            :   const bool alias = tmp1.is_alias(out) || tmp2.is_alias(out) || tmp3.is_alias(out) || tmp4.is_alias(out);
+<span class="lineNum">     388 </span>            :   
+<span class="lineNum">     389 </span>            :   if(alias == false)
+<span class="lineNum">     390 </span>            :     {
+<span class="lineNum">     391 </span>            :     glue_times::apply
+<span class="lineNum">     392 </span>            :       &lt;
+<span class="lineNum">     393 </span>            :       eT,
+<span class="lineNum">     394 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">     395 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">     396 </span>            :       partial_unwrap&lt;T3&gt;::do_trans,
+<span class="lineNum">     397 </span>            :       partial_unwrap&lt;T4&gt;::do_trans,
+<span class="lineNum">     398 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times || partial_unwrap&lt;T4&gt;::do_times)
+<span class="lineNum">     399 </span>            :       &gt;
+<span class="lineNum">     400 </span>            :       (out, A, B, C, D, alpha);
+<span class="lineNum">     401 </span>            :     }
+<span class="lineNum">     402 </span>            :   else
+<span class="lineNum">     403 </span>            :     {
+<span class="lineNum">     404 </span>            :     Mat&lt;eT&gt; tmp;
+<span class="lineNum">     405 </span>            :     
+<span class="lineNum">     406 </span>            :     glue_times::apply
+<span class="lineNum">     407 </span>            :       &lt;
+<span class="lineNum">     408 </span>            :       eT,
+<span class="lineNum">     409 </span>            :       partial_unwrap&lt;T1&gt;::do_trans,
+<span class="lineNum">     410 </span>            :       partial_unwrap&lt;T2&gt;::do_trans,
+<span class="lineNum">     411 </span>            :       partial_unwrap&lt;T3&gt;::do_trans,
+<span class="lineNum">     412 </span>            :       partial_unwrap&lt;T4&gt;::do_trans,
+<span class="lineNum">     413 </span>            :       (partial_unwrap&lt;T1&gt;::do_times || partial_unwrap&lt;T2&gt;::do_times || partial_unwrap&lt;T3&gt;::do_times || partial_unwrap&lt;T4&gt;::do_times)
+<span class="lineNum">     414 </span>            :       &gt;
+<span class="lineNum">     415 </span>            :       (tmp, A, B, C, D, alpha);
+<span class="lineNum">     416 </span>            :     
+<span class="lineNum">     417 </span>            :     out.steal_mem(tmp);
+<span class="lineNum">     418 </span>            :     }
+<span class="lineNum">     419 </span>            :   }
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     424 </span>            : arma_hot
+<span class="lineNum">     425 </span>            : inline
+<span class="lineNum">     426 </span>            : void
+<span class="lineNum">     427 </span>            : glue_times::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt;T1,T2,glue_times&gt;&amp; X)
+<span class="lineNum">     428 </span>            :   {
+<span class="lineNum">     429 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     430 </span>            :   
+<span class="lineNum">     431 </span><span class="lineNoCov">          0 :   const sword N_mat = 1 + depth_lhs&lt; glue_times, Glue&lt;T1,T2,glue_times&gt; &gt;::num;</span>
+<span class="lineNum">     432 </span>            :   
+<span class="lineNum">     433 </span>            :   arma_extra_debug_print(arma_str::format(&quot;N_mat = %d&quot;) % N_mat);
+<span class="lineNum">     434 </span>            :   
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :   glue_times_redirect&lt;N_mat&gt;::apply(out, X);</span>
+<span class="lineNum">     436 </span>            :   }
+<span class="lineNum">     437 </span>            : 
+<span class="lineNum">     438 </span>            : 
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     441 </span>            : arma_hot
+<span class="lineNum">     442 </span>            : inline
+<span class="lineNum">     443 </span>            : void
+<span class="lineNum">     444 </span>            : glue_times::apply_inplace(Mat&lt;typename T1::elem_type&gt;&amp; out, const T1&amp; X)
+<span class="lineNum">     445 </span>            :   {
+<span class="lineNum">     446 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     447 </span>            :   
+<span class="lineNum">     448 </span>            :   out = out * X;
+<span class="lineNum">     449 </span>            :   }
+<span class="lineNum">     450 </span>            : 
+<span class="lineNum">     451 </span>            : 
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     454 </span>            : arma_hot
+<span class="lineNum">     455 </span>            : inline
+<span class="lineNum">     456 </span>            : void
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 : glue_times::apply_inplace_plus(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt;T1, T2, glue_times&gt;&amp; X, const sword sign)</span>
+<span class="lineNum">     458 </span>            :   {
+<span class="lineNum">     459 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     460 </span>            :   
+<span class="lineNum">     461 </span>            :   typedef typename T1::elem_type            eT;
+<span class="lineNum">     462 </span>            :   typedef typename get_pod_type&lt;eT&gt;::result  T;
+<span class="lineNum">     463 </span>            :   
+<span class="lineNum">     464 </span>            :   if( (is_outer_product&lt;T1&gt;::value) || (has_op_inv&lt;T1&gt;::value) || (has_op_inv&lt;T2&gt;::value) )
+<span class="lineNum">     465 </span>            :     {
+<span class="lineNum">     466 </span>            :     // partial workaround for corner cases
+<span class="lineNum">     467 </span>            :     
+<span class="lineNum">     468 </span>            :     const Mat&lt;eT&gt; tmp(X);
+<span class="lineNum">     469 </span>            :     
+<span class="lineNum">     470 </span>            :     if(sign &gt; sword(0))  { out += tmp; }  else  { out -= tmp; }
+<span class="lineNum">     471 </span>            :     
+<span class="lineNum">     472 </span>            :     return;
+<span class="lineNum">     473 </span>            :     }
+<span class="lineNum">     474 </span>            :   
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :   const partial_unwrap_check&lt;T1&gt; tmp1(X.A, out);</span>
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :   const partial_unwrap_check&lt;T2&gt; tmp2(X.B, out);</span>
+<span class="lineNum">     477 </span>            :   
+<span class="lineNum">     478 </span>            :   typedef typename partial_unwrap_check&lt;T1&gt;::stored_type TA;
+<span class="lineNum">     479 </span>            :   typedef typename partial_unwrap_check&lt;T2&gt;::stored_type TB;
+<span class="lineNum">     480 </span>            :   
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :   const TA&amp; A = tmp1.M;</span>
+<span class="lineNum">     482 </span><span class="lineNoCov">          0 :   const TB&amp; B = tmp2.M;</span>
+<span class="lineNum">     483 </span>            :   
+<span class="lineNum">     484 </span><span class="lineNoCov">          0 :   const bool do_trans_A = partial_unwrap_check&lt;T1&gt;::do_trans;</span>
+<span class="lineNum">     485 </span><span class="lineNoCov">          0 :   const bool do_trans_B = partial_unwrap_check&lt;T2&gt;::do_trans;</span>
+<span class="lineNum">     486 </span>            :   
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :   const bool use_alpha = partial_unwrap_check&lt;T1&gt;::do_times || partial_unwrap_check&lt;T2&gt;::do_times || (sign &lt; sword(0));</span>
+<span class="lineNum">     488 </span>            :   
+<span class="lineNum">     489 </span><span class="lineNoCov">          0 :   const eT       alpha = use_alpha ? ( tmp1.get_val() * tmp2.get_val() * ( (sign &gt; sword(0)) ? eT(1) : eT(-1) ) ) : eT(0);</span>
+<span class="lineNum">     490 </span>            :   
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :   arma_debug_assert_mul_size(A, B, do_trans_A, do_trans_B, &quot;matrix multiplication&quot;);</span>
+<span class="lineNum">     492 </span>            :   
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :   const uword result_n_rows = (do_trans_A == false) ? (TA::is_row ? 1 : A.n_rows) : (TA::is_col ? 1 : A.n_cols);</span>
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :   const uword result_n_cols = (do_trans_B == false) ? (TB::is_col ? 1 : B.n_cols) : (TB::is_row ? 1 : B.n_rows);</span>
+<span class="lineNum">     495 </span>            :   
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :   arma_debug_assert_same_size(out.n_rows, out.n_cols, result_n_rows, result_n_cols, ( (sign &gt; sword(0)) ? &quot;addition&quot; : &quot;subtraction&quot; ) );</span>
+<span class="lineNum">     497 </span>            :   
+<span class="lineNum">     498 </span><span class="lineNoCov">          0 :   if(out.n_elem == 0)</span>
+<span class="lineNum">     499 </span>            :     {
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :     return;</span>
+<span class="lineNum">     501 </span>            :     }
+<span class="lineNum">     502 </span>            :   
+<span class="lineNum">     503 </span>            :   
+<span class="lineNum">     504 </span>            :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == false) )
+<span class="lineNum">     505 </span>            :     {
+<span class="lineNum">     506 </span>            :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,         false, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }
+<span class="lineNum">     507 </span>            :     else if(  (B.n_cols == 1) || (TB::is_col)                     )  { gemv&lt;false,        false, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }
+<span class="lineNum">     508 </span>            :     else                                                             { gemm&lt;false, false, false, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     509 </span>            :     }
+<span class="lineNum">     510 </span>            :   else
+<span class="lineNum">     511 </span>            :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == true) )
+<span class="lineNum">     512 </span>            :     {
+<span class="lineNum">     513 </span>            :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,         true, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }
+<span class="lineNum">     514 </span>            :     else if(  (B.n_cols == 1) || (TB::is_col)                     )  { gemv&lt;false,        true, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }
+<span class="lineNum">     515 </span>            :     else                                                             { gemm&lt;false, false, true, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     516 </span>            :     }
+<span class="lineNum">     517 </span>            :   else
+<span class="lineNum">     518 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == false) )
+<span class="lineNum">     519 </span>            :     {
+<span class="lineNum">     520 </span>            :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { gemv&lt;true,        false, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }
+<span class="lineNum">     521 </span>            :     else if(  (B.n_cols == 1) || (TB::is_col)                      )  { gemv&lt;true,        false, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }
+<span class="lineNum">     522 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { syrk&lt;true,        false, true&gt;::apply(out,          A,             alpha, eT(1)); }
+<span class="lineNum">     523 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::yes) )  { herk&lt;true,        false, true&gt;::apply(out,          A,              T(0),  T(1)); }
+<span class="lineNum">     524 </span>            :     else                                                              { gemm&lt;true, false, false, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     525 </span>            :     }
+<span class="lineNum">     526 </span>            :   else
+<span class="lineNum">     527 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == true) )
+<span class="lineNum">     528 </span>            :     {
+<span class="lineNum">     529 </span>            :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,        true, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }
+<span class="lineNum">     530 </span>            :     else if(  (B.n_cols == 1) || (TB::is_col)                     )  { gemv&lt;true,        true, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }
+<span class="lineNum">     531 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no) )  { syrk&lt;true,        true, true&gt;::apply(out,          A,             alpha, eT(1)); }
+<span class="lineNum">     532 </span>            :     else                                                             { gemm&lt;true, false, true, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     533 </span>            :     }
+<span class="lineNum">     534 </span>            :   else
+<span class="lineNum">     535 </span><span class="lineNoCov">          0 :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == false) )</span>
+<span class="lineNum">     536 </span>            :     {
+<span class="lineNum">     537 </span><span class="lineNoCov">          0 :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { gemv&lt;false,       false, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }</span>
+<span class="lineNum">     538 </span><span class="lineNoCov">          0 :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { gemv&lt;false,       false, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }</span>
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { syrk&lt;false,       false, true&gt;::apply(out,          A,             alpha, eT(1)); }</span>
+<span class="lineNum">     540 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::yes) )  { herk&lt;false,       false, true&gt;::apply(out,          A,              T(0),  T(1)); }
+<span class="lineNum">     541 </span>            :     else                                                              { gemm&lt;false, true, false, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     542 </span>            :     }
+<span class="lineNum">     543 </span>            :   else
+<span class="lineNum">     544 </span><span class="lineNoCov">          0 :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == true) )</span>
+<span class="lineNum">     545 </span>            :     {
+<span class="lineNum">     546 </span><span class="lineNoCov">          0 :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;false,       true, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }</span>
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;false,       true, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }</span>
+<span class="lineNum">     548 </span><span class="lineNoCov">          0 :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no) )  { syrk&lt;false,       true, true&gt;::apply(out,          A,             alpha, eT(1)); }</span>
+<span class="lineNum">     549 </span>            :     else                                                             { gemm&lt;false, true, true, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     550 </span>            :     }
+<span class="lineNum">     551 </span>            :   else
+<span class="lineNum">     552 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == false) )
+<span class="lineNum">     553 </span>            :     {
+<span class="lineNum">     554 </span>            :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;false,      false, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }
+<span class="lineNum">     555 </span>            :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,       false, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }
+<span class="lineNum">     556 </span>            :     else                                                             { gemm&lt;true, true, false, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     557 </span>            :     }
+<span class="lineNum">     558 </span>            :   else
+<span class="lineNum">     559 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == true) )
+<span class="lineNum">     560 </span>            :     {
+<span class="lineNum">     561 </span>            :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;false,      true, true&gt;::apply(out.memptr(), B, A.memptr(), alpha, eT(1)); }
+<span class="lineNum">     562 </span>            :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,       true, true&gt;::apply(out.memptr(), A, B.memptr(), alpha, eT(1)); }
+<span class="lineNum">     563 </span>            :     else                                                             { gemm&lt;true, true, true, true&gt;::apply(out,          A, B,          alpha, eT(1)); }
+<span class="lineNum">     564 </span>            :     }
+<span class="lineNum">     565 </span>            :   }
+<span class="lineNum">     566 </span>            : 
+<span class="lineNum">     567 </span>            : 
+<span class="lineNum">     568 </span>            : 
+<span class="lineNum">     569 </span>            : template&lt;typename eT, const bool do_trans_A, const bool do_trans_B, typename TA, typename TB&gt;
+<span class="lineNum">     570 </span>            : arma_inline
+<span class="lineNum">     571 </span>            : uword
+<span class="lineNum">     572 </span>            : glue_times::mul_storage_cost(const TA&amp; A, const TB&amp; B)
+<span class="lineNum">     573 </span>            :   {
+<span class="lineNum">     574 </span><span class="lineNoCov">          0 :   const uword final_A_n_rows = (do_trans_A == false) ? ( TA::is_row ? 1 : A.n_rows ) : ( TA::is_col ? 1 : A.n_cols );</span>
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 :   const uword final_B_n_cols = (do_trans_B == false) ? ( TB::is_col ? 1 : B.n_cols ) : ( TB::is_row ? 1 : B.n_rows );</span>
+<span class="lineNum">     576 </span>            :   
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :   return final_A_n_rows * final_B_n_cols;</span>
+<span class="lineNum">     578 </span>            :   }
+<span class="lineNum">     579 </span>            : 
+<span class="lineNum">     580 </span>            : 
+<span class="lineNum">     581 </span>            : 
+<span class="lineNum">     582 </span>            : template
+<span class="lineNum">     583 </span>            :   &lt;
+<span class="lineNum">     584 </span>            :   typename   eT,
+<span class="lineNum">     585 </span>            :   const bool do_trans_A,
+<span class="lineNum">     586 </span>            :   const bool do_trans_B,
+<span class="lineNum">     587 </span>            :   const bool use_alpha,
+<span class="lineNum">     588 </span>            :   typename   TA,
+<span class="lineNum">     589 </span>            :   typename   TB
+<span class="lineNum">     590 </span>            :   &gt;
+<span class="lineNum">     591 </span>            : arma_hot
+<a name="592"><span class="lineNum">     592 </span>            : inline</a>
+<span class="lineNum">     593 </span>            : void
+<span class="lineNum">     594 </span><span class="lineNoCov">          0 : glue_times::apply</span>
+<span class="lineNum">     595 </span>            :   (
+<span class="lineNum">     596 </span>            :         Mat&lt;eT&gt;&amp; out,
+<span class="lineNum">     597 </span>            :   const TA&amp;      A,
+<span class="lineNum">     598 </span>            :   const TB&amp;      B,
+<span class="lineNum">     599 </span>            :   const eT       alpha
+<span class="lineNum">     600 </span>            :   )
+<span class="lineNum">     601 </span>            :   {
+<span class="lineNum">     602 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     603 </span>            :   
+<span class="lineNum">     604 </span>            :   //arma_debug_assert_mul_size(A, B, do_trans_A, do_trans_B, &quot;matrix multiplication&quot;);
+<span class="lineNum">     605 </span><span class="lineNoCov">          0 :   arma_debug_assert_trans_mul_size&lt;do_trans_A, do_trans_B&gt;(A.n_rows, A.n_cols, B.n_rows, B.n_cols, &quot;matrix multiplication&quot;);</span>
+<span class="lineNum">     606 </span>            :   
+<span class="lineNum">     607 </span><span class="lineNoCov">          0 :   const uword final_n_rows = (do_trans_A == false) ? (TA::is_row ? 1 : A.n_rows) : (TA::is_col ? 1 : A.n_cols);</span>
+<span class="lineNum">     608 </span><span class="lineNoCov">          0 :   const uword final_n_cols = (do_trans_B == false) ? (TB::is_col ? 1 : B.n_cols) : (TB::is_row ? 1 : B.n_rows);</span>
+<span class="lineNum">     609 </span>            :   
+<span class="lineNum">     610 </span><span class="lineNoCov">          0 :   out.set_size(final_n_rows, final_n_cols);</span>
+<span class="lineNum">     611 </span>            :   
+<span class="lineNum">     612 </span><span class="lineNoCov">          0 :   if( (A.n_elem == 0) || (B.n_elem == 0) )</span>
+<span class="lineNum">     613 </span>            :     {
+<span class="lineNum">     614 </span>            :     out.zeros();
+<span class="lineNum">     615 </span>            :     return;
+<span class="lineNum">     616 </span>            :     }
+<span class="lineNum">     617 </span>            :   
+<span class="lineNum">     618 </span>            :   
+<span class="lineNum">     619 </span>            :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == false) )
+<span class="lineNum">     620 </span>            :     {
+<span class="lineNum">     621 </span><span class="lineNoCov">          0 :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,         false, false&gt;::apply(out.memptr(), B, A.memptr()); }</span>
+<span class="lineNum">     622 </span><span class="lineNoCov">          0 :     else if(  (B.n_cols == 1) || (TB::is_col)                     )  { gemv&lt;false,        false, false&gt;::apply(out.memptr(), A, B.memptr()); }</span>
+<span class="lineNum">     623 </span>            :     else                                                             { gemm&lt;false, false, false, false&gt;::apply(out,          A, B         ); }
+<span class="lineNum">     624 </span>            :     }
+<span class="lineNum">     625 </span>            :   else
+<span class="lineNum">     626 </span>            :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == true) )
+<span class="lineNum">     627 </span>            :     {
+<span class="lineNum">     628 </span><span class="lineNoCov">          0 :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,         true, false&gt;::apply(out.memptr(), B, A.memptr(), alpha); }</span>
+<span class="lineNum">     629 </span><span class="lineNoCov">          0 :     else if(  (B.n_cols == 1) || (TB::is_col)                     )  { gemv&lt;false,        true, false&gt;::apply(out.memptr(), A, B.memptr(), alpha); }</span>
+<span class="lineNum">     630 </span>            :     else                                                             { gemm&lt;false, false, true, false&gt;::apply(out,          A, B,          alpha); }
+<span class="lineNum">     631 </span>            :     }
+<span class="lineNum">     632 </span>            :   else
+<span class="lineNum">     633 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == false) )
+<span class="lineNum">     634 </span>            :     {
+<span class="lineNum">     635 </span><span class="lineNoCov">          0 :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { gemv&lt;true,        false, false&gt;::apply(out.memptr(), B, A.memptr()); }</span>
+<span class="lineNum">     636 </span>            :     else if(  (B.n_cols == 1) || (TB::is_col)                      )  { gemv&lt;true,        false, false&gt;::apply(out.memptr(), A, B.memptr()); }
+<span class="lineNum">     637 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { syrk&lt;true,        false, false&gt;::apply(out,          A            ); }
+<span class="lineNum">     638 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::yes) )  { herk&lt;true,        false, false&gt;::apply(out,          A            ); }
+<span class="lineNum">     639 </span>            :     else                                                              { gemm&lt;true, false, false, false&gt;::apply(out,          A, B         ); }
+<span class="lineNum">     640 </span>            :     }
+<span class="lineNum">     641 </span>            :   else
+<span class="lineNum">     642 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == false) &amp;&amp; (use_alpha == true) )
+<span class="lineNum">     643 </span>            :     {
+<span class="lineNum">     644 </span>            :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,        true, false&gt;::apply(out.memptr(), B, A.memptr(), alpha); }
+<span class="lineNum">     645 </span>            :     else if(  (B.n_cols == 1) || (TB::is_col)                     )  { gemv&lt;true,        true, false&gt;::apply(out.memptr(), A, B.memptr(), alpha); }
+<span class="lineNum">     646 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no) )  { syrk&lt;true,        true, false&gt;::apply(out,          A,             alpha); }
+<span class="lineNum">     647 </span>            :     else                                                             { gemm&lt;true, false, true, false&gt;::apply(out,          A, B,          alpha); }
+<span class="lineNum">     648 </span>            :     }
+<span class="lineNum">     649 </span>            :   else
+<span class="lineNum">     650 </span>            :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == false) )
+<span class="lineNum">     651 </span>            :     {
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { gemv&lt;false,       false, false&gt;::apply(out.memptr(), B, A.memptr()); }</span>
+<span class="lineNum">     653 </span><span class="lineNoCov">          0 :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { gemv&lt;false,       false, false&gt;::apply(out.memptr(), A, B.memptr()); }</span>
+<span class="lineNum">     654 </span><span class="lineNoCov">          0 :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no)  )  { syrk&lt;false,       false, false&gt;::apply(out,          A            ); }</span>
+<span class="lineNum">     655 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::yes) )  { herk&lt;false,       false, false&gt;::apply(out,          A            ); }
+<span class="lineNum">     656 </span>            :     else                                                              { gemm&lt;false, true, false, false&gt;::apply(out,          A, B         ); }
+<span class="lineNum">     657 </span>            :     }
+<span class="lineNum">     658 </span>            :   else
+<span class="lineNum">     659 </span>            :   if( (do_trans_A == false) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == true) )
+<span class="lineNum">     660 </span>            :     {
+<span class="lineNum">     661 </span>            :          if( ((A.n_rows == 1) || (TA::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) ) { gemv&lt;false,       true, false&gt;::apply(out.memptr(), B, A.memptr(), alpha); }
+<span class="lineNum">     662 </span>            :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) ) { gemv&lt;false,       true, false&gt;::apply(out.memptr(), A, B.memptr(), alpha); }
+<span class="lineNum">     663 </span>            :     else if( (void_ptr(&amp;A) == void_ptr(&amp;B))    &amp;&amp; (is_cx&lt;eT&gt;::no) ) { syrk&lt;false,       true, false&gt;::apply(out,          A,             alpha); }
+<span class="lineNum">     664 </span>            :     else                                                            { gemm&lt;false, true, true, false&gt;::apply(out,          A, B,          alpha); }
+<span class="lineNum">     665 </span>            :     }
+<span class="lineNum">     666 </span>            :   else
+<span class="lineNum">     667 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == false) )
+<span class="lineNum">     668 </span>            :     {
+<span class="lineNum">     669 </span>            :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;false,      false, false&gt;::apply(out.memptr(), B, A.memptr()); }
+<span class="lineNum">     670 </span>            :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,       false, false&gt;::apply(out.memptr(), A, B.memptr()); }
+<span class="lineNum">     671 </span>            :     else                                                             { gemm&lt;true, true, false, false&gt;::apply(out,          A, B         ); }
+<span class="lineNum">     672 </span>            :     }
+<span class="lineNum">     673 </span>            :   else
+<span class="lineNum">     674 </span>            :   if( (do_trans_A == true) &amp;&amp; (do_trans_B == true) &amp;&amp; (use_alpha == true) )
+<span class="lineNum">     675 </span>            :     {
+<span class="lineNum">     676 </span>            :          if( ((A.n_cols == 1) || (TA::is_col)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;false,      true, false&gt;::apply(out.memptr(), B, A.memptr(), alpha); }
+<span class="lineNum">     677 </span>            :     else if( ((B.n_rows == 1) || (TB::is_row)) &amp;&amp; (is_cx&lt;eT&gt;::no) )  { gemv&lt;true,       true, false&gt;::apply(out.memptr(), A, B.memptr(), alpha); }
+<span class="lineNum">     678 </span>            :     else                                                             { gemm&lt;true, true, true, false&gt;::apply(out,          A, B,          alpha); }
+<span class="lineNum">     679 </span>            :     }
+<span class="lineNum">     680 </span>            :   }
+<span class="lineNum">     681 </span>            : 
+<span class="lineNum">     682 </span>            : 
+<span class="lineNum">     683 </span>            : 
+<span class="lineNum">     684 </span>            : template
+<span class="lineNum">     685 </span>            :   &lt;
+<span class="lineNum">     686 </span>            :   typename   eT,
+<span class="lineNum">     687 </span>            :   const bool do_trans_A,
+<span class="lineNum">     688 </span>            :   const bool do_trans_B,
+<span class="lineNum">     689 </span>            :   const bool do_trans_C,
+<span class="lineNum">     690 </span>            :   const bool use_alpha,
+<span class="lineNum">     691 </span>            :   typename   TA,
+<span class="lineNum">     692 </span>            :   typename   TB,
+<span class="lineNum">     693 </span>            :   typename   TC
+<span class="lineNum">     694 </span>            :   &gt;
+<span class="lineNum">     695 </span>            : arma_hot
+<a name="696"><span class="lineNum">     696 </span>            : inline</a>
+<span class="lineNum">     697 </span>            : void
+<span class="lineNum">     698 </span><span class="lineNoCov">          0 : glue_times::apply</span>
+<span class="lineNum">     699 </span>            :   (
+<span class="lineNum">     700 </span>            :         Mat&lt;eT&gt;&amp; out,
+<span class="lineNum">     701 </span>            :   const TA&amp;      A,
+<span class="lineNum">     702 </span>            :   const TB&amp;      B,
+<span class="lineNum">     703 </span>            :   const TC&amp;      C,
+<span class="lineNum">     704 </span>            :   const eT       alpha
+<span class="lineNum">     705 </span>            :   )
+<span class="lineNum">     706 </span>            :   {
+<span class="lineNum">     707 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     708 </span>            :   
+<span class="lineNum">     709 </span><span class="lineNoCov">          0 :   Mat&lt;eT&gt; tmp;</span>
+<span class="lineNum">     710 </span>            :   
+<span class="lineNum">     711 </span><span class="lineNoCov">          0 :   const uword storage_cost_AB = glue_times::mul_storage_cost&lt;eT, do_trans_A, do_trans_B&gt;(A, B);</span>
+<span class="lineNum">     712 </span><span class="lineNoCov">          0 :   const uword storage_cost_BC = glue_times::mul_storage_cost&lt;eT, do_trans_B, do_trans_C&gt;(B, C);</span>
+<span class="lineNum">     713 </span>            :   
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :   if(storage_cost_AB &lt;= storage_cost_BC)</span>
+<span class="lineNum">     715 </span>            :     {
+<span class="lineNum">     716 </span>            :     // out = (A*B)*C
+<span class="lineNum">     717 </span>            :     
+<span class="lineNum">     718 </span><span class="lineNoCov">          0 :     glue_times::apply&lt;eT, do_trans_A, do_trans_B, use_alpha&gt;(tmp, A,   B, alpha);</span>
+<span class="lineNum">     719 </span><span class="lineNoCov">          0 :     glue_times::apply&lt;eT, false,      do_trans_C, false    &gt;(out, tmp, C, eT(0));</span>
+<span class="lineNum">     720 </span>            :     }
+<span class="lineNum">     721 </span>            :   else
+<span class="lineNum">     722 </span>            :     {
+<span class="lineNum">     723 </span>            :     // out = A*(B*C)
+<span class="lineNum">     724 </span>            :     
+<span class="lineNum">     725 </span><span class="lineNoCov">          0 :     glue_times::apply&lt;eT, do_trans_B, do_trans_C, use_alpha&gt;(tmp, B, C,   alpha);</span>
+<span class="lineNum">     726 </span><span class="lineNoCov">          0 :     glue_times::apply&lt;eT, do_trans_A, false,      false    &gt;(out, A, tmp, eT(0));</span>
+<span class="lineNum">     727 </span>            :     }
+<span class="lineNum">     728 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     729 </span>            : 
+<span class="lineNum">     730 </span>            : 
+<span class="lineNum">     731 </span>            : 
+<span class="lineNum">     732 </span>            : template
+<span class="lineNum">     733 </span>            :   &lt;
+<span class="lineNum">     734 </span>            :   typename   eT,
+<span class="lineNum">     735 </span>            :   const bool do_trans_A,
+<span class="lineNum">     736 </span>            :   const bool do_trans_B,
+<span class="lineNum">     737 </span>            :   const bool do_trans_C,
+<span class="lineNum">     738 </span>            :   const bool do_trans_D,
+<span class="lineNum">     739 </span>            :   const bool use_alpha,
+<span class="lineNum">     740 </span>            :   typename   TA,
+<span class="lineNum">     741 </span>            :   typename   TB,
+<span class="lineNum">     742 </span>            :   typename   TC,
+<span class="lineNum">     743 </span>            :   typename   TD
+<span class="lineNum">     744 </span>            :   &gt;
+<span class="lineNum">     745 </span>            : arma_hot
+<span class="lineNum">     746 </span>            : inline
+<span class="lineNum">     747 </span>            : void
+<span class="lineNum">     748 </span>            : glue_times::apply
+<span class="lineNum">     749 </span>            :   (
+<span class="lineNum">     750 </span>            :         Mat&lt;eT&gt;&amp; out,
+<span class="lineNum">     751 </span>            :   const TA&amp;      A,
+<span class="lineNum">     752 </span>            :   const TB&amp;      B,
+<span class="lineNum">     753 </span>            :   const TC&amp;      C,
+<span class="lineNum">     754 </span>            :   const TD&amp;      D,
+<span class="lineNum">     755 </span>            :   const eT       alpha
+<span class="lineNum">     756 </span>            :   )
+<span class="lineNum">     757 </span>            :   {
+<span class="lineNum">     758 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     759 </span>            :   
+<span class="lineNum">     760 </span>            :   Mat&lt;eT&gt; tmp;
+<span class="lineNum">     761 </span>            :   
+<span class="lineNum">     762 </span>            :   const uword storage_cost_AC = glue_times::mul_storage_cost&lt;eT, do_trans_A, do_trans_C&gt;(A, C);
+<span class="lineNum">     763 </span>            :   const uword storage_cost_BD = glue_times::mul_storage_cost&lt;eT, do_trans_B, do_trans_D&gt;(B, D);
+<span class="lineNum">     764 </span>            :   
+<span class="lineNum">     765 </span>            :   if(storage_cost_AC &lt;= storage_cost_BD)
+<span class="lineNum">     766 </span>            :     {
+<span class="lineNum">     767 </span>            :     // out = (A*B*C)*D
+<span class="lineNum">     768 </span>            :     
+<span class="lineNum">     769 </span>            :     glue_times::apply&lt;eT, do_trans_A, do_trans_B, do_trans_C, use_alpha&gt;(tmp, A, B, C, alpha);
+<span class="lineNum">     770 </span>            :     
+<span class="lineNum">     771 </span>            :     glue_times::apply&lt;eT, false, do_trans_D, false&gt;(out, tmp, D, eT(0));
+<span class="lineNum">     772 </span>            :     }
+<span class="lineNum">     773 </span>            :   else
+<span class="lineNum">     774 </span>            :     {
+<span class="lineNum">     775 </span>            :     // out = A*(B*C*D)
+<span class="lineNum">     776 </span>            :     
+<span class="lineNum">     777 </span>            :     glue_times::apply&lt;eT, do_trans_B, do_trans_C, do_trans_D, use_alpha&gt;(tmp, B, C, D, alpha);
+<span class="lineNum">     778 </span>            :     
+<span class="lineNum">     779 </span>            :     glue_times::apply&lt;eT, do_trans_A, false, false&gt;(out, A, tmp, eT(0));
+<span class="lineNum">     780 </span>            :     }
+<span class="lineNum">     781 </span>            :   }
+<span class="lineNum">     782 </span>            : 
+<span class="lineNum">     783 </span>            : 
+<span class="lineNum">     784 </span>            : 
+<span class="lineNum">     785 </span>            : //
+<span class="lineNum">     786 </span>            : // glue_times_diag
+<span class="lineNum">     787 </span>            : 
+<span class="lineNum">     788 </span>            : 
+<span class="lineNum">     789 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     790 </span>            : arma_hot
+<a name="791"><span class="lineNum">     791 </span>            : inline</a>
+<span class="lineNum">     792 </span>            : void
+<span class="lineNum">     793 </span><span class="lineNoCov">          0 : glue_times_diag::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Glue&lt;T1, T2, glue_times_diag&gt;&amp; X)</span>
+<span class="lineNum">     794 </span>            :   {
+<span class="lineNum">     795 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     796 </span>            :   
+<span class="lineNum">     797 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     798 </span>            :   
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :   const strip_diagmat&lt;T1&gt; S1(X.A);</span>
+<span class="lineNum">     800 </span><span class="lineNoCov">          0 :   const strip_diagmat&lt;T2&gt; S2(X.B);</span>
+<span class="lineNum">     801 </span>            :   
+<span class="lineNum">     802 </span>            :   typedef typename strip_diagmat&lt;T1&gt;::stored_type T1_stripped;
+<span class="lineNum">     803 </span>            :   typedef typename strip_diagmat&lt;T2&gt;::stored_type T2_stripped;
+<span class="lineNum">     804 </span>            :   
+<span class="lineNum">     805 </span>            :   if( (strip_diagmat&lt;T1&gt;::do_diagmat == true) &amp;&amp; (strip_diagmat&lt;T2&gt;::do_diagmat == false) )
+<span class="lineNum">     806 </span>            :     {
+<span class="lineNum">     807 </span>            :     arma_extra_debug_print(&quot;glue_times_diag::apply(): diagmat(A) * B&quot;);
+<span class="lineNum">     808 </span>            :     
+<span class="lineNum">     809 </span><span class="lineNoCov">          0 :     const diagmat_proxy_check&lt;T1_stripped&gt; A(S1.M, out);</span>
+<span class="lineNum">     810 </span>            :     
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :     const unwrap_check&lt;T2&gt; tmp(X.B, out);</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :     const Mat&lt;eT&gt;&amp; B     = tmp.M;</span>
+<span class="lineNum">     813 </span>            :     
+<span class="lineNum">     814 </span><span class="lineNoCov">          0 :     const uword A_n_rows = A.n_rows;</span>
+<span class="lineNum">     815 </span><span class="lineNoCov">          0 :     const uword A_n_cols = A.n_cols;</span>
+<span class="lineNum">     816 </span><span class="lineNoCov">          0 :     const uword A_length = (std::min)(A_n_rows, A_n_cols);</span>
+<span class="lineNum">     817 </span>            :     
+<span class="lineNum">     818 </span><span class="lineNoCov">          0 :     const uword B_n_rows = B.n_rows;</span>
+<span class="lineNum">     819 </span><span class="lineNoCov">          0 :     const uword B_n_cols = B.n_cols;</span>
+<span class="lineNum">     820 </span>            :     
+<span class="lineNum">     821 </span><span class="lineNoCov">          0 :     arma_debug_assert_mul_size(A_n_rows, A_n_cols, B_n_rows, B_n_cols, &quot;matrix multiplication&quot;);</span>
+<span class="lineNum">     822 </span>            :     
+<span class="lineNum">     823 </span><span class="lineNoCov">          0 :     out.zeros(A_n_rows, B_n_cols);</span>
+<span class="lineNum">     824 </span>            :     
+<span class="lineNum">     825 </span><span class="lineNoCov">          0 :     for(uword col=0; col &lt; B_n_cols; ++col)</span>
+<span class="lineNum">     826 </span>            :       {
+<span class="lineNum">     827 </span><span class="lineNoCov">          0 :             eT* out_coldata = out.colptr(col);</span>
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 :       const eT*   B_coldata =   B.colptr(col);</span>
+<span class="lineNum">     829 </span>            :       
+<span class="lineNum">     830 </span><span class="lineNoCov">          0 :       for(uword i=0; i &lt; A_length; ++i)</span>
+<span class="lineNum">     831 </span>            :         {
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :         out_coldata[i] = A[i] * B_coldata[i];</span>
+<span class="lineNum">     833 </span>            :         }
+<span class="lineNum">     834 </span>            :       }
+<span class="lineNum">     835 </span>            :     }
+<span class="lineNum">     836 </span>            :   else
+<span class="lineNum">     837 </span>            :   if( (strip_diagmat&lt;T1&gt;::do_diagmat == false) &amp;&amp; (strip_diagmat&lt;T2&gt;::do_diagmat == true) )
+<span class="lineNum">     838 </span>            :     {
+<span class="lineNum">     839 </span>            :     arma_extra_debug_print(&quot;glue_times_diag::apply(): A * diagmat(B)&quot;);
+<span class="lineNum">     840 </span>            :     
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 :     const unwrap_check&lt;T1&gt; tmp(X.A, out);</span>
+<span class="lineNum">     842 </span><span class="lineNoCov">          0 :     const Mat&lt;eT&gt;&amp; A     = tmp.M;</span>
+<span class="lineNum">     843 </span>            :     
+<span class="lineNum">     844 </span><span class="lineNoCov">          0 :     const diagmat_proxy_check&lt;T2_stripped&gt; B(S2.M, out);</span>
+<span class="lineNum">     845 </span>            :     
+<span class="lineNum">     846 </span><span class="lineNoCov">          0 :     const uword A_n_rows = A.n_rows;</span>
+<span class="lineNum">     847 </span><span class="lineNoCov">          0 :     const uword A_n_cols = A.n_cols;</span>
+<span class="lineNum">     848 </span>            :     
+<span class="lineNum">     849 </span><span class="lineNoCov">          0 :     const uword B_n_rows = B.n_rows;</span>
+<span class="lineNum">     850 </span><span class="lineNoCov">          0 :     const uword B_n_cols = B.n_cols;</span>
+<span class="lineNum">     851 </span><span class="lineNoCov">          0 :     const uword B_length = (std::min)(B_n_rows, B_n_cols);</span>
+<span class="lineNum">     852 </span>            :     
+<span class="lineNum">     853 </span><span class="lineNoCov">          0 :     arma_debug_assert_mul_size(A_n_rows, A_n_cols, B_n_rows, B_n_cols, &quot;matrix multiplication&quot;);</span>
+<span class="lineNum">     854 </span>            :     
+<span class="lineNum">     855 </span><span class="lineNoCov">          0 :     out.zeros(A_n_rows, B_n_cols);</span>
+<span class="lineNum">     856 </span>            :     
+<span class="lineNum">     857 </span><span class="lineNoCov">          0 :     for(uword col=0; col &lt; B_length; ++col)</span>
+<span class="lineNum">     858 </span>            :       {
+<span class="lineNum">     859 </span><span class="lineNoCov">          0 :       const eT  val = B[col];</span>
+<span class="lineNum">     860 </span>            :       
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :             eT* out_coldata = out.colptr(col);</span>
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 :       const eT*   A_coldata =   A.colptr(col);</span>
+<span class="lineNum">     863 </span>            :       
+<span class="lineNum">     864 </span><span class="lineNoCov">          0 :       for(uword i=0; i &lt; A_n_rows; ++i)</span>
+<span class="lineNum">     865 </span>            :         {
+<span class="lineNum">     866 </span><span class="lineNoCov">          0 :         out_coldata[i] = A_coldata[i] * val;</span>
+<span class="lineNum">     867 </span>            :         }
+<span class="lineNum">     868 </span>            :       }
+<span class="lineNum">     869 </span>            :     }
+<span class="lineNum">     870 </span>            :   else
+<span class="lineNum">     871 </span>            :   if( (strip_diagmat&lt;T1&gt;::do_diagmat == true) &amp;&amp; (strip_diagmat&lt;T2&gt;::do_diagmat == true) )
+<span class="lineNum">     872 </span>            :     {
+<span class="lineNum">     873 </span>            :     arma_extra_debug_print(&quot;glue_times_diag::apply(): diagmat(A) * diagmat(B)&quot;);
+<span class="lineNum">     874 </span>            :     
+<span class="lineNum">     875 </span>            :     const diagmat_proxy_check&lt;T1_stripped&gt; A(S1.M, out);
+<span class="lineNum">     876 </span>            :     const diagmat_proxy_check&lt;T2_stripped&gt; B(S2.M, out);
+<span class="lineNum">     877 </span>            :     
+<span class="lineNum">     878 </span>            :     arma_debug_assert_mul_size(A.n_rows, A.n_cols, B.n_rows, B.n_cols, &quot;matrix multiplication&quot;);
+<span class="lineNum">     879 </span>            :     
+<span class="lineNum">     880 </span>            :     out.zeros(A.n_rows, B.n_cols);
+<span class="lineNum">     881 </span>            :     
+<span class="lineNum">     882 </span>            :     const uword A_length = (std::min)(A.n_rows, A.n_cols);
+<span class="lineNum">     883 </span>            :     const uword B_length = (std::min)(B.n_rows, B.n_cols);
+<span class="lineNum">     884 </span>            :     
+<span class="lineNum">     885 </span>            :     const uword N = (std::min)(A_length, B_length);
+<span class="lineNum">     886 </span>            :     
+<span class="lineNum">     887 </span>            :     for(uword i=0; i &lt; N; ++i)
+<span class="lineNum">     888 </span>            :       {
+<span class="lineNum">     889 </span>            :       out.at(i,i) = A[i] * B[i];
+<span class="lineNum">     890 </span>            :       }
+<span class="lineNum">     891 </span>            :     }
+<span class="lineNum">     892 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     893 </span>            : 
+<span class="lineNum">     894 </span>            : 
+<span class="lineNum">     895 </span>            : 
+<span class="lineNum">     896 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/NewSpecies.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - NewSpecies.h<span style="font-size: 80%;"> (source / <a href="NewSpecies.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntry">61</td>
+            <td class="headerCovTableEntryLo">34.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">42.9 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: NewSpecies.h 2462 2016-01-23 08:08:45Z axel $
+<span class="lineNum">       3 </span>            : #ifndef _NEWSPECIES_H_
+<span class="lineNum">       4 </span>            : #define _NEWSPECIES_H_
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #define NEW_POPULATION_DYNAMICS
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &lt;vector&gt;
+<span class="lineNum">       9 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">      10 </span>            : #include &lt;string&gt;
+<span class="lineNum">      11 </span>            : #include &quot;remember.h&quot;
+<span class="lineNum">      12 </span>            : #include &quot;sequence.h&quot;
+<span class="lineNum">      13 </span>            : #include &quot;md5.h&quot;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : // These externs are defined in NewSpecies.cc
+<span class="lineNum">      16 </span>            : extern double predator_relative_size_Lambda;
+<span class="lineNum">      17 </span>            : extern double plant_hardening_time;
+<span class="lineNum">      18 </span>            : extern int big_plants_eaten;
+<span class="lineNum">      19 </span>            : extern double plant_shadowing; // why double??? should be int
+<span class="lineNum">      20 </span>            : extern int niche_space_dimensions_D;
+<span class="lineNum">      21 </span>            : extern double area_per_compartment;
+<span class="lineNum">      22 </span>            : extern int emulate_carrying_capacity_bug;
+<span class="lineNum">      23 </span>            : extern int emulate_animal_body_mass_cutoff_bug;
+<span class="lineNum">      24 </span>            : extern int emulate_log_random_matching_bug;
+<span class="lineNum">      25 </span>            : extern int plant_physiology_version;
+<span class="lineNum">      26 </span>            : extern double loss_rate_over_max_production_rate_r;
+<span class="lineNum">      27 </span>            : extern double minimum_biomass_considered;
+<span class="lineNum">      28 </span>            : extern double trophic_niche_width_w_t;
+<span class="lineNum">      29 </span>            : extern double switching_similarity_width_w_s;
+<span class="lineNum">      30 </span>            : extern double relative_switching_similarity_width;
+<span class="lineNum">      31 </span>            : extern int adjust_prey_similarity_width;
+<span class="lineNum">      32 </span>            : extern int do_switching; ///&lt; determines whether to include prey-switching
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : class NewSpecies; // Forward declaration.
+<span class="lineNum">      35 </span>            : /// A list of animal and plant species.
+<span class="lineNum">      36 </span><span class="lineCov">        180 : class species_list_t: public sequence&lt;NewSpecies&gt;{</span>
+<span class="lineNum">      37 </span>            : public:
+<span class="lineNum">      38 </span>            :   /// Number of animals in web.
+<span class="lineNum">      39 </span>            :   /** This information is needed to organize the species list, because
+<span class="lineNum">      40 </span>            :       we keep first all animals, and then all plants in the list. */
+<span class="lineNum">      41 </span>            :   int n_animals;
+<span class="lineNum">      42 </span>            :   bool is_plant(int i) const {return i&gt;= n_animals;}
+<span class="lineNum">      43 </span><span class="lineCov">        180 :   species_list_t():n_animals(0){};</span>
+<span class="lineNum">      44 </span>            :   __attribute__ ((__always_inline__)) 
+<span class="lineNum">      45 </span>            :   NewSpecies &amp; operator[](unsigned int i) {
+<span class="lineNum">      46 </span><span class="lineCov">  109201171 :     return sequence&lt;NewSpecies&gt;::operator[](i);</span>
+<span class="lineNum">      47 </span>            :   }
+<span class="lineNum">      48 </span>            :   __attribute__ ((__always_inline__))
+<span class="lineNum">      49 </span>            :   const NewSpecies &amp; operator[](unsigned int i) const{
+<span class="lineNum">      50 </span><span class="lineCov">      35200 :     return sequence&lt;NewSpecies&gt;::operator[](i);</span>
+<span class="lineNum">      51 </span>            :   }
+<a name="52"><span class="lineNum">      52 </span>            : };</a>
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span><span class="lineCov">     172696 : class NewSpecies : public permanent</span>
+<span class="lineNum">      55 </span>            : {
+<span class="lineNum">      56 </span>            : public:
+<span class="lineNum">      57 </span>            :   // This is perhaps the mimimal public interface to taxonomy I can think of:
+<span class="lineNum">      58 </span>            :   /// The most specific taxon of a species.
+<span class="lineNum">      59 </span>            :   const std::string &amp; taxon_name() const;
+<span class="lineNum">      60 </span>            :   /// True if this species does not eat from other compartments.
+<span class="lineNum">      61 </span>            :   inline bool is_a_plant() const;
+<span class="lineNum">      62 </span>            :   enum taxon_t {animal=0,plant=1,n_taxa,not_a_taxon};
+<span class="lineNum">      63 </span>            :   friend std::ostream &amp; operator&lt;&lt;(std::ostream &amp; os,taxon_t t);
+<span class="lineNum">      64 </span>            :   friend std::istream &amp; operator&gt;&gt;(std::istream &amp; is,taxon_t &amp; t);
+<span class="lineNum">      65 </span>            : private:
+<span class="lineNum">      66 </span>            :   static std::string the_taxon_name[n_taxa];
+<span class="lineNum">      67 </span>            :   /// Assigns indices to taxa.
+<span class="lineNum">      68 </span>            :   static taxon_t taxon_with_name(const std::string &amp; name);
+<span class="lineNum">      69 </span>            :   /// The taxon of this species.
+<span class="lineNum">      70 </span>            :   taxon_t the_taxon;
+<span class="lineNum">      71 </span>            : public:
+<span class="lineNum">      72 </span>            :   enum kind_of_trait_t {
+<span class="lineNum">      73 </span>            :     body_mass_trait,
+<span class="lineNum">      74 </span>            :     vulnerability_traits,
+<span class="lineNum">      75 </span>            :     foraging_traits,
+<span class="lineNum">      76 </span>            :     aggressivity_trait,
+<span class="lineNum">      77 </span>            :     niche_width_trait,
+<span class="lineNum">      78 </span>            :     n_traits
+<span class="lineNum">      79 </span>            :   };
+<span class="lineNum">      80 </span>            :   static int number_of_kinds_of_traits(taxon_t taxon);
+<span class="lineNum">      81 </span>            :   const std::string &amp; trait_name(int t);
+<span class="lineNum">      82 </span>            :   typedef unsigned int trait_selection_t;
+<span class="lineNum">      83 </span>            : public:
+<span class="lineNum">      84 </span>            :   /// A class representing trait vectors.
+<span class="lineNum">      85 </span>            :   /** Elementary arithmetic operations on vectors, and a few more
+<a name="86"><span class="lineNum">      86 </span>            :       specific members are defined. The user must make sure that the</a>
+<span class="lineNum">      87 </span>            :       numbers of dimensions in arithmetic operations are compatible.*/
+<span class="lineNum">      88 </span><span class="lineCov">     335298 :   class trait_t : public sequence&lt;double&gt;{</span>
+<span class="lineNum">      89 </span>            :   public:
+<span class="lineNum">      90 </span><span class="lineCov">       2792 :     trait_t():sequence&lt;double&gt;(niche_space_dimensions_D){};</span>
+<span class="lineNum">      91 </span><span class="lineCov">      47774 :     trait_t(const sequence&lt;double&gt; &amp; s):sequence&lt;double&gt;(s){};</span>
+<span class="lineNum">      92 </span><span class="lineCov">      36640 :     trait_t(int i):sequence&lt;double&gt;(i){};</span>
+<span class="lineNum">      93 </span><span class="lineCov">       2416 :     trait_t(int i,double d):sequence&lt;double&gt;(i,d){};</span>
+<span class="lineNum">      94 </span>            :     trait_t operator=(const trait_t &amp; other){
+<span class="lineNum">      95 </span><span class="lineCov">      41982 :       return trait_t(sequence&lt;double&gt;::operator=(other));</span>
+<span class="lineNum">      96 </span>            :     }
+<span class="lineNum">      97 </span>            :     trait_t &amp; operator+=(const trait_t &amp; other){
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :       for(int i=niche_space_dimensions_D;i--&gt;0;){</span>
+<span class="lineNum">      99 </span><span class="lineNoCov">          0 :         (*this)(i)+=other(i);</span>
+<span class="lineNum">     100 </span>            :       }
+<span class="lineNum">     101 </span>            :       return *this;
+<span class="lineNum">     102 </span>            :     }
+<span class="lineNum">     103 </span>            :     trait_t &amp; operator-=(const trait_t &amp; other){
+<span class="lineNum">     104 </span>            :       for(int i=niche_space_dimensions_D;i--&gt;0;){
+<span class="lineNum">     105 </span>            :         (*this)(i)-=other(i);
+<span class="lineNum">     106 </span>            :       }
+<span class="lineNum">     107 </span>            :       return *this;
+<span class="lineNum">     108 </span>            :     }
+<span class="lineNum">     109 </span>            :     trait_t &amp; operator*=(const trait_t &amp; other){
+<span class="lineNum">     110 </span>            :       for(int i=niche_space_dimensions_D;i--&gt;0;){
+<span class="lineNum">     111 </span>            :         (*this)(i)*=other(i);
+<span class="lineNum">     112 </span>            :       }
+<span class="lineNum">     113 </span>            :       return *this;
+<span class="lineNum">     114 </span>            :     }
+<span class="lineNum">     115 </span>            :     trait_t &amp; operator/=(const trait_t &amp; other){
+<span class="lineNum">     116 </span>            :       for(int i=niche_space_dimensions_D;i--&gt;0;){
+<span class="lineNum">     117 </span>            :         (*this)(i)/=other(i);
+<span class="lineNum">     118 </span>            :       }
+<span class="lineNum">     119 </span>            :       return *this;
+<span class="lineNum">     120 </span>            :     }
+<span class="lineNum">     121 </span>            :     trait_t &amp; operator*=(const double x){
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :       for(int i=niche_space_dimensions_D;i--&gt;0;){</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :         (*this)(i)*=x;</span>
+<span class="lineNum">     124 </span>            :       }
+<span class="lineNum">     125 </span>            :       return *this;
+<span class="lineNum">     126 </span>            :     }
+<span class="lineNum">     127 </span>            :     trait_t &amp; operator/=(const double x){
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :       for(int i=niche_space_dimensions_D;i--&gt;0;){</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :         (*this)(i)*=1/x;</span>
+<span class="lineNum">     130 </span>            :       }
+<span class="lineNum">     131 </span>            :       return *this;
+<span class="lineNum">     132 </span>            :     }
+<span class="lineNum">     133 </span>            :     trait_t &amp; operator+=(const double x){
+<span class="lineNum">     134 </span>            :       for(int i=niche_space_dimensions_D;i--&gt;0;){
+<span class="lineNum">     135 </span>            :         (*this)(i)+=x;
+<span class="lineNum">     136 </span>            :       }
+<span class="lineNum">     137 </span>            :       return *this;
+<span class="lineNum">     138 </span>            :     }
+<span class="lineNum">     139 </span>            :     trait_t &amp; operator-=(const double x){
+<span class="lineNum">     140 </span>            :       for(int i=niche_space_dimensions_D;i--&gt;0;){
+<span class="lineNum">     141 </span>            :         (*this)(i)-=x;
+<span class="lineNum">     142 </span>            :       }
+<span class="lineNum">     143 </span>            :       return *this;
+<span class="lineNum">     144 </span>            :     }
+<span class="lineNum">     145 </span>            :     /// Square distance to another trait vector.
+<span class="lineNum">     146 </span>            :     double dist_square(const trait_t &amp; other) const{
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :       double sum=0;</span>
+<span class="lineNum">     148 </span>            :       double d;
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :       for(int i=niche_space_dimensions_D;i--&gt;0;){</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :         d=(*this)(i)-other(i);</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :         sum+=d*d;</span>
+<span class="lineNum">     152 </span>            :       }
+<span class="lineNum">     153 </span>            :       return sum;
+<span class="lineNum">     154 </span>            :     }
+<span class="lineNum">     155 </span>            :     /// Multipy-and-add operation:
+<span class="lineNum">     156 </span>            :     void add_multiple(double a,const trait_t other){
+<span class="lineNum">     157 </span>            :       for(int i=niche_space_dimensions_D;i--&gt;0;){
+<span class="lineNum">     158 </span>            :         (*this)(i)+=a*other(i);
+<span class="lineNum">     159 </span>            :       }
+<span class="lineNum">     160 </span>            :     }
+<span class="lineNum">     161 </span>            :     //// Compiler warned this would never the be used! So, I took it out.
+<span class="lineNum">     162 </span>            :     // /// Convert trait_t vector to STL vector:
+<span class="lineNum">     163 </span>            :     // operator std::vector&lt;double&gt; () const {
+<span class="lineNum">     164 </span>            :     //   return 
+<span class="lineNum">     165 </span>            :     //  std::vector&lt;double&gt;(begin(),end());
+<span class="lineNum">     166 </span>            :     // }
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            : //     operator const HepVector () const {
+<span class="lineNum">     169 </span>            : //       HepVector v(niche_space_dimensions_D);
+<span class="lineNum">     170 </span>            : //       return 
+<span class="lineNum">     171 </span>            : //      std::vector&lt;double&gt;(&amp;(*this)[0],&amp;(*this)[niche_space_dimensions_D]);
+<span class="lineNum">     172 </span>            : //     }
+<span class="lineNum">     173 </span>            :   };
+<span class="lineNum">     174 </span>            :   void adjust_trait_vector_dimensions();
+<span class="lineNum">     175 </span>            : private:
+<span class="lineNum">     176 </span>            :   /// Physiologically most easy value of first vulnerability dimension.
+<span class="lineNum">     177 </span>            :   /** In the Population-dynamical matching model, the vulnerabilities
+<span class="lineNum">     178 </span>            :       of plants and animals cover different, overlapping regions in
+<span class="lineNum">     179 </span>            :       trophic trait space.  This is achived by shifting the
+<span class="lineNum">     180 </span>            :       &quot;preferred&quot; value of the first component of the vulnerability
+<span class="lineNum">     181 </span>            :       trait vector away from the coordinate center by an amount
+<span class="lineNum">     182 </span>            :       depending on the type of species.  This amount is here
+<span class="lineNum">     183 </span>            :       computed. If vulnerability_separate_in_all_dimensions is
+<span class="lineNum">     184 </span>            :       non-zero, not only the first, but all components are shifted by
+<span class="lineNum">     185 </span>            :       this amount.*/
+<span class="lineNum">     186 </span>            :   double V_center() const;
+<span class="lineNum">     187 </span>            :   /// Separate the centers of vulerability depending on type of species
+<span class="lineNum">     188 </span>            :   void separate(trait_t &amp; V) const;
+<span class="lineNum">     189 </span>            :   /// Undo separation of the centers of vulerability.
+<span class="lineNum">     190 </span>            :   void unseparate(trait_t &amp; V) const;
+<span class="lineNum">     191 </span>            : private:
+<span class="lineNum">     192 </span>            :   // These members allow experimentation with different ways of
+<span class="lineNum">     193 </span>            :   // mutating traits.
+<span class="lineNum">     194 </span>            :   /// Add \a delta to \a F, reflecting the result back into a sphere.
+<span class="lineNum">     195 </span>            :   static trait_t add_reflecting(trait_t F,trait_t delta,double radius);
+<span class="lineNum">     196 </span>            :   /// Chose a trait randomly, evenly distributed in a sphere.
+<span class="lineNum">     197 </span>            :   static trait_t random_in_sphere(double radius);
+<span class="lineNum">     198 </span>            :   /// Mutate \a t by \a step
+<span class="lineNum">     199 </span>            :   static void add_random_to(trait_t &amp;t, double step);
+<span class="lineNum">     200 </span>            :   /// Mutate \a t by \a step, with mechanism depending on \a do_reflect.
+<span class="lineNum">     201 </span>            :   static void add_random_maybe_reflecting_to(trait_t &amp; t,
+<span class="lineNum">     202 </span>            :                                              double step,double radius,
+<span class="lineNum">     203 </span>            :                                              int do_reflect);
+<span class="lineNum">     204 </span>            :   /// Randomly choose \a t, by mechanism depending on \a do_reflect.
+<span class="lineNum">     205 </span>            :   static void set_random_trait_maybe_flat(trait_t &amp;t,double radius,
+<span class="lineNum">     206 </span>            :                                           int do_reflect);
+<span class="lineNum">     207 </span>            : public:
+<span class="lineNum">     208 </span>            :   bool outside_allowed_trait_space();
+<span class="lineNum">     209 </span>            : private:
+<span class="lineNum">     210 </span>            :   static double log_DBL_MIN; // the values for NewSpecies may be 
+<span class="lineNum">     211 </span>            :   static double log_DBL_MAX; // different from elsewhere
+<span class="lineNum">     212 </span>            :   static int next_unique_id;
+<span class="lineNum">     213 </span>            :   static int next_sequential_id; 
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            : public:
+<span class="lineNum">     216 </span>            :   static double plant_fraction; ///&lt; Default plant fraction.
+<span class="lineNum">     217 </span>            : private:
+<span class="lineNum">     218 </span>            :   // Several constants here that determine population dynamics of a
+<span class="lineNum">     219 </span>            :   // species.
+<span class="lineNum">     220 </span>            :   double the_mean_bodymass_M;
+<span class="lineNum">     221 </span>            :   double the_log_mean_bodymass_M;
+<span class="lineNum">     222 </span>            :   double the_biomass_abundance_B;
+<span class="lineNum">     223 </span>            :   double the_conversion_efficiency_epsilon;
+<span class="lineNum">     224 </span>            :   double the_attack_rate_a;
+<span class="lineNum">     225 </span>            :   double the_handling_time_T;
+<span class="lineNum">     226 </span>            :   double the_turnover_rate_r;
+<span class="lineNum">     227 </span>            :   double the_fishing_mortality;
+<span class="lineNum">     228 </span>            :   double the_plant_growth_rate_sigma;
+<span class="lineNum">     229 </span>            :   double the_carrying_capacity;
+<span class="lineNum">     230 </span>            :   double the_aggressivity_g;
+<span class="lineNum">     231 </span>            :   double the_loss_rate_over_max_production_rate_r;
+<span class="lineNum">     232 </span>            :   double the_niche_width_wt;
+<span class="lineNum">     233 </span>            :   double the_number_of_invading_offspring;
+<span class="lineNum">     234 </span>            :   double the_env_effect;
+<span class="lineNum">     235 </span>            : public:
+<span class="lineNum">     236 </span>            :   double the_GP;
+<span class="lineNum">     237 </span>            :   double the_saturation_strength;
+<span class="lineNum">     238 </span>            :   double the_light_strength;
+<span class="lineNum">     239 </span>            :   double the_top_down_strength;
+<span class="lineNum">     240 </span>            :   double the_competition_strength;
+<span class="lineNum">     241 </span>            : private:  
+<span class="lineNum">     242 </span>            :   int the_unique_id;  ///&lt; Each species is assigned a unique number
+<span class="lineNum">     243 </span>            :   int the_sequential_id;  ///&lt; Each species is assigned a unique number
+<span class="lineNum">     244 </span>            :   int the_parent_unique_id;  ///&lt; Unique id of the parent species
+<span class="lineNum">     245 </span>            :   int the_clade_id; ///&lt; Keeps track of clad
+<span class="lineNum">     246 </span>            :   typedef unsigned int random_tag_t;
+<span class="lineNum">     247 </span>            :   random_tag_t the_random_tag; ///&lt; Used to link species randomly.
+<span class="lineNum">     248 </span>            :   trait_t V;  ///&lt; Vulnerability traits
+<span class="lineNum">     249 </span>            :   trait_t F;  ///&lt; Foraging traits or plant traits.
+<span class="lineNum">     250 </span>            : public:
+<span class="lineNum">     251 </span>            :   /// Returns vulnerbility trait vector.
+<a name="252"><span class="lineNum">     252 </span><span class="lineNoCov">          0 :   const trait_t &amp; vulnerability_V() const {return V;}</span></a>
+<span class="lineNum">     253 </span>            :   /// Returns vulnerbility trait vector relative to preferred value.
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :   const trait_t relative_vulnerability() const {</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :     trait_t Vr=V;</span>
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :     unseparate(Vr);</span>
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :     return Vr;</span>
+<span class="lineNum">     258 </span>            :   }
+<span class="lineNum">     259 </span>            :   /// Returns foraging trait vector.
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :   const trait_t &amp; foraging_F() const {return F;}</span>
+<span class="lineNum">     261 </span>            :   /// Returns plant trait vector.
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :   const trait_t &amp; niche_G() const {return F;}</span>
+<span class="lineNum">     263 </span>            :   static trait_t W; ///&lt; Weights of trophic trait dimensions.
+<span class="lineNum">     264 </span>            :   static trait_t Wp; ///&lt; Weights of plant trait dimensions.
+<span class="lineNum">     265 </span>            :   static void initialize();///&lt; Initialize static members, NewSpecies.
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :   ///A scaling factor of dimension TIME representative of
+<span class="lineNum">     268 </span>            :   ///population dynamics of the species.
+<span class="lineNum">     269 </span>            :   double slowness() const{
+<span class="lineNum">     270 </span>            :     return 
+<span class="lineNum">     271 </span>            :       (is_a_plant()?
+<span class="lineNum">     272 </span>            :        1/the_plant_growth_rate_sigma :
+<span class="lineNum">     273 </span>            :        the_handling_time_T/the_conversion_efficiency_epsilon);
+<span class="lineNum">     274 </span>            :   }
+<span class="lineNum">     275 </span>            : private:
+<span class="lineNum">     276 </span>            :   void set_unique_id();
+<span class="lineNum">     277 </span>            : public:
+<span class="lineNum">     278 </span>            :   void set_sequential_id();
+<span class="lineNum">     279 </span>            :   void set_parameters_given_body_mass();
+<span class="lineNum">     280 </span>            :   void fix_foraging_vector();///&lt; Used when reading older webs.
+<span class="lineNum">     281 </span>            : private:
+<span class="lineNum">     282 </span>            :   virtual void data_mapping();///&lt; For saving/loading species.
+<span class="lineNum">     283 </span>            : public:
+<span class="lineNum">     284 </span>            :   NewSpecies();
+<span class="lineNum">     285 </span>            :   ~NewSpecies();
+<span class="lineNum">     286 </span>            :   /// Sets species properties as if invading.  
+<span class="lineNum">     287 </span>            :   /** \a taxon==-1 means choose species type at random. */
+<span class="lineNum">     288 </span>            :   explicit NewSpecies(int taxon);
+<span class="lineNum">     289 </span>            :   /// Combine a random species from \a samples.
+<span class="lineNum">     290 </span>            :   /** Gives a new NewSpecies with properties assembled randomly from
+<span class="lineNum">     291 </span>            :       the samples.  Animals from animals, plants from plants.  Aborts
+<span class="lineNum">     292 </span>            :       if there are not corresponding samples. (Check code before
+<span class="lineNum">     293 </span>            :       usage.)*/
+<span class="lineNum">     294 </span>            :   NewSpecies(const species_list_t &amp; samples,int offset, int sample_size); 
+<span class="lineNum">     295 </span>            :   /// Are the species identical?
+<span class="lineNum">     296 </span>            :   bool operator==(const NewSpecies &amp; other) const{
+<span class="lineNum">     297 </span><span class="lineCov">    8971490 :     return the_unique_id==other.the_unique_id;</span>
+<span class="lineNum">     298 </span>            :   }
+<span class="lineNum">     299 </span>            :   /// Generate a mutated version of this species.
+<span class="lineNum">     300 </span>            :   /** The parameter \a slowdown can be used to make all mutation steps
+<span class="lineNum">     301 </span>            :       smaller than the default, for example to search for optimal
+<span class="lineNum">     302 </span>            :       trait values in a given environment.*/
+<span class="lineNum">     303 </span>            :   void mutate_selected_traits(trait_selection_t selection,
+<span class="lineNum">     304 </span>            :                               double slowdown=1);
+<span class="lineNum">     305 </span>            :   void sample_F_randomly();
+<span class="lineNum">     306 </span>            :   /// Sample species to sample random traits:
+<span class="lineNum">     307 </span>            :   static const species_list_t * sampling_species_list;
+<span class="lineNum">     308 </span>            :   NewSpecies * speciate_as_new(double slowdown=1) const;
+<span class="lineNum">     309 </span>            :   /// Same as speciate_as_new(double), but assigns a clade_id.
+<span class="lineNum">     310 </span>            :   NewSpecies * speciate(double slowdown=1);
+<span class="lineNum">     311 </span>            : private:
+<span class="lineNum">     312 </span>            :   void initiate_biomass();
+<span class="lineNum">     313 </span>            : public:
+<span class="lineNum">     314 </span>            :   double get_threshold_biomass_B()const;
+<span class="lineNum">     315 </span>            :   double get_trade_off_multiplier()const;
+<span class="lineNum">     316 </span>            :   /// Component of niche overlap used by log_availability_structure().
+<span class="lineNum">     317 </span>            :   double log_niche_matching(const NewSpecies &amp; prey) const;  
+<span class="lineNum">     318 </span>            :   /// Alternative to log_niche_matching(..).
+<span class="lineNum">     319 </span>            :   /** Called if totally_random_link_strength_sigma is != 0; */
+<span class="lineNum">     320 </span>            :   double pseudo_standard_normal_random_with(const NewSpecies &amp; other,
+<span class="lineNum">     321 </span>            :                                             const int choice=0) const;
+<span class="lineNum">     322 </span>            :   double log_random_matching(const NewSpecies &amp; prey) const;  
+<span class="lineNum">     323 </span>            :   /// Component of niche overlap used by log_availability_structure().
+<span class="lineNum">     324 </span>            :   double log_small_prey_matching(const NewSpecies &amp; prey) const;  
+<span class="lineNum">     325 </span>            :   /// Component of niche overlap used by log_availability_structure().
+<span class="lineNum">     326 </span>            :   double log_large_prey_matching(const NewSpecies &amp; prey) const;  
+<span class="lineNum">     327 </span>            :   /// Component of niche overlap used by log_availability_structure().
+<span class="lineNum">     328 </span>            :   double log_mass_matching(const NewSpecies &amp; prey) const;  
+<span class="lineNum">     329 </span>            :   /// Component of niche overlap used by log_availability_structure().
+<span class="lineNum">     330 </span>            :   double log_other_matching(const NewSpecies &amp; prey) const;  
+<span class="lineNum">     331 </span>            :   /// Determines trophic affinities c to other species.
+<span class="lineNum">     332 </span>            :   double log_foraging_strength_c_on(const NewSpecies &amp; prey) const;  
+<span class="lineNum">     333 </span>            :   /// Determines trophic affinities c to other species.
+<span class="lineNum">     334 </span>            :   double foraging_strength_c_on(const NewSpecies &amp; prey) const;
+<span class="lineNum">     335 </span>            :   /// Generate a uniform &quot;random number&quot; between 0 and 1 determined by
+<span class="lineNum">     336 </span>            :   /// the species pair
+<span class="lineNum">     337 </span>            :   double random_with(const NewSpecies &amp; other,int which=0) const;
+<span class="lineNum">     338 </span>            :   /// Generate a standard-normal &quot;random number&quot; between 0 and 1
+<span class="lineNum">     339 </span>            :   /// determined by the species pair
+<span class="lineNum">     340 </span>            :   double random_normal_with(const NewSpecies &amp; other,int which=0) const;
+<span class="lineNum">     341 </span>            :   /// Determines interaction with other plants.
+<span class="lineNum">     342 </span>            :   double plant_hampering_by(const NewSpecies &amp; prey) const;
+<span class="lineNum">     343 </span>            :   /// Distance to prey in trait space.
+<span class="lineNum">     344 </span>            :   double foraging_distance_to(const NewSpecies &amp; prey) const;
+<span class="lineNum">     345 </span>            :   /// Determines switching similarity between two prey species.
+<span class="lineNum">     346 </span>            :   /** Switching similarities are assumed to be independent of the
+<span class="lineNum">     347 </span>            :       consumer. */
+<span class="lineNum">     348 </span>            :   double switching_similarity_to(const NewSpecies &amp; other,
+<span class="lineNum">     349 </span>            :                                  const double width) const;
+<span class="lineNum">     350 </span>            :   inline double prey_similarity_width() const;
+<span class="lineNum">     351 </span>            :   /// Returns total biomass of the species.
+<span class="lineNum">     352 </span>            :   double biomass_abundance_B() const{
+<span class="lineNum">     353 </span>            :     return the_biomass_abundance_B;
+<span class="lineNum">     354 </span>            :   }
+<span class="lineNum">     355 </span>            :   double get_fishing_mortality()const{
+<span class="lineNum">     356 </span>            :     return the_fishing_mortality;
+<span class="lineNum">     357 </span>            :   }
+<span class="lineNum">     358 </span>            :   void set_fishing_mortality(double m){
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :     the_fishing_mortality=m;</span>
+<span class="lineNum">     360 </span>            :   }
+<span class="lineNum">     361 </span>            :   void set_biomass_abundance_B(double B){
+<span class="lineNum">     362 </span><span class="lineCov">     110846 :     the_biomass_abundance_B=B;</span>
+<span class="lineNum">     363 </span>            :   }
+<span class="lineNum">     364 </span>            :   void set_aggressivity_g(double g){
+<span class="lineNum">     365 </span><span class="lineCov">        469 :     the_attack_rate_a*=g/the_aggressivity_g;</span>
+<span class="lineNum">     366 </span><span class="lineCov">        469 :     the_aggressivity_g=g;</span>
+<span class="lineNum">     367 </span>            :   }
+<span class="lineNum">     368 </span>            :   void set_niche_width_wt(double wt){
+<span class="lineNum">     369 </span>            :     the_niche_width_wt=wt;
+<span class="lineNum">     370 </span>            :   }
+<span class="lineNum">     371 </span>            :   void set_conversion_efficiency_eps(double eps){
+<span class="lineNum">     372 </span>            :     the_conversion_efficiency_epsilon=eps;
+<span class="lineNum">     373 </span>            :   }
+<span class="lineNum">     374 </span>            :   void set_plant_growth_rate_sigma(double sig){
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :     the_plant_growth_rate_sigma=sig;</span>
+<span class="lineNum">     376 </span>            :   }
+<span class="lineNum">     377 </span>            : 
+<span class="lineNum">     378 </span>            : 
+<span class="lineNum">     379 </span>            :   /// Returns a characteristic mean body mass of the species.
+<span class="lineNum">     380 </span>            :   /** This is sometimes assumed to be the mean body mass.*/
+<span class="lineNum">     381 </span>            :   double bodymass() const{
+<span class="lineNum">     382 </span>            :     return the_mean_bodymass_M;
+<span class="lineNum">     383 </span>            :   }
+<span class="lineNum">     384 </span>            :   /// Returns the species' unique id.
+<span class="lineNum">     385 </span>            :   int unique_id() const{
+<span class="lineNum">     386 </span>            :     return the_unique_id;
+<span class="lineNum">     387 </span>            :   }
+<span class="lineNum">     388 </span>            :   /// Returns the species' unique id.
+<span class="lineNum">     389 </span>            :   int sequential_id() const{
+<span class="lineNum">     390 </span>            :     return the_sequential_id;
+<span class="lineNum">     391 </span>            :   }
+<span class="lineNum">     392 </span>            :   /// Returns the species' parent's unique id.
+<span class="lineNum">     393 </span>            :   int parent_unique_id() const{
+<span class="lineNum">     394 </span>            :     return the_parent_unique_id;
+<span class="lineNum">     395 </span>            :   }
+<span class="lineNum">     396 </span>            :   /// Returns the species' clade id.
+<span class="lineNum">     397 </span>            :   int clade_id() const{
+<span class="lineNum">     398 </span>            :     return the_clade_id;
+<span class="lineNum">     399 </span>            :   }
+<span class="lineNum">     400 </span>            :   taxon_t taxon() const{
+<span class="lineNum">     401 </span>            :     return the_taxon;
+<span class="lineNum">     402 </span>            :   }
+<span class="lineNum">     403 </span>            :   double mean_bodymass_M() const{
+<span class="lineNum">     404 </span>            :     return the_mean_bodymass_M;
+<span class="lineNum">     405 </span>            :   }
+<span class="lineNum">     406 </span>            :   double log_mean_bodymass_M() const{
+<span class="lineNum">     407 </span>            :     return the_log_mean_bodymass_M;
+<span class="lineNum">     408 </span>            :   }
+<span class="lineNum">     409 </span>            : 
+<span class="lineNum">     410 </span>            :   double conversion_efficiency_eps() const{
+<span class="lineNum">     411 </span>            :     return the_conversion_efficiency_epsilon;
+<span class="lineNum">     412 </span>            :   }
+<span class="lineNum">     413 </span>            :   double attack_rate_a() const{
+<span class="lineNum">     414 </span>            :     return the_attack_rate_a;
+<span class="lineNum">     415 </span>            :   }
+<span class="lineNum">     416 </span>            :   double handling_time_T() const{
+<span class="lineNum">     417 </span>            :     return the_handling_time_T;
+<span class="lineNum">     418 </span>            :   }
+<span class="lineNum">     419 </span>            :   double turnover_rate_r() const{
+<span class="lineNum">     420 </span><span class="lineCov">   31421688 :     return the_turnover_rate_r+the_fishing_mortality;</span>
+<span class="lineNum">     421 </span>            :   }
+<span class="lineNum">     422 </span>            :   double fishing_mortality() const{
+<span class="lineNum">     423 </span>            :     return the_fishing_mortality;
+<span class="lineNum">     424 </span>            :   }
+<span class="lineNum">     425 </span>            :   double fishing_yield() const{
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :     return the_fishing_mortality*the_biomass_abundance_B;</span>
+<span class="lineNum">     427 </span>            :   }
+<span class="lineNum">     428 </span>            :   double plant_growth_rate_sigma() const{
+<span class="lineNum">     429 </span>            :     return the_plant_growth_rate_sigma;
+<span class="lineNum">     430 </span>            :   }
+<span class="lineNum">     431 </span>            :   double carrying_capacity() const{
+<span class="lineNum">     432 </span>            :     return the_carrying_capacity;
+<span class="lineNum">     433 </span>            :   }
+<span class="lineNum">     434 </span>            :   double aggressivity_g() const{
+<span class="lineNum">     435 </span>            :     return the_aggressivity_g;
+<span class="lineNum">     436 </span>            :   }
+<span class="lineNum">     437 </span>            :   double niche_width_wt() const{
+<span class="lineNum">     438 </span>            :     return the_niche_width_wt;
+<span class="lineNum">     439 </span>            :   }
+<span class="lineNum">     440 </span>            :   double get_loss_rate_over_max_production_rate_r() const{
+<span class="lineNum">     441 </span>            :     return the_loss_rate_over_max_production_rate_r;
+<span class="lineNum">     442 </span>            :   }
+<span class="lineNum">     443 </span>            :   bool increase_loss_rate_by(double rate);
+<span class="lineNum">     444 </span>            : 
+<span class="lineNum">     445 </span>            :   double env_effect() const{
+<span class="lineNum">     446 </span>            :     return the_env_effect;
+<span class="lineNum">     447 </span>            :   }
+<span class="lineNum">     448 </span>            : 
+<span class="lineNum">     449 </span>            :   /// Do perturbation of physiological parameters.
+<span class="lineNum">     450 </span>            :   /** The \a factor controlls the amount of perturbation */
+<span class="lineNum">     451 </span>            :   void perturb_physiological_parameters(double factor);
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            :   /// Attempt some predictions based on parameters.
+<span class="lineNum">     454 </span>            :   static void make_predictions();
+<span class="lineNum">     455 </span>            : 
+<span class="lineNum">     456 </span>            :   // Trait sweeps:
+<span class="lineNum">     457 </span>            :   /// Entry in a trait sweep
+<span class="lineNum">     458 </span>            :   class trait_sweep_sample_t {
+<span class="lineNum">     459 </span>            :     sequence&lt; double &gt; the_trait_value;
+<a name="460"><span class="lineNum">     460 </span>            :     NewSpecies * the_species;</a>
+<span class="lineNum">     461 </span>            :   public:
+<span class="lineNum">     462 </span><span class="lineNoCov">          0 :     const trait_sweep_sample_t &amp; operator=(const trait_sweep_sample_t &amp; other){</span>
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :       if(the_species) delete the_species;</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :       the_trait_value=other.the_trait_value;</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :       the_species=(other.the_species?new NewSpecies(*(other.the_species)):0);</span>
+<a name="466"><span class="lineNum">     466 </span><span class="lineNoCov">          0 :       return *this;</span></a>
+<span class="lineNum">     467 </span>            :     }
+<span class="lineNum">     468 </span><span class="lineNoCov">          0 :     trait_sweep_sample_t(const trait_sweep_sample_t &amp; other):</span>
+<span class="lineNum">     469 </span>            :       the_trait_value(other.the_trait_value),
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :       the_species(other.the_species?new NewSpecies(*(other.the_species)):0){</span>
+<span class="lineNum">     471 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     472 </span><span class="lineNoCov">          0 :     trait_sweep_sample_t():the_trait_value(),the_species(0){}</span>
+<a name="473"><span class="lineNum">     473 </span>            :     trait_sweep_sample_t(sequence&lt; double &gt; &amp; v,NewSpecies * s):</a>
+<span class="lineNum">     474 </span><span class="lineNoCov">          0 :       the_trait_value(v),the_species(s){}</span>
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :     ~trait_sweep_sample_t(){if(the_species) delete the_species;}</span>
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :     sequence&lt; double &gt; trait_values(){return the_trait_value;}</span>
+<span class="lineNum">     477 </span>            :     NewSpecies * species(){return the_species;}
+<span class="lineNum">     478 </span>            :   };
+<span class="lineNum">     479 </span>            :   /// A trait sweep
+<span class="lineNum">     480 </span>            :   typedef std::vector&lt; trait_sweep_sample_t &gt; trait_sweep_t;
+<span class="lineNum">     481 </span>            :   /// Generates a trait sweep
+<span class="lineNum">     482 </span>            :   trait_sweep_t trait_sweep(const char * details) const;
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            :   int trait_dimensions(int i);
+<span class="lineNum">     485 </span>            :   trait_t get_trait_values(int i);
+<span class="lineNum">     486 </span>            :   int notify_speciation(const NewSpecies &amp; s){
+<span class="lineNum">     487 </span><span class="lineCov">         65 :     return ++the_number_of_invading_offspring;</span>
+<span class="lineNum">     488 </span>            :   }
+<span class="lineNum">     489 </span>            :   int number_of_invading_offspring() const{
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :     return the_number_of_invading_offspring;</span>
+<span class="lineNum">     491 </span>            :   }
+<span class="lineNum">     492 </span>            :   int age() const{
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :     return next_sequential_id-the_sequential_id;</span>
+<span class="lineNum">     494 </span>            :   }
+<span class="lineNum">     495 </span>            : };
+<span class="lineNum">     496 </span>            : 
+<span class="lineNum">     497 </span>            : // some more inlines:
+<span class="lineNum">     498 </span>            : 
+<span class="lineNum">     499 </span>            : inline bool NewSpecies::is_a_plant() const{
+<span class="lineNum">     500 </span><span class="lineCov">      10852 :   return the_taxon==plant;</span>
+<span class="lineNum">     501 </span>            : }
+<span class="lineNum">     502 </span>            : 
+<span class="lineNum">     503 </span>            : /// A normal dot product between trait vectors.
+<span class="lineNum">     504 </span>            : inline double dot(const NewSpecies::trait_t &amp; x,const NewSpecies::trait_t &amp; y){
+<span class="lineNum">     505 </span><span class="lineCov">       3303 :   double sum=0;</span>
+<span class="lineNum">     506 </span><span class="lineCov">       6606 :   for(int i=x.size();i--&gt;0;){</span>
+<span class="lineNum">     507 </span><span class="lineCov">      10128 :     sum+=x(i)*y(i);</span>
+<span class="lineNum">     508 </span>            :   }
+<span class="lineNum">     509 </span>            :   return sum;
+<span class="lineNum">     510 </span>            : }
+<span class="lineNum">     511 </span>            : 
+<span class="lineNum">     512 </span>            : inline double NewSpecies::prey_similarity_width() const{
+<span class="lineNum">     513 </span><span class="lineNoCov">          0 :   if(relative_switching_similarity_width){</span>
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :     return the_niche_width_wt*switching_similarity_width_w_s;</span>
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :   }else if(adjust_prey_similarity_width){</span>
+<span class="lineNum">     516 </span><span class="lineNoCov">          0 :     return the_niche_width_wt*switching_similarity_width_w_s/</span>
+<span class="lineNum">     517 </span><span class="lineNoCov">          0 :       trophic_niche_width_w_t;</span>
+<span class="lineNum">     518 </span>            :   }else{
+<span class="lineNum">     519 </span><span class="lineNoCov">          0 :     return switching_similarity_width_w_s;</span>
+<span class="lineNum">     520 </span>            :   }
+<span class="lineNum">     521 </span>            : }      
+<span class="lineNum">     522 </span>            : 
+<span class="lineNum">     523 </span>            : inline bool operator&lt;(const NewSpecies &amp; s1, const NewSpecies &amp; s2){
+<span class="lineNum">     524 </span>            :   return s1.sequential_id() &lt; s2.sequential_id();
+<span class="lineNum">     525 </span>            : }
+<span class="lineNum">     526 </span>            : 
+<span class="lineNum">     527 </span>            : #endif // _NEWSPECIES_H_
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

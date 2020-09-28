@@ -1,0 +1,14 @@
+#!/bin/bash
+#$Id$
+
+# call xmgrace with title line 
+
+tmp=`mktemp /tmp/par.XXXX`
+
+echo -e "with g0" >> $tmp 
+echo -e "  subtitle \"\-`hostname`:`pwd`\"" >> $tmp
+echo -e "  title \"\-$*\"" >> $tmp
+
+xmgrace -noask -free "$@" -param $tmp
+
+rm $tmp

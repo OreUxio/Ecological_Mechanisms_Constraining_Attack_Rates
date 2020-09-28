@@ -1,0 +1,46 @@
+// -*- c++ -*-
+//$Id$
+
+#ifndef __LINPACK_EIGEN__
+#define __LINPACK_EIGEN__
+
+#include <CLHEP/Matrix/Matrix.h>
+#include <CLHEP/Matrix/Vector.h>
+
+/// \file Some rudimentary interface to lapack routines.  
+// "linpack" is a misnomer!
+
+/// Return eigenvalues of symmetric matrix mat.
+void eigen(CLHEP::HepMatrix & mat, CLHEP::HepVector & dd);
+
+/// Get eigenvalues of real mat into ddr and ddi:
+void eigen(const CLHEP::HepMatrix & mat, CLHEP::HepVector & ddr, 
+	   CLHEP::HepVector & ddi);
+
+/// Return eigenvalues of real mat into ddr and ddi and its left and
+/// right eigenvectors (following LAPACK convention to split complex
+/// matrices into successive real and imaginary parts), into vecs_l and
+/// vecs_r, respectively:
+void eigen(const CLHEP::HepMatrix & mat, CLHEP::HepVector & ddr, CLHEP::HepVector & ddi, CLHEP::HepMatrix & vecs_l, CLHEP::HepMatrix & vecs_r);
+
+/// Return eigenvectors (in mat) and eigen values of symmetric matrix.
+/// This one should be much faster, and you can specify an accuracy
+void eigen(CLHEP::HepMatrix & mat, CLHEP::HepVector & dd,double accuracy,
+	   int how_many=0);
+
+/// Compute the factor L of the Cholesky transform
+// Returns LAPACK INFO flag.
+int CholeskyL(CLHEP::HepMatrix & mat);
+/// Compute the factor L of the Cholesky transform
+// This second version works with real internally
+// Returns LAPACK INFO flag.
+int rCholeskyL(CLHEP::HepMatrix & mat);
+
+/// Return real and imaginary part of eigenvalues of arbitrary real matrix.
+void eigen(const CLHEP::HepMatrix & mat, CLHEP::HepVector & ddr, CLHEP::HepVector & ddi);
+
+
+/// Multipliation of HepMatrices using BLAS:
+CLHEP::HepMatrix operator^(CLHEP::HepMatrix B, CLHEP::HepMatrix A);
+
+#endif // __LINPACK_EIGEN__

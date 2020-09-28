@@ -1,0 +1,46 @@
+// -*- mode: c++ -*-
+// $Id: Moran.h 1146 2008-08-15 11:24:44Z cvsrep $
+#ifndef _MORAN_H_
+#define _MORAN_H_
+
+#include "topology_generator.h"
+#include "memory_power.h"
+
+#include <set>
+
+class Moran : public Topology_Generator
+{
+  class degree_t:public  sequence< sequence < int > >{
+  public:
+    int & operator()(int i,int j){
+      if(i>=j)
+	return (*this)[i][j];
+      else
+	return (*this)[j][i];
+    }
+  };
+  
+  typedef std::set < int > descendants_set_t;
+  typedef descendants_set_t::iterator diter;
+
+  void get_degrees_of_relation(const int S0, degree_t & degree);
+  void get_log_body_size(const int clade_size,
+			 degree_t & degrees,
+			 sequence< double > & log_body_size);
+  double x0_condition(double x);
+
+  const double _D;
+  const double _C0;
+  memory_power _pow_f;
+  memory_power _pow_v;
+  const double _lambda;
+  const double _q;
+  const int _correct_correlations;
+  const double _x0;
+ public:
+  Moran(double D,double C0,double pf,double pv,
+	double lambda,double q,int co_co);
+  virtual Interaction_Matrix draw_sample(const double rS0);
+};
+
+#endif // _MORAN_H_

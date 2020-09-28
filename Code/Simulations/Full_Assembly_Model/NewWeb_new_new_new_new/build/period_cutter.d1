@@ -1,0 +1,5 @@
+period_cutter.o period_cutter.d1 : period_cutter.cc  \
+ period_cutter.h sequence.h   \
+  simple_vector.h error.h \
+ cfgList.h parsecfg.h evaluate.h CLHEP_Evaluator.h \
+ 

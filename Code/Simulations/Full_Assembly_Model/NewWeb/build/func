@@ -1,0 +1,105 @@
+#!/bin/sh 
+# $Id: func 249 2006-02-11 00:01:54Z cvsrep $ 
+# compute some output value depending on input arguments
+# used together with script optimize
+
+# announce that we are running:
+echo $$ > func.pid
+
+# the first argument is just a line number, we don't need it
+shift
+
+nplants=`echo $1| awk '{srand(); print int($1+rand());}'`
+animal_density=$2
+plant_density=$3
+log_capacity=$4
+
+nice_value=0
+EXECUTABLE=${BINDIR}/NewWorld
+
+ulimit -St 10800
+
+if [ -r func.conf ]; then
+    . func.conf
+elif [ -r ../func.conf ]; then
+    . ../func.conf
+fi
+
+cat > tmp.cfg <<EOF
+niche_space_dimension=5
+#min_bodymass = 0.2*femto_*gram # one bacterium
+min_bodymass = 1*micro_*gram # a pragmatic choice 
+max_bodymass = 100*kilogram
+# prey can have 10-fold adult bodymass of predator:
+lambda = log(10)/log(max_bodymass/min_bodymass)
+mean_switching_exponent=2
+number_of_plant_species=$nplants
+trophic_niche_density=0.3*0.8*pow(${animal_density}*number_of_plant_species,1.0/niche_space_dimension)
+conversion_efficiency=0.1
+
+# use straight allometric exponents:
+metabolic_rate_allometric_exponent = 0.75
+attack_rate_allometric_exponent = -0.25
+handling_time_allometric_exponent = 0.25
+growth_rate_allometric_exponent = -0.25
+body_size_allometric_exponent = 0.25
+
+mu_V=0.1
+mu_F=0.1
+foraging_over_variability=10
+plant_vulnerability_separation=1
+plant_vulnerability_relative_weight=1
+
+plant_niche_density=0.1/sqrt(foraging_over_variability)*pow(${plant_density}*number_of_plant_species/40,1.0/niche_space_dimension)
+plant_carrying_capacity=10^(${log_capacity})*gram
+plant_shadowing=0
+plant_growth_rate=1/(1*year)
+relative_yearly_modulation=0
+
+attack_rate_correction_factor=10^(-6)*1/100000*exp(plant_vulnerability_separation*plant_vulnerability_relative_weight)
+
+#time_between_speciations=30*years
+time_between_insertions=30*years
+time_between_analysis=time_between_insertions
+analysis_start=15000*year
+observation_time=50000*year
+time_between_saving=25*time_between_insertions
+chunk_length=100000*year
+random_seed=random
+check_interval=1*day
+time_between_printout=time_between_insertions
+
+#PRECISION_OF_VECTOR_PRINT=
+DEFAULT_ABSOLUTE_TOLERANCE=0.0001
+DEFAULT_RELATIVE_TOLERANCE=0
+#MAX_INTEGRATOR_STEPS=100000000
+
+TRACEFLAG=0
+EOF
+
+nice -${nice_value}  ${EXECUTABLE} tmp.cfg 2>>error.txt >tmp.txt
+
+return_value=$?
+if [ $return_value == 0 ]; then
+    OK_flag=1
+else
+    echo ${EXECUTABLE} did not finish properly "(retval: $return_value)" >>error.txt
+    echo ${EXECUTABLE} did not finish properly "(retval: $return_value)" >>warning.txt
+    echo ${EXECUTABLE} did not finish properly "(retval: $return_value)" 
+    #mv func.pid failed
+fi
+
+tac tmp.txt |\
+ awk 'BEGIN{S=-1;Z=-1;T=-1;}/Sav = /{S=$3}/Zav = /{Z=$3}/Tav = /{T=$3}(S>=0&&T>=0&&Z>=0){print (1-S)+0.2*(Z/10-1)^2+0.2*T, S, Z, T;}' | head -1 > Y.dat
+
+if grep '[0-9]' Y.dat; then
+    true
+else
+    echo could not extract data >>error.txt
+    echo could not extract data 
+    mv func.pid failed
+    exit 1
+fi
+
+mv func.pid stopped_ok
+exit 0

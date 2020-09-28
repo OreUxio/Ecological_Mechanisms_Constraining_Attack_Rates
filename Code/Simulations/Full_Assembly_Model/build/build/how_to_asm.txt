@@ -1,0 +1,26 @@
+How to generate assembler code for core of NewWeb dynamics.
+
+(1) Put the piece of code into a C source file, and compile with
+optimization options, twice, with and without -S added.  This will
+output a .o object-code file and a .s assembler file.
+
+(2) convert the object file into INTEL assembler code using the
+command
+	objdump --no-show-raw-insn -d -M intel <filename>.o
+
+(3) convert hexadecimal line numbers into decimal labels for jump/branch
+target points, remove the hexadecimal line numbers
+
+(4) look at the .s file and add all the assembler instructions that
+look useful.  (See current version of packed_simulation_asm.s)  Add
+the line
+     .intel_syntax noprefix 
+on the top.
+
+(5) also replace jmp,nop,nop,nop,... sequences with aligned
+directives from .s file.
+
+(6) put a declaration of the C function you started with into a
+corresponding header file, e.g. packed_simulation_asm.h
+
+That's it, essentially.

@@ -1,0 +1,190 @@
+// -*- mode: c++ -*-
+// $Id$
+#ifndef _SORTEDVECTOR_H_
+#define _SORTEDVECTOR_H_
+
+//#include <set>
+#include <vector>
+#include <algorithm>
+#include <hash_map>
+#include <float.h>
+
+#include <boost/serialization/split_member.hpp>
+
+#include "vector_with_max.h"
+
+/// Vector class optimized for situation where most entries are small.
+/** This allows a fast computation of dot products of the form a^T*b,
+    where a is a SortedVector and b is another vector. This works by
+    representing the SortedVector as a list of entries sorted by
+    falling magnitude. When computing a^T*b, only the largest
+    contributions are taken into account. */ 
+class SortedVector 
+{
+  class location_t{
+  public:
+    typedef int index_t;
+    index_t row;
+    location_t(){};// needed for serialization
+    location_t(index_t r):row(r){};
+    bool operator==(const location_t & other) const{
+      return row==other.row;
+    }
+    bool unused(){return row<0;};
+  };
+  struct location_t_hash{
+    size_t operator()( const location_t& l ) const
+    {
+      return size_t(l.row);
+    }
+  };
+  
+  class entry_t:public location_t{
+  private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+      ar & row;
+      ar & value;
+    }
+    entry_t(){};// needed for serialization
+  public:
+    double value; 
+    entry_t(const location_t & l,double v):location_t(l),value(v){};
+    entry_t(int r,double v):location_t(r),value(v){};
+  };
+  
+  class larger_value_than{
+  public:
+    inline bool operator()(const entry_t e1,const entry_t e2);
+  };
+
+  class has_location{
+    const location_t loc;
+  public:
+    has_location(location_t l):loc(l){};
+    bool operator()(entry_t other){
+      return location_t(other)==loc;
+    }
+  };
+    
+  //typedef std::set< entry_t, larger_value_than > _container;
+  typedef std::vector< entry_t > _container;
+  mutable _container _entries;
+  
+  typedef __gnu_cxx::hash_map< location_t, int, location_t_hash > locator_t;
+  mutable locator_t locator;
+
+  int _size;
+  double _accuracy; // controls when to stop summations
+  double _truncation_epsilon; // controls which vector elements to keep
+  mutable bool _clean;
+  
+private:
+  friend class boost::serialization::access;
+  template<class Archive>
+  void save(Archive & ar, const unsigned int version) const
+  {
+    cleanup();
+    ar & _accuracy & _truncation_epsilon & _size;
+    ar & _entries;
+  }
+  template<class Archive>
+  void load(Archive & ar, const unsigned int version)
+  {
+    ar & _accuracy & _truncation_epsilon & _size;
+    ar & _entries;
+    _clean=false;
+    cleanup();
+  }
+  BOOST_SERIALIZATION_SPLIT_MEMBER();
+
+private:
+  void cleanup_helper() const;
+public:
+  inline void cleanup() const;
+  static double &default_accuracy,&default_truncation_epsilon;
+  static const entry_t unused_entry; 
+  class active_reference_t;
+  class const_active_reference_t;
+  class incomplete_location_t;
+  double get_value(const location_t & loc) const;
+  void set_value(double v,const location_t & loc);
+  double get(int i);//get value for debugging
+public:
+  explicit SortedVector();
+  // access to individual vector entries is extremely expensive for
+  // this class...
+  inline active_reference_t operator[](int r);
+  inline const_active_reference_t operator[](int r) const;
+  int size() const {return _size;};
+  void resize(int size);
+  void move(int from,int to);
+  void clear(){_entries.clear(); locator.clear();_clean=true;}
+  // ...but the dot product can be very fast:
+  double dot(const double* v1, double max_v1)const;
+  inline double dot(const vector_with_max & v1)const;
+  bool operator==(const SortedVector & other);
+  double truncation_epsilon(){return _truncation_epsilon;}
+  double accuracy() const {return _accuracy;}
+  friend class packed_simulation;
+  friend std::ostream & operator<<(std::ostream &stream, const SortedVector &m);
+};
+
+// Inline implementation details:
+
+class SortedVector::active_reference_t{
+  const location_t loc;
+  SortedVector & origin;
+public:
+  active_reference_t(const location_t l, SortedVector & m):loc(l),origin(m){};
+  operator double () const{
+    return origin.get_value(loc);
+  }
+  double operator=(double v) const{
+    origin.set_value(v,loc);
+    return v;
+  }
+  double operator=(const active_reference_t & r) const{
+    return operator=(double(r));
+  }
+};
+
+class SortedVector::const_active_reference_t{
+  const location_t loc;
+  const SortedVector & origin;
+public:
+  const_active_reference_t(const location_t l, const SortedVector & m):loc(l),origin(m){};
+  operator double () const{
+    return origin.get_value(loc);
+  }
+};
+
+inline SortedVector::active_reference_t SortedVector::operator[](int r){
+  return active_reference_t(location_t(r),*this);
+}
+inline SortedVector::const_active_reference_t SortedVector::operator[](int r) const{
+  return const_active_reference_t(location_t(r),*this);
+}
+
+inline bool 
+SortedVector::larger_value_than::operator()(const entry_t e1,const entry_t e2){
+  if(fabs(e1.value) != fabs(e2.value))
+    return e1.value>e2.value;
+  return e1.row < e2.row;
+}
+
+inline void SortedVector::cleanup() const{
+  if(!_clean) cleanup_helper();
+}
+
+inline double 
+SortedVector::dot(const vector_with_max & v1)const{
+  return dot(v1.get_data(),v1.get_max());
+}
+
+  
+void SortedVector_tester();
+
+#endif // _SORTEDVECTOR_H_

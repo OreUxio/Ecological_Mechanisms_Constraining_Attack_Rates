@@ -1,0 +1,6 @@
+polyfit.o polyfit.d1 : polyfit.cc  \
+  polyfit.h \
+ Statistics.h NewMatrix.h  \
+  simple_vector.h \
+ error.h sequence.h  \
+ 

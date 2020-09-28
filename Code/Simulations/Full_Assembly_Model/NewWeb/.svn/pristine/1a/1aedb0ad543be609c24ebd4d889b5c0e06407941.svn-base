@@ -1,0 +1,652 @@
+// -*- mode: c++ -*-
+// $Id$
+#ifndef _CONSECUTIVE_ONE_H_
+#define _CONSECUTIVE_ONE_H_
+
+#include<stdio.h>
+#include <stdlib.h>
+#include "NetworkAnalysis.h"
+
+#define R 1000
+#define C 1000
+
+class consecutive_ones_tester{
+
+  class no_consecutive_ones{
+  };
+
+  int rows[R][C];
+  int cols[C][R];
+  bool already[R];
+  bool occupy[C];
+  int final_order[C];
+
+  int schedual[R/2][R];
+  int count[R/2]; //# of rows in a connected component
+
+  int row_num;
+  int col_num;
+
+  int total_schedual;
+  int sc_count[R/2];//# of columns in a connected component
+
+
+  int stack[R];
+  int top;
+
+  struct int_list
+  {
+    int number;
+    int_list* next;
+  };
+
+
+  struct data_set
+  {
+    struct data_set* left;
+    struct data_set* right;
+    int_list contain;
+    int num;
+    int full;//0 empty 1 partial 2 full
+  };
+
+
+
+
+  bool compare(int a,int b)
+  {	
+    int i=0; int j=0;
+    bool eq=0; bool larg=0; bool small=0;
+    while(rows[a][i]!=-1 || rows[b][j]!=-1)
+      {
+	if(rows[a][i]==-1){small=1; break;}
+	if(rows[b][j]==-1){larg=1;break;}
+	if(rows[a][i]==rows[b][j]) { i++;j++;eq=1; continue;}
+	if(rows[a][i]<rows[b][j]) {i++; larg=1;continue;}
+	if(rows[a][i]>rows[b][j]) {j++; small=1;continue;}
+      }
+    return(eq && larg && small);
+  }
+
+  void push(int a)
+  {
+    top+=1;
+    stack[top]=a;
+    schedual[total_schedual][sc_count[total_schedual]]=a;
+    sc_count[total_schedual]+=1;
+    already[a]=1;
+    //printf(" %d ",a); 
+  }
+
+  int pop()
+  {
+    if(top==0) return -1;
+    else
+      {
+	top-=1;
+	return stack[top+1];
+		
+      }
+  }
+
+
+  struct data_set* parti(int a,int b)
+  {
+    int i=0;int j=0;
+    data_set* result;
+    int_list** last;
+    int_list* temp;
+    result=(data_set*)malloc(sizeof(data_set)*3);
+    last=(int_list**)malloc(sizeof(int_list*)*3);
+
+    (*result).right=(result+1);
+    (*(result+1)).right=(result+2);
+    (*(result+1)).left=result;
+    (*(result+2)).left=(result+1);
+    (*result).left=NULL;
+    (*(result+2)).right=NULL;
+	
+
+    (*result).num=0;
+    (*(result+1)).num=0;
+    (*(result+2)).num=0;
+
+    *last=&((*result).contain);
+    *(last+1)=&((*(result+1)).contain);
+    *(last+2)=&((*(result+2)).contain);
+
+    while(rows[a][i]!=-1 || rows[b][j]!=-1)
+      {
+	temp=(int_list*)malloc(sizeof(int_list));
+	(*temp).next=NULL;
+		
+		
+	if(rows[a][i]==-1){(*temp).number=rows[b][j];
+	  (**(last+2)).next=temp;(*(last+2))=temp;
+	  (*(result+2)).num+=1;j++;continue;}
+
+	if(rows[b][j]==-1){(*temp).number=rows[a][i];
+	  (**(last)).next=temp;(*(last))=temp;
+	  (*(result)).num+=1;i++;continue;}
+	if(rows[a][i]==rows[b][j]){(*temp).number=rows[a][i];
+	  (**(last+1)).next=temp;(*(last+1))=temp;
+	  (*(result+1)).num+=1;i++;j++;continue;}
+	if(rows[a][i]<rows[b][j]){(*temp).number=rows[a][i];
+	  (**(last)).next=temp;(*(last))=temp;
+	  (*(result)).num+=1;i++;continue;}
+	if(rows[a][i]>rows[b][j]){(*temp).number=rows[b][j];
+	  (**(last+2)).next=temp;(*(last+2))=temp;
+	  (*(result+2)).num+=1;j++;continue;}
+      }
+    free(last);
+    return result;
+  }
+
+  struct data_set* part2(struct data_set* sets,int a)
+  {
+
+    struct data_set* testb;
+    struct data_set* last;
+    struct int_list* tests;
+    struct int_list* pre;
+    int col_cover[C];
+    int i,n;
+    bool in,out;
+    bool check=0;
+    bool ldeal=0,rdeal=0;
+
+    for(i=0;i<col_num;i++) col_cover[i]=0;
+    for(i=0;rows[a][i]!=-1;i++)	col_cover[rows[a][i]]=1;
+    in=0;out=0;
+    struct data_set* start=NULL;
+    struct data_set* over=NULL;
+    struct data_set* newadd;
+    struct int_list* temp;
+    struct int_list* current;
+	
+
+    testb= sets;
+
+    while(testb!=NULL)
+      {
+	n=0;
+		
+	tests=((*(testb)).contain).next;
+	
+	while(tests!=NULL)
+	  {
+	    if(col_cover[ (*tests).number]==1) {col_cover[ (*tests).number]=2;n++;}
+	    tests=(*tests).next;
+	  }
+	if(n==0) { (*testb).full=0; if(in==1 && out==0) {out=1;over=(*testb).left;}}
+	else if(n<(*testb).num) { (*testb).full=1; 
+	  if(out==1){throw no_consecutive_ones();}
+	  if(in==0) {in=1;start=testb;}
+	  else {out=1;over=testb;}
+	}
+	else { (*testb).full =2; if(out==1){throw no_consecutive_ones();} 
+	  if(in==0) {in=1;start=testb;}
+		
+	}
+       
+	last=testb;
+	testb=(*testb).right;	
+      }
+
+    if(over==NULL)over=last;
+
+    for(i=0;i<col_num;i++) if(col_cover[i]==1) check=1;
+			
+    if(check==1)
+      {
+	if(start !=sets && over != last){throw no_consecutive_ones();};
+	if(start!=over && start==sets && over!=last && (*start).full==1){throw no_consecutive_ones();};
+	if(start!=over && over==last && start!=sets && (*over).full==1){throw no_consecutive_ones();};
+		
+	newadd=(data_set*)malloc(sizeof(data_set));
+	(*newadd).num=0;
+	current=&((*newadd).contain);
+	for(i=0;i<col_num;i++)
+	  {
+	    if(col_cover[i]==1)
+	      {
+		temp=(int_list*)malloc(sizeof(int_list));
+		(*temp).next=NULL;
+		(*temp).number=i;
+		(*current).next=temp;
+		current=temp;
+		(*newadd).num++;
+	      }
+	  }
+	if(start==sets && (over!=last || (*over).full==1)  )
+	  {
+	    (*newadd).right=sets;
+	    (*newadd).left=NULL;
+	    (*sets).left=newadd;
+	    sets=newadd;
+	    ldeal=1;
+	  }
+	else
+	  {
+	    (*newadd).left=last;
+	    (*newadd).right=NULL;
+	    (*last).right=newadd;
+	    rdeal=1;
+	  }
+      }
+
+    if(ldeal==0 && (*start).full==1)
+      {
+	newadd=(data_set*)malloc(sizeof(data_set));
+	(*newadd).num=0;
+	(*newadd).left=start;
+	(*newadd).right=(*start).right;
+	(*start).right=newadd;
+	if((*newadd).right!=NULL) (*(*newadd).right).left=newadd;
+	current=&((*newadd).contain);
+
+	pre=&((*(start)).contain);
+	tests=(*pre).next;
+	while(tests!=NULL)
+	  {
+	    if(col_cover[(*tests).number]==2)
+	      {
+		(*newadd).num++;
+		(*start).num--;
+		(*pre).next=(*tests).next;
+		(*current).next=tests;
+		(*tests).next=NULL;
+		current=tests;
+		tests=(*pre).next;
+		continue;
+	      }
+	    tests=(*tests).next;
+	    pre=(*pre).next;
+	  }
+	ldeal=1;
+      }
+    if(rdeal==0 && (*over).full==1)
+      {
+	newadd=(data_set*)malloc(sizeof(data_set));
+	(*newadd).num=0;
+	(*newadd).right=over;
+	(*newadd).left=(*over).left;
+	(*over).left=newadd;
+	(*(*newadd).left).right=newadd; 
+	current=&((*newadd).contain);
+
+	pre=&((*(over)).contain);
+	tests=(*pre).next;
+	while(tests!=NULL)
+	  {
+	    if(col_cover[(*tests).number]==2)
+	      {
+		(*newadd).num++;
+		(*over).num--;
+		(*pre).next=(*tests).next;
+		(*current).next=tests;
+		(*tests).next=NULL;
+		current=tests;
+		tests=(*pre).next;
+		continue;
+	      }
+	    tests=(*tests).next;
+	    pre=(*pre).next;
+	  }
+	rdeal=1;
+      }
+
+    return sets;
+
+  }
+
+
+  void desame()
+  {
+    int i,j,k;
+    bool same;
+    for(i=0;i<row_num;i++)
+      {
+	for(j=0;j<i;j++)
+	  {
+	    same=1;
+	    for(k=0;(rows[i][k]!=-1)||(rows[j][k]!=-1);k++)
+	      {
+		if(rows[i][k]!=rows[j][k]) 
+		  {
+		    same=0;
+		    break;
+		  }
+	      }
+	    if(same==1) already[j]=1;
+	  }
+      }
+  }
+
+  struct data_set* combine(struct data_set* big,struct data_set* small)
+  {
+    struct data_set* last;
+    struct data_set* pre;
+    struct data_set* small_last;
+    struct int_list* temp;
+    struct int_list* pee;
+    bool small_ocp[C];
+    bool test;
+    int i;
+
+    if( occupy[(*((*small).contain).next).number]==1)
+      {
+	for(i=0;i<col_num;i++) small_ocp[i]=0;	
+
+	last=small;
+	while(last!=NULL)
+	  {
+	    temp=((*last).contain).next;
+	    while(temp!=NULL)
+	      {
+		small_ocp[(*temp).number]=1;
+		temp=(*temp).next;
+	      }
+	    small_last=last;
+	    last=(*last).right;
+	  }
+
+	last=big;
+	test=0;
+	while(last!=NULL)
+	  {
+	    temp=((*last).contain).next;
+	    pee=&((*last).contain);
+	    while(temp!=NULL)
+	      {
+		if(small_ocp[(*temp).number]==1)
+		  {
+		    test=1;
+		    break;
+		  }
+		pee=temp;
+		temp=(*temp).next;
+	      }
+	    if(test==1) break;
+	    last=(*last).right;
+	  }
+		
+	if(test==1)
+	  {
+	    while(temp!=NULL)
+	      {
+		if(small_ocp[(*temp).number]==1)
+		  {
+		    (*last).num--;
+		    (*pee).next=(*temp).next;
+		    free(temp);
+		    temp=(*pee).next;
+		  }
+		else 
+		  {
+		    pee=temp;
+		    temp=(*temp).next;
+		  }
+	      }
+	    pre=(*last).right;
+	    (*last).right=small;
+	    (*small).left=last;
+	    (*small_last).right=pre;
+	    if(pre!=NULL) (*pre).left=small_last;
+	  }
+	return big;
+      }
+
+    else
+      {
+	last=small;
+	while(last!=NULL)
+	  {
+	    temp=((*last).contain).next;
+	    while(temp!=NULL)
+	      {
+		occupy[(*temp).number]=1;
+		temp=(*temp).next;
+	      }
+	    pre=last;
+	    last=(*last).right;
+	  }
+	(*pre).right=big;
+	(*big).left=pre;
+	return small;
+      }
+			
+  }
+		
+  
+public:
+  bool test(const CMatrix<NetworkAnalysis::Interaction> & im)
+  {
+    if(im.GetYSize()>R || im.GetXSize()>C){
+      FATAL_ERROR("consecutive_ones_tester currently has a hard limit of " 
+		  << R << " rows and " 
+		  << C << " columns");
+    }
+    try{
+      int col_temp[C];
+      int i,j;
+      int a;
+      int temp_col,temp_row;
+      int m,n;
+      struct data_set** sets;
+      struct data_set* final;
+
+	
+      top=0;
+      for(i=0;i<R;i++)		
+	{
+	  for(j=0;j<C;j++)
+	    {
+	      rows[i][j]=-1;
+	      cols[j][i]=-1;
+	    }
+	}
+
+      for(i=0;i<(R/2);i++) for(j=0;j<R;j++)	schedual[i][j]=-1;
+
+      row_num=im.GetYSize();
+      col_num=im.GetXSize();
+
+      for(i=0;i<col_num;i++) col_temp[i]=0;
+	
+
+      for(i=0;i<row_num;i++)
+	{
+	  a=0;
+	  for(j=0;j<col_num;j++)
+	    {
+	      bool reading=(im[i][j]==NetworkAnalysis::eats);
+	      if(!reading) continue;
+	      rows[i][a]=j;
+	      a++;
+	      cols[j][col_temp[j]]=i;
+	      col_temp[j]++;
+	    }
+	  if(a>1) already[i]=0;
+	  else already[i]=1;
+		 
+	}
+      desame();
+
+      total_schedual=-1;
+	
+      for(i=0;i<row_num;i++)
+	{
+	  if(already[i]==1) continue;
+	  total_schedual+=1;
+	  sc_count[total_schedual]=0;
+	  push(i);
+	  a=pop();
+	  while(a!=-1)
+	    {			
+	      for(n=0;rows[a][n]!=-1;n++)
+		{
+		  temp_col=rows[a][n];
+				
+		  for(m=0;cols[temp_col][m]!=-1;m++)
+		    {
+		      temp_row=cols[temp_col][m];
+		      if(already[temp_row]) continue;
+		      if(compare(a,temp_row)) push(temp_row);
+		    }
+		}	
+	      a=pop();
+	    }
+	  //printf("\n"); 
+	}
+      sets=(struct data_set **)malloc( (total_schedual+1)* sizeof( struct data_set *) );
+	
+      for(i=0;i<=total_schedual;i++)
+	{
+	  count[i]=0;
+		
+	  if(sc_count[i]>1) 
+	    {
+	      *(sets+i)=parti(schedual[i][0],schedual[i][1]);
+	      for(j=2;j<sc_count[i];j++)	*(sets+i)=part2((*(sets+i)),schedual[i][j]);
+			
+	    }
+
+	  if(sc_count[i]==1) 
+	    {
+	      data_set* result;
+	      int_list* last;
+	      int_list* temp;
+
+	      result=(data_set*)malloc(sizeof(data_set));
+	      last=&((*result).contain);
+	      (*result).right=NULL;
+	      (*result).left =NULL;		
+	      (*result).num=0;
+
+	      j=0;
+	      while(rows[ ( schedual[i][0] ) ] [j]!=-1 )
+		{
+		  temp=(int_list*)malloc(sizeof(int_list));
+		  (*temp).number=rows[ schedual[i][0] ] [j];
+		  (*temp).next=NULL;
+		  (*last).next=temp;
+		  last=temp;
+		  j++;
+				
+		}
+		
+	      *(sets+i)=result;
+	    }
+
+	  data_set* seeing=*(sets+i);
+	  while(seeing!=NULL)
+	    {
+	      count[i]+=(*seeing).num;
+	      seeing=(*seeing).right;
+	    }
+
+	  j=i;
+	  while(j>0)
+	    {
+	      data_set* swap_temp;
+	      int int_temp;
+	      if(count[j]>count[j-1])
+		{
+		  swap_temp=*(sets+j);
+		  *(sets+j)=*(sets+j-1);
+		  *(sets+j-1)=swap_temp;
+		  int_temp=count[j];
+		  count[j]=count[j-1];
+		  count[j-1]=int_temp;
+		  j--;
+		  continue;
+		}
+	      break;
+	    }
+	}
+      for(i=0;i<col_num;i++) occupy[i]=0;
+
+      int_list* temp;
+	
+      data_set* seeing=(*sets);
+      if(total_schedual>=0){
+	while(seeing!=NULL)
+	  {
+	    temp=((*seeing).contain).next;
+	    while(temp!=NULL)
+	      {
+		occupy[(*temp).number]=1;
+		temp=(*temp).next;
+	      }
+	    seeing=(*seeing).right;
+	  }
+	final=(*sets);
+	for(i=1;i<=total_schedual;i++) final=combine(final,*(sets+i));
+      }else{
+	final=NULL;
+      }
+      
+      int_list* new_it;
+      seeing=(data_set*)malloc(sizeof(data_set));
+      (*seeing).num=0;
+      (*seeing).left=NULL;
+      ((*seeing).contain).next=NULL;
+      temp=&((*seeing).contain);
+      for(i=0;i<col_num;i++)
+	{
+	  if(occupy[i]==0)
+	    {
+	      new_it=(int_list*)malloc(sizeof(int_list));
+	      (*new_it).number=i;
+	      (*new_it).next=NULL;
+	      (*temp).next=new_it;
+	      temp=new_it;
+	      ((*seeing).num)++;
+	    }
+	}
+      (*seeing).right=final;
+      final=seeing;
+
+      i=0;
+      while(seeing != NULL)
+	{
+	  temp=((*seeing).contain).next;
+	  while(temp != NULL)
+	    {
+	      final_order[i]=(*temp).number;
+	      i++;
+	      temp=(*temp).next;
+	    }
+	  seeing=(*seeing).right;
+	}
+
+      //// This would return the matrix in the correct permutation:
+#define CONS_ONES_CERTIFY
+#ifdef CONS_ONES_CERTIFY
+      int final_temp[C];
+      for(i=0;i<row_num;i++)
+	{
+	  for(j=0;j<col_num;j++) final_temp[j]=0;
+	  j=0;
+	  while(rows[i][j]>-1)
+	    {
+	      final_temp[ rows[i][j]]=1;
+	      j++;
+	    }
+	  for(j=0;j<col_num;j++)
+	    {
+	      printf("%d",final_temp[final_order[j]]);
+	    }
+	  printf("\n");
+	}
+#endif
+      
+      return true;
+    }catch(no_consecutive_ones){
+      return false;
+    }
+  }
+};
+
+#endif // _CONSECUTIVE_ONE_H_

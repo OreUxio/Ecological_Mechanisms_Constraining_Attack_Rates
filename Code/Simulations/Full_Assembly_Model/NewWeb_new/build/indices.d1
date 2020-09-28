@@ -1,0 +1,3 @@
+indices.o indices.d1 : indices.cc  indices.h \
+  error.h  \
+ 

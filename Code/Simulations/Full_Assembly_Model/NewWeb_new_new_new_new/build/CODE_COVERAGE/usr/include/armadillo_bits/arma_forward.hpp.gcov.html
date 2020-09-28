@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/arma_forward.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - arma_forward.hpp<span style="font-size: 80%;"> (source / <a href="arma_forward.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2015 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : using std::cout;
+<span class="lineNum">      12 </span>            : using std::cerr;
+<span class="lineNum">      13 </span>            : using std::endl;
+<span class="lineNum">      14 </span>            : using std::ios;
+<span class="lineNum">      15 </span>            : using std::size_t;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : template&lt;typename elem_type, typename derived&gt; struct Base;
+<span class="lineNum">      18 </span>            : template&lt;typename elem_type, typename derived&gt; struct BaseCube;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : template&lt;typename eT&gt; class Mat;
+<span class="lineNum">      21 </span>            : template&lt;typename eT&gt; class Col;
+<span class="lineNum">      22 </span>            : template&lt;typename eT&gt; class Row;
+<span class="lineNum">      23 </span>            : template&lt;typename eT&gt; class Cube;
+<span class="lineNum">      24 </span>            : template&lt;typename eT&gt; class xvec_htrans;
+<span class="lineNum">      25 </span>            : template&lt;typename oT&gt; class field;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : template&lt;typename eT, bool do_conj&gt; class xtrans_mat;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : template&lt;typename eT&gt; class subview;
+<span class="lineNum">      31 </span>            : template&lt;typename eT&gt; class subview_col;
+<span class="lineNum">      32 </span>            : template&lt;typename eT&gt; class subview_row;
+<span class="lineNum">      33 </span>            : template&lt;typename eT&gt; class subview_row_strans;
+<span class="lineNum">      34 </span>            : template&lt;typename eT&gt; class subview_row_htrans;
+<span class="lineNum">      35 </span>            : template&lt;typename eT&gt; class subview_cube;
+<span class="lineNum">      36 </span>            : template&lt;typename oT&gt; class subview_field;
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : template&lt;typename eT&gt; class SpValProxy;
+<span class="lineNum">      39 </span>            : template&lt;typename eT&gt; class SpMat;
+<span class="lineNum">      40 </span>            : template&lt;typename eT&gt; class SpCol;
+<span class="lineNum">      41 </span>            : template&lt;typename eT&gt; class SpRow;
+<span class="lineNum">      42 </span>            : template&lt;typename eT&gt; class SpSubview;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : template&lt;typename eT&gt; class diagview;
+<span class="lineNum">      45 </span>            : template&lt;typename eT&gt; class spdiagview;
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : template&lt;typename eT, typename T1&gt;              class subview_elem1;
+<span class="lineNum">      48 </span>            : template&lt;typename eT, typename T1, typename T2&gt; class subview_elem2;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : template&lt;typename parent, unsigned int mode&gt;              class subview_each1;
+<span class="lineNum">      51 </span>            : template&lt;typename parent, unsigned int mode, typename TB&gt; class subview_each2;
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : template&lt;typename eT&gt;              class subview_cube_each1;
+<span class="lineNum">      54 </span>            : template&lt;typename eT, typename TB&gt; class subview_cube_each2;
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : class SizeMat;
+<span class="lineNum">      58 </span>            : class SizeCube;
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : class arma_empty_class {};
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : class diskio;
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : class op_min;
+<span class="lineNum">      65 </span>            : class op_max;
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : class op_strans;
+<span class="lineNum">      68 </span>            : class op_htrans;
+<span class="lineNum">      69 </span>            : class op_htrans2;
+<span class="lineNum">      70 </span>            : class op_inv;
+<span class="lineNum">      71 </span>            : class op_sum;
+<span class="lineNum">      72 </span>            : class op_abs;
+<span class="lineNum">      73 </span>            : class op_diagmat;
+<span class="lineNum">      74 </span>            : class op_trimat;
+<span class="lineNum">      75 </span>            : class op_diagvec;
+<span class="lineNum">      76 </span>            : class op_vectorise_col;
+<span class="lineNum">      77 </span>            : class op_normalise_vec;
+<span class="lineNum">      78 </span>            : class op_clamp;
+<span class="lineNum">      79 </span>            : class op_cumsum_default;
+<span class="lineNum">      80 </span>            : class op_cumprod_default;
+<span class="lineNum">      81 </span>            : class op_shuffle;
+<span class="lineNum">      82 </span>            : class op_shuffle_default;
+<span class="lineNum">      83 </span>            : class op_sort;
+<span class="lineNum">      84 </span>            : class op_sort_default;
+<span class="lineNum">      85 </span>            : class op_find;
+<span class="lineNum">      86 </span>            : class op_find_simple;
+<span class="lineNum">      87 </span>            : class op_find_unique;
+<span class="lineNum">      88 </span>            : class op_flipud;
+<span class="lineNum">      89 </span>            : class op_fliplr;
+<span class="lineNum">      90 </span>            : class op_real;
+<span class="lineNum">      91 </span>            : class op_imag;
+<span class="lineNum">      92 </span>            : class op_nonzeros;
+<span class="lineNum">      93 </span>            : class op_sort_index;
+<span class="lineNum">      94 </span>            : class op_stable_sort_index;
+<span class="lineNum">      95 </span>            : class op_unique;
+<span class="lineNum">      96 </span>            : class op_unique_index;
+<span class="lineNum">      97 </span>            : class op_diff_default;
+<span class="lineNum">      98 </span>            : class op_hist;
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            : class eop_conj;
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            : class glue_times;
+<span class="lineNum">     103 </span>            : class glue_times_diag;
+<span class="lineNum">     104 </span>            : class glue_conv;
+<span class="lineNum">     105 </span>            : class glue_join_cols;
+<span class="lineNum">     106 </span>            : class glue_join_rows;
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : class glue_rel_lt;
+<span class="lineNum">     109 </span>            : class glue_rel_gt;
+<span class="lineNum">     110 </span>            : class glue_rel_lteq;
+<span class="lineNum">     111 </span>            : class glue_rel_gteq;
+<span class="lineNum">     112 </span>            : class glue_rel_eq;
+<span class="lineNum">     113 </span>            : class glue_rel_noteq;
+<span class="lineNum">     114 </span>            : class glue_rel_and;
+<span class="lineNum">     115 </span>            : class glue_rel_or;
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            : class op_rel_lt_pre;
+<span class="lineNum">     118 </span>            : class op_rel_lt_post;
+<span class="lineNum">     119 </span>            : class op_rel_gt_pre;
+<span class="lineNum">     120 </span>            : class op_rel_gt_post;
+<span class="lineNum">     121 </span>            : class op_rel_lteq_pre;
+<span class="lineNum">     122 </span>            : class op_rel_lteq_post;
+<span class="lineNum">     123 </span>            : class op_rel_gteq_pre;
+<span class="lineNum">     124 </span>            : class op_rel_gteq_post;
+<span class="lineNum">     125 </span>            : class op_rel_eq;
+<span class="lineNum">     126 </span>            : class op_rel_noteq;
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : class gen_eye;
+<span class="lineNum">     129 </span>            : class gen_ones;
+<span class="lineNum">     130 </span>            : class gen_zeros;
+<span class="lineNum">     131 </span>            : class gen_randu;
+<span class="lineNum">     132 </span>            : class gen_randn;
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : class glue_mixed_plus;
+<span class="lineNum">     135 </span>            : class glue_mixed_minus;
+<span class="lineNum">     136 </span>            : class glue_mixed_div;
+<span class="lineNum">     137 </span>            : class glue_mixed_schur;
+<span class="lineNum">     138 </span>            : class glue_mixed_times;
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            : class glue_hist;
+<span class="lineNum">     141 </span>            : class glue_hist_default;
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            : class glue_histc;
+<span class="lineNum">     144 </span>            : class glue_histc_default;
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            : class op_cx_scalar_times;
+<span class="lineNum">     147 </span>            : class op_cx_scalar_plus;
+<span class="lineNum">     148 </span>            : class op_cx_scalar_minus_pre;
+<span class="lineNum">     149 </span>            : class op_cx_scalar_minus_post;
+<span class="lineNum">     150 </span>            : class op_cx_scalar_div_pre;
+<span class="lineNum">     151 </span>            : class op_cx_scalar_div_post;
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span>            : class op_internal_equ;
+<span class="lineNum">     156 </span>            : class op_internal_plus;
+<span class="lineNum">     157 </span>            : class op_internal_minus;
+<span class="lineNum">     158 </span>            : class op_internal_schur;
+<span class="lineNum">     159 </span>            : class op_internal_div;
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : template&lt;const bool, const bool, const bool, const bool&gt; class gemm;
+<span class="lineNum">     164 </span>            : template&lt;const bool, const bool, const bool&gt;             class gemv;
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            : template&lt;                 typename eT, typename gen_type&gt; class  Gen; 
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : template&lt;                 typename T1, typename  op_type&gt; class   Op; 
+<span class="lineNum">     170 </span>            : template&lt;                 typename T1, typename eop_type&gt; class  eOp;
+<span class="lineNum">     171 </span>            : template&lt;typename out_eT, typename T1, typename  op_type&gt; class mtOp;
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            : template&lt;                 typename T1, typename T2, typename  glue_type&gt; class   Glue;
+<span class="lineNum">     174 </span>            : template&lt;                 typename T1, typename T2, typename eglue_type&gt; class  eGlue;
+<span class="lineNum">     175 </span>            : template&lt;typename out_eT, typename T1, typename T2, typename  glue_type&gt; class mtGlue;
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : template&lt;                 typename eT, typename gen_type&gt; class  GenCube; 
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            : template&lt;                 typename T1, typename  op_type&gt; class   OpCube; 
+<span class="lineNum">     182 </span>            : template&lt;                 typename T1, typename eop_type&gt; class  eOpCube; 
+<span class="lineNum">     183 </span>            : template&lt;typename out_eT, typename T1, typename  op_type&gt; class mtOpCube;
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            : template&lt;                 typename T1, typename T2, typename  glue_type&gt; class   GlueCube;
+<span class="lineNum">     186 </span>            : template&lt;                 typename T1, typename T2, typename eglue_type&gt; class  eGlueCube;
+<span class="lineNum">     187 </span>            : template&lt;typename out_eT, typename T1, typename T2, typename  glue_type&gt; class mtGlueCube;
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            : template&lt;typename T1&gt; class Proxy;
+<span class="lineNum">     191 </span>            : template&lt;typename T1&gt; class ProxyCube;
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            : class spop_strans;
+<span class="lineNum">     196 </span>            : class spop_htrans;
+<span class="lineNum">     197 </span>            : class spop_scalar_times;
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span>            : class spglue_plus;
+<span class="lineNum">     200 </span>            : class spglue_plus2;
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            : class spglue_minus;
+<span class="lineNum">     203 </span>            : class spglue_minus2;
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            : class spglue_times;
+<span class="lineNum">     206 </span>            : class spglue_times2;
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : 
+<span class="lineNum">     209 </span>            : template&lt;                 typename T1, typename spop_type&gt; class   SpOp;
+<span class="lineNum">     210 </span>            : template&lt;typename out_eT, typename T1, typename spop_type&gt; class mtSpOp;
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span>            : template&lt;typename T1, typename T2, typename spglue_type&gt; class SpGlue;
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            : template&lt;typename T1&gt; class SpProxy;
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            : struct arma_vec_indicator   {};
+<span class="lineNum">     220 </span>            : struct arma_fixed_indicator {};
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            : 
+<span class="lineNum">     223 </span>            : //! \addtogroup injector
+<span class="lineNum">     224 </span>            : //! @{
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            : template&lt;typename Dummy = int&gt; struct injector_end_of_row {};
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            : static const injector_end_of_row&lt;&gt; endr = injector_end_of_row&lt;&gt;();
+<span class="lineNum">     229 </span>            : //!&lt; endr indicates &quot;end of row&quot; when using the &lt;&lt; operator;
+<span class="lineNum">     230 </span>            : //!&lt; similar conceptual meaning to std::endl
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            : //! @}
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            : //! \addtogroup diskio
+<span class="lineNum">     237 </span>            : //! @{
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            : enum file_type
+<span class="lineNum">     241 </span>            :   {
+<span class="lineNum">     242 </span>            :   file_type_unknown,
+<span class="lineNum">     243 </span>            :   auto_detect,  //!&lt; Automatically detect the file type
+<span class="lineNum">     244 </span>            :   raw_ascii,    //!&lt; ASCII format (text), without any other information.
+<span class="lineNum">     245 </span>            :   arma_ascii,   //!&lt; Armadillo ASCII format (text), with information about matrix type and size
+<span class="lineNum">     246 </span>            :   csv_ascii,    //!&lt; comma separated values (CSV), without any other information
+<span class="lineNum">     247 </span>            :   raw_binary,   //!&lt; raw binary format, without any other information.
+<span class="lineNum">     248 </span>            :   arma_binary,  //!&lt; Armadillo binary format, with information about matrix type and size
+<span class="lineNum">     249 </span>            :   pgm_binary,   //!&lt; Portable Grey Map (greyscale image)
+<span class="lineNum">     250 </span>            :   ppm_binary,   //!&lt; Portable Pixel Map (colour image), used by the field and cube classes
+<span class="lineNum">     251 </span>            :   hdf5_binary,  //!&lt; Open binary format, not specific to Armadillo, which can store arbitrary data
+<span class="lineNum">     252 </span>            :   coord_ascii   //!&lt; simple co-ordinate format for sparse matrices
+<span class="lineNum">     253 </span>            :   };
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            : //! @}
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span>            : //! \addtogroup fill
+<span class="lineNum">     261 </span>            : //! @{
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            : namespace fill
+<span class="lineNum">     264 </span>            :   {
+<span class="lineNum">     265 </span>            :   struct fill_none  {};
+<span class="lineNum">     266 </span>            :   struct fill_zeros {};
+<span class="lineNum">     267 </span>            :   struct fill_ones  {};
+<span class="lineNum">     268 </span>            :   struct fill_eye   {};
+<span class="lineNum">     269 </span>            :   struct fill_randu {};
+<span class="lineNum">     270 </span>            :   struct fill_randn {};
+<span class="lineNum">     271 </span>            :   
+<span class="lineNum">     272 </span>            :   template&lt;typename fill_type&gt; 
+<span class="lineNum">     273 </span>            :   struct fill_class { inline fill_class() {} };
+<span class="lineNum">     274 </span>            :   
+<span class="lineNum">     275 </span><span class="lineCov">       1125 :   static const fill_class&lt;fill_none &gt; none;</span>
+<span class="lineNum">     276 </span><span class="lineCov">       1125 :   static const fill_class&lt;fill_zeros&gt; zeros;</span>
+<span class="lineNum">     277 </span><span class="lineCov">       1125 :   static const fill_class&lt;fill_ones &gt; ones;</span>
+<span class="lineNum">     278 </span><span class="lineCov">       1125 :   static const fill_class&lt;fill_eye  &gt; eye;</span>
+<span class="lineNum">     279 </span><span class="lineCov">       1125 :   static const fill_class&lt;fill_randu&gt; randu;</span>
+<span class="lineNum">     280 </span><span class="lineCov">       1125 :   static const fill_class&lt;fill_randn&gt; randn;</span>
+<span class="lineNum">     281 </span>            :   }
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span>            : //! @}
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            : 
+<span class="lineNum">     286 </span>            : 
+<span class="lineNum">     287 </span>            : //! \addtogroup fn_spsolve
+<span class="lineNum">     288 </span>            : //! @{
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            : struct spsolve_opts_base
+<span class="lineNum">     292 </span>            :   {
+<span class="lineNum">     293 </span>            :   const unsigned int id;
+<span class="lineNum">     294 </span>            :   
+<span class="lineNum">     295 </span>            :   inline spsolve_opts_base(const unsigned int in_id) : id(in_id) {}
+<span class="lineNum">     296 </span>            :   };
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            : struct spsolve_opts_none : public spsolve_opts_base
+<span class="lineNum">     300 </span>            :   {
+<span class="lineNum">     301 </span>            :   inline spsolve_opts_none() : spsolve_opts_base(0) {}
+<span class="lineNum">     302 </span>            :   };
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            : struct superlu_opts : public spsolve_opts_base
+<span class="lineNum">     306 </span>            :   {
+<span class="lineNum">     307 </span>            :   typedef enum {NATURAL, MMD_ATA, MMD_AT_PLUS_A, COLAMD} permutation_type;
+<span class="lineNum">     308 </span>            :   
+<span class="lineNum">     309 </span>            :   typedef enum {REF_NONE, REF_SINGLE, REF_DOUBLE, REF_EXTRA} refine_type;
+<span class="lineNum">     310 </span>            :   
+<span class="lineNum">     311 </span>            :   bool             equilibrate;
+<span class="lineNum">     312 </span>            :   bool             symmetric;
+<span class="lineNum">     313 </span>            :   double           pivot_thresh;
+<span class="lineNum">     314 </span>            :   permutation_type permutation;
+<span class="lineNum">     315 </span>            :   refine_type      refine;
+<span class="lineNum">     316 </span>            :   
+<span class="lineNum">     317 </span>            :   inline superlu_opts()
+<span class="lineNum">     318 </span>            :     : spsolve_opts_base(1)
+<span class="lineNum">     319 </span>            :     {
+<span class="lineNum">     320 </span>            :     equilibrate  = false;
+<span class="lineNum">     321 </span>            :     symmetric    = false;
+<span class="lineNum">     322 </span>            :     pivot_thresh = 1.0;
+<span class="lineNum">     323 </span>            :     permutation  = COLAMD;
+<span class="lineNum">     324 </span>            :     refine       = REF_DOUBLE;
+<span class="lineNum">     325 </span>            :     }
+<span class="lineNum">     326 </span>            :   };
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

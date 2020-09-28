@@ -1,0 +1,14 @@
+#!/bin/bash
+#$Id: tgrace 859 2007-02-12 05:46:42Z cvsrep $
+
+# call xmgrace with title line 
+
+tmp=`mktemp /tmp/par.XXXX`
+
+echo -e "with g0" >> $tmp 
+echo -e "  subtitle \"\-`hostname`:`pwd`\"" >> $tmp
+echo -e "  title \"\-$*\"" >> $tmp
+
+xmgrace -noask -free "$@" -param $tmp
+
+rm $tmp

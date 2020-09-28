@@ -1,0 +1,659 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/Statistics.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - Statistics.cc<span style="font-size: 80%;"> (source / <a href="Statistics.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">294</td>
+            <td class="headerCovTableEntryLo">4.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">41</td>
+            <td class="headerCovTableEntryLo">12.2 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // $Id: Statistics.cc 2477 2016-10-23 11:38:50Z axel $</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #include &quot;Statistics.h&quot;
+<span class="lineNum">       4 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">       5 </span>            : #include &quot;NewMatrix.h&quot;
+<span class="lineNum">       6 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">       7 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #ifndef NAN
+<span class="lineNum">      10 </span>            : static const double my_nan=sqrt(-1.0);
+<span class="lineNum">      11 </span>            : #define NAN my_nan
+<span class="lineNum">      12 </span>            : #endif
+<span class="lineNum">      13 </span>            : #ifndef INFINITY
+<span class="lineNum">      14 </span>            : static const double my_infinity=1.0/0.0;
+<span class="lineNum">      15 </span>            : #define INFINITY my_infinity
+<span class="lineNum">      16 </span>            : #endif
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : #ifdef ON_SX5FSV
+<span class="lineNum">      19 </span>            : // there seem to be two versions of iostreams, one in the std
+<span class="lineNum">      20 </span>            : // namespace, the other not, so we have to fight ourselves through
+<span class="lineNum">      21 </span>            : // this:
+<span class="lineNum">      22 </span>            : #define IOSTD 
+<span class="lineNum">      23 </span>            : #else
+<span class="lineNum">      24 </span>            : #define IOSTD std::
+<a name="25"><span class="lineNum">      25 </span>            : #endif</a>
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 : void set_format(std::ostream &amp; os){</span>
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :   os.width(15);</span>
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 :   os.setf(std::ios::scientific, std::ios::floatfield);</span>
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :   os.precision(10);</span>
+<a name="31"><span class="lineNum">      31 </span><span class="lineNoCov">          0 : }  </span></a>
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span><span class="lineNoCov">          0 : Histogram_Estimator::Histogram_Estimator(double min, double max, int n)</span>
+<span class="lineNum">      34 </span>            : {
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 :   if(n&gt;100)</span>
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :     the_histogram=std::simple_vector&lt;int&gt;(int(sqrt(double(n))));</span>
+<span class="lineNum">      37 </span>            :   else
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :     the_histogram=std::simple_vector&lt;int&gt;(10);</span>
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :   the_lowest_x_included=min;</span>
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :   the_bin_width=(max-min)/the_number_of_bins();</span>
+<a name="41"><span class="lineNum">      41 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 : Histogram_Estimator::Histogram_Estimator(double min, double width):</span>
+<span class="lineNum">      44 </span>            :   the_histogram(),
+<span class="lineNum">      45 </span>            :   the_lowest_x_included(min),
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :   the_bin_width(width)</span>
+<span class="lineNum">      47 </span>            : {
+<a name="48"><span class="lineNum">      48 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span><span class="lineNoCov">          0 : Histogram_Estimator::~Histogram_Estimator(){</span>
+<a name="51"><span class="lineNum">      51 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 : void Histogram_Estimator::sample(double x)</span>
+<span class="lineNum">      54 </span>            : {
+<span class="lineNum">      55 </span><span class="lineNoCov">          0 :   double normalized=(x-the_lowest_x_included)/the_bin_width;</span>
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :   N++;</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :   if(normalized &lt; 0) return;</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :   if(int(normalized) &gt;= the_number_of_bins()){</span>
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :     the_histogram.resize(int(normalized)+1);</span>
+<span class="lineNum">      60 </span>            :   }
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :   the_histogram[int(normalized)]++;</span>
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :   return;</span>
+<a name="63"><span class="lineNum">      63 </span>            : }</a>
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 : double Histogram_Estimator::estimate_density(double x)</span>
+<span class="lineNum">      66 </span>            : {
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :   double normalized=(x-the_lowest_x_included)/the_number_of_bins();</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :   if(N&gt;0){</span>
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 :     if(normalized &lt; 0 || int(normalized) &gt;= the_number_of_bins())</span>
+<span class="lineNum">      70 </span>            :       return 0;
+<span class="lineNum">      71 </span>            :     else
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :       return the_histogram[int(normalized)]/N/the_bin_width;</span>
+<span class="lineNum">      73 </span>            :   }
+<span class="lineNum">      74 </span>            :   else
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;attempt to calculate histrogam without taking samples&quot;);</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :   return 0;</span>
+<span class="lineNum">      77 </span>            : }
+<a name="78"><span class="lineNum">      78 </span>            :   </a>
+<span class="lineNum">      79 </span>            :   
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 : void Histogram_Estimator::save(const char * name){</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :   std::ofstream os(name);</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   set_format(os);</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_number_of_bins();i++){</span>
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :     os &lt;&lt; (i+0.5)*the_bin_width &lt;&lt; &quot; &quot; </span>
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :        &lt;&lt; the_histogram[i] &lt;&lt; &quot; &quot;</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :        &lt;&lt; sqrt(the_histogram[i]) &lt;&lt; std::endl;</span>
+<span class="lineNum">      87 </span>            :   }
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 : }</span>
+<a name="89"><span class="lineNum">      89 </span>            :   </a>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 : void weighted_average_meter::sample(double x,double weight){</span>
+<span class="lineNum">      92 </span><span class="lineCov">        549 :     sum+=x*weight;</span>
+<span class="lineNum">      93 </span><span class="lineCov">        549 :     square_sum+=x*x*weight;</span>
+<span class="lineNum">      94 </span><span class="lineCov">        549 :     samples+=weight;</span>
+<a name="95"><span class="lineNum">      95 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span><span class="lineCov">       3789 : double weighted_average_meter::readout() const {</span>
+<span class="lineNum">      98 </span><span class="lineCov">       3789 :   return sum/samples;</span>
+<a name="99"><span class="lineNum">      99 </span>            : }</a>
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 : double weighted_average_meter::sample_var() const {</span>
+<span class="lineNum">     102 </span><span class="lineCov">      20804 :   return std::max&lt;double&gt;(0,(square_sum-sum*sum/samples))/(samples);</span>
+<a name="103"><span class="lineNum">     103 </span>            : }</a>
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 : double weighted_average_meter::sample_std() const {</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :     return sqrt(sample_var());</span>
+<a name="107"><span class="lineNum">     107 </span>            : }</a>
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 : double average_meter::std() const{</span>
+<span class="lineNum">     110 </span><span class="lineNoCov">          0 :     return sqrt(sample_var()*samples/(samples-1));</span>
+<a name="111"><span class="lineNum">     111 </span>            : }</a>
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 : double average_meter::var() const{</span>
+<span class="lineNum">     114 </span><span class="lineCov">      20804 :     return sample_var()*samples/(samples-1);</span>
+<a name="115"><span class="lineNum">     115 </span>            : }</a>
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 : double average_meter::error() const{</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :     return std()/sqrt(double(samples));</span>
+<a name="119"><span class="lineNum">     119 </span>            : }</a>
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span><span class="lineCov">      10402 : double average_meter::error_var() const{</span>
+<span class="lineNum">     122 </span><span class="lineCov">      10402 :     return var()/double(samples);</span>
+<a name="123"><span class="lineNum">     123 </span>            : }</a>
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span><span class="lineCov">        549 : void average_meter::sample(double x){</span>
+<a name="126"><span class="lineNum">     126 </span><span class="lineCov">       1098 :   weighted_average_meter::sample(x,1);</span></a>
+<span class="lineNum">     127 </span><span class="lineCov">        549 : }</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 : void average_meter::sample(double x,double weight){</span>
+<a name="129"><span class="lineNum">     129 </span><span class="lineNoCov">          0 :   FATAL_ERROR(&quot;This is not a weighted average meter!&quot;);</span></a>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     131 </span><span class="lineNoCov">          0 : int average_meter::n(){</span>
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :   return int(0.5+samples);</span>
+<a name="133"><span class="lineNum">     133 </span>            : }</a>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 : std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, </span>
+<span class="lineNum">     136 </span>            :                           const average_meter &amp; av){
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :   stream &lt;&lt; av.readout() &lt;&lt; &quot; +/- &quot; &lt;&lt; av.error();</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :   return stream;</span>
+<span class="lineNum">     139 </span>            : }
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            : // multinormal_distribution
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 : multinormal_distribution::multinormal_distribution(NewVector &amp;m, NewMatrix &amp;c):mean(m),cov(c){</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(m.size()==c.SIZE1());</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(c.SIZE1()==c.SIZE2());</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 : };</span>
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 : std::simple_vector&lt;double&gt; multinormal_distribution::main_axis() const {</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :   int n=cov.SIZE2();</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :   NewVector evals;</span>
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :   NewMatrix m=cov;</span>
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :   NewEigen(m,evals); // get eigensystem</span>
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span><span class="lineNoCov">          0 :   std::simple_vector&lt;double&gt; axis(n);</span>
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;n;i++){</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     axis[i]=m(i,n-1);</span>
+<span class="lineNum">     157 </span>            :   }
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :   return axis;</span>
+<span class="lineNum">     159 </span>            : }
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span><span class="lineNoCov">          0 : std::simple_vector&lt;double&gt; multinormal_distribution::raw_main_axis() const {</span>
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :   int n=cov.SIZE2();</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :   NewVector evals;</span>
+<span class="lineNum">     164 </span><span class="lineNoCov">          0 :   NewMatrix m=cov+mean.t()*mean;</span>
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :   NewEigen(m,evals); // get eigensystem</span>
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :   REPORT(evals);</span>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :   std::simple_vector&lt;double&gt; axis(n);</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;n;i++){</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :     axis[i]=m(i,n-1);</span>
+<span class="lineNum">     171 </span>            :   }
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :   return axis;</span>
+<span class="lineNum">     173 </span>            : }
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 : void multinormal_distribution::save(const char * name) const{</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :   std::ofstream os(name);</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :   set_format(os);</span>
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :   os &lt;&lt; mean.size() &lt;&lt; std::endl;</span>
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :   os &lt;&lt; mean;</span>
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :   os &lt;&lt; cov;</span>
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span>            :   // as a service, include also correlation:
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :   NewMatrix corr_corrector(cov.SIZE1(),cov.SIZE2());</span>
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :   corr_corrector = arma::diagmat(corr_corrector);</span>
+<span class="lineNum">     186 </span>            :   
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :   for(int i=cov.SIZE1();i--&gt;0;){</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :     if(cov(i,i))</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :       corr_corrector(i,i)=1/sqrt(cov(i,i));</span>
+<span class="lineNum">     190 </span>            :   }
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :   os &lt;&lt; prod(NewMatrix(prod(corr_corrector,cov)),corr_corrector);</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 : };</span>
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 : void multinormal_distribution::load(const char * name){</span>
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :   std::ifstream os(name);</span>
+<span class="lineNum">     196 </span>            :   int size;
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :   os &gt;&gt; size;</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :   mean=NewVector(size);</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :   cov=NewMatrix(size,size);</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;size;i++){</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :     os &gt;&gt; mean[i];</span>
+<span class="lineNum">     202 </span>            :   }
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;size;i++){</span>
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;size;j++){</span>
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :       os &gt;&gt; cov(i,j);</span>
+<span class="lineNum">     206 </span>            :     }
+<span class="lineNum">     207 </span>            :   }
+<span class="lineNum">     208 </span>            :   
+<span class="lineNum">     209 </span>            :   // drop correlation matrix
+<span class="lineNum">     210 </span>            :   double dummy;
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;size;i++){</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;size;j++){</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :       os &gt;&gt; dummy;</span>
+<span class="lineNum">     214 </span>            :     }
+<span class="lineNum">     215 </span>            :   }
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 : };</span>
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 : double multinormal_distribution::var_of_sum(){</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :   for(int i=cov.SIZE1();i--&gt;0;){</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :     for(int j=cov.SIZE2();j--&gt;0;){</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :       sum+=cov(i,j);</span>
+<span class="lineNum">     223 </span>            :     }
+<span class="lineNum">     224 </span>            :   }
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :   return sum;</span>
+<a name="226"><span class="lineNum">     226 </span>            : }</a>
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 : void save(std::simple_vector&lt;double&gt; const &amp; data,</span>
+<span class="lineNum">     229 </span>            :           std::simple_vector&lt;bool&gt; const &amp; select,
+<span class="lineNum">     230 </span>            :           std::simple_vector&lt;bool&gt; const &amp; fix,
+<span class="lineNum">     231 </span>            :           const char * name){
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :   int size=0;</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;fix.size();i++) </span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :     if(select[i] &amp;&amp; !fix[i]) size++;</span>
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :   std::ofstream os(name);</span>
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :   set_format(os);</span>
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :   os &lt;&lt; size &lt;&lt; std::endl;;</span>
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;fix.size();i++)</span>
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :     if(select[i] &amp;&amp; !fix[i]) os &lt;&lt; data[i] &lt;&lt; std::endl;;</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 : void load(NewVector &amp; data,</span>
+<span class="lineNum">     246 </span>            :           const char * name){
+<span class="lineNum">     247 </span>            :   int size;
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :   std::ifstream os(name);</span>
+<span class="lineNum">     249 </span>            :   
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :   os &gt;&gt; size;</span>
+<span class="lineNum">     251 </span>            :   
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :   data=NewVector(size);</span>
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;size;i++)</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :     os &gt;&gt; data[i];</span>
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            : //chi_square_meter:
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 : void chi_square_meter::_initialize_selection_given(){</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :   int count = 0;</span>
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size();i++)</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :     if(_selection[i]) count++;</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :   _size=count;</span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :   _sum=NewVector(count,arma::fill::zeros);</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :   _square_sum=NewMatrix(count,count,arma::fill::zeros);</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            : #if 0 // dead code:
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : static double norm(const HepMatrix &amp; m){
+<span class="lineNum">     273 </span>            :   double sum=0;
+<span class="lineNum">     274 </span>            :   for(int i=0;i&lt;m.num_row();i++)
+<span class="lineNum">     275 </span>            :     for(int j=0;j&lt;m.num_col();j++)
+<span class="lineNum">     276 </span>            :       sum+=fabs(m[i][j]);
+<span class="lineNum">     277 </span>            :   return sum/(m.num_col()*m.num_row());
+<span class="lineNum">     278 </span>            : }
+<span class="lineNum">     279 </span>            :     
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            : static HepMatrix sqrt2(const HepMatrix &amp; m0){
+<span class="lineNum">     282 </span>            :   HepMatrix 
+<span class="lineNum">     283 </span>            :     previous(m0.num_row(),m0.num_col()),
+<span class="lineNum">     284 </span>            :     previous2(m0.num_row(),m0.num_col()),
+<span class="lineNum">     285 </span>            :     m=m0;
+<span class="lineNum">     286 </span>            :   m/=sqrt(norm(m0));
+<span class="lineNum">     287 </span>            :   double acc=1e-8*sqrt(norm(m0));
+<span class="lineNum">     288 </span>            :   int err;
+<span class="lineNum">     289 </span>            :   int count=0;
+<span class="lineNum">     290 </span>            :   do{
+<span class="lineNum">     291 </span>            :     previous2=previous;
+<span class="lineNum">     292 </span>            :     previous=m;
+<span class="lineNum">     293 </span>            :     if(norm(previous-previous2)&lt;acc) break;
+<span class="lineNum">     294 </span>            :     m=0.5*(m+m0*m.inverse(err));
+<span class="lineNum">     295 </span>            :     count++;
+<span class="lineNum">     296 </span>            :   }while(norm(previous-m)&gt;acc &amp;&amp; ! err &amp;&amp; count &lt; 300);
+<span class="lineNum">     297 </span>            :   if(err) WARNING(&quot;matrix for sqrt is irregular&quot;);
+<span class="lineNum">     298 </span>            :   return m;
+<span class="lineNum">     299 </span>            : }
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            : #endif
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 : static NewMatrix sqrt(const NewMatrix &amp; m0){</span>
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :   int n=m0.SIZE2();</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :   NewVector evals;</span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :   NewMatrix m=m0,evec;</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :   NewEigen(m,evals); // get eigensystem</span>
+<span class="lineNum">     308 </span>            : 
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :   NewMatrix Lambda(n,n);</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :   Lambda = arma::diagmat(Lambda);</span>
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :   for(int i=n;i--&gt;0;){</span>
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :     if(evals(i)&lt;0){</span>
+<span class="lineNum">     313 </span><span class="lineNoCov">          0 :       WARNING(&quot;Negative eigenvalue, cannot take square root&quot;);</span>
+<span class="lineNum">     314 </span>            :     }else{
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :       Lambda(i,i) = sqrt(evals(i));</span>
+<span class="lineNum">     316 </span>            :     }
+<span class="lineNum">     317 </span>            :   }
+<span class="lineNum">     318 </span>            : 
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 :   FATAL_ERROR(&quot;This part of code needs to be checked, do we do the transposition of matrix m correctly?? Use e.g. chi_square_meter::deviation to test.&quot;);</span>
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :   NewMatrix sqrt_mat = trans(prod(m,Lambda));</span>
+<span class="lineNum">     321 </span><span class="lineNoCov">          0 :   sqrt_mat = prod(m,sqrt_mat);</span>
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :   return sqrt_mat;</span>
+<span class="lineNum">     324 </span>            : }
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 : void chi_square_meter::sample(std::simple_vector&lt;double&gt; data){</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :   NewVector selected_data(_size,arma::fill::zeros);</span>
+<span class="lineNum">     328 </span>            :   int j=0;
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size() &amp;&amp; i&lt;data.size();i++){</span>
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :     if(_selection[i]) selected_data[j++]=data[i];</span>
+<span class="lineNum">     331 </span>            :   }
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 :   _sum+=selected_data;</span>
+<span class="lineNum">     333 </span><span class="lineNoCov">          0 :   _square_sum+=outer_prod(selected_data,selected_data);</span>
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 :   _n_samples++;</span>
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     336 </span>            :   
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 : std::simple_vector&lt;double&gt; chi_square_meter::mean() const {</span>
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :   std::simple_vector&lt;double&gt; result(_selection.size());</span>
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :   int j=0;</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size();i++){</span>
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :     if(_selection[i]) </span>
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :       result[i]=_sum[j++]/_n_samples;</span>
+<span class="lineNum">     343 </span>            :     else
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :       result[i]=NAN;</span>
+<span class="lineNum">     345 </span>            :   }
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :   return result;</span>
+<span class="lineNum">     347 </span>            : }
+<span class="lineNum">     348 </span>            : 
+<span class="lineNum">     349 </span>            : inline double dot(const NewVector &amp; v1,const 
+<span class="lineNum">     350 </span>            :                   NewVector &amp; v2){
+<span class="lineNum">     351 </span>            :   return inner_prod(v1,v2);
+<span class="lineNum">     352 </span>            : }
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 : double chi_square_meter::chi_square_old(std::simple_vector&lt;double&gt; data) const {</span>
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :   NewVector selected_data(_size);</span>
+<span class="lineNum">     356 </span>            :   int j=0;
+<span class="lineNum">     357 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size() &amp;&amp; i&lt;data.size();i++){</span>
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :     if(_selection[i]) selected_data[j++]=data[i];</span>
+<span class="lineNum">     359 </span>            :   }
+<span class="lineNum">     360 </span>            :   //// Compute mean:
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :   NewVector mean=_sum/_n_samples;</span>
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            :   //// Compute Covariance Matrix:
+<span class="lineNum">     364 </span>            :   NewMatrix cov=
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :                          _square_sum/_n_samples-outer_prod(mean,mean);</span>
+<span class="lineNum">     366 </span>            :   
+<span class="lineNum">     367 </span>            :   // correct for finite sample size (correct?):
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :   cov*=double(_n_samples)/(_n_samples-1);</span>
+<span class="lineNum">     369 </span>            :   
+<span class="lineNum">     370 </span><span class="lineNoCov">          0 :   selected_data-=mean;</span>
+<span class="lineNum">     371 </span>            :   int ierr;
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :   double result=dot(selected_data,solve(cov,selected_data));</span>
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :   if(ierr){</span>
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :     IOSTD cout &lt;&lt; cov;</span>
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;covarance matrix is irregular&quot;);</span>
+<span class="lineNum">     376 </span>            :   }
+<span class="lineNum">     377 </span><span class="lineNoCov">          0 :   return result;</span>
+<span class="lineNum">     378 </span>            : }
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span><span class="lineNoCov">          0 : void chi_square_meter::postfix(std::simple_vector&lt;double&gt; const &amp; data,</span>
+<span class="lineNum">     381 </span>            :                                std::simple_vector&lt;bool&gt; const &amp; fixed0,
+<span class="lineNum">     382 </span>            :                                NewVector &amp; v1, 
+<span class="lineNum">     383 </span>            :                                NewVector &amp; mean_star, 
+<span class="lineNum">     384 </span>            :                                NewMatrix &amp; cov11, 
+<span class="lineNum">     385 </span>            :                                NewMatrix &amp; icov11) const {
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :   std::simple_vector&lt;bool&gt; fixed=fixed0;</span>
+<span class="lineNum">     387 </span>            :   //fixed.resize(_selection.size(),false);
+<span class="lineNum">     388 </span><span class="lineNoCov">          0 :   fixed.resize(_selection.size()); //false is default element</span>
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 :   NewVector selected_data(_size);</span>
+<span class="lineNum">     390 </span>            :   int j=0;
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size() &amp;&amp; i&lt;data.size();i++){</span>
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :     if(_selection[i]) selected_data[j++]=data[i];</span>
+<span class="lineNum">     393 </span>            :   }
+<span class="lineNum">     394 </span>            :   //// Compute mean:
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :   NewVector mean=_sum/_n_samples;</span>
+<span class="lineNum">     396 </span>            : 
+<span class="lineNum">     397 </span>            :   //// Compute Covariance Matrix:
+<span class="lineNum">     398 </span>            :   NewMatrix cov=
+<span class="lineNum">     399 </span><span class="lineNoCov">          0 :                          _square_sum/_n_samples-outer_prod(mean,mean);</span>
+<span class="lineNum">     400 </span>            :   
+<span class="lineNum">     401 </span>            :   // correct for finite sample size (correct?):
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :   cov*=double(_n_samples)/(_n_samples-1);</span>
+<span class="lineNum">     403 </span>            : 
+<span class="lineNum">     404 </span>            :   // regularize cov:
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :   double minc=INFINITY;</span>
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;_size;i++){</span>
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :     if(cov(i,i)!=0 &amp;&amp; cov(i,i)&lt;minc) minc=cov(i,i);</span>
+<span class="lineNum">     408 </span>            :   }
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;_size;i++){</span>
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :     if(cov(i,i)==0) cov(i,i)=minc/10;</span>
+<span class="lineNum">     411 </span>            :   }
+<span class="lineNum">     412 </span>            :   
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :   NewMatrix icov=cov.i();</span>
+<span class="lineNum">     414 </span>            : 
+<span class="lineNum">     415 </span>            :   //// now separate fixed and variable part:
+<span class="lineNum">     416 </span>            :   // count the number of fixed elements:
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 :   int fcount=0;</span>
+<span class="lineNum">     418 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;fixed.size();i++){</span>
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :     if(_selection[i] &amp;&amp; fixed[i]) fcount++;</span>
+<span class="lineNum">     420 </span>            :   }
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :   int vcount=_size-fcount;</span>
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span>            :   // compute sub-matrixes and vectors
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :   NewVector v0(fcount),m0(fcount),m1(vcount);</span>
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :   v1=NewVector(vcount);</span>
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :   NewMatrix icov10(vcount,fcount);</span>
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :   icov11=NewMatrix(vcount,vcount);</span>
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :   int k=0,k1=0; </span>
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size();i++){</span>
+<span class="lineNum">     430 </span><span class="lineNoCov">          0 :     if(_selection[i]){</span>
+<span class="lineNum">     431 </span><span class="lineNoCov">          0 :       if(!fixed[i]){</span>
+<span class="lineNum">     432 </span>            :         int l=0,l10=0,l11=0;
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :         for(unsigned int j=0;j&lt;_selection.size();j++){</span>
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :           if(_selection[j]){</span>
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :             if(fixed[j]){</span>
+<span class="lineNum">     436 </span><span class="lineNoCov">          0 :               icov10(k1,l10)=icov(k,l);</span>
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :               v0[l10]=selected_data[l];</span>
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :               m0[l10]=mean[l];</span>
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :               l10++;</span>
+<span class="lineNum">     440 </span>            :             }else{
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :               icov11(k1,l11)=icov(k,l);</span>
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 :               v1[l11]=selected_data[l];</span>
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :               m1[l11]=mean[l];</span>
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :               l11++;</span>
+<span class="lineNum">     445 </span>            :             }
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :             l++;</span>
+<span class="lineNum">     447 </span>            :           }
+<span class="lineNum">     448 </span>            :         }
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :         k1++;</span>
+<span class="lineNum">     450 </span>            :       }
+<span class="lineNum">     451 </span><span class="lineNoCov">          0 :       k++;</span>
+<span class="lineNum">     452 </span>            :     }
+<span class="lineNum">     453 </span>            :   }
+<span class="lineNum">     454 </span>            : 
+<span class="lineNum">     455 </span><span class="lineNoCov">          0 :   cov11=arma::inv(icov11);</span>
+<span class="lineNum">     456 </span>            :       
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 :   if(fcount&gt;0){// armadillo does not like matrices with zero rows or cols</span>
+<span class="lineNum">     458 </span><span class="lineNoCov">          0 :     mean_star=m1+prod(cov11,NewVector(prod(icov10,v0-m0)));</span>
+<span class="lineNum">     459 </span>            :   }else{
+<span class="lineNum">     460 </span>            :     mean_star=m1;
+<span class="lineNum">     461 </span>            :   }
+<a name="462"><span class="lineNum">     462 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">     463 </span>            : 
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 : double chi_square_meter::chi_square(std::simple_vector&lt;double&gt; const &amp; data,</span>
+<span class="lineNum">     465 </span>            :                                     std::simple_vector&lt;bool&gt; const &amp; fixed) const {
+<span class="lineNum">     466 </span>            :   double dummy_log_det_cov;
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :   return chi_square(&amp;dummy_log_det_cov,data,fixed);</span>
+<span class="lineNum">     468 </span>            : }
+<span class="lineNum">     469 </span>            : 
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 : double chi_square_meter::chi_square(double * log_det_cov,</span>
+<span class="lineNum">     471 </span>            :                                     std::simple_vector&lt;double&gt; const &amp; data,
+<span class="lineNum">     472 </span>            :                                     std::simple_vector&lt;bool&gt; const &amp; fixed) const {
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :   NewVector v1,mean_star;</span>
+<span class="lineNum">     474 </span><span class="lineNoCov">          0 :   NewMatrix cov11, icov11;</span>
+<span class="lineNum">     475 </span>            :   //main calculations are done here:
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :   postfix(data,fixed,v1,mean_star,cov11,icov11);</span>
+<span class="lineNum">     477 </span>            : 
+<span class="lineNum">     478 </span><span class="lineNoCov">          0 :   NewVector delta=v1-mean_star;</span>
+<span class="lineNum">     479 </span>            :   
+<span class="lineNum">     480 </span>            : //   HepMatrix dd=cov11;
+<span class="lineNum">     481 </span>            : //   for(int i=0;i&lt;dd.num_row();i++){
+<span class="lineNum">     482 </span>            : //     for(int j=0;j&lt;dd.num_col();j++){
+<span class="lineNum">     483 </span>            : //       if(i!=j) dd[i][j]=0;
+<span class="lineNum">     484 </span>            : //     }
+<span class="lineNum">     485 </span>            : //   }
+<span class="lineNum">     486 </span>            : //   int ierr;
+<span class="lineNum">     487 </span>            : //   dd=sqrt(dd.inverse(ierr));
+<span class="lineNum">     488 </span>            : //   std::cout &lt;&lt; &quot;correlation matrix:&quot; &lt;&lt; std::endl;
+<span class="lineNum">     489 </span>            : //   IOSTD cout &lt;&lt; dd*cov11*dd;
+<span class="lineNum">     490 </span>            : 
+<span class="lineNum">     491 </span>            : //   std::cout &lt;&lt; &quot;covariance matrix:&quot; &lt;&lt; std::endl;
+<span class="lineNum">     492 </span>            : //   IOSTD cout &lt;&lt; cov11;
+<span class="lineNum">     493 </span>            : 
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :   NewVector ev;</span>
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 :   NewEigen(cov11,ev); // get eigensystem</span>
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :   std::cout &lt;&lt; std::endl &lt;&lt; &quot;eigenvalues: &quot;;</span>
+<span class="lineNum">     497 </span>            :   double log_det=0;
+<span class="lineNum">     498 </span>            :   double tr_cov2=0; //trace
+<span class="lineNum">     499 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;cov11.SIZE2();i++){</span>
+<span class="lineNum">     500 </span><span class="lineNoCov">          0 :     std::cout &lt;&lt; ev[i] &lt;&lt; &quot; &quot; ;</span>
+<span class="lineNum">     501 </span><span class="lineNoCov">          0 :     if(!my_isnan(log_det)){</span>
+<span class="lineNum">     502 </span><span class="lineNoCov">          0 :       if(ev[i]&lt;0){</span>
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :         log_det+=NAN;</span>
+<span class="lineNum">     504 </span>            :       }else{
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :         log_det+=log(ev[i]);</span>
+<span class="lineNum">     506 </span>            :       }
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :       tr_cov2+=ev[i]*ev[i];</span>
+<span class="lineNum">     508 </span>            :     }
+<span class="lineNum">     509 </span>            :   }
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :   std::cout &lt;&lt; std::endl &lt;&lt; &quot;log10(det): &quot; &lt;&lt; log_det/log(10.0) </span>
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :             &lt;&lt; &quot;, TR(cov^2): &quot; &lt;&lt; tr_cov2 &lt;&lt; std::endl;</span>
+<span class="lineNum">     512 </span>            : 
+<span class="lineNum">     513 </span><span class="lineNoCov">          0 :   *log_det_cov=log_det; //secondary return value</span>
+<span class="lineNum">     514 </span>            :   
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :   return dot(delta,prod(icov11,delta));</span>
+<span class="lineNum">     516 </span>            : }
+<span class="lineNum">     517 </span>            : 
+<span class="lineNum">     518 </span>            :   
+<span class="lineNum">     519 </span>            : std::simple_vector&lt;double&gt; 
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 : chi_square_meter::deviation(std::simple_vector&lt;double&gt; const &amp; data,</span>
+<span class="lineNum">     521 </span>            :                             std::simple_vector&lt;bool&gt; const &amp; fixed) 
+<span class="lineNum">     522 </span>            :   const
+<span class="lineNum">     523 </span>            : {
+<span class="lineNum">     524 </span><span class="lineNoCov">          0 :   NewVector v1,mean_star;</span>
+<span class="lineNum">     525 </span><span class="lineNoCov">          0 :   NewMatrix cov11, icov11;</span>
+<span class="lineNum">     526 </span>            :   //main calculations are done here:
+<span class="lineNum">     527 </span><span class="lineNoCov">          0 :   postfix(data,fixed,v1,mean_star,cov11,icov11);</span>
+<span class="lineNum">     528 </span>            : 
+<span class="lineNum">     529 </span><span class="lineNoCov">          0 :   NewVector delta=v1-mean_star;</span>
+<span class="lineNum">     530 </span>            :   
+<span class="lineNum">     531 </span><span class="lineNoCov">          0 :   NewMatrix istderr_mat=sqrt(icov11);</span>
+<span class="lineNum">     532 </span>            : 
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :   IOSTD cout &lt;&lt; istderr_mat ;</span>
+<span class="lineNum">     534 </span>            : 
+<span class="lineNum">     535 </span><span class="lineNoCov">          0 :   IOSTD cout &lt;&lt; icov11-prod(istderr_mat,istderr_mat);</span>
+<span class="lineNum">     536 </span>            : 
+<span class="lineNum">     537 </span><span class="lineNoCov">          0 :   NewVector dev=prod(istderr_mat,delta);</span>
+<span class="lineNum">     538 </span>            :   
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 :   std::simple_vector&lt;double&gt; result(_selection.size());</span>
+<span class="lineNum">     540 </span><span class="lineNoCov">          0 :   int j=0;</span>
+<span class="lineNum">     541 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size();i++){</span>
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :     if(_selection[i] &amp;&amp; !fixed[i])</span>
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :       result[i]=dev[j++];</span>
+<span class="lineNum">     544 </span>            :     else
+<span class="lineNum">     545 </span><span class="lineNoCov">          0 :       result[i]=NAN;</span>
+<span class="lineNum">     546 </span>            :   }
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 :   return result;</span>
+<span class="lineNum">     548 </span>            : }
+<span class="lineNum">     549 </span>            : 
+<span class="lineNum">     550 </span>            : 
+<span class="lineNum">     551 </span><span class="lineNoCov">          0 : std::simple_vector&lt;weighted_average_meter&gt; chi_square_meter::</span>
+<span class="lineNum">     552 </span>            : mean_and_var(std::simple_vector&lt;double&gt; const &amp; data, 
+<span class="lineNum">     553 </span>            :              std::simple_vector&lt;bool&gt; const &amp; fixed) const {
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :   int s=_selection.size();</span>
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :   std::simple_vector&lt;weighted_average_meter&gt; avs(s);</span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :   NewVector v1,mean_star;</span>
+<span class="lineNum">     557 </span><span class="lineNoCov">          0 :   NewMatrix cov11, icov11;</span>
+<span class="lineNum">     558 </span>            :   //main calculations are done here:
+<span class="lineNum">     559 </span><span class="lineNoCov">          0 :   postfix(data,fixed,v1,mean_star,cov11,icov11);</span>
+<span class="lineNum">     560 </span>            : 
+<span class="lineNum">     561 </span>            :   // fill 
+<span class="lineNum">     562 </span>            :   int j=0;
+<span class="lineNum">     563 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;_selection.size();i++){</span>
+<span class="lineNum">     564 </span><span class="lineNoCov">          0 :     if(_selection[i] &amp;&amp; !fixed[i]){</span>
+<span class="lineNum">     565 </span>            :       //std::cout &lt;&lt; j &lt;&lt; &quot; &quot; &lt;&lt; mean_star[j] &lt;&lt; std::endl ;
+<span class="lineNum">     566 </span><span class="lineNoCov">          0 :       avs[i]+=weighted_average_meter(mean_star[j],cov11(j,j));</span>
+<span class="lineNum">     567 </span><span class="lineNoCov">          0 :       j++;</span>
+<span class="lineNum">     568 </span>            :     }
+<span class="lineNum">     569 </span>            :   }
+<span class="lineNum">     570 </span>            :   
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :   return avs;</span>
+<span class="lineNum">     572 </span>            : }
+<span class="lineNum">     573 </span>            : 
+<span class="lineNum">     574 </span>            : multinormal_distribution 
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 : chi_square_meter::estimate(std::simple_vector&lt;double&gt; const &amp; data, </span>
+<span class="lineNum">     576 </span>            :                            std::simple_vector&lt;bool&gt; const &amp; fixed){
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :   NewVector v1,mean_star;</span>
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :   NewMatrix cov11, icov11;</span>
+<span class="lineNum">     579 </span>            :   //main calculations are done here:
+<a name="580"><span class="lineNum">     580 </span><span class="lineNoCov">          0 :   postfix(data,fixed,v1,mean_star,cov11,icov11);</span></a>
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 :   return multinormal_distribution(mean_star,cov11);</span>
+<span class="lineNum">     582 </span><span class="lineCov">        135 : }</span>
+<span class="lineNum">     583 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+#$Id$
+
+# Here we could change default settings for Inspect!
+# This file is confusing, and might be removed in future versions.
+
+# POINT: These are the intercept, slope and residual s.e.
+# for the fishing mortality against M line, when Inspect -X fishall
+# is called.
+fishall_intercept = -0.22941/year
+fishall_slope = 0.37240/kilogram/year
+fishall_residual_se = 0.5054/year
+
+# POINT: These determine the max exponent of M that is fished
+# for Inspect -X fishMrange, fishTLrange, fishMrangeconst and
+# fishTLrangeconst.
+fishMrangemax = 3
+fishTLrangemax = 3
+
+# POINT: This is the constant fishing mortality rate for 
+# Inspect -X fishMrangeconst and fishTLrangeconst.
+const_fishing_mortality_rate = 0.1
+
+# POINT: This determines upper limit of fishing mortality rate for
+# fishMrangeline and fishTLrangeline.
+Fmax = 1/year
+
+# POINT: This is the factor by which the known F values for the 6 species are multiplied by.
+fishMrangeCSFfactor = 1.0
+
+# POINT: Determines whether to add a random fishing mortality factor for fishMrangeCS. 
+# If there is a random factor, then randFstd gives the std.
+addrandF = 0
+randFstd = 0.1/year
+
+# POINT: dpf only considers species with bodymass > 
+# pow(10,strength_distribution_exponent).
+strength_distribution_exponent = -20
+
+# POINT: defines pathway to massSum.dat
+mass_integrator_version = 2
+
+# POINT: determines whether dynamics.dat is saved
+record_relaxation_dynamics = 1

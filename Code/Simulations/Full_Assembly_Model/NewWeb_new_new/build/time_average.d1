@@ -1,0 +1,15 @@
+time_average.o time_average.d1 : time_average.cc  time_average.h \
+ sequence.h   \
+  simple_vector.h error.h \
+ NewWeb.h   \
+  NetworkAnalysis.h random.h \
+  CMatrix.h NewMatrix.h \
+  NetworkHelpers.h \
+ ODE.h  \
+  NewSpecies.h remember.h \
+  md5.h \
+ link_strength_matrix.h snapshot.h otherwebs.h \
+  Statistics.h SortedVector.h \
+  vector_with_max.h \
+ SortedMatrix.h relax.h ptr_vector.h CompMatrix.h period_cutter.h \
+ Integrator.h cfgList.h parsecfg.h evaluate.h CLHEP_Evaluator.h

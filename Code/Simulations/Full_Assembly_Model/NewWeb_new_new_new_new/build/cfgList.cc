@@ -1,0 +1,150 @@
+// $Id: cfgList.cc 2502 2017-02-27 17:35:59Z axel $
+
+#include <fstream>
+#include <sstream>
+
+#include "cfgList.h"
+#include "error.h"
+
+using namespace std;
+
+cfg_list_t * cfg_add::cfg_list=0;
+
+const cfgStruct cfg_final={0,CFG_END,0};
+
+cfg_add::cfg_add(cfgStruct * s):the_s(s){
+  cfg_list_t * this_node = (cfg_list_t *) malloc(sizeof(cfg_list_t));
+  this_node->current=s;
+  this_node->next=cfg_list;
+  cfg_list=this_node;
+};
+cfg_add::~cfg_add(){
+  //cfg_list.remove(the_s);
+};
+
+// collect the cfg_lists from all object files and join them to a
+// single list so all object files can have their own cfg_list, but
+// there is only one .cfg file.
+
+
+cfgStruct *full_cfg_list(){
+
+  cfg_list_t * cfg_list=cfg_add::cfg_list;
+  
+  int nEntries=0;
+  for(cfg_list_t * i=cfg_list;
+      i!=0;
+      i=i->next){
+    cfgStruct * p = i->current;
+    while(p->type!=CFG_END){
+      nEntries++;
+      p++;
+    }
+  }
+  cfgStruct * cfg= new cfgStruct[nEntries+1];
+
+  int nEntry=0;
+  for(cfg_list_t * i=cfg_list;
+      i!=0;
+      i=i->next){
+    cfgStruct *p = i->current;
+    while(p->type!=CFG_END){
+      cfg[nEntry++]=*p;
+      p++;
+    }
+  }
+  if(nEntry!=nEntries) FATAL_ERROR("error counting cfgEntries");
+  cfg[nEntries]=cfg_final;
+
+  return cfg;
+}
+
+void read_parameters_from_file(const std::string in_file_name){
+  std::cout << "reading parameter file " << in_file_name << std::endl;
+  cfgStruct * cfg_list=full_cfg_list();
+  if (cfgParse(in_file_name.c_str(), cfg_list, CFG_SIMPLE) == -1)
+    FATAL_ERROR("error reading parameter file");
+  delete [] cfg_list; //this is a raw array, we need to deallocate by hand
+}
+
+double get_cfg_parameter(const char * name){
+  cfgStruct * cfg=full_cfg_list();
+  double result;
+  for(cfgStruct* i=cfg; i->type!=CFG_END; i++){
+    if(strcmp(i->parameterName,name)==0){
+      switch(i->type){
+      case CFG_BOOL:
+	result=double(*(bool *)(i->value));
+	break;
+      case CFG_STRING:
+	FATAL_ERROR("string parameters won't work yet");
+	break;
+      case CFG_INT:
+	result=double(*(int *)(i->value));
+	break;
+      case CFG_UINT:
+	result=double(*(unsigned int *)(i->value));
+	break;
+      case CFG_LONG:
+	result=double(*(long *)(i->value));
+	break;
+      case CFG_ULONG:
+	result=double(*(unsigned long *)(i->value));
+	break;
+      case CFG_STRING_LIST:
+	FATAL_ERROR("string_list parameters won't work yet");
+	break;
+      case CFG_FLOAT:
+	result=double(*(float *)(i->value));
+	break;
+      case CFG_DOUBLE:
+	result=double(*(double *)(i->value));
+	break;
+      }
+      break;
+    }
+  }
+  delete[] cfg;
+  return result;
+}
+
+int set_cfg_parameter(const char * name, const char * value){
+  cfgStruct * cfg=full_cfg_list();
+  int result = cfgStoreValue(cfg,name,value,CFG_SIMPLE,0);
+  delete[] cfg;
+  return result;
+}
+
+void write_cfg_template(const char * filename){
+  ofstream file(filename);
+  write_cfg_template(file);
+}
+
+void write_cfg_template(ostream & file){
+  cfgStruct * cfg=full_cfg_list();
+  for(cfgStruct* i=cfg; i->type!=CFG_END; i++){
+    if(i->type != CFG_STRING and i->type != CFG_STRING_LIST){
+      file << i->parameterName << " = " 
+	   << get_cfg_parameter(i->parameterName) << endl;
+    }
+  }
+}
+
+void do_assignments(const vector< string > & assignments){
+  for(int i=0;i<assignments.size();i++){
+    string assignment = assignments[i];
+    int equal_sign = assignment.find('=');
+    int name_end = assignment.find_first_of("= ");
+    if(equal_sign == string::npos){
+      FATAL_ERROR("No equal sign in assigment '" << assignment << "'");
+    }
+    string var=assignment.substr(0,name_end);
+    double val = eval(assignment.substr(equal_sign+1,string::npos).c_str());
+    string val_str=static_cast<ostringstream*>( &(ostringstream() << val) )->str();
+    if( set_cfg_parameter(var.c_str(),val_str.c_str()) ){
+      FATAL_ERROR("error in inline assignment");
+    }
+  }
+}
+
+  

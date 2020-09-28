@@ -1,0 +1,907 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/relax.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - relax.cc<span style="font-size: 80%;"> (source / <a href="relax.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">243</td>
+            <td class="headerCovTableEntry">298</td>
+            <td class="headerCovTableEntryMed">81.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryMed">83.3 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: relax.cc 2452 2015-04-24 18:21:19Z axel $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">       5 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">       6 </span>            : #include &lt;gsl/gsl_cdf.h&gt;
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;relax.h&quot;
+<span class="lineNum">       9 </span>            : #include &quot;polyfit.h&quot;
+<span class="lineNum">      10 </span>            : #include &quot;random.h&quot;
+<span class="lineNum">      11 </span>            : #include &quot;evaluate.h&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : // #define RELAX_DEBUG
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span><span class="lineCov">         45 : my_evaluator_t eval_now;</span>
+<span class="lineNum">      17 </span>            : static int min_samples=5;
+<span class="lineNum">      18 </span>            : static double evenness_pickiness=1.5;
+<span class="lineNum">      19 </span>            : static double extrema_tolerance=1;
+<span class="lineNum">      20 </span>            : static double extrema_relaxer=1;
+<span class="lineNum">      21 </span>            : static double extinction_test_p=1e-3;
+<span class="lineNum">      22 </span>            : static double efficacious_amount_drifted_up=0.1;
+<span class="lineNum">      23 </span>            : static double fixed_point_wobble_tolerance=0.01;
+<span class="lineNum">      24 </span>            : static double waiting_r=0.5;
+<span class="lineNum">      25 </span><span class="lineCov">         45 : static int drift_accuracy_max_points=min_samples;</span>
+<span class="lineNum">      26 </span>            : const double golden_ratio=0.5*(1+sqrt(5.0));
+<span class="lineNum">      27 </span><span class="lineCov">         45 : static double dephasing_time=eval_now(&quot;1*year&quot;)/golden_ratio;</span>
+<span class="lineNum">      28 </span>            : static int record_relaxation_dynamics=true;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : // Manage adjustable parameters:
+<span class="lineNum">      31 </span>            : #include &quot;cfgList.h&quot;
+<span class="lineNum">      32 </span>            : static cfgStruct cfg[] = 
+<span class="lineNum">      33 </span>            :   {
+<span class="lineNum">      34 </span>            :     CFGINT(record_relaxation_dynamics),
+<span class="lineNum">      35 </span>            :     CFGDOUBLE(fixed_point_wobble_tolerance),
+<span class="lineNum">      36 </span>            :     CFGDOUBLE(extinction_test_p),
+<span class="lineNum">      37 </span>            :     CFGDOUBLE(waiting_r),
+<span class="lineNum">      38 </span>            :     {0, CFG_END, 0}
+<span class="lineNum">      39 </span>            :   };
+<span class="lineNum">      40 </span><span class="lineCov">         45 : static cfg_add cfg_dummy(cfg);</span>
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : 
+<a name="43"><span class="lineNum">      43 </span>            : // Compute correlation between x and y</a>
+<span class="lineNum">      44 </span>            : static double dummy;
+<span class="lineNum">      45 </span><span class="lineCov">       6447 : static double correlation_coefficient(const double * x,const double * y,int N,</span>
+<span class="lineNum">      46 </span>            :                                       double &amp; amount_drifted=dummy){
+<span class="lineNum">      47 </span><span class="lineCov">       6447 :   double sum_sq_x = 0;</span>
+<span class="lineNum">      48 </span><span class="lineCov">       6447 :   double sum_sq_y = 0;</span>
+<span class="lineNum">      49 </span><span class="lineCov">       6447 :   double sum_coproduct = 0;</span>
+<span class="lineNum">      50 </span><span class="lineCov">       6447 :   double mean_x = x[0];</span>
+<span class="lineNum">      51 </span><span class="lineCov">       6447 :   double mean_y = y[0];</span>
+<span class="lineNum">      52 </span><span class="lineCov">      60288 :   for(int i=1;i&lt;N;i++){</span>
+<span class="lineNum">      53 </span><span class="lineCov">      53841 :     double sweep = i/(i+1.0);</span>
+<span class="lineNum">      54 </span><span class="lineCov">      53841 :     double delta_x = x[i] - mean_x;</span>
+<span class="lineNum">      55 </span><span class="lineCov">      53841 :     double delta_y = y[i] - mean_y;</span>
+<span class="lineNum">      56 </span><span class="lineCov">      53841 :     sum_sq_x += delta_x * delta_x * sweep;</span>
+<span class="lineNum">      57 </span><span class="lineCov">      53841 :     sum_sq_y += delta_y * delta_y * sweep;</span>
+<span class="lineNum">      58 </span><span class="lineCov">      53841 :     sum_coproduct += delta_x * delta_y * sweep;</span>
+<span class="lineNum">      59 </span><span class="lineCov">      53841 :     mean_x += delta_x / i;</span>
+<span class="lineNum">      60 </span><span class="lineCov">      53841 :     mean_y += delta_y / i;</span>
+<span class="lineNum">      61 </span>            :   }
+<span class="lineNum">      62 </span><span class="lineCov">       6447 :   const double pop_sd_x = sqrt( sum_sq_x / N );</span>
+<span class="lineNum">      63 </span><span class="lineCov">       6447 :   const double pop_sd_y = sqrt( sum_sq_y / N );</span>
+<span class="lineNum">      64 </span><span class="lineCov">       6447 :   const double cov_x_y = sum_coproduct / N;</span>
+<span class="lineNum">      65 </span><span class="lineCov">       6447 :   const double correlation = cov_x_y / (pop_sd_x * pop_sd_y);</span>
+<span class="lineNum">      66 </span><span class="lineCov">       6447 :   amount_drifted=correlation*pop_sd_y;</span>
+<span class="lineNum">      67 </span><span class="lineCov">       6447 :   return correlation;</span>
+<span class="lineNum">      68 </span>            : }
+<span class="lineNum">      69 </span>            : 
+<a name="70"><span class="lineNum">      70 </span>            : // Compute relative accuracy of drift coefficient in linear</a>
+<span class="lineNum">      71 </span>            : // regression:
+<span class="lineNum">      72 </span><span class="lineCov">       6447 : static double drift_accuracy(const double * x,const double * y,int N){</span>
+<span class="lineNum">      73 </span><span class="lineCov">       6447 :   int n_drift_points=std::min&lt;int&gt;(drift_accuracy_max_points,N);</span>
+<span class="lineNum">      74 </span><span class="lineCov">       6447 :   double step_size=N/double(n_drift_points);</span>
+<span class="lineNum">      75 </span><span class="lineCov">       6447 :   double square_sum=0;</span>
+<span class="lineNum">      76 </span><span class="lineCov">       6447 :   double drift=(y[N-1]-y[0])/(x[N-1]-x[0]);</span>
+<span class="lineNum">      77 </span><span class="lineCov">      32235 :   for(int i=1;i&lt;n_drift_points;i++){</span>
+<span class="lineNum">      78 </span>            :     const double delta_x=
+<span class="lineNum">      79 </span><span class="lineCov">      25788 :       x[int(i*step_size)]-x[int((i-1)*step_size)];</span>
+<span class="lineNum">      80 </span>            :     const double delta_y=
+<span class="lineNum">      81 </span><span class="lineCov">      25788 :       y[int(i*step_size)]-y[int((i-1)*step_size)]-drift*delta_x;</span>
+<span class="lineNum">      82 </span><span class="lineCov">      25788 :     square_sum+=delta_y*delta_y/delta_x;</span>
+<span class="lineNum">      83 </span>            :   }
+<span class="lineNum">      84 </span><span class="lineCov">       6447 :   return (y[N-1]-y[0])/sqrt(square_sum/(N-2)*(x[N-1]-x[0]));</span>
+<span class="lineNum">      85 </span>            : }
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : // Characterize shape of curve y(x):
+<span class="lineNum">      88 </span>            : typedef enum {linear_drift,exponential_relaxation,complex_shape} curve_shape_t;
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span><span class="lineCov">          4 : static curve_shape_t shape(const double * x,const double * y,int preN,</span>
+<span class="lineNum">      91 </span>            :                     double &amp;fixed_point){
+<span class="lineNum">      92 </span><span class="lineCov">          8 :   const int N=std::min&lt;int&gt;(preN,20);</span>
+<span class="lineNum">      93 </span><span class="lineCov">          8 :   sequence&lt;double&gt; xx(N);</span>
+<span class="lineNum">      94 </span><span class="lineCov">         12 :   sequence&lt;average_meter&gt; y_av(N);</span>
+<span class="lineNum">      95 </span><span class="lineCov">          4 :   const double x0=x[0];</span>
+<span class="lineNum">      96 </span><span class="lineCov">          4 :   const int overloads=preN/N;</span>
+<span class="lineNum">      97 </span><span class="lineCov">          4 :   const int rest=preN%N;</span>
+<span class="lineNum">      98 </span>            :   
+<span class="lineNum">      99 </span>            :   // Resample on a new grid: distribute gridpoints x over N data
+<span class="lineNum">     100 </span>            :   // points, and get average of y around these points:
+<span class="lineNum">     101 </span><span class="lineCov">          4 :   int ii=0;</span>
+<span class="lineNum">     102 </span><span class="lineCov">         47 :   for(int i=0;i&lt;N;i++){</span>
+<span class="lineNum">     103 </span><span class="lineCov">         43 :     average_meter xi;</span>
+<span class="lineNum">     104 </span><span class="lineCov">         86 :     for(int j=0;j&lt;overloads+(i&lt;N-rest?0:1);j++){</span>
+<span class="lineNum">     105 </span><span class="lineCov">         43 :       xi.sample(x[ii]-x0);</span>
+<span class="lineNum">     106 </span><span class="lineCov">         86 :       y_av(i).sample(y[ii]+1);</span>
+<span class="lineNum">     107 </span><span class="lineCov">         86 :       y_av(i).sample(y[ii]-1);</span>
+<span class="lineNum">     108 </span><span class="lineCov">         43 :       ii++;</span>
+<span class="lineNum">     109 </span>            :     }
+<span class="lineNum">     110 </span><span class="lineCov">         86 :     xx(i)=xi.readout();</span>
+<span class="lineNum">     111 </span>            :   }
+<span class="lineNum">     112 </span>            :   // Fit y on grid:
+<span class="lineNum">     113 </span><span class="lineCov">          8 :   fitted_function f(xx,y_av);</span>
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span><span class="lineCov">          8 :   if(f.polynomial_order()&lt;=1){</span>
+<span class="lineNum">     116 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     117 </span>            :     WARNING(&quot;linear_drift (1)&quot;);
+<span class="lineNum">     118 </span>            : #endif
+<span class="lineNum">     119 </span>            :     return linear_drift;
+<span class="lineNum">     120 </span>            :   }
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : //   if(f(0)-f(x[preN-1]-x0) &gt; log(10)){
+<span class="lineNum">     123 </span>            : // #ifdef RELAX_DEBUG
+<span class="lineNum">     124 </span>            : //     WARNING(&quot;linear_drift (2)&quot;);
+<span class="lineNum">     125 </span>            : // #endif
+<span class="lineNum">     126 </span>            : //     return linear_drift;
+<span class="lineNum">     127 </span>            : //   }
+<span class="lineNum">     128 </span><span class="lineCov">          8 :   fitted_function df=f.derivative();</span>
+<span class="lineNum">     129 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     130 </span>            :   REPORT(f.polynomial_order());
+<span class="lineNum">     131 </span>            :   REPORT(f[0]);
+<span class="lineNum">     132 </span>            :   REPORT(f[1]);
+<span class="lineNum">     133 </span>            :   REPORT(f[2]);
+<span class="lineNum">     134 </span>            :   REPORT(df[0]);
+<span class="lineNum">     135 </span>            :   REPORT(df[1]);
+<span class="lineNum">     136 </span>            :   REPORT(df[2]);
+<span class="lineNum">     137 </span>            : #endif
+<span class="lineNum">     138 </span>            :   // fit a straight line to the derivative, using an evenly spaced
+<span class="lineNum">     139 </span>            :   // grid:
+<span class="lineNum">     140 </span><span class="lineCov">          4 :   const int n_grid_points=N;</span>
+<span class="lineNum">     141 </span><span class="lineCov">          4 :   const double delta_x=(x[preN-1]-x0)/n_grid_points;</span>
+<span class="lineNum">     142 </span><span class="lineCov">         12 :   sequence&lt;average_meter&gt; logdf_av(n_grid_points);</span>
+<span class="lineNum">     143 </span><span class="lineCov">          4 :   xx.resize(n_grid_points);</span>
+<span class="lineNum">     144 </span><span class="lineCov">          4 :   int df_initial_sign= ( df(0)&gt;0 ? +1 : -1 );</span>
+<span class="lineNum">     145 </span>            : #if 1
+<span class="lineNum">     146 </span>            :   // This usually not happen, as we only look at downward going
+<span class="lineNum">     147 </span>            :   // curves:
+<span class="lineNum">     148 </span><span class="lineCov">          4 :   if(df_initial_sign == +1){</span>
+<span class="lineNum">     149 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     150 </span>            :     WARNING(&quot;complex_shape (1)&quot;);
+<span class="lineNum">     151 </span>            : #endif
+<span class="lineNum">     152 </span>            :     return complex_shape;
+<span class="lineNum">     153 </span>            :   }
+<span class="lineNum">     154 </span>            : #endif
+<span class="lineNum">     155 </span><span class="lineCov">         47 :   for(int i=n_grid_points;i--&gt;0;){</span>
+<span class="lineNum">     156 </span>            :     // generate evenly space grid:
+<span class="lineNum">     157 </span><span class="lineCov">         86 :     xx(i)=i*delta_x;</span>
+<span class="lineNum">     158 </span><span class="lineCov">         86 :     const double dfx=df_initial_sign*df(xx(i));</span>
+<span class="lineNum">     159 </span><span class="lineCov">         43 :     if(dfx&lt;0) {</span>
+<span class="lineNum">     160 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     161 </span>            :       REPORT(dfx);
+<span class="lineNum">     162 </span>            : #endif
+<span class="lineNum">     163 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     164 </span>            :     WARNING(&quot;complex_shape (2)&quot;);
+<span class="lineNum">     165 </span>            : #endif
+<span class="lineNum">     166 </span>            :       return complex_shape;
+<span class="lineNum">     167 </span>            :     }
+<span class="lineNum">     168 </span>            :     // Estimated error in estimation of derivative df/dx (no idea
+<span class="lineNum">     169 </span>            :     // where this formula came from). The fabs around the var_at
+<span class="lineNum">     170 </span>            :     // expression is needed because var_at is sometimes numerically
+<span class="lineNum">     171 </span>            :     // negative.
+<span class="lineNum">     172 </span><span class="lineCov">        129 :     double Delta_dfx=sqrt(fabs(df.var_at(xx(i))/df.var_at(xx(0))))*</span>
+<span class="lineNum">     173 </span><span class="lineCov">         86 :       (1+fabs(df(xx(0)))+fabs(df(xx(n_grid_points-1))));</span>
+<span class="lineNum">     174 </span>            :     //REPORT(Delta_dfx);
+<span class="lineNum">     175 </span><span class="lineCov">         43 :     if(Delta_dfx&lt;=0) Delta_dfx=1;</span>
+<span class="lineNum">     176 </span>            :     // Generate log(-df/dx) time series with corresponding sampling
+<span class="lineNum">     177 </span>            :     // errors:
+<span class="lineNum">     178 </span><span class="lineCov">         86 :     logdf_av(i).sample(log(dfx)+Delta_dfx/dfx);</span>
+<span class="lineNum">     179 </span><span class="lineCov">         86 :     logdf_av(i).sample(log(dfx)-Delta_dfx/dfx);</span>
+<span class="lineNum">     180 </span>            :   }
+<span class="lineNum">     181 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     182 </span>            :   REPORT(logdf_av);
+<span class="lineNum">     183 </span>            : #endif
+<span class="lineNum">     184 </span>            :   // Fit a line to log(-df/dx):
+<span class="lineNum">     185 </span><span class="lineCov">          8 :   fitted_function linear_fit(xx,logdf_av,2);</span>
+<span class="lineNum">     186 </span>            :   
+<span class="lineNum">     187 </span>            :   // Test if data is compatible with an exponential relaxation:
+<span class="lineNum">     188 </span>            :   const double z=2;
+<span class="lineNum">     189 </span><span class="lineCov">          4 :   for(int i=n_grid_points;i--&gt;0;){</span>
+<span class="lineNum">     190 </span><span class="lineCov">         12 :     const double residual=(exp(linear_fit(xx(i)))-df_initial_sign*df(xx(i)));</span>
+<span class="lineNum">     191 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     192 </span>            :     REPORT(residual/sqrt(df.var_at(xx(i))));
+<span class="lineNum">     193 </span>            : #endif
+<span class="lineNum">     194 </span>            :     // does this look like an exponential decay?
+<span class="lineNum">     195 </span><span class="lineCov">          8 :     if(fabs(residual/sqrt(df.var_at(xx(i)))) &gt; z){</span>
+<span class="lineNum">     196 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     197 </span>            :     WARNING(&quot;complex_shape (3)&quot;);
+<span class="lineNum">     198 </span>            : #endif
+<span class="lineNum">     199 </span>            :       return complex_shape;
+<span class="lineNum">     200 </span>            :     }
+<span class="lineNum">     201 </span>            :   }
+<span class="lineNum">     202 </span>            :   
+<span class="lineNum">     203 </span>            :   // looks like an exponential_relaxation, get the fixed point:
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :   const double decay_rate=-linear_fit[1];</span>
+<span class="lineNum">     205 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     206 </span>            :   REPORT(decay_rate);
+<span class="lineNum">     207 </span>            : #endif
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :   if(decay_rate&lt;-0.1*fabs(linear_fit[0]/(xx(n_grid_points-1)-xx(0)))){</span>
+<span class="lineNum">     209 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     210 </span>            :     WARNING(&quot;complex_shape (4)&quot;);
+<span class="lineNum">     211 </span>            : #endif
+<span class="lineNum">     212 </span>            :     return complex_shape;
+<span class="lineNum">     213 </span>            :   }
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :   const double pre_factor=df_initial_sign*exp(linear_fit[0])/decay_rate;</span>
+<span class="lineNum">     215 </span>            :   
+<span class="lineNum">     216 </span>            :   // make an estimate of the fixed point for each point of the time
+<span class="lineNum">     217 </span>            :   // series:
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :   average_meter FP;</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :   for(int i=n_grid_points;i--&gt;0;){</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :     FP.sample(f(xx(i))+pre_factor*exp(-decay_rate*xx(i)));</span>
+<span class="lineNum">     221 </span>            :   }
+<span class="lineNum">     222 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     223 </span>            :   REPORT(xx);
+<span class="lineNum">     224 </span>            :   REPORT(y_av);
+<span class="lineNum">     225 </span>            :   REPORT(FP);
+<span class="lineNum">     226 </span>            : #endif
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :   fixed_point=FP.readout();</span>
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     230 </span>            :     WARNING(&quot;exponential_relaxation&quot;);
+<span class="lineNum">     231 </span>            : #endif
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :   return exponential_relaxation;</span>
+<span class="lineNum">     233 </span>            : }
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            : // for debugging:
+<span class="lineNum">     237 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     238 </span>            : #include &quot;NewWeb.h&quot;
+<span class="lineNum">     239 </span>            : static sequence&lt; int &gt; candidates;
+<span class="lineNum">     240 </span>            : static NewWeb * web_for_debugging;
+<span class="lineNum">     241 </span>            : #endif
+<span class="lineNum">     242 </span>            : 
+<a name="243"><span class="lineNum">     243 </span>            : // A class that can be wrapped around an ODE_state of log abundances</a>
+<span class="lineNum">     244 </span>            : // to watch out for extinctions:
+<span class="lineNum">     245 </span><span class="lineCov">        483 : class extinguisher_t {</span>
+<span class="lineNum">     246 </span>            :   ODE_state &amp; _state;
+<span class="lineNum">     247 </span>            :   relaxing_dynamical_object &amp; _dynamical_object;
+<span class="lineNum">     248 </span>            :   typedef enum {max,min,n_return_cases} _return_case;
+<span class="lineNum">     249 </span>            :   static const _return_case _reference_return_case;
+<span class="lineNum">     250 </span>            :   std::simple_vector&lt; sequence&lt;double&gt; &gt; _t;
+<span class="lineNum">     251 </span>            :   std::simple_vector&lt; sequence&lt;ODE_vector&gt; &gt; _return_state;
+<span class="lineNum">     252 </span>            :   double _start_time;
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :   static const int _states_kept=3;
+<span class="lineNum">     255 </span>            :   long int _states_read;
+<span class="lineNum">     256 </span>            :   double _sum_history[_states_kept];
+<span class="lineNum">     257 </span>            :   double _t_history[_states_kept];
+<span class="lineNum">     258 </span>            :   ODE_vector _state_history[_states_kept];
+<span class="lineNum">     259 </span><span class="lineCov">      61510 :   int current(){return (_states_read)%_states_kept;}</span>
+<span class="lineNum">     260 </span><span class="lineCov">      20718 :   int last(){return (_states_read+(_states_kept-1))%_states_kept;}</span>
+<span class="lineNum">     261 </span><span class="lineCov">      20396 :   int second_last(){return (_states_read+(_states_kept-2))%_states_kept;}</span>
+<span class="lineNum">     262 </span>            :   double _max_sum;
+<span class="lineNum">     263 </span>            :   double _min_sum;
+<span class="lineNum">     264 </span>            :   bool _last_member_dummy;
+<span class="lineNum">     265 </span>            :   double time_since_start() const {
+<span class="lineNum">     266 </span><span class="lineCov">      21088 :     return _state.time_since_start();</span>
+<span class="lineNum">     267 </span>            :   }
+<span class="lineNum">     268 </span>            :     
+<span class="lineNum">     269 </span>            :   // This member is were the decision on continuing or not made:
+<span class="lineNum">     270 </span><span class="lineCov">        375 :   bool _internal_recommendation(const sequence&lt;double&gt;&amp; t,</span>
+<span class="lineNum">     271 </span>            :                                 const sequence&lt;ODE_vector&gt;&amp; _return_state,
+<span class="lineNum">     272 </span>            :                                 sequence&lt;double&gt; &amp; min_point) const {
+<span class="lineNum">     273 </span><span class="lineCov">        750 :     const int n=t.size();</span>
+<span class="lineNum">     274 </span><span class="lineCov">        750 :     const double t_max=t[n-1];</span>
+<span class="lineNum">     275 </span>            :     // first, split off the third quarter and fourth quarter of the
+<span class="lineNum">     276 </span>            :     // time period covered by _return_state(s):
+<span class="lineNum">     277 </span><span class="lineCov">        375 :     int upper_half_start=0,upper_quarter_start=0;</span>
+<span class="lineNum">     278 </span><span class="lineCov">        375 :     for(int i=n;i--&gt;0;){</span>
+<span class="lineNum">     279 </span><span class="lineCov">       2900 :       if(t[i]&lt;t_max*(3.0/4.0)){</span>
+<span class="lineNum">     280 </span><span class="lineCov">        646 :         if(!upper_quarter_start){</span>
+<span class="lineNum">     281 </span><span class="lineCov">        285 :           upper_quarter_start=i+1;</span>
+<span class="lineNum">     282 </span>            :         }
+<span class="lineNum">     283 </span><span class="lineCov">       1292 :         if(t[i]&lt;t_max/2){</span>
+<span class="lineNum">     284 </span>            :           upper_half_start=i+1;
+<span class="lineNum">     285 </span>            :           break;
+<span class="lineNum">     286 </span>            :         }
+<span class="lineNum">     287 </span>            :       }
+<span class="lineNum">     288 </span>            :     }
+<span class="lineNum">     289 </span>            :     
+<span class="lineNum">     290 </span>            :     // Test if samples are evenly distributed in second half, which
+<span class="lineNum">     291 </span>            :     // would indicate that we reached a steady state:
+<span class="lineNum">     292 </span><span class="lineCov">        375 :     const int samples_third_quarter=upper_quarter_start-upper_half_start;</span>
+<span class="lineNum">     293 </span><span class="lineCov">        375 :     const int samples_fourth_quarter=n-upper_quarter_start;</span>
+<span class="lineNum">     294 </span>            :     const int N=
+<span class="lineNum">     295 </span>            :       samples_third_quarter+
+<span class="lineNum">     296 </span><span class="lineCov">        375 :       samples_fourth_quarter;</span>
+<span class="lineNum">     297 </span>            :     const int Delta=
+<span class="lineNum">     298 </span>            :       samples_third_quarter-
+<span class="lineNum">     299 </span><span class="lineCov">        375 :       samples_fourth_quarter;</span>
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            :     // According to Przyborowski and Wilenski (C-test: Homogeneity of
+<span class="lineNum">     302 </span>            :     // results in testing samples from Poisson series, Biometrica 31,
+<span class="lineNum">     303 </span>            :     // 313-323, 1940) samples_third_quarter is binomially distributed
+<span class="lineNum">     304 </span>            :     // within the N samples;
+<span class="lineNum">     305 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     306 </span>            :     REPORT(N);
+<span class="lineNum">     307 </span>            :     REPORT(Delta);
+<span class="lineNum">     308 </span>            : #endif
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span><span class="lineCov">        530 :     if(N&lt;=2 ||</span>
+<span class="lineNum">     311 </span><span class="lineCov">        228 :        N &lt; min_samples || Delta*Delta*evenness_pickiness &gt; N){</span>
+<span class="lineNum">     312 </span>            :       // Sampling did not reach a steady state.  Let's wait.
+<span class="lineNum">     313 </span>            :       return false;
+<span class="lineNum">     314 </span>            :     }
+<span class="lineNum">     315 </span>            :     
+<span class="lineNum">     316 </span>            :     // Sampling rate has reached steady state.  We are ready to make
+<span class="lineNum">     317 </span>            :     // recommendations:
+<span class="lineNum">     318 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     319 </span>            :     REPORT(t_max);
+<span class="lineNum">     320 </span>            : #endif
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :     // Prepare computing confidence intervals:
+<span class="lineNum">     323 </span><span class="lineCov">         50 :     double student_t=gsl_cdf_tdist_Pinv(extinction_test_p,N-2);</span>
+<span class="lineNum">     324 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     325 </span>            :     REPORT(student_t);
+<span class="lineNum">     326 </span>            : #endif
+<span class="lineNum">     327 </span><span class="lineCov">         50 :     double student_t2=student_t*student_t;</span>
+<span class="lineNum">     328 </span>            :     // A negative correlation that we would recognize with confidence:
+<span class="lineNum">     329 </span><span class="lineCov">         50 :     double target_r=-sqrt(student_t2/(N-2+student_t2));</span>
+<span class="lineNum">     330 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     331 </span>            :     REPORT(target_r);
+<span class="lineNum">     332 </span>            : #endif
+<span class="lineNum">     333 </span>            :       
+<span class="lineNum">     334 </span>            :     // Prepare computing confidence intervals for waiting.  This
+<span class="lineNum">     335 </span>            :     // includes a Bonferroni correction, otherwise we would wait
+<span class="lineNum">     336 </span>            :     // forever with large numbers of variables.
+<span class="lineNum">     337 </span><span class="lineCov">         50 :     double corrected_student_t=gsl_cdf_tdist_Pinv(extinction_test_p/n,N-2);</span>
+<span class="lineNum">     338 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     339 </span>            :     REPORT(corrected_student_t);
+<span class="lineNum">     340 </span>            : #endif
+<span class="lineNum">     341 </span><span class="lineCov">         50 :     double corrected_student_t2=corrected_student_t*corrected_student_t;</span>
+<span class="lineNum">     342 </span>            :     // A negative correlation that we would recognize with confidence:
+<span class="lineNum">     343 </span><span class="lineCov">         50 :     double corrected_target_r=-sqrt(corrected_student_t2/(N-2+corrected_student_t2));</span>
+<span class="lineNum">     344 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     345 </span>            :     REPORT(corrected_target_r);
+<span class="lineNum">     346 </span>            : #endif
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span><span class="lineCov">         50 :     double z_error=gsl_cdf_ugaussian_Pinv(pow(0.5,1.0/n))/sqrt(N-3);</span>
+<span class="lineNum">     349 </span>            :     double corrected_waiting_r=
+<span class="lineNum">     350 </span><span class="lineCov">         50 :       tanh(atanh(waiting_r)+z_error);</span>
+<span class="lineNum">     351 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     352 </span>            :     REPORT(z_error);
+<span class="lineNum">     353 </span>            :     REPORT(tanh(waiting_r));
+<span class="lineNum">     354 </span>            :     REPORT(corrected_waiting_r);
+<span class="lineNum">     355 </span>            : #endif
+<span class="lineNum">     356 </span>            :       
+<span class="lineNum">     357 </span><span class="lineCov">        100 :     std::simple_vector&lt;double&gt; y(N);</span>
+<span class="lineNum">     358 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     359 </span>            :     candidates.resize(0);
+<span class="lineNum">     360 </span>            : #endif
+<span class="lineNum">     361 </span>            :     // Now, look for each variable separately:
+<span class="lineNum">     362 </span><span class="lineCov">         50 :     for(int k=_return_state[0].size();k--&gt;0;){</span>
+<span class="lineNum">     363 </span><span class="lineCov">       6447 :       if(_dynamical_object.is_active(k)){</span>
+<span class="lineNum">     364 </span>            :         // Sample out second half of time series:
+<span class="lineNum">     365 </span><span class="lineCov">     127023 :         for(int i=upper_half_start;i&lt;n;i++){</span>
+<span class="lineNum">     366 </span><span class="lineCov">     241152 :           y[i-upper_half_start]=_return_state[i][k];</span>
+<span class="lineNum">     367 </span>            :         }
+<span class="lineNum">     368 </span>            :         double amount_drifted;
+<span class="lineNum">     369 </span>            :         double r=
+<span class="lineNum">     370 </span><span class="lineCov">      12894 :           correlation_coefficient(&amp;t(upper_half_start),&amp;y(0),N,amount_drifted);</span>
+<span class="lineNum">     371 </span>            :         double z=
+<span class="lineNum">     372 </span>            :           // relative accuracy of slope:
+<span class="lineNum">     373 </span><span class="lineCov">      12894 :           drift_accuracy(&amp;t(upper_half_start),&amp;y(0),N);</span>
+<span class="lineNum">     374 </span>            :         if(r&lt;target_r||z&lt;student_t){
+<span class="lineNum">     375 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     376 </span>            :           candidates[candidates.size()]=k;
+<span class="lineNum">     377 </span>            :           REPORT(k);
+<span class="lineNum">     378 </span>            :           REPORT(web_for_debugging-&gt;assigned_column(k));
+<span class="lineNum">     379 </span>            :           REPORT(z);
+<span class="lineNum">     380 </span>            :           REPORT(r);
+<span class="lineNum">     381 </span>            : #endif
+<span class="lineNum">     382 </span>            :           //      for(int i=upper_half_start;i&lt;n;i++)
+<span class="lineNum">     383 </span>            :           //        std::cout &lt;&lt; t[i]+ &lt;&lt; &quot; &quot; &lt;&lt; _return_state[i][k]/log(10) &lt;&lt; std::endl;
+<span class="lineNum">     384 </span>            :         }
+<span class="lineNum">     385 </span>            : //      if(amount_drifted &gt;= efficacious_amount_drifted_up){
+<span class="lineNum">     386 </span>            : //        // This series is clearly going up.  Let's wait until it
+<span class="lineNum">     387 </span>            : //        // reaches steady state.
+<span class="lineNum">     388 </span>            : // #ifdef RELAX_DEBUG
+<span class="lineNum">     389 </span>            : //        WARNING(k &lt;&lt; &quot;'s going up&quot;);
+<span class="lineNum">     390 </span>            : //        REPORT(web_for_debugging-&gt;assigned_column(k));
+<span class="lineNum">     391 </span>            : //        REPORT(amount_drifted);
+<span class="lineNum">     392 </span>            : // #endif
+<span class="lineNum">     393 </span>            : //        return false;
+<span class="lineNum">     394 </span>            : //      }
+<span class="lineNum">     395 </span><span class="lineCov">       6447 :         if(amount_drifted &lt; -fixed_point_wobble_tolerance and</span>
+<span class="lineNum">     396 </span>            :            r&lt;corrected_target_r){
+<span class="lineNum">     397 </span>            :           // This time series appears to be decaying.  Have a close
+<span class="lineNum">     398 </span>            :           // look to recognize the shape of its curve:
+<span class="lineNum">     399 </span>            :           double fixed_point;
+<span class="lineNum">     400 </span>            :           curve_shape_t s;
+<span class="lineNum">     401 </span>            : //        double rr=r;
+<span class="lineNum">     402 </span>            : //        REPORT(rr);
+<span class="lineNum">     403 </span>            :           try{
+<span class="lineNum">     404 </span><span class="lineCov">          8 :             s=shape(&amp;t(upper_half_start),&amp;y(0),N,fixed_point);</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :           }catch(polyfit_error e){</span>
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :             WARNING(&quot;polyfit_error &quot; &lt;&lt; e.message);</span>
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :             s=complex_shape;</span>
+<span class="lineNum">     408 </span>            :           }
+<span class="lineNum">     409 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     410 </span>            :           REPORT(k);
+<span class="lineNum">     411 </span>            :           REPORT(web_for_debugging-&gt;assigned_column(k));
+<span class="lineNum">     412 </span>            :           REPORT(z);
+<span class="lineNum">     413 </span>            :           REPORT(r);
+<span class="lineNum">     414 </span>            :           REPORT(s);
+<span class="lineNum">     415 </span>            :           REPORT(amount_drifted);
+<span class="lineNum">     416 </span>            : #endif
+<span class="lineNum">     417 </span><span class="lineCov">          4 :           switch(s){</span>
+<span class="lineNum">     418 </span>            :           case linear_drift:
+<span class="lineNum">     419 </span>            :             // This is a candidate for deletion.
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 :             min_point[k]=-INFINITY;</span>
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     422 </span>            :           case exponential_relaxation:
+<span class="lineNum">     423 </span>            :             // This may be another candidate for deletion (depends on
+<span class="lineNum">     424 </span>            :             // fixed point).
+<span class="lineNum">     425 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     426 </span>            :             REPORT(log(web_for_debugging-&gt;s(k).bodymass()));
+<span class="lineNum">     427 </span>            : #endif
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :             min_point[k]=fixed_point;</span>
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     430 </span>            :           case complex_shape:
+<span class="lineNum">     431 </span>            :             // Something strange is happening.  Let's wait.
+<span class="lineNum">     432 </span><span class="lineCov">          4 :             return false;</span>
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :           }</span>
+<span class="lineNum">     434 </span>            :         }else{
+<span class="lineNum">     435 </span>            :           // We could not decide to delete this one.  Does it require
+<span class="lineNum">     436 </span>            :           // further observation?
+<span class="lineNum">     437 </span><span class="lineCov">       6485 :           if(fabs(amount_drifted) &gt; fixed_point_wobble_tolerance and</span>
+<span class="lineNum">     438 </span><span class="lineCov">         42 :              fabs(r) &gt; corrected_waiting_r){</span>
+<span class="lineNum">     439 </span>            :             // Result is not clear, let's wait a bit more.
+<span class="lineNum">     440 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     441 </span>            :             WARNING(k &lt;&lt; &quot;'s not clear&quot;);
+<span class="lineNum">     442 </span>            :             REPORT(web_for_debugging-&gt;assigned_column(k));
+<span class="lineNum">     443 </span>            :             REPORT(z);
+<span class="lineNum">     444 </span>            :             REPORT(r);
+<span class="lineNum">     445 </span>            :             REPORT(amount_drifted);
+<span class="lineNum">     446 </span>            : #endif
+<span class="lineNum">     447 </span>            :             return false;
+<span class="lineNum">     448 </span>            :           }
+<span class="lineNum">     449 </span>            :           // This variable will probably stay where it is right now.
+<span class="lineNum">     450 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     451 </span>            :           REPORT(k);
+<span class="lineNum">     452 </span>            :           REPORT(web_for_debugging-&gt;assigned_column(k));
+<span class="lineNum">     453 </span>            :           REPORT(z);
+<span class="lineNum">     454 </span>            :           REPORT(r);
+<span class="lineNum">     455 </span>            : #endif
+<span class="lineNum">     456 </span><span class="lineCov">      12804 :           min_point[k]=y[N-1];</span>
+<span class="lineNum">     457 </span>            :         }
+<span class="lineNum">     458 </span>            :       }
+<span class="lineNum">     459 </span>            :     }
+<span class="lineNum">     460 </span>            :     // There was not reason not to make a recommendation, so we make
+<span class="lineNum">     461 </span>            :     // one.
+<span class="lineNum">     462 </span>            :     return true;
+<span class="lineNum">     463 </span>            :   }
+<span class="lineNum">     464 </span>            : 
+<span class="lineNum">     465 </span><span class="lineCov">        370 :   bool _at_fixed_point(double t_max){</span>
+<span class="lineNum">     466 </span><span class="lineCov">        740 :     if(_return_state[_reference_return_case].size()&lt;3){</span>
+<span class="lineNum">     467 </span>            :       return false;
+<span class="lineNum">     468 </span>            :     }
+<span class="lineNum">     469 </span><span class="lineCov">        247 :     double t_min=t_max*2/3;</span>
+<span class="lineNum">     470 </span><span class="lineCov">        247 :     for(int k=_state.size();k--&gt;0;){</span>
+<span class="lineNum">     471 </span><span class="lineCov">      19399 :       if(_dynamical_object.is_active(k)){</span>
+<span class="lineNum">     472 </span><span class="lineCov">      77596 :         double mi=_return_state[_reference_return_case][_return_state[_reference_return_case].size()-1][k];</span>
+<span class="lineNum">     473 </span><span class="lineCov">      19399 :         double ma=mi;</span>
+<span class="lineNum">     474 </span><span class="lineCov">      57985 :         for(_return_case c=_return_case(0);</span>
+<span class="lineNum">     475 </span><span class="lineCov">      57985 :             c&lt;n_return_cases;</span>
+<span class="lineNum">     476 </span><span class="lineCov">      38586 :             c=_return_case(c+1)){</span>
+<span class="lineNum">     477 </span><span class="lineCov">     116076 :           const int n_max=_return_state[c].size();</span>
+<span class="lineNum">     478 </span><span class="lineCov">      38692 :           int n=n_max-1;</span>
+<span class="lineNum">     479 </span><span class="lineCov">     609230 :           for(; n&gt;=0 and _t[c][n]&gt;t_min; n--){</span>
+<span class="lineNum">     480 </span><span class="lineCov">     539898 :             double val=_return_state[c][n][k];</span>
+<span class="lineNum">     481 </span><span class="lineCov">     179966 :             mi=std::min(mi,val);</span>
+<span class="lineNum">     482 </span><span class="lineCov">     179966 :             ma=std::max(ma,val);</span>
+<span class="lineNum">     483 </span>            :           }
+<span class="lineNum">     484 </span><span class="lineCov">      38692 :           if(n_max-n&lt;=2){</span>
+<span class="lineNum">     485 </span><span class="lineCov">        205 :             return false;</span>
+<span class="lineNum">     486 </span>            :           }
+<span class="lineNum">     487 </span>            :         }
+<span class="lineNum">     488 </span><span class="lineCov">      19293 :         if(fabs(mi-ma)&gt; fixed_point_wobble_tolerance ){</span>
+<span class="lineNum">     489 </span>            :           return false;
+<span class="lineNum">     490 </span>            :         }
+<span class="lineNum">     491 </span>            :       }
+<span class="lineNum">     492 </span>            :     }
+<span class="lineNum">     493 </span><span class="lineCov">        210 :     WARNING(&quot;FIXED POINT&quot;);</span>
+<span class="lineNum">     494 </span><span class="lineCov">         42 :     return true;</span>
+<span class="lineNum">     495 </span>            :   }
+<span class="lineNum">     496 </span>            : 
+<a name="497"><span class="lineNum">     497 </span>            : </a>
+<span class="lineNum">     498 </span>            : public:
+<span class="lineNum">     499 </span><span class="lineCov">        161 :   extinguisher_t (ODE_state &amp; state, </span>
+<span class="lineNum">     500 </span>            :                   relaxing_dynamical_object * obj)
+<span class="lineNum">     501 </span>            :  :_state(state),
+<span class="lineNum">     502 </span>            :   _dynamical_object(*obj),
+<span class="lineNum">     503 </span>            :   _t(n_return_cases),
+<span class="lineNum">     504 </span>            :   _return_state(n_return_cases,sequence&lt;ODE_vector&gt;(0,ODE_vector(state))),
+<span class="lineNum">     505 </span><span class="lineCov">        161 :   _start_time(state.start_time()),</span>
+<span class="lineNum">     506 </span>            :   _max_sum(0),_min_sum(1),
+<span class="lineNum">     507 </span>            :   _states_read(0),
+<span class="lineNum">     508 </span><span class="lineCov">        805 :   _last_member_dummy(false){</span>
+<span class="lineNum">     509 </span>            :     
+<span class="lineNum">     510 </span><span class="lineCov">        161 :   }</span>
+<span class="lineNum">     511 </span>            : 
+<span class="lineNum">     512 </span>            :   
+<span class="lineNum">     513 </span><span class="lineCov">      20718 :   bool recommendation(sequence&lt;double&gt; &amp; min_point){</span>
+<span class="lineNum">     514 </span>            :     // preprocess and save current state:
+<span class="lineNum">     515 </span><span class="lineCov">      20718 :     _states_read++;</span>
+<span class="lineNum">     516 </span><span class="lineCov">      41436 :     const int current_state=current();</span>
+<span class="lineNum">     517 </span><span class="lineCov">      41436 :     const int last_state=last();</span>
+<span class="lineNum">     518 </span>            :     // Compute the sum of all active variables:
+<span class="lineNum">     519 </span><span class="lineCov">      20718 :     double sum=_dynamical_object.active_sum(_state);</span>
+<span class="lineNum">     520 </span>            : 
+<span class="lineNum">     521 </span>            :     // Record current sum:
+<span class="lineNum">     522 </span><span class="lineCov">      20718 :     _sum_history[current_state]=sum;</span>
+<span class="lineNum">     523 </span><span class="lineCov">      41436 :     _t_history[current_state]=time_since_start();</span>
+<span class="lineNum">     524 </span><span class="lineCov">      20718 :     _state_history[current_state]=_state;</span>
+<span class="lineNum">     525 </span><span class="lineCov">      20718 :     if(_states_read&lt;3){</span>
+<span class="lineNum">     526 </span>            :       // initialize max and min:
+<span class="lineNum">     527 </span><span class="lineCov">        322 :       if(_max_sum&lt;_min_sum){</span>
+<span class="lineNum">     528 </span><span class="lineCov">        161 :         _max_sum=_min_sum=sum;</span>
+<span class="lineNum">     529 </span>            :       }
+<span class="lineNum">     530 </span>            :       return false;
+<span class="lineNum">     531 </span>            :     }
+<span class="lineNum">     532 </span>            :     
+<span class="lineNum">     533 </span>            :     // Look first for local maxima, then for local minima (which are
+<span class="lineNum">     534 </span>            :     // not used, after all)...
+<span class="lineNum">     535 </span><span class="lineCov">     101886 :     for(_return_case c=_return_case(0);c&lt;n_return_cases;c=_return_case(c+1)){</span>
+<span class="lineNum">     536 </span><span class="lineCov">      40792 :       bool catch_it=false;</span>
+<span class="lineNum">     537 </span><span class="lineCov">      40792 :       switch(c){</span>
+<span class="lineNum">     538 </span>            :       case max:
+<span class="lineNum">     539 </span><span class="lineCov">      54387 :         if((_sum_history[last_state] &gt; _sum_history[current()]) &amp;&amp;</span>
+<span class="lineNum">     540 </span><span class="lineCov">      27190 :            (_sum_history[last_state] &gt; _sum_history[second_last()]) ){</span>
+<span class="lineNum">     541 </span>            :           // Look for a new &quot;quite large&quot; maximum, but be forgiving
+<span class="lineNum">     542 </span>            :           // over time.
+<span class="lineNum">     543 </span><span class="lineCov">        872 :           if(_sum_history[last_state] &gt;</span>
+<span class="lineNum">     544 </span><span class="lineCov">        872 :              (_max_sum-=extrema_relaxer)-extrema_tolerance){</span>
+<span class="lineNum">     545 </span><span class="lineCov">        434 :             _max_sum=_sum_history[last_state];</span>
+<span class="lineNum">     546 </span><span class="lineCov">        434 :             catch_it=true;</span>
+<span class="lineNum">     547 </span>            :           }
+<span class="lineNum">     548 </span>            :         }
+<span class="lineNum">     549 </span>            :         break;
+<span class="lineNum">     550 </span>            :       case min:
+<span class="lineNum">     551 </span><span class="lineCov">      47593 :         if(_sum_history[last_state] &lt; _sum_history[current()] &amp;&amp;</span>
+<span class="lineNum">     552 </span><span class="lineCov">      13602 :            _sum_history[last_state] &lt; _sum_history[second_last()] ){</span>
+<span class="lineNum">     553 </span><span class="lineCov">        870 :           if(_sum_history[last_state] &lt; </span>
+<span class="lineNum">     554 </span><span class="lineCov">        870 :              (_min_sum+=extrema_relaxer)+extrema_tolerance){</span>
+<span class="lineNum">     555 </span><span class="lineCov">        375 :             _min_sum=_sum_history[last_state];</span>
+<span class="lineNum">     556 </span><span class="lineCov">        375 :             catch_it=true;</span>
+<span class="lineNum">     557 </span>            :           }
+<span class="lineNum">     558 </span>            :         }
+<span class="lineNum">     559 </span>            :       }
+<span class="lineNum">     560 </span><span class="lineCov">      40792 :       if(catch_it){</span>
+<span class="lineNum">     561 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     562 </span>            :         REPORT(c);
+<span class="lineNum">     563 </span>            :         REPORT(_min_sum);
+<span class="lineNum">     564 </span>            :         REPORT(_max_sum);
+<span class="lineNum">     565 </span>            : #endif
+<span class="lineNum">     566 </span>            :         // We found a new extremum, 
+<span class="lineNum">     567 </span><span class="lineCov">       2427 :         int n=_t[c].size();</span>
+<span class="lineNum">     568 </span><span class="lineCov">        809 :         _t[c][n]=_t_history[last_state];</span>
+<span class="lineNum">     569 </span><span class="lineCov">       1618 :         _return_state[c][n]=_state_history[last_state];</span>
+<span class="lineNum">     570 </span>            :         // Decide whether to compute a recommendation.  The criterion
+<span class="lineNum">     571 </span>            :         // is to do it only when all but the first few digits of n are
+<span class="lineNum">     572 </span>            :         // zero.
+<span class="lineNum">     573 </span><span class="lineCov">        809 :         while(n&gt;333){</span>
+<span class="lineNum">     574 </span><span class="lineNoCov">          0 :           if(n%10!=0)</span>
+<span class="lineNum">     575 </span>            :             return false;
+<span class="lineNum">     576 </span><span class="lineNoCov">          0 :           n/=10;</span>
+<span class="lineNum">     577 </span>            :         }
+<span class="lineNum">     578 </span><span class="lineCov">        809 :         if(c==_reference_return_case){</span>
+<span class="lineNum">     579 </span>            :           // Base on the time-series of extrema, compute whether we
+<span class="lineNum">     580 </span>            :           // should stop here, and which species to delete then:
+<span class="lineNum">     581 </span><span class="lineCov">       1125 :           if(_internal_recommendation(_t[c],_return_state[c],min_point)){</span>
+<span class="lineNum">     582 </span>            :             return true;
+<span class="lineNum">     583 </span>            :           }
+<span class="lineNum">     584 </span>            :           //// This is supposed to stop relaxing if a fixed point is
+<span class="lineNum">     585 </span>            :           //// reached.  However, I could not see any significant speed
+<span class="lineNum">     586 </span>            :           //// up.
+<span class="lineNum">     587 </span>            : #if 1
+<span class="lineNum">     588 </span><span class="lineCov">        740 :           if(_at_fixed_point(time_since_start())){</span>
+<span class="lineNum">     589 </span><span class="lineCov">       8191 :             for(int i=_state.size();i--&gt;0;){</span>
+<span class="lineNum">     590 </span><span class="lineCov">      16298 :               min_point[i]=_state[i];</span>
+<span class="lineNum">     591 </span>            :             }
+<span class="lineNum">     592 </span>            :             return true;
+<span class="lineNum">     593 </span>            :           }
+<span class="lineNum">     594 </span>            : #endif
+<span class="lineNum">     595 </span>            :         }
+<span class="lineNum">     596 </span>            :       }
+<span class="lineNum">     597 </span>            :     }
+<span class="lineNum">     598 </span>            :     return false;
+<span class="lineNum">     599 </span>            :   }
+<span class="lineNum">     600 </span>            : };
+<span class="lineNum">     601 </span>            : 
+<span class="lineNum">     602 </span>            : const extinguisher_t::_return_case extinguisher_t::_reference_return_case=
+<span class="lineNum">     603 </span>            :   extinguisher_t::min;
+<a name="604"><span class="lineNum">     604 </span>            : </a>
+<span class="lineNum">     605 </span>            :   
+<a name="606"><span class="lineNum">     606 </span><span class="lineCov">         90 : relaxing_dynamical_object::~relaxing_dynamical_object(){};</span></a>
+<span class="lineNum">     607 </span>            : 
+<span class="lineNum">     608 </span><span class="lineCov">      25846 : bool relaxing_dynamical_object::is_active(int i){</span>
+<span class="lineNum">     609 </span><span class="lineCov">      25846 :   return true;</span>
+<a name="610"><span class="lineNum">     610 </span>            : }</a>
+<span class="lineNum">     611 </span>            : 
+<span class="lineNum">     612 </span><span class="lineCov">      20718 : double relaxing_dynamical_object::active_sum(ODE_vector &amp; s){</span>
+<span class="lineNum">     613 </span><span class="lineCov">      20718 :   double sum=0;</span>
+<span class="lineNum">     614 </span><span class="lineCov">    4110277 :   for(int i=s.size();i--&gt;0;){</span>
+<span class="lineNum">     615 </span><span class="lineCov">    8179118 :     sum+=s[i];</span>
+<span class="lineNum">     616 </span>            :   }
+<span class="lineNum">     617 </span><span class="lineCov">      20718 :   return sum;</span>
+<span class="lineNum">     618 </span>            : }
+<span class="lineNum">     619 </span>            : 
+<a name="620"><span class="lineNum">     620 </span>            : static bool integrator_trouble_last_step=false; //for integrator trouble</a>
+<span class="lineNum">     621 </span>            : 
+<span class="lineNum">     622 </span><span class="lineCov">         90 : double relaxing_dynamical_object::relax(double relaxation_time,</span>
+<span class="lineNum">     623 </span>            :                                         const species_set_t &amp; newly_inserted,
+<span class="lineNum">     624 </span>            :                                         const bool do_auto_extinguish){
+<span class="lineNum">     625 </span><span class="lineCov">        180 :   species_set_t deleted;</span>
+<span class="lineNum">     626 </span>            :   return
+<span class="lineNum">     627 </span><span class="lineCov">        180 :     relax(relaxation_time,newly_inserted,deleted,do_auto_extinguish);</span>
+<span class="lineNum">     628 </span>            : }
+<span class="lineNum">     629 </span>            :   
+<span class="lineNum">     630 </span>            : // Iterate ODE while watching for recommendations by extinguisher_t to
+<span class="lineNum">     631 </span>            : // stop and extinguish rare species.  The rest is book keeping.
+<span class="lineNum">     632 </span><span class="lineCov">         90 : double relaxing_dynamical_object::relax(double relaxation_time,</span>
+<span class="lineNum">     633 </span>            :                                         const species_set_t &amp; newly_inserted,
+<span class="lineNum">     634 </span>            :                                         species_set_t &amp; deleted,
+<span class="lineNum">     635 </span>            :                                         const bool do_auto_extinguish){
+<span class="lineNum">     636 </span>            :   
+<span class="lineNum">     637 </span><span class="lineCov">        360 :   REPORT(relaxation_time);</span>
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span><span class="lineCov">         90 :   bool recording_dynamics=record_relaxation_dynamics;</span>
+<span class="lineNum">     640 </span><span class="lineCov">        180 :   std::ofstream record;</span>
+<span class="lineNum">     641 </span><span class="lineCov">         90 :   if(recording_dynamics) record.open(&quot;dynamics.dat&quot;);</span>
+<span class="lineNum">     642 </span>            : 
+<span class="lineNum">     643 </span><span class="lineCov">         90 :   double &amp;t=current_time;</span>
+<span class="lineNum">     644 </span><span class="lineCov">         90 :   double t_start=t;</span>
+<span class="lineNum">     645 </span><span class="lineCov">         90 :   double true_t_stop=t+relaxation_time;</span>
+<span class="lineNum">     646 </span>            :  restart_relaxation:
+<span class="lineNum">     647 </span><span class="lineCov">         90 :   double t_stop=true_t_stop;</span>
+<span class="lineNum">     648 </span><span class="lineCov">         90 :   int nsteps=0;</span>
+<span class="lineNum">     649 </span><span class="lineCov">         90 :   ODE_vector ddt(number_of_variables());</span>
+<span class="lineNum">     650 </span>            : 
+<span class="lineNum">     651 </span><span class="lineCov">         90 :   bool auto_extinguish=do_auto_extinguish;</span>
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 :   sequence&lt;double&gt; min_point(0);</span>
+<span class="lineNum">     653 </span>            : 
+<span class="lineNum">     654 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     655 </span>            :   web_for_debugging=(NewWeb *)this;
+<span class="lineNum">     656 </span>            : #endif
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span><span class="lineCov">        412 :   while(t&lt;t_stop){</span>
+<span class="lineNum">     659 </span><span class="lineCov">        161 :     if(number_of_variables()==0){</span>
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 :       return t-t_start;</span>
+<span class="lineNum">     661 </span>            :     }
+<span class="lineNum">     662 </span>            :     { //begin scope ode_state
+<span class="lineNum">     663 </span><span class="lineCov">        322 :       ODE_state ode_state(this); </span>
+<span class="lineNum">     664 </span><span class="lineCov">        322 :       extinguisher_t extinguisher(ode_state,this);</span>
+<span class="lineNum">     665 </span>            : 
+<span class="lineNum">     666 </span><span class="lineCov">      21199 :       do{</span>
+<span class="lineNum">     667 </span><span class="lineCov">      21199 :         if(exit_now){</span>
+<span class="lineNum">     668 </span><span class="lineNoCov">          0 :           throw terminal_condition(&quot;exit_now set during relax&quot;);</span>
+<span class="lineNum">     669 </span>            :         }
+<span class="lineNum">     670 </span>            : 
+<span class="lineNum">     671 </span>            :         // step integrator:
+<span class="lineNum">     672 </span><span class="lineCov">      21199 :         double last_t=t;</span>
+<span class="lineNum">     673 </span>            :         int integrator_failure;
+<span class="lineNum">     674 </span><span class="lineCov">      21199 :         integrator_failure=ode_state.integrate_one_step(t_stop);</span>
+<span class="lineNum">     675 </span><span class="lineCov">      21199 :         if(newton_failure){</span>
+<span class="lineNum">     676 </span>            :           ///!!!! actually, the previous ODE state should be restored here!!!!
+<span class="lineNum">     677 </span><span class="lineNoCov">          0 :           newton_failure=0;</span>
+<span class="lineNum">     678 </span><span class="lineNoCov">          0 :           integrator_failure=1;</span>
+<span class="lineNum">     679 </span>            :         }
+<span class="lineNum">     680 </span><span class="lineCov">      21199 :         if(integrator_failure){</span>
+<span class="lineNum">     681 </span><span class="lineNoCov">          0 :           ode_state.diagnosis();</span>
+<span class="lineNum">     682 </span><span class="lineNoCov">          0 :           if(integrator_trouble_last_step){</span>
+<span class="lineNum">     683 </span><span class="lineNoCov">          0 :             WARNING(&quot;Integrator trouble again&quot;);</span>
+<span class="lineNum">     684 </span><span class="lineNoCov">          0 :             REPORT(ode_state);</span>
+<span class="lineNum">     685 </span><span class="lineNoCov">          0 :             throw terminal_condition(&quot;repeated integrator trouble&quot;);</span>
+<span class="lineNum">     686 </span>            :           }else{
+<span class="lineNum">     687 </span><span class="lineNoCov">          0 :             WARNING(&quot;Integrator trouble&quot;);</span>
+<span class="lineNum">     688 </span>            :           }
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :           integrator_trouble_last_step=true;</span>
+<span class="lineNum">     690 </span><span class="lineNoCov">          0 :           break;</span>
+<span class="lineNum">     691 </span>            :         }else{
+<span class="lineNum">     692 </span><span class="lineCov">      21199 :           integrator_trouble_last_step=false;</span>
+<span class="lineNum">     693 </span>            :         }
+<span class="lineNum">     694 </span><span class="lineCov">      21199 :         nsteps++;</span>
+<span class="lineNum">     695 </span>            :         
+<span class="lineNum">     696 </span>            :         // For debugging integrator:
+<span class="lineNum">     697 </span>            :         //      static int round=0;
+<span class="lineNum">     698 </span>            :         //      if(++round==1000){
+<span class="lineNum">     699 </span>            :         //        round=0;
+<span class="lineNum">     700 </span>            :         //        ode_state.diagnosis();
+<span class="lineNum">     701 </span>            :         //      }
+<span class="lineNum">     702 </span>            :         
+<span class="lineNum">     703 </span>            :         // These two lines save time series of biomass_B and
+<span class="lineNum">     704 </span>            :         // common_factor for later computations of invasion fitness.
+<span class="lineNum">     705 </span>            :         // However, this is not the best way of doing this.  We'd
+<span class="lineNum">     706 </span>            :         // better save the ode state vector in each step, and later
+<span class="lineNum">     707 </span>            :         // compute biomass_B and common_factor from this if and when
+<span class="lineNum">     708 </span>            :         // we really need it, e.g. using calls to dynamics() as done
+<span class="lineNum">     709 </span>            :         // here.
+<span class="lineNum">     710 </span><span class="lineCov">      21199 :         dynamics(ode_state,ddt);</span>
+<span class="lineNum">     711 </span><span class="lineCov">      21199 :         record_for_steady_state(ode_state,ddt);</span>
+<span class="lineNum">     712 </span>            :         
+<span class="lineNum">     713 </span><span class="lineCov">      21199 :         if(auto_extinguish){</span>
+<span class="lineNum">     714 </span><span class="lineCov">      20718 :           bool made_recommendation=extinguisher.recommendation(min_point);</span>
+<span class="lineNum">     715 </span><span class="lineCov">      20718 :           if(made_recommendation){</span>
+<span class="lineNum">     716 </span>            :             // move to a random phase before exiting:
+<span class="lineNum">     717 </span><span class="lineCov">         47 :             t_stop=t_start+(t-t_start)*(1+unirand()/min_samples);</span>
+<span class="lineNum">     718 </span><span class="lineCov">         47 :             auto_extinguish=false; //stop extinguishing for now</span>
+<span class="lineNum">     719 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     720 </span>            :             REPORT(min_point);
+<span class="lineNum">     721 </span>            : #endif
+<span class="lineNum">     722 </span>            :           }
+<span class="lineNum">     723 </span>            :         }
+<span class="lineNum">     724 </span>            : 
+<span class="lineNum">     725 </span>            :         // we keep this in to get some feedback of what's happening:
+<span class="lineNum">     726 </span>            :         // delete it if you want to:
+<span class="lineNum">     727 </span><span class="lineCov">      21199 :         if(recording_dynamics and t != t_start){</span>
+<span class="lineNum">     728 </span><span class="lineNoCov">          0 :           int old_prec=std::cout.precision();</span>
+<span class="lineNum">     729 </span><span class="lineNoCov">          0 :           record.precision(19);</span>
+<span class="lineNum">     730 </span><span class="lineNoCov">          0 :           record &lt;&lt; t-t_start;</span>
+<span class="lineNum">     731 </span><span class="lineNoCov">          0 :           record.precision(old_prec);</span>
+<span class="lineNum">     732 </span><span class="lineNoCov">          0 :           record &lt;&lt; &quot;  &quot; </span>
+<span class="lineNum">     733 </span><span class="lineNoCov">          0 :                  &lt;&lt; ode_state &lt;&lt; std::endl;</span>
+<span class="lineNum">     734 </span>            :         }
+<span class="lineNum">     735 </span>            :         // end of output
+<span class="lineNum">     736 </span>            : 
+<span class="lineNum">     737 </span>            : 
+<span class="lineNum">     738 </span><span class="lineCov">      21199 :       }while(t&lt;t_stop &amp;&amp; !small_values_in(ode_state,newly_inserted));</span>
+<span class="lineNum">     739 </span>            :       //ode_state.diagnosis();
+<span class="lineNum">     740 </span>            :     } //end scope of ode_state
+<span class="lineNum">     741 </span><span class="lineCov">        208 :     if(do_auto_extinguish &amp;&amp; !auto_extinguish &amp;&amp; !min_point.empty()){</span>
+<span class="lineNum">     742 </span>            : #ifdef RELAX_DEBUG
+<span class="lineNum">     743 </span>            : //       std::cout &lt;&lt; &quot;candidates: &quot;;
+<span class="lineNum">     744 </span>            : //       for(int i=candidates.size();i--&gt;0;){
+<span class="lineNum">     745 </span>            : //      std::cout &lt;&lt; assigned_column(candidates(i)) &lt;&lt; &quot; &quot;;
+<span class="lineNum">     746 </span>            : //       }
+<span class="lineNum">     747 </span>            : //       std::cout &lt;&lt; std::endl;
+<span class="lineNum">     748 </span>            : #endif
+<span class="lineNum">     749 </span>            :       species_set_t just_deleted=
+<span class="lineNum">     750 </span><span class="lineCov">         94 :         delete_species_larger_than_exp(min_point,newly_inserted);</span>
+<span class="lineNum">     751 </span><span class="lineCov">         47 :       if(!just_deleted.empty()){</span>
+<span class="lineNum">     752 </span><span class="lineNoCov">          0 :         std::cout &lt;&lt; &quot;... at &quot; &lt;&lt; t-t_start &lt;&lt; std::endl;</span>
+<span class="lineNum">     753 </span><span class="lineNoCov">          0 :         deleted.insert(just_deleted.begin(),just_deleted.end());</span>
+<span class="lineNum">     754 </span><span class="lineNoCov">          0 :         goto restart_relaxation;</span>
+<span class="lineNum">     755 </span>            :       }
+<span class="lineNum">     756 </span>            :     }
+<span class="lineNum">     757 </span>            :     species_set_t just_deleted=
+<span class="lineNum">     758 </span><span class="lineCov">        322 :       delete_all_species_with_less_than_one_individual(newly_inserted);</span>
+<span class="lineNum">     759 </span><span class="lineCov">        161 :     if(!just_deleted.empty()){</span>
+<span class="lineNum">     760 </span><span class="lineCov">        316 :       std::cout &lt;&lt; &quot;... at &quot; &lt;&lt; t-t_start &lt;&lt; std::endl;</span>
+<span class="lineNum">     761 </span><span class="lineCov">        158 :       deleted.insert(just_deleted.begin(),just_deleted.end());</span>
+<span class="lineNum">     762 </span>            :     }
+<span class="lineNum">     763 </span><span class="lineCov">        275 :     if(auto_extinguish &amp;&amp; !newly_inserted.empty() &amp;&amp; deleted==newly_inserted){</span>
+<span class="lineNum">     764 </span>            :       // Exactly all inserted species went extinct.  We should be in a
+<span class="lineNum">     765 </span>            :       // steady state again.  Move to a random phase and stop:
+<span class="lineNum">     766 </span>            :       t_stop=
+<span class="lineNum">     767 </span>            :         std::min(t_stop,
+<span class="lineNum">     768 </span><span class="lineNoCov">          0 :                  std::max(t+dephasing_time,</span>
+<span class="lineNum">     769 </span><span class="lineNoCov">          0 :                           t+(t-t_start)*unirand()) );</span>
+<span class="lineNum">     770 </span><span class="lineNoCov">          0 :       auto_extinguish=false; // Here indicating that we don't need to look</span>
+<span class="lineNum">     771 </span>            :                              // for further extinctions.
+<span class="lineNum">     772 </span><span class="lineNoCov">          0 :       min_point.resize(0);</span>
+<span class="lineNum">     773 </span>            :     }
+<span class="lineNum">     774 </span>            :   }//while(t&lt;t_stop)
+<span class="lineNum">     775 </span>            : 
+<span class="lineNum">     776 </span>            :   // write again to give some account of what we have lastly extinguished.
+<span class="lineNum">     777 </span>            :   
+<span class="lineNum">     778 </span><span class="lineCov">         90 :   if(number_of_variables()&gt;0){//running this without species would lead to crash</span>
+<span class="lineNum">     779 </span><span class="lineCov">        180 :     ODE_state ode_state(this);</span>
+<span class="lineNum">     780 </span><span class="lineCov">         90 :     int old_prec=std::cout.precision();</span>
+<span class="lineNum">     781 </span><span class="lineCov">        180 :     record.precision(19);</span>
+<span class="lineNum">     782 </span><span class="lineCov">        180 :     record &lt;&lt; t-t_start;</span>
+<span class="lineNum">     783 </span><span class="lineCov">        180 :     record.precision(old_prec);</span>
+<span class="lineNum">     784 </span><span class="lineCov">         90 :     record &lt;&lt; &quot;  &quot; </span>
+<span class="lineNum">     785 </span><span class="lineCov">        180 :            &lt;&lt; ode_state &lt;&lt; std::endl;</span>
+<span class="lineNum">     786 </span>            :     // end of output
+<span class="lineNum">     787 </span>            :   }
+<span class="lineNum">     788 </span>            : 
+<span class="lineNum">     789 </span><span class="lineCov">         90 :   const double true_relaxation_time=t-t_start;</span>
+<span class="lineNum">     790 </span><span class="lineCov">         90 :   bool is_fixedpoint=true;</span>
+<span class="lineNum">     791 </span><span class="lineCov">         90 :   for(int i=ddt.size();i--&gt;0;){</span>
+<span class="lineNum">     792 </span><span class="lineCov">      19416 :     if(fabs(ddt[i])*true_relaxation_time&gt;fixed_point_wobble_tolerance){</span>
+<span class="lineNum">     793 </span>            :       is_fixedpoint=false;
+<span class="lineNum">     794 </span>            :       break;
+<span class="lineNum">     795 </span>            :     }
+<span class="lineNum">     796 </span>            :   }
+<span class="lineNum">     797 </span><span class="lineCov">         90 :   if(is_fixedpoint){</span>
+<span class="lineNum">     798 </span><span class="lineCov">         39 :     steady_state_is_fixed_point();</span>
+<span class="lineNum">     799 </span>            :   }
+<span class="lineNum">     800 </span>            :   
+<span class="lineNum">     801 </span>            :   return true_relaxation_time;
+<span class="lineNum">     802 </span>            : }
+<span class="lineNum">     803 </span>            : 
+<a name="804"><span class="lineNum">     804 </span>            : </a>
+<span class="lineNum">     805 </span>            : void 
+<span class="lineNum">     806 </span><span class="lineNoCov">          0 : combined_relaxing_dynamical_object::</span>
+<span class="lineNum">     807 </span>            : split_conserved(const species_set_t&amp; conserved,
+<span class="lineNum">     808 </span>            :                 species_set_t &amp;set1,
+<span class="lineNum">     809 </span>            :                 species_set_t &amp;set2){
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 :   for(species_set_t::const_iterator i=conserved.begin();</span>
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :       i!=conserved.end();++i){</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :     if( (*i|1) == 0 ){</span>
+<span class="lineNum">     813 </span>            :       set1.insert(*i/2);
+<span class="lineNum">     814 </span>            :     }else{
+<span class="lineNum">     815 </span><span class="lineNoCov">          0 :       set2.insert(*i/2);</span>
+<span class="lineNum">     816 </span>            :     }
+<span class="lineNum">     817 </span>            :   }  
+<span class="lineNum">     818 </span><span class="lineNoCov">          0 : }</span>
+<a name="819"><span class="lineNum">     819 </span>            : </a>
+<span class="lineNum">     820 </span>            : void 
+<span class="lineNum">     821 </span><span class="lineNoCov">          0 : combined_relaxing_dynamical_object::</span>
+<span class="lineNum">     822 </span>            : merge_into_deleted(const species_set_t &amp;set1,
+<span class="lineNum">     823 </span>            :                    const species_set_t &amp;set2,
+<span class="lineNum">     824 </span>            :                    species_set_t &amp; deleted){
+<span class="lineNum">     825 </span><span class="lineNoCov">          0 :   for(species_set_t::const_iterator i=set1.begin(); i!=set1.end(); ++i){</span>
+<span class="lineNum">     826 </span><span class="lineNoCov">          0 :     deleted.insert(2*(*i));</span>
+<span class="lineNum">     827 </span>            :   }
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 :   for(species_set_t::const_iterator i=set2.begin(); i!=set2.end(); ++i){</span>
+<a name="829"><span class="lineNum">     829 </span><span class="lineNoCov">          0 :     deleted.insert(2*(*i)+1);</span></a>
+<span class="lineNum">     830 </span>            :   }
+<span class="lineNum">     831 </span><span class="lineCov">        135 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

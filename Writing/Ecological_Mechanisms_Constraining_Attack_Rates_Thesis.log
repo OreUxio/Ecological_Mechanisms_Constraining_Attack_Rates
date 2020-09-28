@@ -1,0 +1,2230 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.10.12)  28 SEP 2020 19:17
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.tex
+(./Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.tex
+LaTeX2e <2016/02/01>
+Babel <3.9q> and hyphenation patterns for 5 language(s) loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.def
+File: t1enc.def 2005/09/27 v1.99g Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2015/03/17 v1.2c Input encoding file
+\inpenc@prehook=\toks14
+\inpenc@posthook=\toks15
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/utf8.def
+File: utf8.def 2015/12/03 v1.1r UTF-8 support for inputenc
+Now handling font encoding OML ...
+... no UTF-8 mapping file for font encoding OML
+Now handling font encoding T1 ...
+... processing UTF-8 mapping file for font encoding T1
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.dfu
+File: t1enc.dfu 2015/12/03 v1.1r UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
+   defining Unicode char U+00A1 (decimal 161)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00AB (decimal 171)
+   defining Unicode char U+00AD (decimal 173)
+   defining Unicode char U+00BB (decimal 187)
+   defining Unicode char U+00BF (decimal 191)
+   defining Unicode char U+00C0 (decimal 192)
+   defining Unicode char U+00C1 (decimal 193)
+   defining Unicode char U+00C2 (decimal 194)
+   defining Unicode char U+00C3 (decimal 195)
+   defining Unicode char U+00C4 (decimal 196)
+   defining Unicode char U+00C5 (decimal 197)
+   defining Unicode char U+00C6 (decimal 198)
+   defining Unicode char U+00C7 (decimal 199)
+   defining Unicode char U+00C8 (decimal 200)
+   defining Unicode char U+00C9 (decimal 201)
+   defining Unicode char U+00CA (decimal 202)
+   defining Unicode char U+00CB (decimal 203)
+   defining Unicode char U+00CC (decimal 204)
+   defining Unicode char U+00CD (decimal 205)
+   defining Unicode char U+00CE (decimal 206)
+   defining Unicode char U+00CF (decimal 207)
+   defining Unicode char U+00D0 (decimal 208)
+   defining Unicode char U+00D1 (decimal 209)
+   defining Unicode char U+00D2 (decimal 210)
+   defining Unicode char U+00D3 (decimal 211)
+   defining Unicode char U+00D4 (decimal 212)
+   defining Unicode char U+00D5 (decimal 213)
+   defining Unicode char U+00D6 (decimal 214)
+   defining Unicode char U+00D8 (decimal 216)
+   defining Unicode char U+00D9 (decimal 217)
+   defining Unicode char U+00DA (decimal 218)
+   defining Unicode char U+00DB (decimal 219)
+   defining Unicode char U+00DC (decimal 220)
+   defining Unicode char U+00DD (decimal 221)
+   defining Unicode char U+00DE (decimal 222)
+   defining Unicode char U+00DF (decimal 223)
+   defining Unicode char U+00E0 (decimal 224)
+   defining Unicode char U+00E1 (decimal 225)
+   defining Unicode char U+00E2 (decimal 226)
+   defining Unicode char U+00E3 (decimal 227)
+   defining Unicode char U+00E4 (decimal 228)
+   defining Unicode char U+00E5 (decimal 229)
+   defining Unicode char U+00E6 (decimal 230)
+   defining Unicode char U+00E7 (decimal 231)
+   defining Unicode char U+00E8 (decimal 232)
+   defining Unicode char U+00E9 (decimal 233)
+   defining Unicode char U+00EA (decimal 234)
+   defining Unicode char U+00EB (decimal 235)
+   defining Unicode char U+00EC (decimal 236)
+   defining Unicode char U+00ED (decimal 237)
+   defining Unicode char U+00EE (decimal 238)
+   defining Unicode char U+00EF (decimal 239)
+   defining Unicode char U+00F0 (decimal 240)
+   defining Unicode char U+00F1 (decimal 241)
+   defining Unicode char U+00F2 (decimal 242)
+   defining Unicode char U+00F3 (decimal 243)
+   defining Unicode char U+00F4 (decimal 244)
+   defining Unicode char U+00F5 (decimal 245)
+   defining Unicode char U+00F6 (decimal 246)
+   defining Unicode char U+00F8 (decimal 248)
+   defining Unicode char U+00F9 (decimal 249)
+   defining Unicode char U+00FA (decimal 250)
+   defining Unicode char U+00FB (decimal 251)
+   defining Unicode char U+00FC (decimal 252)
+   defining Unicode char U+00FD (decimal 253)
+   defining Unicode char U+00FE (decimal 254)
+   defining Unicode char U+00FF (decimal 255)
+   defining Unicode char U+0100 (decimal 256)
+   defining Unicode char U+0101 (decimal 257)
+   defining Unicode char U+0102 (decimal 258)
+   defining Unicode char U+0103 (decimal 259)
+   defining Unicode char U+0104 (decimal 260)
+   defining Unicode char U+0105 (decimal 261)
+   defining Unicode char U+0106 (decimal 262)
+   defining Unicode char U+0107 (decimal 263)
+   defining Unicode char U+0108 (decimal 264)
+   defining Unicode char U+0109 (decimal 265)
+   defining Unicode char U+010A (decimal 266)
+   defining Unicode char U+010B (decimal 267)
+   defining Unicode char U+010C (decimal 268)
+   defining Unicode char U+010D (decimal 269)
+   defining Unicode char U+010E (decimal 270)
+   defining Unicode char U+010F (decimal 271)
+   defining Unicode char U+0110 (decimal 272)
+   defining Unicode char U+0111 (decimal 273)
+   defining Unicode char U+0112 (decimal 274)
+   defining Unicode char U+0113 (decimal 275)
+   defining Unicode char U+0114 (decimal 276)
+   defining Unicode char U+0115 (decimal 277)
+   defining Unicode char U+0116 (decimal 278)
+   defining Unicode char U+0117 (decimal 279)
+   defining Unicode char U+0118 (decimal 280)
+   defining Unicode char U+0119 (decimal 281)
+   defining Unicode char U+011A (decimal 282)
+   defining Unicode char U+011B (decimal 283)
+   defining Unicode char U+011C (decimal 284)
+   defining Unicode char U+011D (decimal 285)
+   defining Unicode char U+011E (decimal 286)
+   defining Unicode char U+011F (decimal 287)
+   defining Unicode char U+0120 (decimal 288)
+   defining Unicode char U+0121 (decimal 289)
+   defining Unicode char U+0122 (decimal 290)
+   defining Unicode char U+0123 (decimal 291)
+   defining Unicode char U+0124 (decimal 292)
+   defining Unicode char U+0125 (decimal 293)
+   defining Unicode char U+0128 (decimal 296)
+   defining Unicode char U+0129 (decimal 297)
+   defining Unicode char U+012A (decimal 298)
+   defining Unicode char U+012B (decimal 299)
+   defining Unicode char U+012C (decimal 300)
+   defining Unicode char U+012D (decimal 301)
+   defining Unicode char U+012E (decimal 302)
+   defining Unicode char U+012F (decimal 303)
+   defining Unicode char U+0130 (decimal 304)
+   defining Unicode char U+0131 (decimal 305)
+   defining Unicode char U+0132 (decimal 306)
+   defining Unicode char U+0133 (decimal 307)
+   defining Unicode char U+0134 (decimal 308)
+   defining Unicode char U+0135 (decimal 309)
+   defining Unicode char U+0136 (decimal 310)
+   defining Unicode char U+0137 (decimal 311)
+   defining Unicode char U+0139 (decimal 313)
+   defining Unicode char U+013A (decimal 314)
+   defining Unicode char U+013B (decimal 315)
+   defining Unicode char U+013C (decimal 316)
+   defining Unicode char U+013D (decimal 317)
+   defining Unicode char U+013E (decimal 318)
+   defining Unicode char U+0141 (decimal 321)
+   defining Unicode char U+0142 (decimal 322)
+   defining Unicode char U+0143 (decimal 323)
+   defining Unicode char U+0144 (decimal 324)
+   defining Unicode char U+0145 (decimal 325)
+   defining Unicode char U+0146 (decimal 326)
+   defining Unicode char U+0147 (decimal 327)
+   defining Unicode char U+0148 (decimal 328)
+   defining Unicode char U+014A (decimal 330)
+   defining Unicode char U+014B (decimal 331)
+   defining Unicode char U+014C (decimal 332)
+   defining Unicode char U+014D (decimal 333)
+   defining Unicode char U+014E (decimal 334)
+   defining Unicode char U+014F (decimal 335)
+   defining Unicode char U+0150 (decimal 336)
+   defining Unicode char U+0151 (decimal 337)
+   defining Unicode char U+0152 (decimal 338)
+   defining Unicode char U+0153 (decimal 339)
+   defining Unicode char U+0154 (decimal 340)
+   defining Unicode char U+0155 (decimal 341)
+   defining Unicode char U+0156 (decimal 342)
+   defining Unicode char U+0157 (decimal 343)
+   defining Unicode char U+0158 (decimal 344)
+   defining Unicode char U+0159 (decimal 345)
+   defining Unicode char U+015A (decimal 346)
+   defining Unicode char U+015B (decimal 347)
+   defining Unicode char U+015C (decimal 348)
+   defining Unicode char U+015D (decimal 349)
+   defining Unicode char U+015E (decimal 350)
+   defining Unicode char U+015F (decimal 351)
+   defining Unicode char U+0160 (decimal 352)
+   defining Unicode char U+0161 (decimal 353)
+   defining Unicode char U+0162 (decimal 354)
+   defining Unicode char U+0163 (decimal 355)
+   defining Unicode char U+0164 (decimal 356)
+   defining Unicode char U+0165 (decimal 357)
+   defining Unicode char U+0168 (decimal 360)
+   defining Unicode char U+0169 (decimal 361)
+   defining Unicode char U+016A (decimal 362)
+   defining Unicode char U+016B (decimal 363)
+   defining Unicode char U+016C (decimal 364)
+   defining Unicode char U+016D (decimal 365)
+   defining Unicode char U+016E (decimal 366)
+   defining Unicode char U+016F (decimal 367)
+   defining Unicode char U+0170 (decimal 368)
+   defining Unicode char U+0171 (decimal 369)
+   defining Unicode char U+0172 (decimal 370)
+   defining Unicode char U+0173 (decimal 371)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
+   defining Unicode char U+0178 (decimal 376)
+   defining Unicode char U+0179 (decimal 377)
+   defining Unicode char U+017A (decimal 378)
+   defining Unicode char U+017B (decimal 379)
+   defining Unicode char U+017C (decimal 380)
+   defining Unicode char U+017D (decimal 381)
+   defining Unicode char U+017E (decimal 382)
+   defining Unicode char U+01CD (decimal 461)
+   defining Unicode char U+01CE (decimal 462)
+   defining Unicode char U+01CF (decimal 463)
+   defining Unicode char U+01D0 (decimal 464)
+   defining Unicode char U+01D1 (decimal 465)
+   defining Unicode char U+01D2 (decimal 466)
+   defining Unicode char U+01D3 (decimal 467)
+   defining Unicode char U+01D4 (decimal 468)
+   defining Unicode char U+01E2 (decimal 482)
+   defining Unicode char U+01E3 (decimal 483)
+   defining Unicode char U+01E6 (decimal 486)
+   defining Unicode char U+01E7 (decimal 487)
+   defining Unicode char U+01E8 (decimal 488)
+   defining Unicode char U+01E9 (decimal 489)
+   defining Unicode char U+01EA (decimal 490)
+   defining Unicode char U+01EB (decimal 491)
+   defining Unicode char U+01F0 (decimal 496)
+   defining Unicode char U+01F4 (decimal 500)
+   defining Unicode char U+01F5 (decimal 501)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
+   defining Unicode char U+01E02 (decimal 7682)
+   defining Unicode char U+01E03 (decimal 7683)
+   defining Unicode char U+200C (decimal 8204)
+   defining Unicode char U+2013 (decimal 8211)
+   defining Unicode char U+2014 (decimal 8212)
+   defining Unicode char U+2018 (decimal 8216)
+   defining Unicode char U+2019 (decimal 8217)
+   defining Unicode char U+201A (decimal 8218)
+   defining Unicode char U+201C (decimal 8220)
+   defining Unicode char U+201D (decimal 8221)
+   defining Unicode char U+201E (decimal 8222)
+   defining Unicode char U+2030 (decimal 8240)
+   defining Unicode char U+2031 (decimal 8241)
+   defining Unicode char U+2039 (decimal 8249)
+   defining Unicode char U+203A (decimal 8250)
+   defining Unicode char U+2423 (decimal 9251)
+)
+Now handling font encoding OT1 ...
+... processing UTF-8 mapping file for font encoding OT1
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/ot1enc.dfu
+File: ot1enc.dfu 2015/12/03 v1.1r UTF-8 support for inputenc
+   defining Unicode char U+00A0 (decimal 160)
+   defining Unicode char U+00A1 (decimal 161)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00AD (decimal 173)
+   defining Unicode char U+00B8 (decimal 184)
+   defining Unicode char U+00BF (decimal 191)
+   defining Unicode char U+00C5 (decimal 197)
+   defining Unicode char U+00C6 (decimal 198)
+   defining Unicode char U+00D8 (decimal 216)
+   defining Unicode char U+00DF (decimal 223)
+   defining Unicode char U+00E6 (decimal 230)
+   defining Unicode char U+00EC (decimal 236)
+   defining Unicode char U+00ED (decimal 237)
+   defining Unicode char U+00EE (decimal 238)
+   defining Unicode char U+00EF (decimal 239)
+   defining Unicode char U+00F8 (decimal 248)
+   defining Unicode char U+0131 (decimal 305)
+   defining Unicode char U+0141 (decimal 321)
+   defining Unicode char U+0142 (decimal 322)
+   defining Unicode char U+0152 (decimal 338)
+   defining Unicode char U+0153 (decimal 339)
+   defining Unicode char U+0174 (decimal 372)
+   defining Unicode char U+0175 (decimal 373)
+   defining Unicode char U+0176 (decimal 374)
+   defining Unicode char U+0177 (decimal 375)
+   defining Unicode char U+0218 (decimal 536)
+   defining Unicode char U+0219 (decimal 537)
+   defining Unicode char U+021A (decimal 538)
+   defining Unicode char U+021B (decimal 539)
+   defining Unicode char U+2013 (decimal 8211)
+   defining Unicode char U+2014 (decimal 8212)
+   defining Unicode char U+2018 (decimal 8216)
+   defining Unicode char U+2019 (decimal 8217)
+   defining Unicode char U+201C (decimal 8220)
+   defining Unicode char U+201D (decimal 8221)
+)
+Now handling font encoding OMS ...
+... processing UTF-8 mapping file for font encoding OMS
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omsenc.dfu
+File: omsenc.dfu 2015/12/03 v1.1r UTF-8 support for inputenc
+   defining Unicode char U+00A7 (decimal 167)
+   defining Unicode char U+00B6 (decimal 182)
+   defining Unicode char U+00B7 (decimal 183)
+   defining Unicode char U+2020 (decimal 8224)
+   defining Unicode char U+2021 (decimal 8225)
+   defining Unicode char U+2022 (decimal 8226)
+)
+Now handling font encoding OMX ...
+... no UTF-8 mapping file for font encoding OMX
+Now handling font encoding U ...
+... no UTF-8 mapping file for font encoding U
+   defining Unicode char U+00A9 (decimal 169)
+   defining Unicode char U+00AA (decimal 170)
+   defining Unicode char U+00AE (decimal 174)
+   defining Unicode char U+00BA (decimal 186)
+   defining Unicode char U+02C6 (decimal 710)
+   defining Unicode char U+02DC (decimal 732)
+   defining Unicode char U+200C (decimal 8204)
+   defining Unicode char U+2026 (decimal 8230)
+   defining Unicode char U+2122 (decimal 8482)
+   defining Unicode char U+2423 (decimal 9251)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2016/03/03 v2.15a AMS math features
+\@mathmargin=\skip43
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01 AMS text
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks16
+\ex@=\dimen103
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen104
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count88
+LaTeX Info: Redefining \frac on input line 199.
+\uproot@=\count89
+\leftroot@=\count90
+LaTeX Info: Redefining \overline on input line 297.
+\classnum@=\count91
+\DOTSCASE@=\count92
+LaTeX Info: Redefining \ldots on input line 394.
+LaTeX Info: Redefining \dots on input line 397.
+LaTeX Info: Redefining \cdots on input line 518.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen105
+LaTeX Font Info:    Redeclaring font encoding OML on input line 630.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 631.
+\macc@depth=\count93
+\c@MaxMatrixCols=\count94
+\dotsspace@=\muskip10
+\c@parentequation=\count95
+\dspbrk@lvl=\count96
+\tag@help=\toks17
+\row@=\count97
+\column@=\count98
+\maxfields@=\count99
+\andhelp@=\toks18
+\eqnshift@=\dimen106
+\alignsep@=\dimen107
+\tagshift@=\dimen108
+\tagwidth@=\dimen109
+\totwidth@=\dimen110
+\lineht@=\dimen111
+\@envbody=\toks19
+\multlinegap=\skip44
+\multlinetaggap=\skip45
+\mathdisplay@stack=\toks20
+LaTeX Info: Redefining \[ on input line 2735.
+LaTeX Info: Redefining \] on input line 2736.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks21
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count100
+\Gm@cntv=\count101
+\c@Gm@tempcnt=\count102
+\Gm@bindingoffset=\dimen112
+\Gm@wd@mp=\dimen113
+\Gm@odd@mp=\dimen114
+\Gm@even@mp=\dimen115
+\Gm@layoutwidth=\dimen116
+\Gm@layoutheight=\dimen117
+\Gm@layouthoffset=\dimen118
+\Gm@layoutvoffset=\dimen119
+\Gm@dimlist=\toks22
+)
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count103
+\float@exts=\toks23
+\float@box=\box28
+\@float@everytoks=\toks24
+\@floatcapt=\box29
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2014/10/28 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count104
+\calc@Bcount=\count105
+\calc@Adimen=\dimen120
+\calc@Bdimen=\dimen121
+\calc@Askip=\skip46
+\calc@Bskip=\skip47
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count106
+\calc@Cskip=\skip48
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2016/01/03 v1.0q Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 95.
+
+(/usr/share/texlive/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count107
+))
+\Gin@req@height=\dimen122
+\Gin@req@width=\dimen123
+)
+(/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+(/usr/share/texlive/texmf-dist/tex/latex/esint/esint.sty
+Package: esint 
+\symlargesymbolsA=\mathgroup4
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1341.
+Package xcolor Info: Model `RGB' extended on input line 1353.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1357.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1358.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1359.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1360.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
+
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty
+Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+Package hobsub Info: Skipping package `ifvtex' (already loaded).
+Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
+)
+Package: bitset 2011/01/30 v1.1 Handle bit-vector datatype (HO)
+Package: uniquecounter 2011/01/30 v1.2 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2010/09/02 v1.4 Let assignment for LaTeX macros (HO)
+Package: hopatch 2012/05/28 v1.2 Wrapper for package hooks (HO)
+Package: xcolor-patch 2011/01/30 xcolor patch
+Package: atveryend 2011/06/30 v1.8 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
+Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
+Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/auxhook.sty
+Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+)
+\@linkdim=\dimen124
+\Hy@linkcounter=\count108
+\Hy@pagecounter=\count109
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+\Hy@SavedSpaceFactor=\count110
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/hyperref.cfg
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Hyper figures OFF on input line 4443.
+Package hyperref Info: Link nesting OFF on input line 4448.
+Package hyperref Info: Hyper index ON on input line 4451.
+Package hyperref Info: Plain pages OFF on input line 4458.
+Package hyperref Info: Backreferencing OFF on input line 4463.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4688.
+\c@Hy@tempcnt=\count111
+
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip11
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5041.
+\XeTeXLinkMargin=\dimen125
+\Fld@menulength=\count112
+\Field@Width=\dimen126
+\Fld@charsize=\dimen127
+Package hyperref Info: Hyper figures OFF on input line 6295.
+Package hyperref Info: Link nesting OFF on input line 6300.
+Package hyperref Info: Hyper index ON on input line 6303.
+Package hyperref Info: backreferencing OFF on input line 6310.
+Package hyperref Info: Link coloring OFF on input line 6315.
+Package hyperref Info: Link coloring with OCG OFF on input line 6320.
+Package hyperref Info: PDF/A mode OFF on input line 6325.
+LaTeX Info: Redefining \ref on input line 6365.
+LaTeX Info: Redefining \pageref on input line 6369.
+\Hy@abspage=\count113
+\c@Item=\count114
+\c@Hfootnote=\count115
+)
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2012/11/06 v6.83m Hyperref driver for pdfTeX
+\Fld@listcount=\count116
+\c@bookmark@seq@number=\count117
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
+Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip49
+)
+(/usr/share/texlive/texmf-dist/tex/latex/soul/soul.sty
+Package: soul 2003/11/17 v2.4 letterspacing/underlining (mf)
+\SOUL@word=\toks25
+\SOUL@lasttoken=\toks26
+\SOUL@cmds=\toks27
+\SOUL@buffer=\toks28
+\SOUL@token=\toks29
+\SOUL@spaceskip=\skip50
+\SOUL@ttwidth=\dimen128
+\SOUL@uldp=\dimen129
+\SOUL@ulht=\dimen130
+)
+(/usr/share/texlive/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip51
+\bibsep=\skip52
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count118
+)
+(/usr/share/texlive/texmf-dist/tex/latex/subfig/subfig.sty
+Package: subfig 2005/06/28 ver: 1.3 subfig package
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2016/02/21 v3.3-144 Customizing captions (AR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2016/02/04 v1.7-139 caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 67.
+\captionmargin=\dimen131
+\captionmargin@=\dimen132
+\captionwidth=\dimen133
+\caption@tempdima=\dimen134
+\caption@indent=\dimen135
+\caption@parindent=\dimen136
+\caption@hangindent=\dimen137
+)
+\c@ContinuedFloat=\count119
+Package caption Info: float package is loaded.
+Package caption Info: hyperref package is loaded.
+)
+\c@KVtest=\count120
+\sf@farskip=\skip53
+\sf@captopadj=\dimen138
+\sf@capskip=\skip54
+\sf@nearskip=\skip55
+\c@subfigure=\count121
+\c@subfigure@save=\count122
+\c@lofdepth=\count123
+\c@subtable=\count124
+\c@subtable@save=\count125
+\c@lotdepth=\count126
+\sf@top=\skip56
+\sf@bottom=\skip57
+)
+
+! LaTeX Error: Option clash for package geometry.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.26 		\usepackage
+                  {array, caption, tabularx,  ragged2e,  booktabs}
+The package geometry has already been loaded with options:
+  []
+There has now been an attempt to load it with options
+  [showframe]
+Adding the global options:
+  ,showframe
+to your \documentclass declaration may fix this.
+Try typing  <return>  to proceed.
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2014/10/28 v2.4c Tabular extension package (FMi)
+\col@sep=\dimen139
+\extrarowheight=\dimen140
+\NC@list=\toks30
+\extratabsurround=\skip58
+\backup@length=\skip59
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2014/10/28 v2.10 `tabularx' package (DPC)
+\TX@col@width=\dimen141
+\TX@old@table=\dimen142
+\TX@old@col=\dimen143
+\TX@target=\dimen144
+\TX@delta=\dimen145
+\TX@cols=\count127
+\TX@ftn=\toks31
+)
+(/usr/share/texlive/texmf-dist/tex/latex/ms/ragged2e.sty
+Package: ragged2e 2009/05/21 v2.1 ragged2e Package (MS)
+
+(/usr/share/texlive/texmf-dist/tex/latex/ms/everysel.sty
+Package: everysel 2011/10/28 v1.2 EverySelectfont Package (MS)
+)
+\CenteringLeftskip=\skip60
+\RaggedLeftLeftskip=\skip61
+\RaggedRightLeftskip=\skip62
+\CenteringRightskip=\skip63
+\RaggedLeftRightskip=\skip64
+\RaggedRightRightskip=\skip65
+\CenteringParfillskip=\skip66
+\RaggedLeftParfillskip=\skip67
+\RaggedRightParfillskip=\skip68
+\JustifyingParfillskip=\skip69
+\CenteringParindent=\skip70
+\RaggedLeftParindent=\skip71
+\RaggedRightParindent=\skip72
+\JustifyingParindent=\skip73
+)
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen146
+\lightrulewidth=\dimen147
+\cmidrulewidth=\dimen148
+\belowrulesep=\dimen149
+\belowbottomsep=\dimen150
+\aboverulesep=\dimen151
+\abovetopsep=\dimen152
+\cmidrulesep=\dimen153
+\cmidrulekern=\dimen154
+\defaultaddspace=\dimen155
+\@cmidla=\count128
+\@cmidlb=\count129
+\@aboverulesep=\dimen156
+\@belowrulesep=\dimen157
+\@thisruleclass=\count130
+\@lastruleclass=\count131
+\@thisrulewidth=\dimen158
+)
+\@float@every@floatbox1=\toks32
+\c@floatbox1=\count132
+
+
+! LaTeX Error: Command \log already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.47 \DeclareMathOperator{\log}{log}
+                                    
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Command \min already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.48 \DeclareMathOperator{\min}{min}
+                                    
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Command \max already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.49 \DeclareMathOperator{\max}{max}
+                                    
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Command \det already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.50 \DeclareMathOperator{\det}{det}
+                                    
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: Command \d already defined.
+               Or name \end... illegal, see p.192 of the manual.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.51 \DeclareMathOperator{\d}{d}
+                                
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2016/02/24 3.9q The Babel package
+
+
+! Package babel Error: You haven't specified a language option.
+
+See the babel package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.343 ...ry to proceed from here, type x to quit.}
+                                                  
+You need to specify a language, either as a global option
+or as an optional argument to the \usepackage command;
+You shouldn't try to proceed from here, type x to quit.
+
+) (./Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.aux
+
+LaTeX Warning: Label `eq:birth_rate_final' multiply defined.
+
+)
+\openout1 = `Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(72.26999pt, 452.9679pt, 72.26999pt)
+* v-part:(T,H,B)=(108.405pt, 628.23685pt, 108.405pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=452.9679pt
+* \textheight=628.23685pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-108.40497pt
+* \headheight=72.26999pt
+* \headsep=72.26999pt
+* \topskip=10.0pt
+* \footskip=72.26999pt
+* \marginparwidth=57.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count133
+\scratchdimen=\dimen159
+\scratchbox=\box30
+\nofMPsegments=\count134
+\nofMParguments=\count135
+\everyMPshowfont=\toks33
+\MPscratchCnt=\count136
+\MPscratchDim=\dimen160
+\MPnumerator=\count137
+\makeMPintoPDFobject=\count138
+\everyMPtoPDFconversion=\toks34
+) (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+)
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+\AtBeginShipoutBox=\box31
+Package hyperref Info: Link coloring OFF on input line 54.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
+Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
+)
+\c@section@level=\count139
+)
+LaTeX Info: Redefining \ref on input line 54.
+LaTeX Info: Redefining \pageref on input line 54.
+LaTeX Info: Redefining \nameref on input line 54.
+
+(./Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.out)
+(./Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.out)
+\@outlinefile=\write3
+\openout3 = `Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.out'.
+
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: subfig package v1.3 is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+ABD: EverySelectfont initializing macros
+LaTeX Info: Redefining \selectfont on input line 54.
+LaTeX Font Info:    Try loading font information for U+esint on input line 73.
+
+(/usr/share/texlive/texmf-dist/tex/latex/esint/uesint.fd
+File: uesint.fd 
+) [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+Underfull \hbox (badness 10000) in paragraph at lines 76--89
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 90--91
+
+ []
+
+[2] [3] (./Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.toc [4
+
+]
+[5])
+\tf@toc=\write4
+\openout4 = `Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.toc'.
+
+ [6]
+Underfull \hbox (badness 10000) in paragraph at lines 107--108
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 110--111
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 112--113
+
+ []
+
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 120--121
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 122--123
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+
+ []
+
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 126--127
+
+ []
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.129 ...y: https://github.com/OreUxio/Ecological_
+                                                  Mechanisms_Constraining_At...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.130 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (66.20537pt too wide) in paragraph at lines 129--130
+\T1/cmr/m/n/10 can be found in the fol-low-ing repos-i-tory: https://github.com
+/OreUxio/Ecological$[]\OML/cmm/m/it/10 echanisms[]onstraining[]ttack[]ates$ 
+ []
+
+[9]
+Chapter 1.
+
+Underfull \hbox (badness 10000) in paragraph at lines 135--136
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 139--140
+
+ []
+
+[10
+
+]
+
+! LaTeX Error: Environment sub-equations undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.143 \begin{sub-equations}
+                           
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: \begin{document} ended by \end{sub-equations}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.150 \end{sub-equations}
+                         
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 152--153
+
+ []
+
+[11]
+Underfull \hbox (badness 10000) in paragraph at lines 166--167
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 170--171
+
+ []
+
+[12]
+Underfull \hbox (badness 10000) in paragraph at lines 172--173
+
+ []
+
+[13]
+Underfull \hbox (badness 10000) in paragraph at lines 174--175
+
+ []
+
+[14]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 179.
+
+ (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 179.
+
+Underfull \hbox (badness 10000) in paragraph at lines 183--184
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 185--186
+
+ []
+
+[15]
+Underfull \hbox (badness 10000) in paragraph at lines 189--190
+
+ []
+
+[16]
+Underfull \hbox (badness 10000) in paragraph at lines 191--200
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 201--202
+
+ []
+
+[17]
+Underfull \hbox (badness 10000) in paragraph at lines 203--204
+
+ []
+
+[18]
+Underfull \hbox (badness 10000) in paragraph at lines 205--206
+
+ []
+
+[19]
+Underfull \hbox (badness 10000) in paragraph at lines 207--208
+
+ []
+
+[20]
+Underfull \hbox (badness 10000) in paragraph at lines 209--210
+
+ []
+
+[21]
+Underfull \hbox (badness 10000) in paragraph at lines 211--212
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 213--214
+
+ []
+
+[22]
+Underfull \hbox (badness 10000) in paragraph at lines 217--218
+
+ []
+
+[23]
+Underfull \hbox (badness 10000) in paragraph at lines 219--220
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 222--223
+
+ []
+
+[24] [25]
+Underfull \hbox (badness 10000) in paragraph at lines 224--225
+
+ []
+
+[26]
+Underfull \hbox (badness 10000) in paragraph at lines 226--227
+
+ []
+
+[27]
+Underfull \hbox (badness 10000) in paragraph at lines 232--233
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 234--235
+
+ []
+
+[28]
+Underfull \hbox (badness 10000) in paragraph at lines 236--237
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 238--239
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 240--241
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 242--243
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 244--245
+
+ []
+
+[29]
+Underfull \hbox (badness 10000) in paragraph at lines 246--247
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 248--249
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 250--251
+
+ []
+
+[30] [31]
+Underfull \hbox (badness 10000) in paragraph at lines 260--260
+[]|\T1/cmr/m/n/10 Explicit sim-u-la-tion of
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 264--264
+[]|\T1/cmr/m/n/10 Complex food-webs
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 264--264
+\T1/cmr/m/n/10 with many co-evolving
+ []
+
+
+Underfull \hbox (badness 6284) in paragraph at lines 268--268
+[]|\T1/cmr/m/n/10 Complex func-tional re-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 271--271
+\T1/cmr/m/n/10 race, life-dinner
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 275--275
+[]|\T1/cmr/m/n/10 Explicitly de-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 275--275
+\T1/cmr/m/n/10 fined (a pri-ori)
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 275--275
+\T1/cmr/m/n/10 pleiotropic trade-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 276--276
+[]|\T1/cmr/m/n/10 Correlations be-tween
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 279--279
+[]|\T1/cmr/m/n/10 Explicitly de-fined
+ []
+
+
+Underfull \hbox (badness 1142) in paragraph at lines 279--279
+\T1/cmr/m/n/10 (a pri-ori) ther-mo-
+ []
+
+
+Underfull \hbox (badness 1577) in paragraph at lines 279--279
+\T1/cmr/m/n/10 dy-namic trade-offs
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 283--283
+[]|\T1/cmr/m/n/10 Spatially ex-plicit
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 288--288
+[]|\T1/cmr/m/n/10 Respective trade-offs,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 288--288
+\T1/cmr/m/n/10 sep-a-ra-tion of al-tru-ists
+ []
+
+
+Overfull \hbox (38.04976pt too wide) in paragraph at lines 256--296
+[][] 
+ []
+
+
+! Package inputenc Error: Unicode char ￹ (U+FFF9)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.297 ￹
+         
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 300--301
+
+ []
+
+[32] [33]
+Underfull \hbox (badness 10000) in paragraph at lines 324--325
+
+ []
+
+[34] [35]
+Chapter 2.
+
+Underfull \hbox (badness 10000) in paragraph at lines 332--333
+
+ []
+
+[36
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 334--335
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 352--362
+
+ []
+
+[37]
+Underfull \hbox (badness 10000) in paragraph at lines 414--428
+
+ []
+
+[38]
+Overfull \hbox (39.22523pt too wide) in paragraph at lines 454--483
+[][] 
+ []
+
+[39] <../Images/spec_a_full.pdf, id=990, 469.755pt x 234.8775pt>
+File: ../Images/spec_a_full.pdf Graphic file (type pdf)
+
+<use ../Images/spec_a_full.pdf>
+Package pdftex.def Info: ../Images/spec_a_full.pdf used on input line 494.
+(pdftex.def)             Requested size: 469.75386pt x 234.87692pt.
+
+Overfull \hbox (16.78596pt too wide) in paragraph at lines 494--495
+ [][] 
+ []
+
+[40]
+Underfull \hbox (badness 10000) in paragraph at lines 500--501
+
+ []
+
+[41 <../Images/spec_a_full.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 502--503
+
+ []
+
+
+LaTeX Warning: Command \d invalid in math mode on input line 504.
+
+
+LaTeX Warning: Command \d invalid in math mode on input line 504.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 504--505
+
+ []
+
+[42] [43] [44] [45]
+LaTeX Font Info:    Try loading font information for T1+cmss on input line 572.
+
+ (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
+File: t1cmss.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+Package hyperref Info: bookmark level for unknown floatbox1 defaults to 0 on in
+put line 574.
+
+! Extra }, or forgotten \endgroup.
+\sf@endfloatbox ...gefalse \outer@nobreak \egroup 
+                                                  \color@endbox 
+l.609 \end{floatbox}
+                    
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 615--625
+
+ []
+
+[46]
+Underfull \hbox (badness 10000) in paragraph at lines 638--642
+
+ []
+
+<../Images/animal_plants.pdf, id=1149, 469.755pt x 234.8775pt>
+File: ../Images/animal_plants.pdf Graphic file (type pdf)
+
+<use ../Images/animal_plants.pdf>
+Package pdftex.def Info: ../Images/animal_plants.pdf used on input line 646.
+(pdftex.def)             Requested size: 469.75386pt x 234.87692pt.
+
+Overfull \hbox (16.78596pt too wide) in paragraph at lines 646--647
+ [][] 
+ []
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.649 
+      
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+<../Images/agg_time_series.pdf, id=1150, 469.755pt x 234.8775pt>
+File: ../Images/agg_time_series.pdf Graphic file (type pdf)
+
+<use ../Images/agg_time_series.pdf>
+Package pdftex.def Info: ../Images/agg_time_series.pdf used on input line 653.
+(pdftex.def)             Requested size: 469.75386pt x 234.87692pt.
+
+Overfull \hbox (16.78596pt too wide) in paragraph at lines 653--655
+ [][] 
+ []
+
+[47 <../Images/animal_plants.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 667--668
+
+ []
+
+[48 <../Images/agg_time_series.pdf>]
+<../Images/Invasion_verification.pdf, id=1193, 632.3625pt x 632.3625pt>
+File: ../Images/Invasion_verification.pdf Graphic file (type pdf)
+
+<use ../Images/Invasion_verification.pdf>
+Package pdftex.def Info: ../Images/Invasion_verification.pdf used on input line
+ 673.
+(pdftex.def)             Requested size: 316.18048pt x 316.18048pt.
+ [49] [50 <../Images/Invasion_verification.pdf>]
+<../Images/Over_exploitative.pdf, id=1224, 695.41104pt x 707.70195pt>
+File: ../Images/Over_exploitative.pdf Graphic file (type pdf)
+
+<use ../Images/Over_exploitative.pdf>
+Package pdftex.def Info: ../Images/Over_exploitative.pdf used on input line 691
+.
+(pdftex.def)             Requested size: 347.70467pt x 353.85011pt.
+ [51] [52 <../Images/Over_exploitative.pdf>]
+
+! LaTeX Error: Bad math environment delimiter.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.722 ... compared the sum of trophic links $\ln\(
+                                                  \sum_{k=1}^{S_{R}}H_{k,i}$...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+[53] <../Images/serial_extinction.pdf, id=1294, 632.3625pt x 632.3625pt>
+File: ../Images/serial_extinction.pdf Graphic file (type pdf)
+
+<use ../Images/serial_extinction.pdf>
+Package pdftex.def Info: ../Images/serial_extinction.pdf used on input line 742
+.
+(pdftex.def)             Requested size: 316.18048pt x 316.18048pt.
+ [54] [55 <../Images/serial_extinction.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 755--756
+
+ []
+
+[56]
+Underfull \hbox (badness 10000) in paragraph at lines 784--786
+
+ []
+
+[57] [58] <../Images/Validation_exploitative.pdf, id=1381, 722.7pt x 722.7pt>
+File: ../Images/Validation_exploitative.pdf Graphic file (type pdf)
+
+<use ../Images/Validation_exploitative.pdf>
+Package pdftex.def Info: ../Images/Validation_exploitative.pdf used on input li
+ne 842.
+(pdftex.def)             Requested size: 361.3491pt x 361.3491pt.
+ [59]
+! Undefined control sequence.
+<argument> ...ver the Roman legions forced \texti 
+                                                  {Epirus} to end his whole ...
+l.849 ...e the heavy loss of casualties incurred.}
+                                                   given it has weakened its...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[60 <../Images/Validation_exploitative.pdf>] [61]
+<../Images/Validation_phyrric.pdf, id=1421, 722.7pt x 722.7pt>
+File: ../Images/Validation_phyrric.pdf Graphic file (type pdf)
+
+<use ../Images/Validation_phyrric.pdf>
+Package pdftex.def Info: ../Images/Validation_phyrric.pdf used on input line 88
+5.
+(pdftex.def)             Requested size: 361.3491pt x 361.3491pt.
+ [62]
+Underfull \hbox (badness 10000) in paragraph at lines 892--893
+
+ []
+
+[63 <../Images/Validation_phyrric.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 894--895
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 897--899
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 900--901
+
+ []
+
+[64]
+Underfull \hbox (badness 10000) in paragraph at lines 902--903
+
+ []
+
+[65]
+Chapter 3.
+
+Underfull \hbox (badness 10000) in paragraph at lines 908--909
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 910--911
+
+ []
+
+[66
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 912--913
+
+ []
+
+[67]
+Underfull \hbox (badness 10000) in paragraph at lines 923--924
+
+ []
+
+[68]
+Underfull \hbox (badness 10000) in paragraph at lines 933--938
+
+ []
+
+[69]
+Underfull \hbox (badness 10000) in paragraph at lines 970--972
+
+ []
+
+[70]
+! Missing delimiter (. inserted).
+<to be read again> 
+                   {
+l.1012 \end{align}
+                  
+I was expecting to see something like `(' or `\{' or
+`\}' here. If you typed, e.g., `{' instead of `\{', you
+should probably delete the `{' by typing `1' now, so that
+braces don't get unbalanced. Otherwise just proceed.
+Acceptable delimiters are characters whose \delcode is
+nonnegative, or you can use `\delimiter <delimiter code>'.
+
+! Missing delimiter (. inserted).
+<to be read again> 
+                   {
+l.1012 \end{align}
+                  
+I was expecting to see something like `(' or `\{' or
+`\}' here. If you typed, e.g., `{' instead of `\{', you
+should probably delete the `{' by typing `1' now, so that
+braces don't get unbalanced. Otherwise just proceed.
+Acceptable delimiters are characters whose \delcode is
+nonnegative, or you can use `\delimiter <delimiter code>'.
+
+
+Overfull \hbox (44.10533pt too wide) in paragraph at lines 1012--1012
+[] 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1018--1025
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1026--1044
+
+ []
+
+[71]
+Underfull \hbox (badness 10000) in paragraph at lines 1045--1046
+
+ []
+
+[72] <../Images/All_deconstructed.pdf, id=1567, 767.86874pt x 767.86874pt>
+File: ../Images/All_deconstructed.pdf Graphic file (type pdf)
+
+<use ../Images/All_deconstructed.pdf>
+Package pdftex.def Info: ../Images/All_deconstructed.pdf used on input line 105
+1.
+(pdftex.def)             Requested size: 460.7248pt x 460.7248pt.
+
+Overfull \hbox (7.7569pt too wide) in paragraph at lines 1051--1052
+ [] 
+ []
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1056 
+       
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+[73] [74 <../Images/All_deconstructed.pdf>]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1059.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1059.
+
+! Missing } inserted.
+<inserted text> 
+                }
+l.1084 ...ted random variables $e^{\sigma\xi_{ki}$
+                                                   and is therefore itself a...
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+[75] [76]
+<../Images/Invasion_Probabillity.pdf, id=1634, 632.3625pt x 632.3625pt>
+File: ../Images/Invasion_Probabillity.pdf Graphic file (type pdf)
+
+<use ../Images/Invasion_Probabillity.pdf>
+Package pdftex.def Info: ../Images/Invasion_Probabillity.pdf used on input line
+ 1124.
+(pdftex.def)             Requested size: 316.18048pt x 316.18048pt.
+ [77] [78 <../Images/Invasion_Probabillity.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 1139--1140
+
+ []
+
+<../Images/Birth_rate_comp.pdf, id=1661, 666.65854pt x 671.96632pt>
+File: ../Images/Birth_rate_comp.pdf Graphic file (type pdf)
+
+<use ../Images/Birth_rate_comp.pdf>
+Package pdftex.def Info: ../Images/Birth_rate_comp.pdf used on input line 1145.
+
+(pdftex.def)             Requested size: 399.9982pt x 403.1829pt.
+ [79]
+<../Images/Birth_rate_no_comp.pdf, id=1671, 666.65854pt x 671.96632pt>
+File: ../Images/Birth_rate_no_comp.pdf Graphic file (type pdf)
+
+<use ../Images/Birth_rate_no_comp.pdf>
+Package pdftex.def Info: ../Images/Birth_rate_no_comp.pdf used on input line 11
+53.
+(pdftex.def)             Requested size: 399.9982pt x 403.1829pt.
+ [80 <../Images/Birth_rate_comp.pdf>]
+[81 <../Images/Birth_rate_no_comp.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 1169--1170
+
+ []
+
+! Double subscript.
+l.1204 ...d by the mutation bias, where $\alpha_r_
+                                                  0=\alpha_r \times a_0$:
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+
+Overfull \hbox (11.22406pt too wide) in paragraph at lines 1209--1210
+[]\T1/cmr/m/n/10 This as-sumes the ap-prox-i-ma-tion is valid for when the vari
+-ance as-so-ci-ated with the mu-ta-tion, $[][]\OT1/cmr/m/n/10 (\OML/cmm/m/it/10
+ ^^M[]\OT1/cmr/m/n/10 )[] \OMS/cmsy/m/n/10 ^^Y
+ []
+
+[82]
+Underfull \hbox (badness 10000) in paragraph at lines 1213--1221
+
+ []
+
+<../Images/activation_frequency.pdf, id=1754, 180.675pt x 180.675pt>
+File: ../Images/activation_frequency.pdf Graphic file (type pdf)
+
+<use ../Images/activation_frequency.pdf>
+Package pdftex.def Info: ../Images/activation_frequency.pdf used on input line 
+1226.
+(pdftex.def)             Requested size: 252.94325pt x 252.94325pt.
+ [83]
+Underfull \hbox (badness 10000) in paragraph at lines 1243--1244
+
+ []
+
+[84 <../Images/activation_frequency.pdf>]
+<../Images/components_with_without_serial_scaled_older.pdf, id=1785, 542.025pt 
+x 542.025pt>
+File: ../Images/components_with_without_serial_scaled_older.pdf Graphic file (t
+ype pdf)
+ <use ../Images/components_with_without_serial_scaled_older.pdf>
+Package pdftex.def Info: ../Images/components_with_without_serial_scaled_older.
+pdf used on input line 1250.
+(pdftex.def)             Requested size: 406.51775pt x 406.51775pt.
+
+[85] [86 <../Images/components_with_without_serial_scaled_older.pdf>]
+<../Images/variation.pdf, id=1813, 902.85138pt x 592.17023pt>
+File: ../Images/variation.pdf Graphic file (type pdf)
+
+<use ../Images/variation.pdf>
+Package pdftex.def Info: ../Images/variation.pdf used on input line 1259.
+(pdftex.def)             Requested size: 541.71501pt x 355.30487pt.
+
+Overfull \hbox (88.74712pt too wide) in paragraph at lines 1259--1261
+ [][] 
+ []
+
+[87]
+Overfull \vbox (1.06802pt too high) has occurred while \output is active []
+
+
+[88 <../Images/variation.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 1265--1266
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1272--1273
+
+ []
+
+[89]
+Underfull \hbox (badness 10000) in paragraph at lines 1274--1275
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1276--1277
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1278--1279
+
+ []
+
+[90]
+Underfull \hbox (badness 10000) in paragraph at lines 1280--1281
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1282--1283
+
+ []
+
+[91] [92]
+Chapter 4.
+
+Underfull \hbox (badness 10000) in paragraph at lines 1290--1291
+
+ []
+
+[93
+
+] [94] [95] <../Images/topology_2.pdf, id=1963, 251.75392pt x 248.5893pt>
+File: ../Images/topology_2.pdf Graphic file (type pdf)
+
+<use ../Images/topology_2.pdf>
+Package pdftex.def Info: ../Images/topology_2.pdf used on input line 1339.
+(pdftex.def)             Requested size: 251.7533pt x 248.58867pt.
+ [96]
+Underfull \hbox (badness 10000) in paragraph at lines 1343--1344
+
+ []
+
+[97 <../Images/topology_2.pdf>]
+<../Images/topology_3.pdf, id=1992, 256.27087pt x 270.77802pt>
+File: ../Images/topology_3.pdf Graphic file (type pdf)
+
+<use ../Images/topology_3.pdf>
+Package pdftex.def Info: ../Images/topology_3.pdf used on input line 1349.
+(pdftex.def)             Requested size: 256.27023pt x 270.77734pt.
+ [98 <../Images/topology_3.pdf>]
+! Extra }, or forgotten $.
+l.1359 ...c{\ln(\alpha_m)-y_{0}}{\sigma_{0}}\Big)}
+                                                  ,\label{eq:prob_invasion}
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+[99]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1363.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 1363.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1363.
+
+! Undefined control sequence.
+l.1371 \mathscr
+               {L}(L=t|a) = \prod_{i=0}^t (1-h(a)_i) h(a)_t \label{eq:likeli...
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.1375 \mathscr
+               {L}(L=t|a) = (1-h(a))^{t-1}h(a)_t \label{eq:likelihood_life2}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+[100]
+Underfull \hbox (badness 10000) in paragraph at lines 1390--1391
+
+ []
+
+[101]
+<../Images/Meta_com_time_series_no_intra.pdf, id=2050, 722.7pt x 361.35pt>
+File: ../Images/Meta_com_time_series_no_intra.pdf Graphic file (type pdf)
+
+<use ../Images/Meta_com_time_series_no_intra.pdf>
+Package pdftex.def Info: ../Images/Meta_com_time_series_no_intra.pdf used on in
+put line 1431.
+(pdftex.def)             Requested size: 505.88655pt x 252.94327pt.
+
+Overfull \hbox (52.91866pt too wide) in paragraph at lines 1431--1432
+ [][] 
+ []
+
+<../Images/Meta_com_time_series_2.pdf, id=2056, 722.7pt x 361.35pt>
+File: ../Images/Meta_com_time_series_2.pdf Graphic file (type pdf)
+
+<use ../Images/Meta_com_time_series_2.pdf>
+Package pdftex.def Info: ../Images/Meta_com_time_series_2.pdf used on input lin
+e 1440.
+(pdftex.def)             Requested size: 505.88655pt x 252.94327pt.
+
+Overfull \hbox (52.91866pt too wide) in paragraph at lines 1440--1441
+ [][] 
+ []
+
+[102 <../Images/Meta_com_time_series_no_intra.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 1444--1445
+
+ []
+
+! Too many }'s.
+l.1446 ...f Fig. \ref{fig:Meta_com_time_series_2}}
+                                                   for when patch connectanc...
+You've closed more groups than you opened.
+Such booboos are generally harmless, so keep going.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1446--1447
+
+ []
+
+<../Images/Meta_com_time_series_random.pdf, id=2079, 722.7pt x 361.35pt>
+File: ../Images/Meta_com_time_series_random.pdf Graphic file (type pdf)
+
+<use ../Images/Meta_com_time_series_random.pdf>
+Package pdftex.def Info: ../Images/Meta_com_time_series_random.pdf used on inpu
+t line 1450.
+(pdftex.def)             Requested size: 505.88655pt x 252.94327pt.
+
+Overfull \hbox (52.91866pt too wide) in paragraph at lines 1450--1451
+ [][] 
+ []
+
+[103 <../Images/Meta_com_time_series_2.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 1454--1455
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1458--1459
+
+ []
+
+[104 <../Images/Meta_com_time_series_random.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 1460--1461
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1462--1463
+
+ []
+
+[105]
+Underfull \hbox (badness 10000) in paragraph at lines 1464--1465
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1466--1467
+
+ []
+
+[106] [107]
+Chapter 5.
+[108
+
+]
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1476.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `subscript' on input line 1476.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
+(hyperref)                removing `math shift' on input line 1476.
+
+[109]
+Underfull \hbox (badness 10000) in paragraph at lines 1488--1489
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1493--1494
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1495--1496
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1497--1498
+
+ []
+
+[110]
+Underfull \hbox (badness 10000) in paragraph at lines 1503--1504
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1505--1506
+
+ []
+
+[111] [112]
+Underfull \hbox (badness 10000) in paragraph at lines 1525--1526
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1527--1528
+
+ []
+
+[113]
+Underfull \hbox (badness 10000) in paragraph at lines 1531--1532
+
+ []
+
+[114]
+Underfull \hbox (badness 10000) in paragraph at lines 1533--1534
+
+ []
+
+[115]
+Underfull \hbox (badness 10000) in paragraph at lines 1543--1544
+
+ []
+
+[116]
+Underfull \hbox (badness 10000) in paragraph at lines 1545--1546
+
+ []
+
+! Too many }'s.
+l.1547 ...tep{Yeo2009} and \citep{Taylor1996}2015}
+                                                  ), this implies that the n...
+You've closed more groups than you opened.
+Such booboos are generally harmless, so keep going.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1547--1548
+
+ []
+
+[117] [118]
+Underfull \hbox (badness 1348) in paragraph at lines 1562--1562
+[]|\T1/cmr/m/n/10 Invasive ants: Anoplolepis gra-cilipes, Linep-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1582--1583
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1584--1585
+
+ []
+
+[119]
+Underfull \hbox (badness 10000) in paragraph at lines 1591--1592
+
+ []
+
+[120]
+Underfull \hbox (badness 10000) in paragraph at lines 1593--1594
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1595--1596
+
+ []
+
+[121]
+Underfull \hbox (badness 10000) in paragraph at lines 1597--1598
+
+ []
+
+[122]
+
+! Package inputenc Error: Unicode char ‐ (U+2010)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1599 ...dator–prey dynamics depend on trade‐
+                                                  off shapes. These are usua...
+
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1599--1600
+
+ []
+
+(./Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.bbl [123] [124]
+[125
+
+] [126]
+
+! Package inputenc Error: Unicode char ‐ (U+2010)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.225 \newblock {Eco‐
+                       evolutionary feedbacks — Theoretical models and
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+[127] [128] [129] [130] [131] [132] [133]
+
+! Package inputenc Error: Unicode char ‐ (U+2010)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.795 \newblock {On testing the competition‐
+                                              colonization trade‐off in a
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! Package inputenc Error: Unicode char ‐ (U+2010)
+(inputenc)                not set up for use with LaTeX.
+
+See the inputenc package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.795 ...g the competition‐colonization trade‐
+                                                  off in a
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1611.
+ [134]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1611.
+ (./Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1611.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1611.
+
+Package rerunfilecheck Info: File `Ecological_Mechanisms_Constraining_Attack_Ra
+tes_Thesis.out' has not changed.
+(rerunfilecheck)             Checksum: F912EE1DBB79C435209B74D9F3F135BB;5069.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1611.
+ ) 
+Here is how much of TeX's memory you used:
+ 10523 strings out of 494910
+ 155577 string characters out of 6179835
+ 292238 words of memory out of 5000000
+ 13117 multiletter control sequences out of 15000+600000
+ 30276 words of font info for 75 fonts, out of 8000000 for 9000
+ 36 hyphenation exceptions out of 8191
+ 44i,13n,42p,4682b,668s stack positions out of 5000i,500n,10000p,200000b,80000s
+ </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecss0600.600pk> </home/ore
+/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0900.600pk> </home/ore/.texmf-var/f
+onts/pk/ljfour/jknappen/ec/ecsx0900.600pk> </home/ore/.texmf-var/fonts/pk/ljfou
+r/jknappen/ec/ecss0900.600pk> </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/ec
+/ecbx1200.600pk> </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecti0800.600
+pk> </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1000.600pk> </home/or
+e/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2074.600pk> </home/ore/.texmf-var/
+fonts/pk/ljfour/jknappen/ec/ecrm0800.600pk> </home/ore/.texmf-var/fonts/pk/ljfo
+ur/jknappen/ec/ecrm0600.600pk> </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/e
+c/ecrm0700.600pk> </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.60
+0pk> </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2488.600pk> </home/o
+re/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/ore/.texmf-var
+/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </home/ore/.texmf-var/fonts/pk/ljf
+our/jknappen/ec/ecrm1200.600pk> </home/ore/.texmf-var/fonts/pk/ljfour/jknappen/
+ec/ecrm1728.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/
+cmex9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/
+texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/esint-type1/esint10.pfb></usr/share/texmf/fonts/type1/public/tex-gyre/qhvr
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/symbol/usyr.pfb>
+Output written on Ecological_Mechanisms_Constraining_Attack_Rates_Thesis.pdf (1
+34 pages, 3945851 bytes).
+PDF statistics:
+ 3213 PDF objects out of 3580 (max. 8388607)
+ 2343 compressed objects within 24 object streams
+ 510 named destinations out of 1000 (max. 500000)
+ 573 words of extra memory for PDF output out of 10000 (max. 10000000)
+

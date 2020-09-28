@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/three_column_files.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - three_column_files.cc<span style="font-size: 80%;"> (source / <a href="three_column_files.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">57</td>
+            <td class="headerCovTableEntryLo">1.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryLo">40.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // $Id: three_column_files.cc 1981 2010-11-15 17:32:46Z axel $</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #include &lt;limits.h&gt;
+<span class="lineNum">       4 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">       5 </span>            : #include &quot;three_column_files.h&quot;
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : using namespace std;
+<a name="8"><span class="lineNum">       8 </span>            : </a>
+<span class="lineNum">       9 </span>            : // helper:
+<span class="lineNum">      10 </span><span class="lineNoCov">          0 : static bool separator_then_digit(FILE * f){</span>
+<span class="lineNum">      11 </span><span class="lineNoCov">          0 :   char c=getc(f);</span>
+<span class="lineNum">      12 </span><span class="lineNoCov">          0 :   if(c!=','){</span>
+<span class="lineNum">      13 </span><span class="lineNoCov">          0 :     ungetc(c,f);</span>
+<span class="lineNum">      14 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      15 </span>            :   }
+<span class="lineNum">      16 </span><span class="lineNoCov">          0 :   c=getc(f);</span>
+<span class="lineNum">      17 </span><span class="lineNoCov">          0 :   if(c &lt; '0' || c &gt; '9' ){</span>
+<span class="lineNum">      18 </span><span class="lineNoCov">          0 :     ungetc(c,f);</span>
+<span class="lineNum">      19 </span><span class="lineNoCov">          0 :     return false;</span>
+<span class="lineNum">      20 </span>            :   }else{
+<span class="lineNum">      21 </span><span class="lineNoCov">          0 :     ungetc(c,f);</span>
+<span class="lineNum">      22 </span><span class="lineNoCov">          0 :     return true;</span>
+<span class="lineNum">      23 </span>            :   }
+<span class="lineNum">      24 </span>            : }
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 : Interaction_Matrix load_three_column_file(string &amp; in_file_name){</span>
+<span class="lineNum">      28 </span>            :   ////this is a text file food web, skip all rOops stuff
+<span class="lineNum">      29 </span>            :   //first, find the size of the web:
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :   int maxindex=0;</span>
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :   int minindex=INT_MAX;</span>
+<span class="lineNum">      32 </span>            :   {
+<span class="lineNum">      33 </span>            :     // the programmer does not like c++ style file i/o:
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :     cout &lt;&lt; &quot;Reading &quot; &lt;&lt; in_file_name &lt;&lt; endl;</span>
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 :     FILE* webf=fopen(in_file_name.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :     if(webf==0)</span>
+<span class="lineNum">      37 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;problem opening &quot; &lt;&lt; in_file_name);</span>
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :     while(!feof(webf)){</span>
+<span class="lineNum">      39 </span>            :       int index;
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :       if(fscanf(webf,&quot;%i&quot;,&amp;index)){</span>
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :         if(index&gt;maxindex) maxindex=index;</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :         if(index&lt;minindex) minindex=index;</span>
+<span class="lineNum">      43 </span>            :       }
+<span class="lineNum">      44 </span>            :       char c;
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :       do{</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :         c=fgetc(webf);</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :       }while((c&lt;'0' || c&gt;'9') &amp;&amp; !feof(webf));</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :       ungetc(c,webf);</span>
+<span class="lineNum">      49 </span>            :     }
+<span class="lineNum">      50 </span><span class="lineNoCov">          0 :     fclose(webf);</span>
+<span class="lineNum">      51 </span>            :   }
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :   Interaction_Matrix im(maxindex-minindex+1);</span>
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 :   im.label_species_by_index();</span>
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :   if(minindex)</span>
+<span class="lineNum">      55 </span><span class="lineNoCov">          0 :     cout &lt;&lt; &quot;!!!! Species index in file starts from &quot; </span>
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :          &lt;&lt; minindex &lt;&lt; endl;</span>
+<span class="lineNum">      57 </span>            :   {
+<span class="lineNum">      58 </span>            :     // the programmer does not like c++ style file i/o:
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :     FILE* webf=fopen(in_file_name.c_str(),&quot;r&quot;);</span>
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :     if(webf==0) FATAL_ERROR(&quot;Could not open input file&quot;);</span>
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :     while(!feof(webf)){</span>
+<span class="lineNum">      62 </span>            :       int predator_index;
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :       if(fscanf(webf,&quot;%i&quot;,&amp;predator_index)&lt;1)</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :         WARNING(&quot;Unexpected trouble reading file&quot;);</span>
+<span class="lineNum">      65 </span>            :       int prey_start_index;
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :       if(!separator_then_digit(webf))</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :         FATAL_ERROR(&quot;Unexpected trouble reading file&quot;);</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :       fscanf(webf,&quot;%i&quot;,&amp;prey_start_index);</span>
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 :       int prey_stop_index=prey_start_index;</span>
+<span class="lineNum">      70 </span><span class="lineNoCov">          0 :       if(separator_then_digit(webf))</span>
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :         fscanf(webf,&quot;%i&quot;,&amp;prey_stop_index);</span>
+<span class="lineNum">      72 </span>            :       //        cout &lt;&lt; predator_index &lt;&lt; &quot;\t&quot; 
+<span class="lineNum">      73 </span>            :       //             &lt;&lt; prey_start_index &lt;&lt; &quot;\t&quot;
+<span class="lineNum">      74 </span>            :       //             &lt;&lt; prey_stop_index &lt;&lt; endl;
+<span class="lineNum">      75 </span>            :       ASSERT(prey_stop_index&gt;=prey_start_index);
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :       for(int i=prey_start_index;i&lt;=prey_stop_index;i++){</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :         im[predator_index-minindex][i-minindex]=</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :           NetworkAnalysis::eats;</span>
+<span class="lineNum">      79 </span>            :       }
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :       while(fgetc(webf)!='\n' &amp;&amp; !feof(webf)){} // drop the rest of the line</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :       ungetc(getc(webf),webf); // force eof at end of file</span>
+<span class="lineNum">      82 </span>            :     }
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :     fclose(webf);</span>
+<span class="lineNum">      84 </span>            :   }
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :   return im;</span>
+<span class="lineNum">      86 </span>            : }
+<span class="lineNum">      87 </span>            : 
+<a name="88"><span class="lineNum">      88 </span>            : #include &lt;fstream&gt;</a>
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 : void save_three_column_file(Interaction_Matrix &amp; m,const char * name){</span>
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :   ofstream os(name);</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;m.size();i++){</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;m.size();j++){</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :       if(m[i][j]==NetworkAnalysis::eats){</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :         os &lt;&lt; i &lt;&lt; &quot;,&quot; &lt;&lt; j &lt;&lt; &quot;,&quot; &lt;&lt; endl;</span>
+<span class="lineNum">      96 </span>            :       }
+<a name="97"><span class="lineNum">      97 </span>            :     }</a>
+<span class="lineNum">      98 </span>            :   }
+<span class="lineNum">      99 </span><span class="lineCov">        135 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+// -*- c++ -*-
+// $Id: standardize.h 1431 2009-05-04 12:22:40Z axel $
+
+#ifndef __STANDARDIZE_H__
+#define __STANDARDIZE_H__
+
+#include "NetworkAnalysis.h"
+
+/// Standardize an interaction matrix.
+/** Used for comparison with empirical data.  If never_standardize==0
+    lump_lowest_level==1 (the defaults), follows the procedure by
+    Rossberg t al., J. Theor. Biol., 241(3), 552–563 (2006).*/
+Interaction_Matrix standardize(const Interaction_Matrix & rim);
+
+#endif // __STANDARDIZE_H__

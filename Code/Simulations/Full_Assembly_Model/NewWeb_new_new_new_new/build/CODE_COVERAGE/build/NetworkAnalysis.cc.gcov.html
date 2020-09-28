@@ -1,0 +1,1636 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/NetworkAnalysis.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - NetworkAnalysis.cc<span style="font-size: 80%;"> (source / <a href="NetworkAnalysis.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntry">701</td>
+            <td class="headerCovTableEntryLo">1.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">79</td>
+            <td class="headerCovTableEntryLo">5.1 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // $Id: NetworkAnalysis.cc 2466 2016-05-01 23:27:44Z axel $</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #include &quot;NetworkAnalysis.h&quot;
+<span class="lineNum">       4 </span>            : #include &quot;NetworkHelpers.h&quot;
+<span class="lineNum">       5 </span>            : #include &lt;iomanip&gt;
+<span class="lineNum">       6 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">       7 </span>            : #include &lt;string&gt;
+<span class="lineNum">       8 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">       9 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">      10 </span>            : #include &lt;numeric&gt;
+<span class="lineNum">      11 </span>            : #include &quot;random.h&quot;
+<span class="lineNum">      12 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">      13 </span>            : #include &quot;Statistics.h&quot;
+<span class="lineNum">      14 </span>            : #ifdef WITH_GSL
+<span class="lineNum">      15 </span>            : #include &lt;gsl/gsl_sf.h&gt;              // special functions
+<span class="lineNum">      16 </span>            : #endif
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : using namespace std;
+<a name="19"><span class="lineNum">      19 </span>            : </a>
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span><span class="lineNoCov">          0 : int Interaction_Matrix::Number_of_Species_S() const</span>
+<span class="lineNum">      22 </span>            : {
+<span class="lineNum">      23 </span><span class="lineNoCov">          0 :   return the_size;</span>
+<span class="lineNum">      24 </span>            : }
+<a name="25"><span class="lineNum">      25 </span>            : </a>
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span><span class="lineNoCov">          0 : int Interaction_Matrix::Number_of_Links_L()</span>
+<span class="lineNum">      28 </span>            : {
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 :   int count=0;</span>
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++)</span>
+<span class="lineNum">      31 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++)</span>
+<span class="lineNum">      32 </span><span class="lineNoCov">          0 :       if((*this)[i][j]!=NetworkAnalysis::none) count++;</span>
+<span class="lineNum">      33 </span><span class="lineNoCov">          0 :   return count;</span>
+<a name="34"><span class="lineNum">      34 </span>            : }</a>
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 : void Interaction_Matrix::label_species_by_index(){</span>
+<span class="lineNum">      37 </span>            : #if defined(NO_POPULATION_DYNAMICS) || defined(NEW_POPULATION_DYNAMICS)
+<span class="lineNum">      38 </span>            : #else
+<span class="lineNum">      39 </span>            :   for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">      40 </span>            :     the_species[i].push_back(new Index_Species(i));
+<span class="lineNum">      41 </span>            :   }
+<span class="lineNum">      42 </span>            : #endif
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">      47 </span>            : static double total_biomass_sum(const Species_List &amp; l){
+<span class="lineNum">      48 </span>            :   double s=0;
+<span class="lineNum">      49 </span>            :   for(Species_List::const_iterator i=l.begin();
+<span class="lineNum">      50 </span>            :       i!=l.end();
+<span class="lineNum">      51 </span>            :       i++){
+<span class="lineNum">      52 </span>            :     s+=(*i)-&gt;biomass_abundance_B();
+<span class="lineNum">      53 </span>            :   }
+<span class="lineNum">      54 </span>            :   return s;
+<span class="lineNum">      55 </span>            : }
+<a name="56"><span class="lineNum">      56 </span>            : #endif</a>
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span><span class="lineCov">         45 : Interaction_Matrix::Interaction_Matrix(const Interaction_Matrix&amp; matrix):</span>
+<span class="lineNum">      59 </span><span class="lineCov">         45 :   IMatrix(matrix),the_size(matrix.size()),</span>
+<span class="lineNum">      60 </span><span class="lineCov">        135 :   the_species(matrix.the_species)</span>
+<span class="lineNum">      61 </span>            : {
+<a name="62"><span class="lineNum">      62 </span><span class="lineCov">         45 : };</span></a>
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span><span class="lineCov">         45 : Interaction_Matrix const &amp; Interaction_Matrix::operator=</span>
+<span class="lineNum">      65 </span>            : (Interaction_Matrix const&amp; matrix){
+<span class="lineNum">      66 </span>            :   //ASSERT(this-&gt;the_size == matrix.the_size); ??? What is this good for ???
+<span class="lineNum">      67 </span><span class="lineCov">         45 :   if(this != &amp;matrix){</span>
+<span class="lineNum">      68 </span><span class="lineCov">         45 :     the_size=matrix.the_size;</span>
+<span class="lineNum">      69 </span><span class="lineCov">         90 :     the_species=matrix.the_species;</span>
+<span class="lineNum">      70 </span><span class="lineCov">         45 :     this-&gt;IMatrix::operator=(matrix);</span>
+<span class="lineNum">      71 </span>            :   }
+<span class="lineNum">      72 </span><span class="lineCov">         45 :   return (*this);</span>
+<span class="lineNum">      73 </span>            : };
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 : void Interaction_Matrix::Print(std::ostream &amp;os) const</span>
+<span class="lineNum">      77 </span>            : {
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :   os &lt;&lt; std::setw(3);</span>
+<span class="lineNum">      79 </span>            :   
+<span class="lineNum">      80 </span>            :   // horizontal scale:
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;WEB   &quot;;</span>
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :     os &lt;&lt; (j/10)%10;</span>
+<span class="lineNum">      84 </span>            :   }
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :   os &lt;&lt; endl;</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;WEB   &quot;;</span>
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :   for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :     os &lt;&lt; (j)%10;</span>
+<span class="lineNum">      89 </span>            :   }
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :   os &lt;&lt; endl;</span>
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :     os &lt;&lt; &quot;WEB&quot;&lt;&lt; ((i%100)&lt;10?&quot;0&quot;:&quot;&quot;) &lt;&lt; i%100&lt;&lt;&quot; &quot;;</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :       string s=&quot;.&quot;;</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :       if((*this)[j][i])</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :         s[0]='0'+(*this)[j][i];</span>
+<span class="lineNum">      98 </span><span class="lineNoCov">          0 :       os &lt;&lt; s ;</span>
+<span class="lineNum">      99 </span>            :     }
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     102 </span>            :     os &lt;&lt; &quot;  &quot; &lt;&lt; total_biomass_sum(the_species[i]);
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :     for(Species_List::const_iterator j=the_species[i].begin();
+<span class="lineNum">     105 </span>            :         j!=the_species[i].end();
+<span class="lineNum">     106 </span>            :         j++){
+<span class="lineNum">     107 </span>            : #if !defined(NEW_POPULATION_DYNAMICS)
+<span class="lineNum">     108 </span>            :       Species_with_Individuals * rs=dynamic_cast&lt;Species_with_Individuals *&gt;(*j);
+<span class="lineNum">     109 </span>            : #else
+<span class="lineNum">     110 </span>            :       NewSpecies * rs = *j;
+<span class="lineNum">     111 </span>            : #endif
+<span class="lineNum">     112 </span>            :       if(rs){
+<span class="lineNum">     113 </span>            :         os &lt;&lt; &quot;  &quot; &lt;&lt; rs-&gt;bodymass();
+<span class="lineNum">     114 </span>            :       }
+<span class="lineNum">     115 </span>            :       else
+<span class="lineNum">     116 </span>            :         os &lt;&lt; &quot;  &quot; &lt;&lt; &quot;xx&quot;;
+<span class="lineNum">     117 </span>            :     }
+<span class="lineNum">     118 </span>            : #endif
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :     os &lt;&lt; endl;</span>
+<span class="lineNum">     120 </span>            :   }// for i
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 : void Interaction_Matrix::PPrint(std::ostream &amp;os) const</span>
+<span class="lineNum">     125 </span>            : {
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :   os &lt;&lt; std::setw(3);</span>
+<span class="lineNum">     127 </span>            :   
+<span class="lineNum">     128 </span>            :   // horizontal scale:
+<span class="lineNum">     129 </span>            : //   for(int j=0;j&lt;the_size;j++){
+<span class="lineNum">     130 </span>            : //     os &lt;&lt; (j)%10;
+<span class="lineNum">     131 </span>            : //       }
+<span class="lineNum">     132 </span>            : //   os &lt;&lt; endl;
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     135 </span>            : //     os &lt;&lt; i%10&lt;&lt;&quot; &quot;;
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :     os &lt;&lt; &quot;WIB &quot;;</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :       string s=&quot;.&quot;;</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :       if((*this)[j][i])</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :         s[0]='X';</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :       os &lt;&lt; s ;</span>
+<span class="lineNum">     142 </span>            :     }
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     os &lt;&lt; endl;</span>
+<span class="lineNum">     145 </span>            :   }// for i
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;WIB &quot; &lt;&lt; endl;</span>
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 : istream &amp; operator&gt;&gt;(istream &amp;is, Interaction_Matrix &amp; im){</span>
+<span class="lineNum">     152 </span>            :   int S;
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :   string l;</span>
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :   is &gt;&gt; S;</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :   im=Interaction_Matrix(S);</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;S;i++){</span>
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :     is &gt;&gt; l;</span>
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :     if(l.size()!=S){</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :       FATAL_ERROR(&quot;input data has wrong format&quot;);</span>
+<span class="lineNum">     161 </span>            :     }
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :     for(int j=S;j--&gt;0;){</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :       im[j][i]=(l[j]=='.' ? </span>
+<span class="lineNum">     164 </span>            :                 NetworkAnalysis::none : 
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :                 NetworkAnalysis::eats );</span>
+<span class="lineNum">     166 </span>            :     }
+<span class="lineNum">     167 </span>            :   }
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :   return is;</span>
+<span class="lineNum">     169 </span>            : }
+<a name="170"><span class="lineNum">     170 </span>            : </a>
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 : void Interaction_Matrix::tPrint(std::ostream &amp;os) const</span>
+<span class="lineNum">     173 </span>            : {
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :   os &lt;&lt; the_size &lt;&lt; endl;</span>
+<span class="lineNum">     175 </span>            :   
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :       os &lt;&lt; ((*this)[j][i] ? 'X' : '.') ;</span>
+<span class="lineNum">     179 </span>            :     }
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :     os &lt;&lt; endl;</span>
+<span class="lineNum">     181 </span>            :   }
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     183 </span>            : 
+<a name="184"><span class="lineNum">     184 </span><span class="lineCov">        135 : const string PGM_magic=&quot;P5&quot;; </span></a>
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 : void Interaction_Matrix::pgm_write(const char * filename)</span>
+<span class="lineNum">     187 </span>            : {
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :   std::ofstream os(filename);</span>
+<span class="lineNum">     189 </span>            :   
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :   os &lt;&lt; PGM_magic &lt;&lt; endl;</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :   os &lt;&lt; the_size &lt;&lt; endl; //width</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :   os &lt;&lt; the_size &lt;&lt; endl; //height</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :   os &lt;&lt; 1 &lt;&lt; endl; //maximum graylevel, i.e. black/white image</span>
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :       int value=1;</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :       if((*this)[j][i])</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :         value=0;</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :       os &lt;&lt; char(value);</span>
+<span class="lineNum">     201 </span>            :     }
+<span class="lineNum">     202 </span>            :   }// for i
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 : }</span>
+<a name="204"><span class="lineNum">     204 </span>            : </a>
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 : double Interaction_Matrix::connectance_C(){</span>
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :   return double(Number_of_Links_L())/</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :     (double(Number_of_Species_S())*double(Number_of_Species_S()));</span>
+<a name="209"><span class="lineNum">     209 </span>            : }</a>
+<span class="lineNum">     210 </span>            :   
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 : double Interaction_Matrix::links_per_species_Z(){</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :   return double(Number_of_Links_L())/</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :     (double(Number_of_Species_S()));</span>
+<span class="lineNum">     214 </span>            : }
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : // Interaction_Matrix Interaction_Matrix::tsort(){
+<span class="lineNum">     217 </span>            : //   string tmp_file_name = &quot;/tmp/NAtmp.dat&quot;;
+<span class="lineNum">     218 </span>            : //   FILE * TS = popen((&quot;tsort - &gt; &quot;+tmp_file_name+&quot; 2&gt; /dev/null&quot;).c_str(),&quot;w&quot;);
+<span class="lineNum">     219 </span>            : //   for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">     220 </span>            : //     fprintf(TS,&quot;%i &quot;,i);
+<span class="lineNum">     221 </span>            : //     fprintf(stdout,&quot;%i &quot;,i);
+<span class="lineNum">     222 </span>            : //     for(int j=0;j&lt;the_size;j++){
+<span class="lineNum">     223 </span>            : //       if((*this)[i][j]){
+<span class="lineNum">     224 </span>            : //      fprintf(TS,&quot;%i &quot;,j);
+<span class="lineNum">     225 </span>            : //      fprintf(stdout,&quot;%i &quot;,j);
+<span class="lineNum">     226 </span>            : //       }
+<span class="lineNum">     227 </span>            : //     }
+<span class="lineNum">     228 </span>            : //     fprintf(TS,&quot;\n&quot;,i);
+<span class="lineNum">     229 </span>            : //     fprintf(stdout,&quot;\n&quot;,i);
+<span class="lineNum">     230 </span>            : //   }
+<span class="lineNum">     231 </span>            : //   pclose(TS);
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            : //   TS=fopen(tmp_file_name.c_str(),&quot;r&quot;);
+<span class="lineNum">     234 </span>            : //   int perm[the_size];
+<span class="lineNum">     235 </span>            : //   cout &lt;&lt; &quot;perm: &quot;;
+<span class="lineNum">     236 </span>            : //   for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">     237 </span>            : //     fscanf(TS,&quot;%i&quot;,&amp;perm[i]);
+<span class="lineNum">     238 </span>            : //     cout &lt;&lt; perm[i] &lt;&lt; &quot; &quot; ;
+<span class="lineNum">     239 </span>            : //   }
+<span class="lineNum">     240 </span>            : //   cout &lt;&lt; endl;
+<span class="lineNum">     241 </span>            : //   fclose(TS);
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            : //   IMatrix pm(the_size,the_size);
+<span class="lineNum">     244 </span>            : //   for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">     245 </span>            : //     for(int j=0;j&lt;the_size;j++){
+<span class="lineNum">     246 </span>            : //       //      pm[i][j]=(*this)[perm[i]][perm[j]];
+<span class="lineNum">     247 </span>            : //       pm[perm[i]][perm[j]]=(*this)[i][j];
+<span class="lineNum">     248 </span>            : //     }
+<span class="lineNum">     249 </span>            : //   }
+<span class="lineNum">     250 </span>            : //   Interaction_Matrix new_im(the_size);
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            : //   for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">     253 </span>            : //     for(int j=0;j&lt;the_size;j++){
+<span class="lineNum">     254 </span>            : //       (new_im)[i][j]=pm[i][j];
+<span class="lineNum">     255 </span>            : //     }
+<span class="lineNum">     256 </span>            : //   }
+<span class="lineNum">     257 </span>            : //   return new_im;
+<span class="lineNum">     258 </span>            : // }
+<a name="259"><span class="lineNum">     259 </span>            : </a>
+<span class="lineNum">     260 </span>            : Interaction_Matrix 
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 : Interaction_Matrix::permute(permutation new_pos) const{</span>
+<span class="lineNum">     262 </span>            :   ASSERT((int)new_pos.size()==the_size);
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :   Interaction_Matrix pm(the_size);</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     265 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     266 </span>            :     pm.the_species[new_pos[i]]=the_species[i];
+<span class="lineNum">     267 </span>            : #endif
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :       pm[new_pos[i]][new_pos[j]]=(*this)[i][j];</span>
+<span class="lineNum">     270 </span>            :     }
+<span class="lineNum">     271 </span>            :   }
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :   return pm;</span>
+<span class="lineNum">     273 </span>            : }
+<a name="274"><span class="lineNum">     274 </span>            : </a>
+<span class="lineNum">     275 </span>            : Interaction_Matrix 
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 : Interaction_Matrix::select(simple_vector&lt;bool&gt; &amp;sel) const {</span>
+<span class="lineNum">     277 </span>            :   ASSERT((int) sel.size()==the_size);
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :   int n_sels=count_if(sel.begin(),sel.end(),</span>
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :                       bind2nd(equal_to&lt;bool&gt;(),true) );</span>
+<span class="lineNum">     281 </span>            :   
+<span class="lineNum">     282 </span>            :   // make interaction matrix only for sels:
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :   Interaction_Matrix sel_im(n_sels);</span>
+<span class="lineNum">     284 </span>            :   int i,j,k,l;
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :   for(i=0,j=0; i&lt;the_size; i++)</span>
+<span class="lineNum">     286 </span><span class="lineNoCov">          0 :     if(sel[i]){</span>
+<span class="lineNum">     287 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     288 </span>            :       sel_im.the_species[j]=the_species[i];
+<span class="lineNum">     289 </span>            : #endif
+<span class="lineNum">     290 </span><span class="lineNoCov">          0 :       for(k=0,l=0; k&lt;the_size; k++)</span>
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :         if(sel[k]){</span>
+<span class="lineNum">     292 </span>            :           NetworkAnalysis::Interaction ii=
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :             (*this)[i][k];</span>
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :           sel_im[j][l]=ii;</span>
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :           l++;</span>
+<span class="lineNum">     296 </span>            :         }
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :       j++;</span>
+<span class="lineNum">     298 </span>            :     }
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :   return sel_im;</span>
+<span class="lineNum">     300 </span>            : }
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span>            : Interaction_Matrix 
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 : Interaction_Matrix::remove_lowest_level(){</span>
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :   simple_vector&lt;bool&gt; sel(the_size);</span>
+<span class="lineNum">     305 </span>            :   // make interaction matrix only for sels:
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :   for(int i=0; i&lt;the_size; i++){</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :     for(int j=0; j&lt;the_size ;j++){//simple_vectorized</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :       if( (*this)[i][j] != NetworkAnalysis::none ){</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :         sel[i]=true;</span>
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     311 </span>            :       }
+<span class="lineNum">     312 </span>            :     }
+<span class="lineNum">     313 </span>            :   }
+<span class="lineNum">     314 </span><span class="lineNoCov">          0 :   return select(sel);</span>
+<span class="lineNum">     315 </span>            : }
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            : #if 1 //new definition of lump_lowest_level:
+<span class="lineNum">     318 </span>            : Interaction_Matrix 
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 : Interaction_Matrix::lump_lowest_level(){</span>
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :   simple_vector&lt;bool&gt; lowest_level(the_size,true);</span>
+<span class="lineNum">     321 </span><span class="lineNoCov">          0 :   simple_vector&lt;bool&gt; selection(the_size,true);</span>
+<span class="lineNum">     322 </span>            :   //this sometimes yields the complete web as the lowest level!!:
+<span class="lineNum">     323 </span>            : 
+<span class="lineNum">     324 </span>            :   // make interaction matrix only for sels:
+<span class="lineNum">     325 </span><span class="lineNoCov">          0 :   for(int i=0; i&lt;the_size; i++){</span>
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :     for(int j=0; j&lt;the_size ;j++){//simple_vectorized</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :       if( eats(i,j) ){</span>
+<span class="lineNum">     328 </span><span class="lineNoCov">          0 :         lowest_level[i]=false;</span>
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :         break;</span>
+<span class="lineNum">     330 </span>            :       }
+<span class="lineNum">     331 </span>            :     }
+<span class="lineNum">     332 </span>            :   }
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            :   int j=0; // the first species in lowest level
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 :   while(j&lt;the_size &amp;&amp; !lowest_level[j]) j++;</span>
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :   if(j==the_size){</span>
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :     REPORT(the_size);</span>
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :     PPrint();</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :     WARNING(&quot;there is no lowest level in food web&quot;);</span>
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :     return *this;</span>
+<span class="lineNum">     342 </span>            :   }
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :   Interaction_Matrix m2=*this;</span>
+<span class="lineNum">     345 </span>            :   // lump together
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :     if(i&gt;j &amp;&amp; lowest_level[i]){</span>
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :       selection[i]=false;</span>
+<span class="lineNum">     349 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     350 </span>            :       m2.the_species[j].insert(m2.the_species[j].end(),
+<span class="lineNum">     351 </span>            :                                m2.the_species[i].begin(),
+<span class="lineNum">     352 </span>            :                                m2.the_species[i].end() );
+<span class="lineNum">     353 </span>            : #endif
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :       for(int k=0;k&lt;the_size;k++){</span>
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :         NetworkAnalysis::Interaction ii=m2[k][i];</span>
+<span class="lineNum">     356 </span><span class="lineNoCov">          0 :         NetworkAnalysis::Interaction ij=m2[k][j];</span>
+<span class="lineNum">     357 </span><span class="lineNoCov">          0 :         if(ii&gt;ij) m2[k][j]=ii;</span>
+<span class="lineNum">     358 </span>            :       }
+<span class="lineNum">     359 </span>            :     }
+<span class="lineNum">     360 </span>            :   }
+<span class="lineNum">     361 </span>            :   
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 :   return m2.select(selection);</span>
+<span class="lineNum">     363 </span>            : }
+<span class="lineNum">     364 </span>            : #else
+<span class="lineNum">     365 </span>            : Interaction_Matrix 
+<span class="lineNum">     366 </span>            : Interaction_Matrix::lump_lowest_level(){
+<span class="lineNum">     367 </span>            :   simple_vector&lt;bool&gt; lowest_level(the_size);
+<span class="lineNum">     368 </span>            :   simple_vector&lt;bool&gt; selection(the_size,true);
+<span class="lineNum">     369 </span>            :   //this sometimes yields the complete web as the lowest level!!:
+<span class="lineNum">     370 </span>            :   find_lowest_level(*this,lowest_level);
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span>            :   int j=0; // the first species in lowest level
+<span class="lineNum">     373 </span>            :   while(!lowest_level[j]) j++;
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span>            :   Interaction_Matrix m2=*this;
+<span class="lineNum">     376 </span>            :   // lump together
+<span class="lineNum">     377 </span>            :   for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">     378 </span>            :     if(i&gt;j &amp;&amp; lowest_level[i]){
+<span class="lineNum">     379 </span>            :       selection[i]=false;
+<span class="lineNum">     380 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     381 </span>            :       m2.the_species[j].insert(m2.the_species[j].end(),
+<span class="lineNum">     382 </span>            :                                m2.the_species[i].begin(),
+<span class="lineNum">     383 </span>            :                                m2.the_species[i].end() );
+<span class="lineNum">     384 </span>            : #endif
+<span class="lineNum">     385 </span>            :       for(int k=0;k&lt;the_size;k++){
+<span class="lineNum">     386 </span>            :         NetworkAnalysis::Interaction ii=m2[k][i];
+<span class="lineNum">     387 </span>            :         NetworkAnalysis::Interaction ij=m2[k][j];
+<span class="lineNum">     388 </span>            :         if(ii&gt;ij) m2[k][j]=ii;
+<span class="lineNum">     389 </span>            :       }
+<span class="lineNum">     390 </span>            :     }
+<span class="lineNum">     391 </span>            :   }
+<span class="lineNum">     392 </span>            :   
+<span class="lineNum">     393 </span>            :   return m2.select(selection);
+<span class="lineNum">     394 </span>            : }
+<a name="395"><span class="lineNum">     395 </span>            : #endif</a>
+<span class="lineNum">     396 </span>            : 
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 : int Interaction_Matrix::prop_Cy4() const{</span>
+<span class="lineNum">     398 </span><span class="lineNoCov">          0 :   return Cy4(*this);</span>
+<span class="lineNum">     399 </span>            : }
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 : Interaction_Matrix Interaction_Matrix::randomize(){</span>
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :   Interaction_Matrix im(size());</span>
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :   int S=size();</span>
+<span class="lineNum">     404 </span>            :   int L=Number_of_Links_L();
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;L;i++){</span>
+<span class="lineNum">     406 </span>            :     int x,y;
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :     do{</span>
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :       x=int(random_double(S));</span>
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :       y=int(random_double(S));</span>
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :     }while(im[x][y] || x==y);</span>
+<span class="lineNum">     411 </span><span class="lineNoCov">          0 :     im[x][y]=NetworkAnalysis::eats;</span>
+<span class="lineNum">     412 </span>            :   }
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :   return im;</span>
+<span class="lineNum">     414 </span>            : }
+<span class="lineNum">     415 </span>            : 
+<span class="lineNum">     416 </span><span class="lineNoCov">          0 : Interaction_Matrix Interaction_Matrix::tsort(){</span>
+<span class="lineNum">     417 </span>            :   //return forgiving_tsort(*this);
+<span class="lineNum">     418 </span>            :   graphs_stats_data stats=
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :     graph_analyze(*this,false/*don't do multiplicities*/);</span>
+<span class="lineNum">     420 </span><span class="lineNoCov">          0 :   return stats.sorted;</span>
+<span class="lineNum">     421 </span>            : }
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 : Interaction_Matrix Interaction_Matrix::tsort2(){</span>
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :   const int unset=-1;</span>
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :   permutation perm(the_size);</span>
+<span class="lineNum">     426 </span>            :   
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :     perm[i]=unset;</span>
+<span class="lineNum">     429 </span>            :   }
+<span class="lineNum">     430 </span>            :   
+<span class="lineNum">     431 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     432 </span>            :     //find species for i-th position:
+<span class="lineNum">     433 </span>            : 
+<span class="lineNum">     434 </span>            :     //find an unset species j that is eaten by most n other unset k, keeping
+<span class="lineNum">     435 </span>            :     //n as small as possible:
+<span class="lineNum">     436 </span><span class="lineNoCov">          0 :     for(int n=0;n&lt;2*the_size;n++){</span>
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :       for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :         if(perm[j]==unset){</span>
+<span class="lineNum">     439 </span>            :           int count=0;
+<span class="lineNum">     440 </span><span class="lineNoCov">          0 :           for(int k=0;k&lt;the_size;k++){</span>
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :             if(k!=j &amp;&amp; perm[k]==unset){</span>
+<span class="lineNum">     442 </span>            :               //count+=(*this)[j][k]==NetworkAnalysis::eats;
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :               count+=((int)(*this)[k][j]==(int)NetworkAnalysis::eats);</span>
+<span class="lineNum">     444 </span>            :             }
+<span class="lineNum">     445 </span>            :           }// for k
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :           if(count==n){</span>
+<span class="lineNum">     447 </span>            :             //register j as i-the species:
+<span class="lineNum">     448 </span><span class="lineNoCov">          0 :             perm[j]=i;</span>
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :             goto next_i;</span>
+<span class="lineNum">     450 </span>            :           }// if
+<span class="lineNum">     451 </span>            :         }// if
+<span class="lineNum">     452 </span>            :       }// for j
+<span class="lineNum">     453 </span>            :     }// for n
+<span class="lineNum">     454 </span>            :      //a species can have at most the_size-1 predators, therefore:
+<span class="lineNum">     455 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;This point should not be reached!&quot;);</span>
+<span class="lineNum">     456 </span>            :   next_i:;
+<span class="lineNum">     457 </span>            :   }// for i
+<span class="lineNum">     458 </span>            : 
+<span class="lineNum">     459 </span><span class="lineNoCov">          0 :   return (*this).permute(perm);</span>
+<span class="lineNum">     460 </span>            : }
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     463 </span>            : double average_mass(Species_List l){
+<span class="lineNum">     464 </span>            :   double sum=0;
+<span class="lineNum">     465 </span>            :   for(Species_List::iterator s=l.begin();
+<span class="lineNum">     466 </span>            :       s!=l.end();
+<span class="lineNum">     467 </span>            :       s++){
+<span class="lineNum">     468 </span>            : #if defined(NEW_POPULATION_DYNAMICS)
+<span class="lineNum">     469 </span>            :     sum+=(*s)-&gt;bodymass();
+<span class="lineNum">     470 </span>            : #else
+<span class="lineNum">     471 </span>            :     if(Species_with_Individuals *si=
+<span class="lineNum">     472 </span>            :        dynamic_cast&lt;Species_with_Individuals *&gt;(*s) ){
+<span class="lineNum">     473 </span>            :       sum+=si-&gt;bodymass();
+<span class="lineNum">     474 </span>            :     }
+<span class="lineNum">     475 </span>            :     else
+<span class="lineNum">     476 </span>            :       WARNING(&quot;Species without mass!!&quot;);
+<span class="lineNum">     477 </span>            : #endif
+<span class="lineNum">     478 </span>            :   }
+<span class="lineNum">     479 </span>            :   return sum/l.size();
+<span class="lineNum">     480 </span>            : }
+<span class="lineNum">     481 </span>            : #endif
+<span class="lineNum">     482 </span>            : 
+<span class="lineNum">     483 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     484 </span>            : class higher_average_mass_in {
+<span class="lineNum">     485 </span>            : private:
+<span class="lineNum">     486 </span>            :   Interaction_Matrix const &amp; the_matrix;
+<span class="lineNum">     487 </span>            : public:
+<span class="lineNum">     488 </span>            :   higher_average_mass_in(Interaction_Matrix const &amp; m):the_matrix(m){};
+<span class="lineNum">     489 </span>            :   bool operator()(int s1, int s2){
+<span class="lineNum">     490 </span>            :     return 
+<span class="lineNum">     491 </span>            :       (average_mass(the_matrix.the_species[s1]) &gt;=
+<span class="lineNum">     492 </span>            :        average_mass(the_matrix.the_species[s2])    );
+<span class="lineNum">     493 </span>            :   }
+<span class="lineNum">     494 </span>            : };
+<span class="lineNum">     495 </span>            : 
+<span class="lineNum">     496 </span>            :                          
+<span class="lineNum">     497 </span>            : Interaction_Matrix Interaction_Matrix::msort(){
+<span class="lineNum">     498 </span>            :   // sort by mass
+<span class="lineNum">     499 </span>            :   permutation perm(the_size);
+<span class="lineNum">     500 </span>            :   for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">     501 </span>            :     perm[i]=i;
+<span class="lineNum">     502 </span>            :   }
+<span class="lineNum">     503 </span>            :   stable_sort(perm.begin(),perm.end(),higher_average_mass_in(*this));
+<span class="lineNum">     504 </span>            :   permutation p2=perm.inverse();
+<span class="lineNum">     505 </span>            :   return this-&gt;permute(p2);
+<span class="lineNum">     506 </span>            : }
+<span class="lineNum">     507 </span>            : #endif
+<span class="lineNum">     508 </span>            :   
+<span class="lineNum">     509 </span>            : 
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 : class random_ranking {</span>
+<span class="lineNum">     511 </span>            : private:
+<span class="lineNum">     512 </span>            :   simple_vector&lt;double&gt; ranking;
+<span class="lineNum">     513 </span>            : public:
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :   random_ranking(int size):ranking(simple_vector&lt;double&gt;(size)){</span>
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :     for(int i=0;i&lt;size;i++){</span>
+<span class="lineNum">     516 </span><span class="lineNoCov">          0 :       ranking[i]=random_double(1);</span>
+<span class="lineNum">     517 </span>            :     }
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     519 </span>            :   bool operator()(int s1, int s2){
+<span class="lineNum">     520 </span>            :     return 
+<span class="lineNum">     521 </span><span class="lineNoCov">          0 :       (ranking[s1] &gt;= ranking[s2] );</span>
+<span class="lineNum">     522 </span>            :   }
+<span class="lineNum">     523 </span>            : };
+<span class="lineNum">     524 </span>            : 
+<span class="lineNum">     525 </span>            :                          
+<span class="lineNum">     526 </span><span class="lineNoCov">          0 : Interaction_Matrix Interaction_Matrix::random_shuffle(){</span>
+<span class="lineNum">     527 </span>            :   // sort by mass
+<span class="lineNum">     528 </span><span class="lineNoCov">          0 :   permutation perm(the_size);</span>
+<span class="lineNum">     529 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     530 </span><span class="lineNoCov">          0 :     perm[i]=i;</span>
+<span class="lineNum">     531 </span>            :   }
+<span class="lineNum">     532 </span><span class="lineNoCov">          0 :   stable_sort(perm.begin(),perm.end(),random_ranking(the_size));</span>
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :   return this-&gt;permute(perm);</span>
+<span class="lineNum">     534 </span>            : }
+<span class="lineNum">     535 </span>            :   
+<span class="lineNum">     536 </span>            : 
+<span class="lineNum">     537 </span>            : class precedes_in {
+<span class="lineNum">     538 </span>            : private:
+<span class="lineNum">     539 </span>            :   Interaction_Matrix const &amp; the_matrix;
+<a name="540"><span class="lineNum">     540 </span>            : public:</a>
+<span class="lineNum">     541 </span>            :   precedes_in(Interaction_Matrix const &amp; m):the_matrix(m){};
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :   bool operator()(int s1, int s2){</span>
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :     int N=the_matrix.size();</span>
+<span class="lineNum">     544 </span><span class="lineNoCov">          0 :     for(int i=0;i&lt;N;i++){</span>
+<span class="lineNum">     545 </span><span class="lineNoCov">          0 :       if(the_matrix[i][s1] &lt; the_matrix[i][s2])</span>
+<span class="lineNum">     546 </span>            :         return true;
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 :       else if (the_matrix[i][s1] &gt; the_matrix[i][s2])</span>
+<span class="lineNum">     548 </span>            :         return false;
+<span class="lineNum">     549 </span>            :     }
+<span class="lineNum">     550 </span><span class="lineNoCov">          0 :     for(int i=0;i&lt;N;i++){</span>
+<span class="lineNum">     551 </span><span class="lineNoCov">          0 :       if(the_matrix[s1][i] &lt; the_matrix[s2][i])</span>
+<span class="lineNum">     552 </span>            :         return true;
+<span class="lineNum">     553 </span><span class="lineNoCov">          0 :       else if (the_matrix[s1][i] &gt; the_matrix[s2][i])</span>
+<span class="lineNum">     554 </span>            :         return false;
+<span class="lineNum">     555 </span>            :     }
+<span class="lineNum">     556 </span>            :     return false;
+<span class="lineNum">     557 </span>            :   }
+<span class="lineNum">     558 </span>            : };
+<span class="lineNum">     559 </span>            : 
+<span class="lineNum">     560 </span>            : class equal_in {
+<span class="lineNum">     561 </span>            : private:
+<span class="lineNum">     562 </span>            :   Interaction_Matrix const &amp; the_matrix;
+<a name="563"><span class="lineNum">     563 </span>            : public:</a>
+<span class="lineNum">     564 </span><span class="lineNoCov">          0 :   equal_in(Interaction_Matrix const &amp; m):the_matrix(m){};</span>
+<span class="lineNum">     565 </span><span class="lineNoCov">          0 :   bool operator()(int s1, int s2){</span>
+<span class="lineNum">     566 </span><span class="lineNoCov">          0 :     int N=the_matrix.size();</span>
+<span class="lineNum">     567 </span><span class="lineNoCov">          0 :     for(int i=0;i&lt;N;i++){// simple_vectorized</span>
+<span class="lineNum">     568 </span><span class="lineNoCov">          0 :       if(the_matrix[i][s1] != the_matrix[i][s2])</span>
+<span class="lineNum">     569 </span>            :         return false;
+<span class="lineNum">     570 </span>            :     }
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :     for(int i=0;i&lt;N;i++){// simple_vectorized</span>
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :       if(the_matrix[s1][i] != the_matrix[s2][i])</span>
+<span class="lineNum">     573 </span>            :         return false;
+<span class="lineNum">     574 </span>            :     }
+<span class="lineNum">     575 </span>            :     return true;
+<span class="lineNum">     576 </span>            :   }
+<span class="lineNum">     577 </span>            : };
+<span class="lineNum">     578 </span>            : 
+<span class="lineNum">     579 </span><span class="lineNoCov">          0 : Interaction_Matrix Interaction_Matrix::trophic(){</span>
+<span class="lineNum">     580 </span>            :   // condense an Interaction_Matrix to a trophical food web
+<span class="lineNum">     581 </span>            : 
+<span class="lineNum">     582 </span><span class="lineNoCov">          0 :   permutation perm(the_size);</span>
+<span class="lineNum">     583 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     584 </span><span class="lineNoCov">          0 :     perm[i]=i;</span>
+<span class="lineNum">     585 </span>            :   }
+<span class="lineNum">     586 </span>            : 
+<span class="lineNum">     587 </span>            :   // sort so that species to be lumped together follow each other:
+<span class="lineNum">     588 </span>            :   //sort(perm.begin(),perm.end(),precedes_in(*this)); 
+<span class="lineNum">     589 </span>            :   //we prefere stable sorting:
+<span class="lineNum">     590 </span><span class="lineNoCov">          0 :   stable_sort(perm.begin(),perm.end(),precedes_in(*this));</span>
+<span class="lineNum">     591 </span><span class="lineNoCov">          0 :   permutation p2=perm.inverse();</span>
+<span class="lineNum">     592 </span><span class="lineNoCov">          0 :   Interaction_Matrix m2=this-&gt;permute(p2);</span>
+<span class="lineNum">     593 </span>            : 
+<span class="lineNum">     594 </span>            :   // generate trophical species:
+<span class="lineNum">     595 </span><span class="lineNoCov">          0 :   equal_in eq=equal_in(m2);</span>
+<span class="lineNum">     596 </span><span class="lineNoCov">          0 :   simple_vector&lt;bool&gt; selected(the_size,false);</span>
+<span class="lineNum">     597 </span><span class="lineNoCov">          0 :   int j=0;</span>
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     599 </span><span class="lineNoCov">          0 :     if(i&gt;j &amp;&amp; eq(i,j)){</span>
+<span class="lineNum">     600 </span>            : #ifndef NO_POPULATION_DYNAMICS
+<span class="lineNum">     601 </span>            :       m2.the_species[j].insert(m2.the_species[j].end(),
+<span class="lineNum">     602 </span>            :                                m2.the_species[i].begin(),
+<span class="lineNum">     603 </span>            :                                m2.the_species[i].end() );
+<span class="lineNum">     604 </span>            : #endif
+<span class="lineNum">     605 </span>            :     }else{
+<span class="lineNum">     606 </span><span class="lineNoCov">          0 :       selected[i]=true;</span>
+<span class="lineNum">     607 </span><span class="lineNoCov">          0 :       j=i;</span>
+<span class="lineNum">     608 </span>            :     }
+<span class="lineNum">     609 </span>            :   }
+<span class="lineNum">     610 </span>            :   
+<span class="lineNum">     611 </span><span class="lineNoCov">          0 :   return m2.select(selected);</span>
+<span class="lineNum">     612 </span>            : }
+<span class="lineNum">     613 </span>            : 
+<span class="lineNum">     614 </span><span class="lineNoCov">          0 : void Interaction_Matrix::prey_hist(std::ostream &amp; co, </span>
+<span class="lineNum">     615 </span>            :                                    string prefix /*=&quot;&quot;*/){
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :   histogram hist=prey_hist();</span>
+<span class="lineNum">     617 </span><span class="lineNoCov">          0 :   distribution p=theoretical_prey_dist(hist.size()+1);</span>
+<span class="lineNum">     618 </span><span class="lineNoCov">          0 :   double S=Number_of_Species_S();</span>
+<span class="lineNum">     619 </span><span class="lineNoCov">          0 :   double L=Number_of_Links_L();</span>
+<span class="lineNum">     620 </span><span class="lineNoCov">          0 :   double z=L/Number_of_Species_S();</span>
+<span class="lineNum">     621 </span>            : 
+<span class="lineNum">     622 </span><span class="lineNoCov">          0 :   histogram ii;</span>
+<span class="lineNum">     623 </span><span class="lineNoCov">          0 :   for(int i=p.size()-1;i&gt;=0;i--)</span>
+<span class="lineNum">     624 </span><span class="lineNoCov">          0 :     ii[i]=i;</span>
+<span class="lineNum">     625 </span>            : 
+<span class="lineNum">     626 </span><span class="lineNoCov">          0 :   hist.resize(p.size());</span>
+<span class="lineNum">     627 </span>            : 
+<span class="lineNum">     628 </span><span class="lineNoCov">          0 :   if(prefix.size()) </span>
+<span class="lineNum">     629 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;prey hist:&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     630 </span><span class="lineNoCov">          0 :   sequence&lt;int&gt; h=0.5+S*p;</span>
+<span class="lineNum">     631 </span><span class="lineNoCov">          0 :   co &lt;&lt; prefix+&quot; &quot;+</span>
+<span class="lineNum">     632 </span><span class="lineNoCov">          0 :     ii.format(&quot;%4g &quot;)+</span>
+<span class="lineNum">     633 </span><span class="lineNoCov">          0 :     hist.format(&quot;%5g &quot;)+</span>
+<span class="lineNum">     634 </span><span class="lineNoCov">          0 :     h.format(&quot;%5i &quot;)+</span>
+<span class="lineNum">     635 </span><span class="lineNoCov">          0 :     (distribution(hist)/S).format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     636 </span><span class="lineNoCov">          0 :     p.format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     637 </span><span class="lineNoCov">          0 :     (distribution(ii)/(2*z)).format(&quot;%#8.3g &quot;);</span>
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span><span class="lineNoCov">          0 :   if(prefix.size()){</span>
+<span class="lineNum">     640 </span><span class="lineNoCov">          0 :     co &lt;&lt; prefix;</span>
+<span class="lineNum">     641 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;basal species fraction: &quot; &lt;&lt; hist[0]/double(the_size) </span>
+<span class="lineNum">     642 </span><span class="lineNoCov">          0 :        &lt;&lt; &quot; (&quot; &lt;&lt; log(1+2*z)/(2*z) &lt;&lt; &quot;)&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     643 </span>            :   }
+<span class="lineNum">     644 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     645 </span>            : 
+<span class="lineNum">     646 </span><span class="lineNoCov">          0 : void Interaction_Matrix::cumulative_prey_hist(std::ostream &amp; co, </span>
+<span class="lineNum">     647 </span>            :                                               string prefix /*=&quot;&quot;*/){
+<span class="lineNum">     648 </span><span class="lineNoCov">          0 :   histogram hist=cumulative_prey_hist();</span>
+<span class="lineNum">     649 </span><span class="lineNoCov">          0 :   distribution p=theoretical_cumulative_prey_dist(hist.size()+1);</span>
+<span class="lineNum">     650 </span><span class="lineNoCov">          0 :   double S=Number_of_Species_S();</span>
+<span class="lineNum">     651 </span><span class="lineNoCov">          0 :   double L=Number_of_Links_L();</span>
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 :   double z=L/S;</span>
+<span class="lineNum">     653 </span>            : 
+<span class="lineNum">     654 </span><span class="lineNoCov">          0 :   histogram ii;</span>
+<span class="lineNum">     655 </span><span class="lineNoCov">          0 :   for(int i=p.size()-1;i&gt;=0;i--)</span>
+<span class="lineNum">     656 </span><span class="lineNoCov">          0 :     ii[i]=i;</span>
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span><span class="lineNoCov">          0 :   hist.resize(p.size());</span>
+<span class="lineNum">     659 </span>            : 
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 :   if(prefix.size()) </span>
+<span class="lineNum">     661 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;cumulative prey hist:&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     662 </span><span class="lineNoCov">          0 :   sequence&lt;int&gt; h=0.5+S*p;</span>
+<span class="lineNum">     663 </span><span class="lineNoCov">          0 :   co &lt;&lt; prefix+&quot; &quot;+</span>
+<span class="lineNum">     664 </span><span class="lineNoCov">          0 :     ii.format(&quot;%4g &quot;)+</span>
+<span class="lineNum">     665 </span><span class="lineNoCov">          0 :     hist.format(&quot;%5g &quot;)+</span>
+<span class="lineNum">     666 </span><span class="lineNoCov">          0 :     h.format(&quot;%5i &quot;)+</span>
+<span class="lineNum">     667 </span><span class="lineNoCov">          0 :     (distribution(hist)/S).format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     668 </span><span class="lineNoCov">          0 :     p.format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     669 </span><span class="lineNoCov">          0 :     (distribution(ii)/(2*z)).format(&quot;%#8.3g &quot;);</span>
+<span class="lineNum">     670 </span>            : 
+<span class="lineNum">     671 </span><span class="lineNoCov">          0 :   if(prefix.size()){</span>
+<span class="lineNum">     672 </span><span class="lineNoCov">          0 :     co &lt;&lt; prefix;</span>
+<span class="lineNum">     673 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;basal species fraction: &quot; &lt;&lt; hist[0]/double(the_size) </span>
+<span class="lineNum">     674 </span><span class="lineNoCov">          0 :        &lt;&lt; &quot; (&quot; &lt;&lt; log(1+2*z)/(2*z) &lt;&lt; &quot;)&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     675 </span>            :   }
+<span class="lineNum">     676 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     677 </span>            : 
+<span class="lineNum">     678 </span>            : 
+<span class="lineNum">     679 </span>            : #if 0// dead code (def ON_SX5FSV)
+<span class="lineNum">     680 </span>            : static double gsl_sf_gamma_inc_P(double a, double x){
+<span class="lineNum">     681 </span>            :   gsl_sf_result res;
+<span class="lineNum">     682 </span>            :   gsl_sf_gamma_inc_P_e(a,x,&amp;res);
+<span class="lineNum">     683 </span>            :   return res.val;
+<span class="lineNum">     684 </span>            : }
+<span class="lineNum">     685 </span>            : static double gsl_sf_expint_Ei(double x){
+<span class="lineNum">     686 </span>            :   gsl_sf_result res;
+<span class="lineNum">     687 </span>            :   gsl_sf_expint_Ei_e(x,&amp;res);
+<span class="lineNum">     688 </span>            :   return res.val;
+<span class="lineNum">     689 </span>            : }
+<span class="lineNum">     690 </span>            : #endif
+<a name="691"><span class="lineNum">     691 </span>            : </a>
+<span class="lineNum">     692 </span>            : 
+<span class="lineNum">     693 </span><span class="lineNoCov">          0 : double P_pred(int m,double z){</span>
+<span class="lineNum">     694 </span>            : #ifdef WITH_GSL
+<span class="lineNum">     695 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     696 </span><span class="lineNoCov">          0 :   double sum_old=-1;</span>
+<span class="lineNum">     697 </span><span class="lineNoCov">          0 :   for(int mm=m;sum!=sum_old;mm++){</span>
+<span class="lineNum">     698 </span><span class="lineNoCov">          0 :     sum_old=sum;</span>
+<span class="lineNum">     699 </span><span class="lineNoCov">          0 :     sum+=gsl_sf_gamma_inc_P(mm+1,2*z);</span>
+<span class="lineNum">     700 </span>            :   }
+<span class="lineNum">     701 </span><span class="lineNoCov">          0 :   return sum/(2*z);</span>
+<span class="lineNum">     702 </span>            : #else
+<span class="lineNum">     703 </span>            :   return 0;
+<span class="lineNum">     704 </span>            : #endif
+<span class="lineNum">     705 </span>            : }
+<span class="lineNum">     706 </span>            :       
+<span class="lineNum">     707 </span>            : 
+<span class="lineNum">     708 </span>            : 
+<span class="lineNum">     709 </span><span class="lineNoCov">          0 : void Interaction_Matrix::predator_hist(std::ostream &amp; co, </span>
+<span class="lineNum">     710 </span>            :                                        string prefix /*=&quot;&quot;*/){
+<span class="lineNum">     711 </span><span class="lineNoCov">          0 :   histogram hist=predator_hist();</span>
+<span class="lineNum">     712 </span><span class="lineNoCov">          0 :   distribution p=theoretical_predator_dist(hist.size()+1);</span>
+<span class="lineNum">     713 </span><span class="lineNoCov">          0 :   double S=Number_of_Species_S();</span>
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :   double L=Number_of_Links_L();</span>
+<span class="lineNum">     715 </span><span class="lineNoCov">          0 :   double z=L/Number_of_Species_S();</span>
+<span class="lineNum">     716 </span>            : 
+<span class="lineNum">     717 </span><span class="lineNoCov">          0 :   histogram ii;</span>
+<span class="lineNum">     718 </span><span class="lineNoCov">          0 :   for(int i=p.size()-1;i&gt;=0;i--)</span>
+<span class="lineNum">     719 </span><span class="lineNoCov">          0 :     ii[i]=i;</span>
+<span class="lineNum">     720 </span>            : 
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :   hist.resize(p.size());</span>
+<span class="lineNum">     722 </span>            : 
+<span class="lineNum">     723 </span><span class="lineNoCov">          0 :   if(prefix.size()) </span>
+<span class="lineNum">     724 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;predator hist:&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     725 </span><span class="lineNoCov">          0 :   sequence&lt;int&gt; h=0.5+S*p;</span>
+<span class="lineNum">     726 </span><span class="lineNoCov">          0 :   co &lt;&lt; prefix+&quot; &quot;+</span>
+<span class="lineNum">     727 </span><span class="lineNoCov">          0 :     ii.format(&quot;%4g &quot;)+</span>
+<span class="lineNum">     728 </span><span class="lineNoCov">          0 :     hist.format(&quot;%5g &quot;)+</span>
+<span class="lineNum">     729 </span><span class="lineNoCov">          0 :     h.format(&quot;%5i &quot;)+</span>
+<span class="lineNum">     730 </span><span class="lineNoCov">          0 :     (distribution(hist)/S).format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     731 </span><span class="lineNoCov">          0 :     p.format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     732 </span><span class="lineNoCov">          0 :     (distribution(ii)/(2*z)).format(&quot;%#8.3g &quot;);</span>
+<span class="lineNum">     733 </span>            : 
+<span class="lineNum">     734 </span><span class="lineNoCov">          0 :   if(prefix.size()){</span>
+<span class="lineNum">     735 </span><span class="lineNoCov">          0 :     co &lt;&lt; prefix;</span>
+<span class="lineNum">     736 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;top predator fraction: &quot; &lt;&lt; hist[0]/double(the_size) </span>
+<span class="lineNum">     737 </span><span class="lineNoCov">          0 :        &lt;&lt; &quot; (&quot; &lt;&lt; (1-exp(-2*z))/(2*z) &lt;&lt; &quot;)&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     738 </span>            :   }
+<span class="lineNum">     739 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     740 </span><span class="lineNoCov">          0 : void Interaction_Matrix::cumulative_predator_hist(std::ostream &amp; co, </span>
+<span class="lineNum">     741 </span>            :                                                   string prefix /*=&quot;&quot;*/){
+<span class="lineNum">     742 </span><span class="lineNoCov">          0 :   histogram hist=cumulative_predator_hist();</span>
+<span class="lineNum">     743 </span><span class="lineNoCov">          0 :   distribution p=theoretical_cumulative_predator_dist(hist.size()+1);</span>
+<span class="lineNum">     744 </span><span class="lineNoCov">          0 :   double S=Number_of_Species_S();</span>
+<span class="lineNum">     745 </span><span class="lineNoCov">          0 :   double L=Number_of_Links_L();</span>
+<span class="lineNum">     746 </span><span class="lineNoCov">          0 :   double z=L/Number_of_Species_S();</span>
+<span class="lineNum">     747 </span>            : 
+<span class="lineNum">     748 </span><span class="lineNoCov">          0 :   histogram ii;</span>
+<span class="lineNum">     749 </span><span class="lineNoCov">          0 :   for(int i=p.size()-1;i&gt;=0;i--)</span>
+<span class="lineNum">     750 </span><span class="lineNoCov">          0 :     ii[i]=i;</span>
+<span class="lineNum">     751 </span>            : 
+<span class="lineNum">     752 </span><span class="lineNoCov">          0 :   hist.resize(p.size());</span>
+<span class="lineNum">     753 </span>            : 
+<span class="lineNum">     754 </span><span class="lineNoCov">          0 :   if(prefix.size()) </span>
+<span class="lineNum">     755 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;cumulative predator hist:&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     756 </span><span class="lineNoCov">          0 :   sequence&lt;int&gt; h=0.5+S*p;</span>
+<span class="lineNum">     757 </span><span class="lineNoCov">          0 :   co &lt;&lt; prefix+&quot; &quot;+</span>
+<span class="lineNum">     758 </span><span class="lineNoCov">          0 :     ii.format(&quot;%4g &quot;)+</span>
+<span class="lineNum">     759 </span><span class="lineNoCov">          0 :     hist.format(&quot;%5g &quot;)+</span>
+<span class="lineNum">     760 </span><span class="lineNoCov">          0 :     h.format(&quot;%5i &quot;)+</span>
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :     (distribution(hist)/S).format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     762 </span><span class="lineNoCov">          0 :     p.format(&quot;%#8.3g &quot;)+</span>
+<span class="lineNum">     763 </span><span class="lineNoCov">          0 :     (distribution(ii)/(2*z)).format(&quot;%#8.3g &quot;);</span>
+<span class="lineNum">     764 </span>            : 
+<span class="lineNum">     765 </span><span class="lineNoCov">          0 :   if(prefix.size()){</span>
+<span class="lineNum">     766 </span><span class="lineNoCov">          0 :     co &lt;&lt; prefix;</span>
+<span class="lineNum">     767 </span><span class="lineNoCov">          0 :     co &lt;&lt; &quot;top predator fraction: &quot; &lt;&lt; hist[0]/double(the_size) </span>
+<span class="lineNum">     768 </span><span class="lineNoCov">          0 :        &lt;&lt; &quot; (&quot; &lt;&lt; (1-exp(-2*z))/(2*z) &lt;&lt; &quot;)&quot; &lt;&lt; endl;</span>
+<span class="lineNum">     769 </span>            :   }
+<span class="lineNum">     770 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     771 </span>            : 
+<span class="lineNum">     772 </span>            : Interaction_Matrix::histogram
+<span class="lineNum">     773 </span><span class="lineNoCov">          0 : Interaction_Matrix::prey_hist(){</span>
+<span class="lineNum">     774 </span><span class="lineNoCov">          0 :   histogram hist;</span>
+<span class="lineNum">     775 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     776 </span>            :     int count=0;
+<span class="lineNum">     777 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++)</span>
+<span class="lineNum">     778 </span><span class="lineNoCov">          0 :       if( (int)(*this)[i][j] == (int)NetworkAnalysis::eats ) count++;</span>
+<span class="lineNum">     779 </span><span class="lineNoCov">          0 :     hist[count]++;</span>
+<span class="lineNum">     780 </span>            :   }
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :   return hist;</span>
+<span class="lineNum">     782 </span>            : }
+<span class="lineNum">     783 </span>            : 
+<span class="lineNum">     784 </span>            : Interaction_Matrix::histogram
+<span class="lineNum">     785 </span><span class="lineNoCov">          0 : Interaction_Matrix::predator_hist(){</span>
+<span class="lineNum">     786 </span><span class="lineNoCov">          0 :   histogram hist;</span>
+<span class="lineNum">     787 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">     788 </span>            :     int count=0;
+<span class="lineNum">     789 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++)</span>
+<span class="lineNum">     790 </span><span class="lineNoCov">          0 :       if( (int)(*this)[j][i] == (int)NetworkAnalysis::eats ) count++;</span>
+<span class="lineNum">     791 </span><span class="lineNoCov">          0 :     hist[count]++;</span>
+<span class="lineNum">     792 </span>            :   }
+<span class="lineNum">     793 </span><span class="lineNoCov">          0 :   return hist;</span>
+<span class="lineNum">     794 </span>            : }
+<span class="lineNum">     795 </span>            : 
+<span class="lineNum">     796 </span>            : Interaction_Matrix::histogram
+<span class="lineNum">     797 </span><span class="lineNoCov">          0 : Interaction_Matrix::cumulative_prey_hist(){</span>
+<span class="lineNum">     798 </span><span class="lineNoCov">          0 :   return prey_hist().reverse_cumulative_sum();</span>
+<span class="lineNum">     799 </span>            : }
+<span class="lineNum">     800 </span>            : 
+<span class="lineNum">     801 </span>            : Interaction_Matrix::histogram
+<span class="lineNum">     802 </span><span class="lineNoCov">          0 : Interaction_Matrix::cumulative_predator_hist(){</span>
+<span class="lineNum">     803 </span><span class="lineNoCov">          0 :   return predator_hist().reverse_cumulative_sum();</span>
+<span class="lineNum">     804 </span>            : }
+<span class="lineNum">     805 </span>            : 
+<span class="lineNum">     806 </span>            : Interaction_Matrix::distribution
+<span class="lineNum">     807 </span><span class="lineNoCov">          0 : Interaction_Matrix::theoretical_prey_dist(int n, double z){</span>
+<span class="lineNum">     808 </span>            : #ifdef WITH_GSL
+<span class="lineNum">     809 </span><span class="lineNoCov">          0 :   distribution p;</span>
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 :   if(z&lt;0) z=links_per_species_Z();</span>
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :   if(z==0){</span>
+<span class="lineNum">     812 </span><span class="lineNoCov">          0 :     WARNING(&quot;no links&quot;);</span>
+<span class="lineNum">     813 </span>            :     return p;
+<span class="lineNum">     814 </span>            :   }
+<span class="lineNum">     815 </span><span class="lineNoCov">          0 :   for(int i=n-1;i&gt;=0;i--){</span>
+<span class="lineNum">     816 </span><span class="lineNoCov">          0 :     double k2z=double(i)/(2*z);</span>
+<span class="lineNum">     817 </span><span class="lineNoCov">          0 :     double theo=(i?-1/(2*z)*gsl_sf_expint_Ei(-k2z): log(1+2*z)/(2*z) );</span>
+<span class="lineNum">     818 </span><span class="lineNoCov">          0 :     p[i]=theo;</span>
+<span class="lineNum">     819 </span>            :   }
+<span class="lineNum">     820 </span>            :   return p;
+<span class="lineNum">     821 </span>            : #else
+<span class="lineNum">     822 </span>            :   WARNING(&quot;theoretical_prey_dist needs gsl library&quot;);
+<span class="lineNum">     823 </span>            :   return 0;
+<span class="lineNum">     824 </span>            : #endif
+<span class="lineNum">     825 </span>            : }
+<span class="lineNum">     826 </span>            : 
+<span class="lineNum">     827 </span>            : Interaction_Matrix::distribution
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 : Interaction_Matrix::theoretical_cumulative_prey_dist(int n, double z){</span>
+<span class="lineNum">     829 </span>            : #ifdef WITH_GSL
+<span class="lineNum">     830 </span><span class="lineNoCov">          0 :   distribution p;</span>
+<span class="lineNum">     831 </span><span class="lineNoCov">          0 :   if(z&lt;0) z=links_per_species_Z();</span>
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :   if(z==0){</span>
+<span class="lineNum">     833 </span><span class="lineNoCov">          0 :     WARNING(&quot;no links&quot;);</span>
+<span class="lineNum">     834 </span>            :     return p;
+<span class="lineNum">     835 </span>            :   }
+<span class="lineNum">     836 </span><span class="lineNoCov">          0 :   for(int i=n-1;i&gt;=0;i--){</span>
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :     double k2z=double(i)/(2*z);</span>
+<span class="lineNum">     838 </span><span class="lineNoCov">          0 :     double theo=exp(-k2z)+(i?k2z*gsl_sf_expint_Ei(-k2z):0);</span>
+<span class="lineNum">     839 </span><span class="lineNoCov">          0 :     p[i]=theo;</span>
+<span class="lineNum">     840 </span>            :   }
+<span class="lineNum">     841 </span>            :   return p;
+<span class="lineNum">     842 </span>            : #else
+<span class="lineNum">     843 </span>            :   WARNING(&quot;theoretical_cumulative_prey_dist needs gsl library&quot;);
+<span class="lineNum">     844 </span>            :   return 0;
+<span class="lineNum">     845 </span>            : #endif
+<span class="lineNum">     846 </span>            : }
+<span class="lineNum">     847 </span>            : 
+<span class="lineNum">     848 </span>            : Interaction_Matrix::distribution
+<span class="lineNum">     849 </span><span class="lineNoCov">          0 : Interaction_Matrix::theoretical_predator_dist(int n, double z){</span>
+<span class="lineNum">     850 </span>            : #ifdef WITH_GSL
+<span class="lineNum">     851 </span><span class="lineNoCov">          0 :   distribution p;</span>
+<span class="lineNum">     852 </span><span class="lineNoCov">          0 :   if(z&lt;0) z=links_per_species_Z();</span>
+<span class="lineNum">     853 </span><span class="lineNoCov">          0 :   if(z==0){</span>
+<span class="lineNum">     854 </span><span class="lineNoCov">          0 :     WARNING(&quot;no links&quot;);</span>
+<span class="lineNum">     855 </span>            :     return p;
+<span class="lineNum">     856 </span>            :   }
+<span class="lineNum">     857 </span><span class="lineNoCov">          0 :   for(int m=n-1;m&gt;=0;m--){</span>
+<span class="lineNum">     858 </span><span class="lineNoCov">          0 :     double theo= gsl_sf_gamma_inc_P(m+1,2*z)/(2*z);</span>
+<span class="lineNum">     859 </span><span class="lineNoCov">          0 :     p[m]=theo;</span>
+<span class="lineNum">     860 </span>            :   }
+<span class="lineNum">     861 </span>            :   return p;
+<span class="lineNum">     862 </span>            : #else
+<span class="lineNum">     863 </span>            :   WARNING(&quot;theoretical_predator_dist needs gsl library&quot;);
+<span class="lineNum">     864 </span>            :   return 0;
+<span class="lineNum">     865 </span>            : #endif
+<span class="lineNum">     866 </span>            : }
+<span class="lineNum">     867 </span>            : 
+<span class="lineNum">     868 </span>            : Interaction_Matrix::distribution
+<span class="lineNum">     869 </span><span class="lineNoCov">          0 : Interaction_Matrix::theoretical_cumulative_predator_dist(int n, double z){</span>
+<span class="lineNum">     870 </span>            : #ifdef WITH_GSL
+<span class="lineNum">     871 </span><span class="lineNoCov">          0 :   distribution p;</span>
+<span class="lineNum">     872 </span><span class="lineNoCov">          0 :   if(z&lt;0) z=links_per_species_Z();</span>
+<span class="lineNum">     873 </span><span class="lineNoCov">          0 :   if(z==0){</span>
+<span class="lineNum">     874 </span><span class="lineNoCov">          0 :     WARNING(&quot;no links&quot;);</span>
+<span class="lineNum">     875 </span>            :     return p;
+<span class="lineNum">     876 </span>            :   }
+<span class="lineNum">     877 </span><span class="lineNoCov">          0 :   for(int m=n-1;m&gt;=0;m--){</span>
+<span class="lineNum">     878 </span><span class="lineNoCov">          0 :     double theo= P_pred(m,z);</span>
+<span class="lineNum">     879 </span><span class="lineNoCov">          0 :     p[m]=theo;</span>
+<span class="lineNum">     880 </span>            :   }
+<span class="lineNum">     881 </span>            :   return p;
+<span class="lineNum">     882 </span>            : #else
+<span class="lineNum">     883 </span>            :   WARNING(&quot;theoretical_cumulative_predator_dist needs gsl library&quot;);
+<span class="lineNum">     884 </span>            :   return 0;
+<span class="lineNum">     885 </span>            : #endif
+<span class="lineNum">     886 </span>            : }
+<span class="lineNum">     887 </span>            : 
+<span class="lineNum">     888 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_T()//fraction of top predators</span>
+<span class="lineNum">     889 </span>            : {
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :   histogram h=predator_hist();</span>
+<span class="lineNum">     891 </span><span class="lineNoCov">          0 :   return prop_T(h);</span>
+<span class="lineNum">     892 </span>            : }
+<span class="lineNum">     893 </span>            : 
+<span class="lineNum">     894 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_I()//fraction of intermediate species</span>
+<span class="lineNum">     895 </span>            : {
+<span class="lineNum">     896 </span><span class="lineNoCov">          0 :   histogram h1=predator_hist();</span>
+<span class="lineNum">     897 </span><span class="lineNoCov">          0 :   histogram h2=prey_hist();</span>
+<span class="lineNum">     898 </span><span class="lineNoCov">          0 :   return prop_I(h1,h2);</span>
+<span class="lineNum">     899 </span>            : }
+<span class="lineNum">     900 </span>            : 
+<span class="lineNum">     901 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_B()//fraction of bottom species</span>
+<span class="lineNum">     902 </span>            : {
+<span class="lineNum">     903 </span><span class="lineNoCov">          0 :   histogram h=prey_hist();</span>
+<span class="lineNum">     904 </span><span class="lineNoCov">          0 :   return prop_B(h);</span>
+<span class="lineNum">     905 </span>            : }
+<span class="lineNum">     906 </span>            : 
+<span class="lineNum">     907 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_GenSD()//std of prey count normalized to (L/S)</span>
+<span class="lineNum">     908 </span>            : {
+<span class="lineNum">     909 </span><span class="lineNoCov">          0 :   histogram h=prey_hist();</span>
+<span class="lineNum">     910 </span><span class="lineNoCov">          0 :   return prop_GenSD(h);</span>
+<span class="lineNum">     911 </span>            : }
+<span class="lineNum">     912 </span>            : 
+<span class="lineNum">     913 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_VulSD()//std of predator count</span>
+<span class="lineNum">     914 </span>            :                                        //normalized to (L/S)
+<span class="lineNum">     915 </span>            : {
+<span class="lineNum">     916 </span><span class="lineNoCov">          0 :   histogram h=predator_hist();</span>
+<span class="lineNum">     917 </span><span class="lineNoCov">          0 :   return prop_VulSD(h);</span>
+<a name="918"><span class="lineNum">     918 </span>            : }</a>
+<span class="lineNum">     919 </span>            : 
+<span class="lineNum">     920 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_T(histogram &amp; h)//fraction of top predators</span>
+<span class="lineNum">     921 </span>            : {
+<span class="lineNum">     922 </span><span class="lineNoCov">          0 :   return double(h[0])/size();</span>
+<a name="923"><span class="lineNum">     923 </span>            : }</a>
+<span class="lineNum">     924 </span>            : 
+<span class="lineNum">     925 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_I(histogram &amp; h1, histogram &amp; h2)</span>
+<span class="lineNum">     926 </span>            :   //fraction of intermediate species
+<span class="lineNum">     927 </span>            : {
+<span class="lineNum">     928 </span><span class="lineNoCov">          0 :   return 1-double(h1[0]+h2[0])/size();</span>
+<a name="929"><span class="lineNum">     929 </span>            : }</a>
+<span class="lineNum">     930 </span>            : 
+<span class="lineNum">     931 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_B(histogram &amp; h)//fraction of bottom species</span>
+<span class="lineNum">     932 </span>            : {
+<span class="lineNum">     933 </span><span class="lineNoCov">          0 :   return double(h[0])/size();</span>
+<a name="934"><span class="lineNum">     934 </span>            : }</a>
+<span class="lineNum">     935 </span>            : 
+<span class="lineNum">     936 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_GenSD(histogram &amp; h)//std of prey count normalized to (L/S)</span>
+<span class="lineNum">     937 </span>            : {
+<span class="lineNum">     938 </span><span class="lineNoCov">          0 :   weighted_average_meter av;</span>
+<span class="lineNum">     939 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;h.size();i++){</span>
+<span class="lineNum">     940 </span><span class="lineNoCov">          0 :     av.sample(i,h[i]);</span>
+<span class="lineNum">     941 </span>            :   }
+<span class="lineNum">     942 </span><span class="lineNoCov">          0 :   double S=Number_of_Species_S();</span>
+<span class="lineNum">     943 </span>            :   // correct for an error made by Williams and Martinez
+<span class="lineNum">     944 </span><span class="lineNoCov">          0 :   return av.sample_std()/av.readout()*sqrt(S/(S-1));</span>
+<a name="945"><span class="lineNum">     945 </span>            : }</a>
+<span class="lineNum">     946 </span>            : 
+<span class="lineNum">     947 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_VulSD(histogram &amp; h)//std of predator count</span>
+<span class="lineNum">     948 </span>            :   //normalized to (L/S)
+<span class="lineNum">     949 </span>            : {
+<span class="lineNum">     950 </span><span class="lineNoCov">          0 :   return prop_GenSD(h); // the method to calculate it is the same;</span>
+<span class="lineNum">     951 </span>            : }
+<a name="952"><span class="lineNum">     952 </span>            : </a>
+<span class="lineNum">     953 </span>            : 
+<span class="lineNum">     954 </span><span class="lineNoCov">          0 : Interaction_Matrix::similarity_matrix_t Interaction_Matrix::similarity_s()</span>
+<span class="lineNum">     955 </span>            : //fraction of prey and predators shared by a pair
+<span class="lineNum">     956 </span>            : {
+<span class="lineNum">     957 </span><span class="lineNoCov">          0 :   similarity_matrix_t s(size(),size());</span>
+<span class="lineNum">     958 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;size();i++){</span>
+<span class="lineNum">     959 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;size();j++){</span>
+<span class="lineNum">     960 </span><span class="lineNoCov">          0 :       if(j&lt;=i){ // we include i==j for testing</span>
+<span class="lineNum">     961 </span>            :         // compute similarity:
+<span class="lineNum">     962 </span>            : //      int linked_to_i=0;
+<span class="lineNum">     963 </span>            : //      int linked_to_j=0;
+<span class="lineNum">     964 </span>            : //      int linked_to_both=0;
+<span class="lineNum">     965 </span>            : //      for(int k=0;k&lt;size();k++){
+<span class="lineNum">     966 </span>            : //        if(true || (k!=i &amp;&amp; k!=j)){
+<span class="lineNum">     967 </span>            : //          if(eats(i,k)){
+<span class="lineNum">     968 </span>            : //            linked_to_i++;
+<span class="lineNum">     969 </span>            : //            if(eats(j,k)){
+<span class="lineNum">     970 </span>            : //              linked_to_j++;
+<span class="lineNum">     971 </span>            : //              linked_to_both++;
+<span class="lineNum">     972 </span>            : //            }
+<span class="lineNum">     973 </span>            : //          }else if(eats(j,k)){
+<span class="lineNum">     974 </span>            : //            linked_to_j++;
+<span class="lineNum">     975 </span>            : //          }
+<span class="lineNum">     976 </span>            : //          if(eats(k,i)){
+<span class="lineNum">     977 </span>            : //            linked_to_i++;
+<span class="lineNum">     978 </span>            : //            if(eats(k,j)){
+<span class="lineNum">     979 </span>            : //              linked_to_j++;
+<span class="lineNum">     980 </span>            : //              linked_to_both++;
+<span class="lineNum">     981 </span>            : //            }
+<span class="lineNum">     982 </span>            : //          }else if(eats(k,j)){
+<span class="lineNum">     983 </span>            : //            linked_to_j++;
+<span class="lineNum">     984 </span>            : //          }
+<span class="lineNum">     985 </span>            : //        }
+<span class="lineNum">     986 </span>            : //      }
+<span class="lineNum">     987 </span>            : //      s[i][j]=
+<span class="lineNum">     988 </span>            : //        double(2*linked_to_both)/(linked_to_j+linked_to_i);
+<span class="lineNum">     989 </span>            : 
+<span class="lineNum">     990 </span>            : //      int linked_to_i=0;
+<span class="lineNum">     991 </span>            : //      int linked_to_j=0;
+<span class="lineNum">     992 </span>            : //      int linked_to_both=0;
+<span class="lineNum">     993 </span>            : //      for(int k=0;k&lt;size();k++){
+<span class="lineNum">     994 </span>            : //        if(true || (k!=i &amp;&amp; k!=j)){
+<span class="lineNum">     995 </span>            : //          if(eats(i,k) || eats(k,i)){
+<span class="lineNum">     996 </span>            : //            linked_to_i++;
+<span class="lineNum">     997 </span>            : //            if(eats(j,k) || eats(k,j)){
+<span class="lineNum">     998 </span>            : //              linked_to_j++;
+<span class="lineNum">     999 </span>            : //              linked_to_both++;
+<span class="lineNum">    1000 </span>            : //            }
+<span class="lineNum">    1001 </span>            : //          }else if(eats(j,k) || eats(k,j)){
+<span class="lineNum">    1002 </span>            : //            linked_to_j++;
+<span class="lineNum">    1003 </span>            : //          }
+<span class="lineNum">    1004 </span>            : //        }
+<span class="lineNum">    1005 </span>            : //      }
+<span class="lineNum">    1006 </span>            : //      s[i][j]=
+<span class="lineNum">    1007 </span>            : //        double(linked_to_both)/(linked_to_j+linked_to_i-linked_to_both);
+<span class="lineNum">    1008 </span>            : 
+<span class="lineNum">    1009 </span>            : 
+<span class="lineNum">    1010 </span>            :         // this makes more sense, but is not what W &amp; M used:
+<span class="lineNum">    1011 </span><span class="lineNoCov">          0 :         average_meter ss;</span>
+<span class="lineNum">    1012 </span><span class="lineNoCov">          0 :         for(int k=0;k&lt;size();k++){</span>
+<span class="lineNum">    1013 </span>            :           if(true || (k!=i &amp;&amp; k!= j)){
+<span class="lineNum">    1014 </span><span class="lineNoCov">          0 :             if(eats(i,k) || eats(j,k))</span>
+<span class="lineNum">    1015 </span><span class="lineNoCov">          0 :               ss.sample((eats(i,k) &amp;&amp; eats(j,k))?1:0);</span>
+<span class="lineNum">    1016 </span><span class="lineNoCov">          0 :             if(eats(k,i) || eats(k,j))</span>
+<span class="lineNum">    1017 </span><span class="lineNoCov">          0 :               ss.sample((eats(k,i) &amp;&amp; eats(k,j))?1:0);</span>
+<span class="lineNum">    1018 </span>            :           }
+<span class="lineNum">    1019 </span>            :         }
+<span class="lineNum">    1020 </span><span class="lineNoCov">          0 :         s(i,j)=ss.readout();</span>
+<span class="lineNum">    1021 </span>            :       }
+<span class="lineNum">    1022 </span>            :     }
+<span class="lineNum">    1023 </span>            :   }
+<span class="lineNum">    1024 </span><span class="lineNoCov">          0 :   WARNING(&quot;Check code if symmetry is used correctly here!&quot;);</span>
+<span class="lineNum">    1025 </span><span class="lineNoCov">          0 :   s = symmatu(s);</span>
+<span class="lineNum">    1026 </span>            :   //cout &lt;&lt; s &lt;&lt; endl;
+<a name="1027"><span class="lineNum">    1027 </span><span class="lineNoCov">          0 :   return s;</span></a>
+<span class="lineNum">    1028 </span>            : }
+<span class="lineNum">    1029 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_MxSim()//web average over max s</span>
+<span class="lineNum">    1030 </span>            : {
+<span class="lineNum">    1031 </span><span class="lineNoCov">          0 :   average_meter mxsim;</span>
+<span class="lineNum">    1032 </span><span class="lineNoCov">          0 :   similarity_matrix_t s=similarity_s();</span>
+<span class="lineNum">    1033 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;size();i++){</span>
+<span class="lineNum">    1034 </span>            :     double mx=0;
+<span class="lineNum">    1035 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;size();j++)</span>
+<span class="lineNum">    1036 </span><span class="lineNoCov">          0 :       if(i!=j &amp;&amp; s(i,j)&gt;mx) mx=s(i,j);</span>
+<span class="lineNum">    1037 </span><span class="lineNoCov">          0 :     mxsim.sample(mx);</span>
+<span class="lineNum">    1038 </span>            :   }
+<span class="lineNum">    1039 </span><span class="lineNoCov">          0 :   return mxsim.readout();</span>
+<span class="lineNum">    1040 </span>            : }
+<span class="lineNum">    1041 </span>            :     
+<span class="lineNum">    1042 </span>            : typedef Interaction_Matrix::histogram histogram;
+<span class="lineNum">    1043 </span>            : 
+<span class="lineNum">    1044 </span><span class="lineNoCov">          0 : histogram Interaction_Matrix::chain_hist(){</span>
+<span class="lineNum">    1045 </span>            :   //all loop-free directed chains starting from bottom
+<span class="lineNum">    1046 </span><span class="lineNoCov">          0 :   return histogram(); //dummy</span>
+<span class="lineNum">    1047 </span>            : //   Interaction_Matrix im=(*this).tsort();
+<span class="lineNum">    1048 </span>            : //   for(int i=0;i&lt;im.size();i++){
+<span class="lineNum">    1049 </span>            : //     for(int j=0;j&lt;i+1;j++){
+<span class="lineNum">    1050 </span>            : //       im[i][j]=NetworkAnalysis::none;
+<span class="lineNum">    1051 </span>            : //     }
+<span class="lineNum">    1052 </span>            : //   }
+<span class="lineNum">    1053 </span>            : //  return loop_free_chain_hist(*this);
+<a name="1054"><span class="lineNum">    1054 </span>            : }</a>
+<span class="lineNum">    1055 </span>            : 
+<span class="lineNum">    1056 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_ChnLg(histogram &amp; h){ //average chain length</span>
+<span class="lineNum">    1057 </span><span class="lineNoCov">          0 :   weighted_average_meter av;</span>
+<span class="lineNum">    1058 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;h.size();i++){</span>
+<span class="lineNum">    1059 </span><span class="lineNoCov">          0 :     av.sample(i,h[i]);</span>
+<span class="lineNum">    1060 </span>            :   }
+<span class="lineNum">    1061 </span><span class="lineNoCov">          0 :   return av.readout();</span>
+<a name="1062"><span class="lineNum">    1062 </span>            : }</a>
+<span class="lineNum">    1063 </span>            : 
+<span class="lineNum">    1064 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_ChnSD(histogram &amp; h){ //std chain length</span>
+<span class="lineNum">    1065 </span><span class="lineNoCov">          0 :   weighted_average_meter av;</span>
+<span class="lineNum">    1066 </span><span class="lineNoCov">          0 :   for(unsigned int i=0;i&lt;h.size();i++){</span>
+<span class="lineNum">    1067 </span><span class="lineNoCov">          0 :     av.sample(i,h[i]);</span>
+<span class="lineNum">    1068 </span>            :   }
+<span class="lineNum">    1069 </span><span class="lineNoCov">          0 :   return av.sample_std();</span>
+<a name="1070"><span class="lineNum">    1070 </span>            : }</a>
+<span class="lineNum">    1071 </span>            : 
+<span class="lineNum">    1072 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_ChnNo(histogram &amp; h){ //log # of chains</span>
+<span class="lineNum">    1073 </span><span class="lineNoCov">          0 :   return log10(accumulate(h.begin(),h.end(),0.0));</span>
+<a name="1074"><span class="lineNum">    1074 </span>            : }</a>
+<span class="lineNum">    1075 </span>            : 
+<span class="lineNum">    1076 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_Cannib(){ //cannibal fraction</span>
+<span class="lineNum">    1077 </span><span class="lineNoCov">          0 :   int s=size();</span>
+<span class="lineNum">    1078 </span><span class="lineNoCov">          0 :   int count=0;</span>
+<span class="lineNum">    1079 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;s;i++){</span>
+<span class="lineNum">    1080 </span><span class="lineNoCov">          0 :     if(eats(i,i)) count++;</span>
+<span class="lineNum">    1081 </span>            :   }
+<span class="lineNum">    1082 </span><span class="lineNoCov">          0 :   return double(count)/s;</span>
+<a name="1083"><span class="lineNum">    1083 </span>            : }</a>
+<span class="lineNum">    1084 </span>            : 
+<span class="lineNum">    1085 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_Loop(){ //fraction of species involved in loops</span>
+<span class="lineNum">    1086 </span><span class="lineNoCov">          0 :   return loop_species_fraction(*this);</span>
+<a name="1087"><span class="lineNum">    1087 </span>            : }</a>
+<span class="lineNum">    1088 </span>            : 
+<span class="lineNum">    1089 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_Omniv(){ </span>
+<span class="lineNum">    1090 </span>            :   // fraction of species that have food chains of different length
+<span class="lineNum">    1091 </span><span class="lineNoCov">          0 :   return omnivore_fraction(*this);</span>
+<a name="1092"><span class="lineNum">    1092 </span>            : }</a>
+<span class="lineNum">    1093 </span>            : 
+<span class="lineNum">    1094 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_Clust(){ // Clustering Coefficient</span>
+<span class="lineNum">    1095 </span><span class="lineNoCov">          0 :   const int s=size();</span>
+<span class="lineNum">    1096 </span><span class="lineNoCov">          0 :   average_meter C;</span>
+<span class="lineNum">    1097 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;s;i++){</span>
+<span class="lineNum">    1098 </span><span class="lineNoCov">          0 :     average_meter localC;</span>
+<span class="lineNum">    1099 </span><span class="lineNoCov">          0 :     for(int j=s-1;j&gt;=0;j--){</span>
+<span class="lineNum">    1100 </span><span class="lineNoCov">          0 :       if(connected(i,j) &amp;&amp; j!=i){</span>
+<span class="lineNum">    1101 </span><span class="lineNoCov">          0 :         for(int k=j-1;k&gt;=0;k--){</span>
+<span class="lineNum">    1102 </span><span class="lineNoCov">          0 :           if(connected(i,k) &amp;&amp; k!=i)</span>
+<span class="lineNum">    1103 </span><span class="lineNoCov">          0 :             localC.sample(connected(j,k));</span>
+<span class="lineNum">    1104 </span>            :         }
+<span class="lineNum">    1105 </span>            :       }
+<span class="lineNum">    1106 </span>            :     }
+<span class="lineNum">    1107 </span><span class="lineNoCov">          0 :     if(localC.n()&gt;=1){</span>
+<span class="lineNum">    1108 </span><span class="lineNoCov">          0 :       C.sample(localC.readout());</span>
+<span class="lineNum">    1109 </span>            :     }
+<span class="lineNum">    1110 </span>            :   }
+<span class="lineNum">    1111 </span><span class="lineNoCov">          0 :   return C.readout();</span>
+<span class="lineNum">    1112 </span>            : }
+<span class="lineNum">    1113 </span>            :   
+<span class="lineNum">    1114 </span>            : 
+<span class="lineNum">    1115 </span>            : //// helper class for prop_Ddiet
+<span class="lineNum">    1116 </span>            : class diet_sorter_t {
+<span class="lineNum">    1117 </span>            :   enum {before,on_line,after};
+<span class="lineNum">    1118 </span>            :   typedef int position_to_species_line;
+<span class="lineNum">    1119 </span>            :   static simple_vector&lt;bool&gt; _can_be_linearly_ordered;
+<span class="lineNum">    1120 </span>            :   void assign_orderable(int order_class);
+<span class="lineNum">    1121 </span>            :   void advance_positions_starting_with(int n,
+<span class="lineNum">    1122 </span>            :                                        simple_vector&lt;position_to_species_line&gt; &amp; 
+<span class="lineNum">    1123 </span>            :                                        position,
+<span class="lineNum">    1124 </span>            :                                        int sharing_class,
+<span class="lineNum">    1125 </span>            :                                        int order_class);
+<span class="lineNum">    1126 </span>            : public:
+<span class="lineNum">    1127 </span>            :   static const int i_bit;
+<span class="lineNum">    1128 </span>            :   static const int j_bit;
+<span class="lineNum">    1129 </span>            :   static const int k_bit;
+<a name="1130"><span class="lineNum">    1130 </span>            :   static const int n_order_classes;</a>
+<span class="lineNum">    1131 </span>            :   void initialize__can_be_linearly_ordered();
+<span class="lineNum">    1132 </span><span class="lineNoCov">          0 :   diet_sorter_t(){</span>
+<span class="lineNum">    1133 </span><span class="lineNoCov">          0 :     if(int(_can_be_linearly_ordered.size())!=n_order_classes){</span>
+<span class="lineNum">    1134 </span><span class="lineNoCov">          0 :       initialize__can_be_linearly_ordered();</span>
+<span class="lineNum">    1135 </span>            :     }
+<span class="lineNum">    1136 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">    1137 </span>            :   bool can_be_linearly_ordered(int order_class){
+<span class="lineNum">    1138 </span><span class="lineNoCov">          0 :     return _can_be_linearly_ordered[order_class];</span>
+<span class="lineNum">    1139 </span>            :   }
+<span class="lineNum">    1140 </span>            : };
+<span class="lineNum">    1141 </span>            : const int diet_sorter_t::i_bit=1&lt;&lt;0;
+<span class="lineNum">    1142 </span>            : const int diet_sorter_t::j_bit=1&lt;&lt;1;
+<span class="lineNum">    1143 </span>            : const int diet_sorter_t::k_bit=1&lt;&lt;2;
+<span class="lineNum">    1144 </span>            : const int diet_sorter_t::n_order_classes=(1&lt;&lt;((i_bit|j_bit|k_bit)+1))/*=256*/;
+<a name="1145"><span class="lineNum">    1145 </span><span class="lineCov">         45 : simple_vector&lt;bool&gt; diet_sorter_t::_can_be_linearly_ordered=simple_vector&lt;bool&gt;(0);</span></a>
+<span class="lineNum">    1146 </span>            : 
+<span class="lineNum">    1147 </span><span class="lineNoCov">          0 : void diet_sorter_t::assign_orderable(int order_class){</span>
+<span class="lineNum">    1148 </span><span class="lineNoCov">          0 :   _can_be_linearly_ordered[order_class]=true;</span>
+<span class="lineNum">    1149 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1150 </span><span class="lineNoCov">          0 : void diet_sorter_t::initialize__can_be_linearly_ordered(){</span>
+<span class="lineNum">    1151 </span><span class="lineNoCov">          0 :   _can_be_linearly_ordered=simple_vector&lt;bool&gt;(n_order_classes,false);</span>
+<span class="lineNum">    1152 </span><span class="lineNoCov">          0 :   simple_vector&lt;position_to_species_line&gt; position(3,before);</span>
+<span class="lineNum">    1153 </span><span class="lineNoCov">          0 :   int sharing_class=0;</span>
+<span class="lineNum">    1154 </span><span class="lineNoCov">          0 :   int order_class=0;</span>
+<span class="lineNum">    1155 </span><span class="lineNoCov">          0 :   assign_orderable(order_class);</span>
+<span class="lineNum">    1156 </span>            :   // the rest is recursion:
+<span class="lineNum">    1157 </span><span class="lineNoCov">          0 :   for(int m=0;m&lt;3;m++){</span>
+<span class="lineNum">    1158 </span><span class="lineNoCov">          0 :     advance_positions_starting_with(m,position,sharing_class,order_class);</span>
+<span class="lineNum">    1159 </span>            :   }
+<span class="lineNum">    1160 </span><span class="lineNoCov">          0 :   order_class|=(1&lt;&lt;sharing_class);</span>
+<span class="lineNum">    1161 </span><span class="lineNoCov">          0 :   assign_orderable(order_class);</span>
+<span class="lineNum">    1162 </span><span class="lineNoCov">          0 :   for(int m=0;m&lt;3;m++){</span>
+<span class="lineNum">    1163 </span><span class="lineNoCov">          0 :     advance_positions_starting_with(m,position,sharing_class,order_class);</span>
+<span class="lineNum">    1164 </span>            :   }
+<a name="1165"><span class="lineNum">    1165 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">    1166 </span>            :   
+<span class="lineNum">    1167 </span><span class="lineNoCov">          0 : void diet_sorter_t::advance_positions_starting_with</span>
+<span class="lineNum">    1168 </span>            : (int n,
+<span class="lineNum">    1169 </span>            :  simple_vector&lt;position_to_species_line&gt; &amp; position,
+<span class="lineNum">    1170 </span>            :  int sharing_class,
+<span class="lineNum">    1171 </span>            :  int order_class){
+<span class="lineNum">    1172 </span><span class="lineNoCov">          0 :   if(position[n]==after) return; //stop recursion</span>
+<span class="lineNum">    1173 </span>            :   
+<span class="lineNum">    1174 </span><span class="lineNoCov">          0 :   position[n]=position[n]+1;</span>
+<span class="lineNum">    1175 </span><span class="lineNoCov">          0 :   if(position[n]==after){</span>
+<span class="lineNum">    1176 </span><span class="lineNoCov">          0 :     sharing_class&amp;=(i_bit|j_bit|k_bit)^(1&lt;&lt;n);</span>
+<span class="lineNum">    1177 </span>            :   }else{ //position[n]==on_line
+<span class="lineNum">    1178 </span><span class="lineNoCov">          0 :     sharing_class|=(1&lt;&lt;n);</span>
+<span class="lineNum">    1179 </span>            :   }
+<span class="lineNum">    1180 </span><span class="lineNoCov">          0 :   for(int m=0;m&lt;3;m++){</span>
+<span class="lineNum">    1181 </span><span class="lineNoCov">          0 :     advance_positions_starting_with(m,position,sharing_class,order_class);</span>
+<span class="lineNum">    1182 </span>            :   }
+<span class="lineNum">    1183 </span><span class="lineNoCov">          0 :   order_class|=(1&lt;&lt;sharing_class);</span>
+<span class="lineNum">    1184 </span><span class="lineNoCov">          0 :   assign_orderable(order_class);</span>
+<span class="lineNum">    1185 </span><span class="lineNoCov">          0 :   for(int m=0;m&lt;3;m++){</span>
+<span class="lineNum">    1186 </span><span class="lineNoCov">          0 :     advance_positions_starting_with(m,position,sharing_class,order_class);</span>
+<span class="lineNum">    1187 </span>            :   }
+<span class="lineNum">    1188 </span><span class="lineNoCov">          0 :   --position[n];</span>
+<span class="lineNum">    1189 </span>            : }
+<span class="lineNum">    1190 </span>            : 
+<span class="lineNum">    1191 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_Ddiet(bool FrenchVariant){ </span>
+<span class="lineNum">    1192 </span>            :   // the fraction of species triples with an irreducible dietary gap
+<span class="lineNum">    1193 </span><span class="lineNoCov">          0 :   static diet_sorter_t sorter;</span>
+<span class="lineNum">    1194 </span><span class="lineNoCov">          0 :   int orderable_count=0,total_count=0;</span>
+<span class="lineNum">    1195 </span><span class="lineNoCov">          0 :   simple_vector&lt;bool&gt; possible(the_size,true);</span>
+<span class="lineNum">    1196 </span><span class="lineNoCov">          0 :   if(FrenchVariant){</span>
+<span class="lineNum">    1197 </span><span class="lineNoCov">          0 :     for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">    1198 </span>            :       int link_count=0;
+<span class="lineNum">    1199 </span><span class="lineNoCov">          0 :       for(int n=0;n&lt;the_size &amp;&amp; link_count &lt;=2;n++){</span>
+<span class="lineNum">    1200 </span><span class="lineNoCov">          0 :         if(eats(i,n)) link_count++;</span>
+<span class="lineNum">    1201 </span>            :       }
+<span class="lineNum">    1202 </span><span class="lineNoCov">          0 :       possible[i]=(link_count&gt;=2);</span>
+<span class="lineNum">    1203 </span>            :     }
+<span class="lineNum">    1204 </span>            :   }
+<span class="lineNum">    1205 </span><span class="lineNoCov">          0 :   for(int i=the_size-1;i&gt;=0;i--){</span>
+<span class="lineNum">    1206 </span><span class="lineNoCov">          0 :     if(possible[i]){</span>
+<span class="lineNum">    1207 </span><span class="lineNoCov">          0 :       for(int j=i-1;j&gt;=0;j--){</span>
+<span class="lineNum">    1208 </span><span class="lineNoCov">          0 :         if(possible[j]){</span>
+<span class="lineNum">    1209 </span><span class="lineNoCov">          0 :           for(int k=j-1;k&gt;=0;k--){</span>
+<span class="lineNum">    1210 </span><span class="lineNoCov">          0 :             if(possible[k]){</span>
+<span class="lineNum">    1211 </span>            :               int order_class=0;
+<span class="lineNum">    1212 </span><span class="lineNoCov">          0 :               for(int n=the_size-1;n&gt;=0;n--){</span>
+<span class="lineNum">    1213 </span><span class="lineNoCov">          0 :                 int sharing_class=0;</span>
+<span class="lineNum">    1214 </span><span class="lineNoCov">          0 :                 if(eats(i,n)) sharing_class|=diet_sorter_t::i_bit;</span>
+<span class="lineNum">    1215 </span><span class="lineNoCov">          0 :                 if(eats(j,n)) sharing_class|=diet_sorter_t::j_bit;</span>
+<span class="lineNum">    1216 </span><span class="lineNoCov">          0 :                 if(eats(k,n)) sharing_class|=diet_sorter_t::k_bit;</span>
+<span class="lineNum">    1217 </span><span class="lineNoCov">          0 :                 order_class|=(1&lt;&lt;sharing_class);</span>
+<span class="lineNum">    1218 </span>            :               }
+<span class="lineNum">    1219 </span><span class="lineNoCov">          0 :               if(sorter.can_be_linearly_ordered(order_class)){</span>
+<span class="lineNum">    1220 </span><span class="lineNoCov">          0 :                 orderable_count++;</span>
+<span class="lineNum">    1221 </span>            :               }else{
+<span class="lineNum">    1222 </span>            :                 //#define DDIET_CERTIFY
+<span class="lineNum">    1223 </span>            : #ifdef DDIET_CERTIFY
+<span class="lineNum">    1224 </span>            : //              cout &lt;&lt; the_size-i-1 &lt;&lt; &quot;, &quot;&lt;&lt; 
+<span class="lineNum">    1225 </span>            : //                the_size-j-1 &lt;&lt; &quot;, &quot;&lt;&lt; 
+<span class="lineNum">    1226 </span>            : //                the_size-k-1 &lt;&lt; &quot;, &quot; ;
+<span class="lineNum">    1227 </span>            :                 cout &lt;&lt; i &lt;&lt; &quot;, &quot;&lt;&lt; 
+<span class="lineNum">    1228 </span>            :                   j &lt;&lt; &quot;, &quot;&lt;&lt; 
+<span class="lineNum">    1229 </span>            :                   k &lt;&lt; &quot;, &quot; ;
+<span class="lineNum">    1230 </span>            :                 int oc=order_class;
+<span class="lineNum">    1231 </span>            :                 for(int p=0;p&lt;8;p++){
+<span class="lineNum">    1232 </span>            :                   cout &lt;&lt; ((oc&lt;&lt;=1)&amp;256)/256 ;
+<span class="lineNum">    1233 </span>            :                 }       
+<span class="lineNum">    1234 </span>            :                 cout &lt;&lt; endl;
+<span class="lineNum">    1235 </span>            : #endif
+<span class="lineNum">    1236 </span>            :               }
+<span class="lineNum">    1237 </span>            :               
+<span class="lineNum">    1238 </span><span class="lineNoCov">          0 :               total_count++;</span>
+<span class="lineNum">    1239 </span>            :             }
+<span class="lineNum">    1240 </span>            :           }
+<span class="lineNum">    1241 </span>            :         }
+<span class="lineNum">    1242 </span>            :       }
+<span class="lineNum">    1243 </span>            :     }
+<span class="lineNum">    1244 </span>            :   }
+<span class="lineNum">    1245 </span>            : //   cout &lt;&lt; total_count &lt;&lt; &quot; triples&quot; &lt;&lt; endl;
+<span class="lineNum">    1246 </span><span class="lineNoCov">          0 :   return 1-orderable_count/double(total_count);</span>
+<span class="lineNum">    1247 </span>            : }
+<span class="lineNum">    1248 </span>            : 
+<span class="lineNum">    1249 </span>            : 
+<span class="lineNum">    1250 </span>            : 
+<span class="lineNum">    1251 </span><span class="lineNoCov">          0 : Interaction_Matrix::prop_vec_t Interaction_Matrix::props(){ // all properties.</span>
+<span class="lineNum">    1252 </span><span class="lineNoCov">          0 :   graphs_stats_data stats=graph_analyze(*this);</span>
+<span class="lineNum">    1253 </span><span class="lineNoCov">          0 :   Interaction_Matrix::prop_vec_t p;</span>
+<span class="lineNum">    1254 </span><span class="lineNoCov">          0 :   histogram h1=predator_hist();</span>
+<span class="lineNum">    1255 </span><span class="lineNoCov">          0 :   histogram h2=prey_hist();</span>
+<span class="lineNum">    1256 </span>            :   //histogram ch=chain_hist();
+<span class="lineNum">    1257 </span>            : 
+<span class="lineNum">    1258 </span><span class="lineNoCov">          0 :   p[pS]=size();</span>
+<span class="lineNum">    1259 </span><span class="lineNoCov">          0 :   p[pZ]=links_per_species_Z();</span>
+<span class="lineNum">    1260 </span><span class="lineNoCov">          0 :   p[pC]=connectance_C();</span>
+<span class="lineNum">    1261 </span><span class="lineNoCov">          0 :   p[pT]=prop_T(h1);</span>
+<span class="lineNum">    1262 </span><span class="lineNoCov">          0 :   p[pI]=prop_I(h1,h2);</span>
+<span class="lineNum">    1263 </span><span class="lineNoCov">          0 :   p[pB]=prop_B(h2);</span>
+<span class="lineNum">    1264 </span><span class="lineNoCov">          0 :   p[pGenSD]=prop_GenSD(h2);</span>
+<span class="lineNum">    1265 </span><span class="lineNoCov">          0 :   p[pVulSD]=prop_VulSD(h1);</span>
+<span class="lineNum">    1266 </span><span class="lineNoCov">          0 :   p[pMxSim]=prop_MxSim();</span>
+<span class="lineNum">    1267 </span><span class="lineNoCov">          0 :   p[pCannib]=prop_Cannib();</span>
+<span class="lineNum">    1268 </span>            : //   p[pChnLg]=prop_ChnLg(ch);
+<span class="lineNum">    1269 </span>            : //   p[pChnSD]=prop_ChnSD(ch);
+<span class="lineNum">    1270 </span>            : //   p[pChnNo]=prop_ChnNo(ch);
+<span class="lineNum">    1271 </span><span class="lineNoCov">          0 :   p[pLoop]=prop_Loop();</span>
+<span class="lineNum">    1272 </span><span class="lineNoCov">          0 :   p[pOmniv]=prop_Omniv();</span>
+<span class="lineNum">    1273 </span><span class="lineNoCov">          0 :   p[poChnLg]=stats.oChnLg;</span>
+<span class="lineNum">    1274 </span><span class="lineNoCov">          0 :   p[poChnSD]=stats.oChnSD;</span>
+<span class="lineNum">    1275 </span><span class="lineNoCov">          0 :   p[poChnNo]=stats.oChnNo;</span>
+<span class="lineNum">    1276 </span><span class="lineNoCov">          0 :   p[poLoop]=stats.oLoop;</span>
+<span class="lineNum">    1277 </span><span class="lineNoCov">          0 :   p[poOmniv]=stats.oOmniv;</span>
+<span class="lineNum">    1278 </span><span class="lineNoCov">          0 :   p[pDdiet]=prop_Ddiet();</span>
+<span class="lineNum">    1279 </span><span class="lineNoCov">          0 :   p[pfDdiet]=prop_Ddiet(true);//French Variant</span>
+<span class="lineNum">    1280 </span><span class="lineNoCov">          0 :   p[pCy4]=prop_Cy4();</span>
+<span class="lineNum">    1281 </span><span class="lineNoCov">          0 :   p[pNest]=prop_Nest();</span>
+<span class="lineNum">    1282 </span><span class="lineNoCov">          0 :   p[pClust]=prop_Clust();</span>
+<span class="lineNum">    1283 </span><span class="lineNoCov">          0 :   p[pSStab]=structural_stability();</span>
+<span class="lineNum">    1284 </span><span class="lineNoCov">          0 :   return p;</span>
+<span class="lineNum">    1285 </span>            : }
+<span class="lineNum">    1286 </span>            : 
+<span class="lineNum">    1287 </span><span class="lineNoCov">          0 : sequence&lt;const char *&gt; Interaction_Matrix::prop_names(){ </span>
+<span class="lineNum">    1288 </span>            :   // the names of these properties. 
+<span class="lineNum">    1289 </span><span class="lineNoCov">          0 :   sequence&lt;const char *&gt; p;</span>
+<span class="lineNum">    1290 </span><span class="lineNoCov">          0 :   p[pS]=&quot;S&quot;;</span>
+<span class="lineNum">    1291 </span><span class="lineNoCov">          0 :   p[pZ]=&quot;Z&quot;;</span>
+<span class="lineNum">    1292 </span><span class="lineNoCov">          0 :   p[pC]=&quot;C&quot;;</span>
+<span class="lineNum">    1293 </span><span class="lineNoCov">          0 :   p[pT]=&quot;T&quot;;</span>
+<span class="lineNum">    1294 </span><span class="lineNoCov">          0 :   p[pI]=&quot;I&quot;;</span>
+<span class="lineNum">    1295 </span><span class="lineNoCov">          0 :   p[pB]=&quot;B&quot;;</span>
+<span class="lineNum">    1296 </span><span class="lineNoCov">          0 :   p[pGenSD]=&quot;GenSD&quot;;</span>
+<span class="lineNum">    1297 </span><span class="lineNoCov">          0 :   p[pVulSD]=&quot;VulSD&quot;;</span>
+<span class="lineNum">    1298 </span><span class="lineNoCov">          0 :   p[pMxSim]=&quot;MxSim&quot;;</span>
+<span class="lineNum">    1299 </span><span class="lineNoCov">          0 :   p[pChnLg]=&quot;ChnLg&quot;;</span>
+<span class="lineNum">    1300 </span><span class="lineNoCov">          0 :   p[pChnSD]=&quot;ChnSD&quot;;</span>
+<span class="lineNum">    1301 </span><span class="lineNoCov">          0 :   p[pChnNo]=&quot;ChnNo&quot;;</span>
+<span class="lineNum">    1302 </span><span class="lineNoCov">          0 :   p[pCannib]=&quot;Cannib&quot;;</span>
+<span class="lineNum">    1303 </span><span class="lineNoCov">          0 :   p[pLoop]=&quot;Loop&quot;;</span>
+<span class="lineNum">    1304 </span><span class="lineNoCov">          0 :   p[pOmniv]=&quot;Omniv&quot;;</span>
+<span class="lineNum">    1305 </span><span class="lineNoCov">          0 :   p[poChnLg]=&quot;aChnLg&quot;;</span>
+<span class="lineNum">    1306 </span><span class="lineNoCov">          0 :   p[poChnSD]=&quot;aChnSD&quot;;</span>
+<span class="lineNum">    1307 </span><span class="lineNoCov">          0 :   p[poChnNo]=&quot;aChnNo&quot;;</span>
+<span class="lineNum">    1308 </span><span class="lineNoCov">          0 :   p[poLoop]=&quot;aLoop&quot;;</span>
+<span class="lineNum">    1309 </span><span class="lineNoCov">          0 :   p[poOmniv]=&quot;aOmniv&quot;;</span>
+<span class="lineNum">    1310 </span><span class="lineNoCov">          0 :   p[pDdiet]=&quot;vDdiet&quot;;</span>
+<span class="lineNum">    1311 </span><span class="lineNoCov">          0 :   p[pfDdiet]=&quot;Ddiet&quot;;</span>
+<span class="lineNum">    1312 </span><span class="lineNoCov">          0 :   p[pCy4]=&quot;Cy4&quot;;</span>
+<span class="lineNum">    1313 </span><span class="lineNoCov">          0 :   p[pNest]=&quot;Nest&quot;;</span>
+<span class="lineNum">    1314 </span><span class="lineNoCov">          0 :   p[pClust]=&quot;Clust&quot;;</span>
+<span class="lineNum">    1315 </span><span class="lineNoCov">          0 :   p[pSStab]=&quot;SStab&quot;;</span>
+<span class="lineNum">    1316 </span><span class="lineNoCov">          0 :   return p;</span>
+<a name="1317"><span class="lineNum">    1317 </span>            : } </a>
+<span class="lineNum">    1318 </span>            : 
+<span class="lineNum">    1319 </span><span class="lineNoCov">          0 : bool Interaction_Matrix::connected(){</span>
+<span class="lineNum">    1320 </span><span class="lineNoCov">          0 :   return is_connected(*this);</span>
+<a name="1321"><span class="lineNum">    1321 </span>            : }</a>
+<span class="lineNum">    1322 </span>            : 
+<span class="lineNum">    1323 </span><span class="lineNoCov">          0 : Interaction_Matrix Interaction_Matrix::largest_connected_subweb() const{</span>
+<span class="lineNum">    1324 </span><span class="lineNoCov">          0 :   return the_largest_connected_subweb(*this);</span>
+<a name="1325"><span class="lineNum">    1325 </span>            : }</a>
+<span class="lineNum">    1326 </span>            : 
+<span class="lineNum">    1327 </span><span class="lineNoCov">          0 : void Interaction_Matrix::two_column_write(const string &amp; filename,</span>
+<span class="lineNum">    1328 </span>            :                                           string delimiter/*=&quot;,&quot;*/)
+<span class="lineNum">    1329 </span>            : {
+<span class="lineNum">    1330 </span><span class="lineNoCov">          0 :   std::ofstream os(filename.c_str());</span>
+<span class="lineNum">    1331 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">    1332 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">    1333 </span><span class="lineNoCov">          0 :       if(eats(i,j))</span>
+<span class="lineNum">    1334 </span><span class="lineNoCov">          0 :         os &lt;&lt; the_size-j &lt;&lt; delimiter &lt;&lt; the_size-i &lt;&lt; endl;</span>
+<span class="lineNum">    1335 </span>            :     }
+<span class="lineNum">    1336 </span>            :     
+<span class="lineNum">    1337 </span>            :   }
+<a name="1338"><span class="lineNum">    1338 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">    1339 </span>            : 
+<span class="lineNum">    1340 </span><span class="lineNoCov">          0 : Interaction_Matrix::distribution Interaction_Matrix::trophic_height_vector(){</span>
+<span class="lineNum">    1341 </span><span class="lineNoCov">          0 :   return ::trophic_height_vector(*this);</span>
+<span class="lineNum">    1342 </span>            : }
+<span class="lineNum">    1343 </span>            : 
+<span class="lineNum">    1344 </span>            : Interaction_Matrix::histogram 
+<span class="lineNum">    1345 </span><span class="lineNoCov">          0 : Interaction_Matrix::shortest_path_level_vector(){</span>
+<span class="lineNum">    1346 </span><span class="lineNoCov">          0 :   int species_left=the_size;</span>
+<span class="lineNum">    1347 </span><span class="lineNoCov">          0 :   simple_vector&lt;bool&gt; lowest_level(the_size);</span>
+<span class="lineNum">    1348 </span><span class="lineNoCov">          0 :   histogram level(the_size);</span>
+<span class="lineNum">    1349 </span><span class="lineNoCov">          0 :   for(int i=the_size;i--&gt;0;){</span>
+<span class="lineNum">    1350 </span><span class="lineNoCov">          0 :     bool lowest=true;</span>
+<span class="lineNum">    1351 </span><span class="lineNoCov">          0 :     for(int j=the_size;j--&gt;0;){</span>
+<span class="lineNum">    1352 </span><span class="lineNoCov">          0 :       if(eats(i,j)){</span>
+<span class="lineNum">    1353 </span>            :         lowest=false;
+<span class="lineNum">    1354 </span>            :         break;
+<span class="lineNum">    1355 </span>            :       }
+<span class="lineNum">    1356 </span>            :     }
+<span class="lineNum">    1357 </span><span class="lineNoCov">          0 :     if(lowest){</span>
+<span class="lineNum">    1358 </span><span class="lineNoCov">          0 :       level[i]=1;</span>
+<span class="lineNum">    1359 </span><span class="lineNoCov">          0 :       species_left--;</span>
+<span class="lineNum">    1360 </span>            :     }
+<span class="lineNum">    1361 </span>            :   }
+<span class="lineNum">    1362 </span><span class="lineNoCov">          0 :   if(species_left==the_size) </span>
+<span class="lineNum">    1363 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;no lowest level found!&quot;);</span>
+<span class="lineNum">    1364 </span>            :   int level_found=1;
+<span class="lineNum">    1365 </span><span class="lineNoCov">          0 :   while(species_left){</span>
+<span class="lineNum">    1366 </span><span class="lineNoCov">          0 :     int last_species_left=species_left;</span>
+<span class="lineNum">    1367 </span><span class="lineNoCov">          0 :     for(int i=the_size;i--&gt;0;){</span>
+<span class="lineNum">    1368 </span><span class="lineNoCov">          0 :       if(level[i]==level_found){</span>
+<span class="lineNum">    1369 </span><span class="lineNoCov">          0 :         for(int j=the_size;j--&gt;0;){</span>
+<span class="lineNum">    1370 </span><span class="lineNoCov">          0 :           if(!level[j] &amp;&amp; eats(j,i)){</span>
+<span class="lineNum">    1371 </span><span class="lineNoCov">          0 :             level[j]=level_found+1;</span>
+<span class="lineNum">    1372 </span><span class="lineNoCov">          0 :             species_left--;</span>
+<span class="lineNum">    1373 </span>            :           }
+<span class="lineNum">    1374 </span>            :         }
+<span class="lineNum">    1375 </span>            :       }
+<span class="lineNum">    1376 </span>            :     }
+<span class="lineNum">    1377 </span><span class="lineNoCov">          0 :     level_found++;</span>
+<span class="lineNum">    1378 </span><span class="lineNoCov">          0 :     if(last_species_left==species_left){</span>
+<span class="lineNum">    1379 </span><span class="lineNoCov">          0 :       WARNING(&quot;problem computing shortest_path_level_vector&quot;);</span>
+<span class="lineNum">    1380 </span>            :       break;
+<span class="lineNum">    1381 </span>            :     }
+<span class="lineNum">    1382 </span>            :   }
+<span class="lineNum">    1383 </span><span class="lineNoCov">          0 :   return level;</span>
+<a name="1384"><span class="lineNum">    1384 </span>            : }</a>
+<span class="lineNum">    1385 </span>            : 
+<span class="lineNum">    1386 </span><span class="lineNoCov">          0 : double Interaction_Matrix::prop_Nest(){</span>
+<span class="lineNum">    1387 </span><span class="lineNoCov">          0 :   int violations=0;</span>
+<span class="lineNum">    1388 </span><span class="lineNoCov">          0 :   for(int i=the_size;i--&gt;0;){</span>
+<span class="lineNum">    1389 </span><span class="lineNoCov">          0 :     for(int j=i-1;j--&gt;0;){</span>
+<span class="lineNum">    1390 </span>            :       bool i_in_j=true,j_in_i=true,i_overlap_j=false;
+<span class="lineNum">    1391 </span><span class="lineNoCov">          0 :       for(int k=the_size;k--&gt;0;){</span>
+<span class="lineNum">    1392 </span><span class="lineNoCov">          0 :         if(eats(i,k) &amp;&amp; !eats(j,k)) i_in_j=false;</span>
+<span class="lineNum">    1393 </span><span class="lineNoCov">          0 :         if(!eats(i,k) &amp;&amp; eats(j,k)) j_in_i=false;</span>
+<span class="lineNum">    1394 </span><span class="lineNoCov">          0 :         if(eats(i,k) &amp;&amp; eats(j,k)) i_overlap_j=true;</span>
+<span class="lineNum">    1395 </span>            :       }
+<span class="lineNum">    1396 </span><span class="lineNoCov">          0 :       if(!(i_in_j || j_in_i || !i_overlap_j)){</span>
+<span class="lineNum">    1397 </span><span class="lineNoCov">          0 :         violations++;</span>
+<span class="lineNum">    1398 </span>            :       }
+<span class="lineNum">    1399 </span>            :     }
+<span class="lineNum">    1400 </span>            :   }
+<span class="lineNum">    1401 </span><span class="lineNoCov">          0 :   return violations;</span>
+<span class="lineNum">    1402 </span>            : }
+<a name="1403"><span class="lineNum">    1403 </span>            :         </a>
+<span class="lineNum">    1404 </span>            : 
+<span class="lineNum">    1405 </span><span class="lineNoCov">          0 : void Interaction_Matrix::dot_graph(const string &amp; filename){</span>
+<span class="lineNum">    1406 </span><span class="lineNoCov">          0 :   std::ofstream os(filename.c_str());</span>
+<span class="lineNum">    1407 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;strict digraph web {&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1408 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;shape=circle;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1409 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;splines=false;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1410 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;size=\&quot;7,11\&quot;;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1411 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;rankdir=BT;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1412 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;style=filled;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1413 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;height=1;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1414 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;width=1;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1415 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;fixedsize=true;&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1416 </span><span class="lineNoCov">          0 :   for(int i=0;i&lt;the_size;i++){</span>
+<span class="lineNum">    1417 </span><span class="lineNoCov">          0 :     for(int j=0;j&lt;the_size;j++){</span>
+<span class="lineNum">    1418 </span><span class="lineNoCov">          0 :       if(eats(i,j))</span>
+<span class="lineNum">    1419 </span><span class="lineNoCov">          0 :         os &lt;&lt; &quot;s&quot; &lt;&lt; j &lt;&lt; &quot; -&gt; &quot; &lt;&lt; &quot;s&quot; &lt;&lt; i &lt;&lt; &quot;[label = \&quot;\&quot;];&quot; &lt;&lt; endl;</span>
+<span class="lineNum">    1420 </span>            :     }
+<span class="lineNum">    1421 </span>            :   }
+<span class="lineNum">    1422 </span><span class="lineNoCov">          0 :   os &lt;&lt; &quot;}&quot; &lt;&lt; endl;</span>
+<a name="1423"><span class="lineNum">    1423 </span><span class="lineNoCov">          0 : }</span></a>
+<span class="lineNum">    1424 </span>            : 
+<span class="lineNum">    1425 </span><span class="lineNoCov">          0 : double Interaction_Matrix::structural_stability(){</span>
+<span class="lineNum">    1426 </span>            :   // &quot;structural stability&quot; according to J. Fox Oikos 115:97-109, 2006 
+<span class="lineNum">    1427 </span><span class="lineNoCov">          0 :   NewMatrix plusminus(the_size,the_size);</span>
+<span class="lineNum">    1428 </span><span class="lineNoCov">          0 :   for(int i=the_size;i--&gt;0;){</span>
+<span class="lineNum">    1429 </span><span class="lineNoCov">          0 :     for(int j=the_size;j--&gt;0;){</span>
+<span class="lineNum">    1430 </span><span class="lineNoCov">          0 :       if(eats(i,j)){ </span>
+<span class="lineNum">    1431 </span><span class="lineNoCov">          0 :         plusminus(i,j)=-1;</span>
+<span class="lineNum">    1432 </span><span class="lineNoCov">          0 :         if(eats(j,i)){</span>
+<span class="lineNum">    1433 </span><span class="lineNoCov">          0 :           plusminus(j,i)=-1;</span>
+<span class="lineNum">    1434 </span>            :         }else{
+<span class="lineNum">    1435 </span><span class="lineNoCov">          0 :           plusminus(j,i)=1;</span>
+<span class="lineNum">    1436 </span>            :         }
+<span class="lineNum">    1437 </span>            :       }
+<span class="lineNum">    1438 </span>            :     }
+<span class="lineNum">    1439 </span>            :   }
+<span class="lineNum">    1440 </span>            :   
+<span class="lineNum">    1441 </span>            :   int cannibs=0;
+<span class="lineNum">    1442 </span><span class="lineNoCov">          0 :   for(int i=the_size;i--&gt;0;){</span>
+<span class="lineNum">    1443 </span><span class="lineNoCov">          0 :     cannibs-=(int)plusminus(i,i);</span>
+<span class="lineNum">    1444 </span>            :   }
+<span class="lineNum">    1445 </span>            : 
+<span class="lineNum">    1446 </span><span class="lineNoCov">          0 :   NewMatrix save_plusminus=plusminus;</span>
+<span class="lineNum">    1447 </span>            : 
+<span class="lineNum">    1448 </span><span class="lineNoCov">          0 :   average_meter stability;</span>
+<span class="lineNum">    1449 </span><span class="lineNoCov">          0 :   bool random_cannibs=true;//(cannibs&lt;10);   // add cannibals</span>
+<span class="lineNum">    1450 </span>            :   
+<span class="lineNum">    1451 </span><span class="lineNoCov">          0 :   for(int rep=(random_cannibs?100:1);rep--&gt;0;){</span>
+<span class="lineNum">    1452 </span>            :     if(random_cannibs){
+<span class="lineNum">    1453 </span><span class="lineNoCov">          0 :       int non_cannibs=the_size-cannibs;</span>
+<span class="lineNum">    1454 </span><span class="lineNoCov">          0 :       plusminus=save_plusminus;</span>
+<span class="lineNum">    1455 </span>            :       // add non_cannibs/2 cannibals
+<span class="lineNum">    1456 </span><span class="lineNoCov">          0 :       for(int l=non_cannibs/2;l--&gt;0;){</span>
+<span class="lineNum">    1457 </span>            :         //REPORT(non_cannibs);
+<span class="lineNum">    1458 </span><span class="lineNoCov">          0 :         int nth=random_integer(non_cannibs); // = 0..non_cannibs-1</span>
+<span class="lineNum">    1459 </span>            :         //REPORT(nth);
+<span class="lineNum">    1460 </span>            :         int n=-1,i=-1;
+<span class="lineNum">    1461 </span><span class="lineNoCov">          0 :         while(n&lt;nth){</span>
+<span class="lineNum">    1462 </span><span class="lineNoCov">          0 :           i++;</span>
+<span class="lineNum">    1463 </span><span class="lineNoCov">          0 :           while(plusminus(i,i)==-1) i++;</span>
+<span class="lineNum">    1464 </span><span class="lineNoCov">          0 :           n++;</span>
+<span class="lineNum">    1465 </span>            :         }
+<span class="lineNum">    1466 </span><span class="lineNoCov">          0 :         ALWAYS_ASSERT(i&lt;the_size);</span>
+<span class="lineNum">    1467 </span>            :         //REPORT(i);
+<span class="lineNum">    1468 </span><span class="lineNoCov">          0 :         plusminus(i,i)=-1;</span>
+<span class="lineNum">    1469 </span><span class="lineNoCov">          0 :         non_cannibs--;</span>
+<span class="lineNum">    1470 </span>            :       }
+<span class="lineNum">    1471 </span>            :     }
+<span class="lineNum">    1472 </span>            :     
+<span class="lineNum">    1473 </span>            : //     PPrint();
+<span class="lineNum">    1474 </span>            : //     for(int j=0;j&lt;the_size;j++){
+<span class="lineNum">    1475 </span>            : //       for(int i=0;i&lt;the_size;i++){
+<span class="lineNum">    1476 </span>            : //      if(plusminus[i][j]==+1)
+<span class="lineNum">    1477 </span>            : //        cout &lt;&lt; '+';
+<span class="lineNum">    1478 </span>            : //      else if(plusminus[i][j]==-1)
+<span class="lineNum">    1479 </span>            : //        cout &lt;&lt; '-';
+<span class="lineNum">    1480 </span>            : //      else if(plusminus[i][j])
+<span class="lineNum">    1481 </span>            : //        FATAL_ERROR(&quot;plusminus garbeled&quot;);
+<span class="lineNum">    1482 </span>            : //      else 
+<span class="lineNum">    1483 </span>            : //        cout &lt;&lt; '0';
+<span class="lineNum">    1484 </span>            : //      cout &lt;&lt; ' ';
+<span class="lineNum">    1485 </span>            : //       }
+<span class="lineNum">    1486 </span>            : //       cout &lt;&lt; endl;
+<span class="lineNum">    1487 </span>            : //     }
+<span class="lineNum">    1488 </span>            : //     cout &lt;&lt; endl;
+<span class="lineNum">    1489 </span>            : 
+<span class="lineNum">    1490 </span><span class="lineNoCov">          0 :     NewVector evalr,evali;</span>
+<span class="lineNum">    1491 </span><span class="lineNoCov">          0 :     NewEigen(plusminus,evalr,evali);</span>
+<span class="lineNum">    1492 </span>            :     
+<span class="lineNum">    1493 </span>            :     // find maximum real part:
+<span class="lineNum">    1494 </span><span class="lineNoCov">          0 :     int maxind=0;</span>
+<span class="lineNum">    1495 </span><span class="lineNoCov">          0 :     for(int i=the_size;i--&gt;0;){</span>
+<span class="lineNum">    1496 </span><span class="lineNoCov">          0 :       if(evalr[i]&gt;evalr[maxind]){</span>
+<span class="lineNum">    1497 </span><span class="lineNoCov">          0 :       maxind=i;</span>
+<span class="lineNum">    1498 </span>            :       }
+<span class="lineNum">    1499 </span>            :     }
+<span class="lineNum">    1500 </span><span class="lineNoCov">          0 :     stability.sample(evalr[maxind]);</span>
+<span class="lineNum">    1501 </span>            :     if(rep==0){
+<span class="lineNum">    1502 </span>            :       //REPORT(evalr);
+<span class="lineNum">    1503 </span>            :       //REPORT(evali);
+<span class="lineNum">    1504 </span>            :     }
+<span class="lineNum">    1505 </span>            :   }
+<span class="lineNum">    1506 </span>            :   //REPORT(stability.std());
+<span class="lineNum">    1507 </span>            :   //REPORT(stability.error());
+<span class="lineNum">    1508 </span><span class="lineNoCov">          0 :   return stability.readout();</span>
+<span class="lineNum">    1509 </span>            : }
+<span class="lineNum">    1510 </span>            : 
+<span class="lineNum">    1511 </span>            : // #include &quot;consecutive_one.h&quot;
+<span class="lineNum">    1512 </span>            : 
+<span class="lineNum">    1513 </span>            : // bool has_consecutive_ones(const CMatrix&lt;NetworkAnalysis::Interaction&gt; &amp; m){
+<span class="lineNum">    1514 </span>            : //   static consecutive_ones_tester cons_one;
+<span class="lineNum">    1515 </span>            : //   return cons_one.test(m);
+<span class="lineNum">    1516 </span>            : // }
+<span class="lineNum">    1517 </span>            : 
+<span class="lineNum">    1518 </span>            : #include &quot;pqtree.h&quot;
+<span class="lineNum">    1519 </span>            : 
+<span class="lineNum">    1520 </span><span class="lineNoCov">          0 : bool has_consecutive_ones(const CMatrix&lt;NetworkAnalysis::Interaction&gt; &amp; m){</span>
+<span class="lineNum">    1521 </span><span class="lineNoCov">          0 :   set&lt;int&gt; U;</span>
+<span class="lineNum">    1522 </span><span class="lineNoCov">          0 :   for(int c=0;c&lt;m.GetXSize();c++)</span>
+<span class="lineNum">    1523 </span><span class="lineNoCov">          0 :     U.insert(c);</span>
+<span class="lineNum">    1524 </span>            :   
+<span class="lineNum">    1525 </span><span class="lineNoCov">          0 :   pqtree&lt;int&gt; T(U);</span>
+<span class="lineNum">    1526 </span>            : 
+<span class="lineNum">    1527 </span>            :   try{
+<span class="lineNum">    1528 </span><span class="lineNoCov">          0 :     for(int r=0;r&lt;m.GetYSize();r++){</span>
+<span class="lineNum">    1529 </span>            :       // for each row ...
+<span class="lineNum">    1530 </span><span class="lineNoCov">          0 :       set&lt;int&gt; s;</span>
+<span class="lineNum">    1531 </span><span class="lineNoCov">          0 :       for(int c=0;c&lt;m.GetXSize();c++){</span>
+<span class="lineNum">    1532 </span>            :         // get the ones in each column:
+<span class="lineNum">    1533 </span><span class="lineNoCov">          0 :         if(m[r][c]==NetworkAnalysis::eats){</span>
+<span class="lineNum">    1534 </span>            :           s.insert(c);
+<span class="lineNum">    1535 </span>            :         }
+<span class="lineNum">    1536 </span>            :       }
+<span class="lineNum">    1537 </span>            :       
+<span class="lineNum">    1538 </span><span class="lineNoCov">          0 :       if(!T.reduce(s)){</span>
+<span class="lineNum">    1539 </span><span class="lineNoCov">          0 :         return false;</span>
+<span class="lineNum">    1540 </span>            :       }
+<span class="lineNum">    1541 </span>            :     }
+<span class="lineNum">    1542 </span><span class="lineNoCov">          0 :   }catch(AnalysisBug){</span>
+<span class="lineNum">    1543 </span><span class="lineNoCov">          0 :     Interaction_Matrix(m).PPrint();</span>
+<span class="lineNum">    1544 </span>            :     return false;
+<span class="lineNum">    1545 </span>            :   }
+<span class="lineNum">    1546 </span>            :   return true;
+<span class="lineNum">    1547 </span>            : }
+<a name="1548"><span class="lineNum">    1548 </span>            : </a>
+<span class="lineNum">    1549 </span>            : 
+<span class="lineNum">    1550 </span><span class="lineNoCov">          0 : bool Interaction_Matrix::has_consecutive_ones(){</span>
+<span class="lineNum">    1551 </span><span class="lineNoCov">          0 :   return ::has_consecutive_ones(*this);</span>
+<a name="1552"><span class="lineNum">    1552 </span>            : }</a>
+<span class="lineNum">    1553 </span>            : 
+<span class="lineNum">    1554 </span><span class="lineNoCov">          0 : bool Interaction_Matrix::is_interval(){</span>
+<span class="lineNum">    1555 </span><span class="lineNoCov">          0 :   return niche_overlap_graph_analysis(*this) &gt;= 2;</span>
+<a name="1556"><span class="lineNum">    1556 </span>            : }</a>
+<span class="lineNum">    1557 </span>            : 
+<a name="1558"><span class="lineNum">    1558 </span><span class="lineNoCov">          0 : bool Interaction_Matrix::is_chordal(){</span></a>
+<span class="lineNum">    1559 </span><span class="lineNoCov">          0 :   return niche_overlap_graph_analysis(*this) &gt;= 1;</span>
+<span class="lineNum">    1560 </span><span class="lineCov">        135 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

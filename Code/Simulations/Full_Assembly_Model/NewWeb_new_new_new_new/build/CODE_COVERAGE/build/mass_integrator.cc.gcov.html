@@ -1,0 +1,1535 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/mass_integrator.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - mass_integrator.cc<span style="font-size: 80%;"> (source / <a href="mass_integrator.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">474</td>
+            <td class="headerCovTableEntryLo">0.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntryLo">20.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: mass_integrator.cc,v 1.1 2005/12/01 07:13:32 cvsrep Exp $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &lt;fstream&gt;
+<span class="lineNum">       5 </span>            : #include &lt;sstream&gt;
+<span class="lineNum">       6 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">       7 </span>            : #include &quot;mass_integrator.h&quot;
+<span class="lineNum">       8 </span>            : #include &quot;evaluate.h&quot;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : using namespace std;
+<span class="lineNum">      11 </span>            : static int mass_integrator_version=1;
+<span class="lineNum">      12 </span>            : static double conversion_factor_to_Mmat=1/0.571;
+<span class="lineNum">      13 </span>            : static double LFI_L_threshold_CS=50;
+<span class="lineNum">      14 </span>            : static double LFI_L_threshold_NS=40;
+<span class="lineNum">      15 </span>            : static double logLmax_logMmat_reg_a_CS=1.81817;
+<span class="lineNum">      16 </span>            : static double logLmax_logMmat_reg_b_CS=0.30819;
+<span class="lineNum">      17 </span>            : static double proplargefishB_Lmax_reg_a_CS=1.39089;
+<span class="lineNum">      18 </span>            : static double proplargefishB_Lmax_reg_b_CS=17.89367;
+<span class="lineNum">      19 </span>            : static double logLmax_logMmat_reg_a_NS=1.83214;
+<span class="lineNum">      20 </span>            : static double logLmax_logMmat_reg_b_NS=0.23904;
+<span class="lineNum">      21 </span>            : static double proplargefishB_Lmax_reg_a_NS_noqcorrection=1.39300;
+<span class="lineNum">      22 </span>            : static double proplargefishB_Lmax_reg_b_NS_noqcorrection=23.98780;
+<span class="lineNum">      23 </span>            : static double proplargefishB_Lmax_reg_a_NS_qcorrection=1.35103;
+<span class="lineNum">      24 </span>            : static double proplargefishB_Lmax_reg_b_NS_qcorrection=24.40813;
+<span class="lineNum">      25 </span>            : static double logLmax_logMmat_reg_a_CS_RMA=1.876;
+<span class="lineNum">      26 </span>            : static double logLmax_logMmat_reg_b_CS_RMA=0.3852;
+<span class="lineNum">      27 </span>            : static double proplargefishB_logLmax_reg_a_CS_RMA=0.008698;
+<span class="lineNum">      28 </span>            : static double proplargefishB_logLmax_reg_b_CS_RMA=2.552;
+<span class="lineNum">      29 </span>            : static double logLmax_logMmat_reg_a_NS_RMA=1.926;
+<span class="lineNum">      30 </span>            : static double logLmax_logMmat_reg_b_NS_RMA=0.3421;
+<span class="lineNum">      31 </span>            : static double proplargefishB_logLmax_reg_a_NS_noqcorrection_RMA=-0.09929;
+<span class="lineNum">      32 </span>            : static double proplargefishB_logLmax_reg_b_NS_noqcorrection_RMA=2.452;
+<span class="lineNum">      33 </span>            : static double proplargefishB_logLmax_reg_a_NS_qcorrection_RMA=-0.06042;
+<span class="lineNum">      34 </span>            : static double proplargefishB_logLmax_reg_b_NS_qcorrection_RMA=2.386;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : // Manage adjustable parameters:
+<span class="lineNum">      38 </span>            : #include &quot;cfgList.h&quot;
+<span class="lineNum">      39 </span>            : static cfgStruct cfg[] = 
+<span class="lineNum">      40 </span>            : {
+<span class="lineNum">      41 </span>            :   CFGINT(mass_integrator_version),
+<span class="lineNum">      42 </span>            :   CFGDOUBLE(conversion_factor_to_Mmat),
+<span class="lineNum">      43 </span>            :   CFGDOUBLE(LFI_L_threshold_CS),
+<span class="lineNum">      44 </span>            :   CFGDOUBLE(LFI_L_threshold_NS),
+<span class="lineNum">      45 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_a_CS),
+<span class="lineNum">      46 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_b_CS),
+<span class="lineNum">      47 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_a_NS),
+<span class="lineNum">      48 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_b_NS),
+<span class="lineNum">      49 </span>            :   CFGDOUBLE(proplargefishB_Lmax_reg_a_CS),
+<span class="lineNum">      50 </span>            :   CFGDOUBLE(proplargefishB_Lmax_reg_b_CS),
+<span class="lineNum">      51 </span>            :   CFGDOUBLE(proplargefishB_Lmax_reg_a_NS_noqcorrection),
+<span class="lineNum">      52 </span>            :   CFGDOUBLE(proplargefishB_Lmax_reg_b_NS_noqcorrection),
+<span class="lineNum">      53 </span>            :   CFGDOUBLE(proplargefishB_Lmax_reg_a_NS_qcorrection),
+<span class="lineNum">      54 </span>            :   CFGDOUBLE(proplargefishB_Lmax_reg_b_NS_qcorrection),
+<span class="lineNum">      55 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_a_CS_RMA),
+<span class="lineNum">      56 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_b_CS_RMA),
+<span class="lineNum">      57 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_a_NS_RMA),
+<span class="lineNum">      58 </span>            :   CFGDOUBLE(logLmax_logMmat_reg_b_NS_RMA),
+<span class="lineNum">      59 </span>            :   CFGDOUBLE(proplargefishB_logLmax_reg_a_CS_RMA),
+<span class="lineNum">      60 </span>            :   CFGDOUBLE(proplargefishB_logLmax_reg_b_CS_RMA),
+<span class="lineNum">      61 </span>            :   CFGDOUBLE(proplargefishB_logLmax_reg_a_NS_noqcorrection_RMA),
+<span class="lineNum">      62 </span>            :   CFGDOUBLE(proplargefishB_logLmax_reg_b_NS_noqcorrection_RMA),
+<span class="lineNum">      63 </span>            :   CFGDOUBLE(proplargefishB_logLmax_reg_a_NS_qcorrection_RMA),
+<span class="lineNum">      64 </span>            :   CFGDOUBLE(proplargefishB_logLmax_reg_b_NS_qcorrection_RMA),
+<span class="lineNum">      65 </span>            :   {0, CFG_END, 0}
+<span class="lineNum">      66 </span>            : };
+<span class="lineNum">      67 </span><span class="lineCov">         45 : static cfg_add dummy(cfg);</span>
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 : Mass_Integrator::Mass_Integrator()</span>
+<span class="lineNum">      70 </span>            : {
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :   switch(mass_integrator_version){</span>
+<span class="lineNum">      72 </span>            :   case 1:
+<span class="lineNum">      73 </span>            :     {
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :       init(&quot;/usr/local/etc/NewWeb/massSum.dat&quot;);</span>
+<span class="lineNum">      75 </span>            :     }
+<span class="lineNum">      76 </span>            :     break;
+<span class="lineNum">      77 </span>            :   case 2:
+<span class="lineNum">      78 </span>            :     {
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :       init(&quot;/home/tfung/NewWeb/massSum.dat&quot;);</span>
+<span class="lineNum">      80 </span>            :     }
+<span class="lineNum">      81 </span>            :     break;
+<span class="lineNum">      82 </span>            :   case 3:
+<span class="lineNum">      83 </span>            :     {
+<span class="lineNum">      84 </span><span class="lineNoCov">          0 :       init(&quot;/home/tfung/NewWeb/massSum.dat&quot;);</span>
+<span class="lineNum">      85 </span>            :     }
+<span class="lineNum">      86 </span>            :   break;
+<span class="lineNum">      87 </span>            :   case 4:
+<span class="lineNum">      88 </span>            :     {
+<span class="lineNum">      89 </span>            :     }
+<span class="lineNum">      90 </span>            :   break;
+<span class="lineNum">      91 </span>            :   case 5:
+<span class="lineNum">      92 </span>            :     {
+<span class="lineNum">      93 </span>            :     }
+<span class="lineNum">      94 </span>            :   break;
+<span class="lineNum">      95 </span>            :   case 6:
+<span class="lineNum">      96 </span>            :     {
+<span class="lineNum">      97 </span>            :     }
+<span class="lineNum">      98 </span>            :   break;
+<span class="lineNum">      99 </span>            :   case 7:
+<span class="lineNum">     100 </span>            :     {
+<span class="lineNum">     101 </span>            :     }
+<span class="lineNum">     102 </span>            :   break;
+<span class="lineNum">     103 </span>            :   case 8:
+<span class="lineNum">     104 </span>            :     {
+<span class="lineNum">     105 </span>            :     }
+<span class="lineNum">     106 </span>            :   break;
+<span class="lineNum">     107 </span>            :   case 9:
+<span class="lineNum">     108 </span>            :     {
+<span class="lineNum">     109 </span>            :     }
+<span class="lineNum">     110 </span>            :   break;
+<span class="lineNum">     111 </span>            :   default:
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;mass_integrator_version &quot; &lt;&lt; mass_integrator_version &lt;&lt; &quot; unknown&quot;);</span>
+<span class="lineNum">     113 </span>            :   }
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 : void Mass_Integrator::init(const char * filename){</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :   ifstream sum_file(filename);</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :   if(sum_file.is_open()){</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :     while(!sum_file.eof()){</span>
+<span class="lineNum">     120 </span>            :       double x,s;
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :       sum_file &gt;&gt; x &gt;&gt; s;</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :       _standard_sum[_standard_sum.size()]=std::pair&lt;double,double&gt;(x,s);</span>
+<span class="lineNum">     123 </span>            :     }
+<span class="lineNum">     124 </span>            :   }else{
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :     WARNING(&quot;Cound not open &quot;&quot;&quot; &lt;&lt; filename &lt;&lt; &quot;&quot;&quot;, using built-in table&quot;);</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :     for(int i=0;i&lt; sum_data_length;i++){</span>
+<span class="lineNum">     127 </span><span class="lineNoCov">          0 :       double x=sum_data[i][0];</span>
+<span class="lineNum">     128 </span><span class="lineNoCov">          0 :       double s=sum_data[i][1];</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :       _standard_sum[_standard_sum.size()]=std::pair&lt;double,double&gt;(x,s);</span>
+<span class="lineNum">     130 </span>            :     }
+<span class="lineNum">     131 </span>            :   }
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :   REPORT(_standard_sum.size());</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            : /* Example:
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            : _standard_sum:
+<span class="lineNum">     138 </span>            : 0 1
+<span class="lineNum">     139 </span>            : 1 0.5
+<span class="lineNum">     140 </span>            : 2 0.25
+<span class="lineNum">     141 </span>            : 3 0.12
+<span class="lineNum">     142 </span>            : 4 0.06
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : n_points = 5
+<span class="lineNum">     145 </span>            : xmax=4
+<span class="lineNum">     146 </span>            : indexer=4/4=1
+<span class="lineNum">     147 </span>            : */
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : /// Computes the biomass of individuals larger than startM
+<span class="lineNum">     150 </span>            : /** Now using linear interpolation of _standard_sum **/
+<span class="lineNum">     151 </span>            : double 
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 : Mass_Integrator::integrate(const sequence&lt; double &gt; &amp; B,</span>
+<span class="lineNum">     153 </span>            :                            const sequence&lt; double &gt; &amp; M,
+<span class="lineNum">     154 </span>            :                            double startM){
+<span class="lineNum">     155 </span><span class="lineNoCov">          0 :   const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :   const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :   const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     158 </span>            :   
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(B.size()==M.size());</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :   for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :     double index=startM*indexer/M(i);//index must be double to avoid</span>
+<span class="lineNum">     164 </span>            :     //conversion errors!
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :     if(mass_integrator_version &lt; 2)</span>
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :       index/=conversion_factor_to_Mmat;</span>
+<span class="lineNum">     168 </span>            :     
+<span class="lineNum">     169 </span>            :     // add up biomass above startM from all species
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :     if(index&lt;n_points){</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :       if(index &gt;= 1){</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :         sum+=B(i)*</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :           (_standard_sum[index].second+</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :            (index-int(index))*</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :            ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :             _standard_sum[index].second ))/_standard_sum[1].second;</span>
+<span class="lineNum">     177 </span>            :       }else{
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :         sum+=B(i);</span>
+<span class="lineNum">     179 </span>            :       }
+<span class="lineNum">     180 </span>            :     }
+<span class="lineNum">     181 </span>            :   }
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :   return sum;</span>
+<span class="lineNum">     183 </span>            : }
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            : // integrateThreshold is same as integrate except that only species with M above and below 2 thresholds are considered.
+<span class="lineNum">     186 </span>            : // used to calculate LFI where we only want to consider fish with M above and below 2 thresholds. 
+<span class="lineNum">     187 </span>            : double 
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 : Mass_Integrator::integrateThreshold(const sequence&lt; double &gt; &amp; B,</span>
+<span class="lineNum">     189 </span>            :                            const sequence&lt; double &gt; &amp; M,
+<span class="lineNum">     190 </span>            :                                     double startM, double Mlowerthreshold, double Mupperthreshold){
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(B.size()==M.size());</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :   switch(mass_integrator_version){</span>
+<span class="lineNum">     195 </span>            :   case 1: // M(i) is Mav rather than the maturation body mass.
+<span class="lineNum">     196 </span>            :     // Hence, M(i) is multiplied by factor conversion_factor_to_Mmat to convert to maturation body mass.
+<span class="lineNum">     197 </span>            :    {
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :      for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with Mav above and below 2 thresholds</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :           double index=(startM*indexer)/(M(i)*conversion_factor_to_Mmat);//index must be double to avoid conversion errors!</span>
+<span class="lineNum">     204 </span>            :           // add up biomass above startM from all species
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :           if(index&lt;n_points){</span>
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 :             sum+=B(i)*</span>
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :               (_standard_sum[index].second+</span>
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :                (index-int(index))*</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :                ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :                 _standard_sum[index].second ));</span>
+<span class="lineNum">     211 </span>            :           }
+<span class="lineNum">     212 </span>            :         }
+<span class="lineNum">     213 </span>            :      }
+<span class="lineNum">     214 </span>            :    }
+<span class="lineNum">     215 </span>            :   case 2: // M(i) is Mav rather than the maturation body mass.
+<span class="lineNum">     216 </span>            :     // Hence, M(i) is multiplied by factor conversion_factor_to_Mmat to convert to maturation body mass.
+<span class="lineNum">     217 </span>            :    {
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :      for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     222 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with Mav above and below 2 thresholds</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :           double index=(startM*indexer)/(M(i)*conversion_factor_to_Mmat);//index must be double to avoid conversion errors!</span>
+<span class="lineNum">     224 </span>            :           // add up biomass above startM from all species
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :           if(index&lt;n_points){</span>
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :             sum+=B(i)*</span>
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :               (_standard_sum[index].second+</span>
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :                (index-int(index))*</span>
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :                ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :                 _standard_sum[index].second ));</span>
+<span class="lineNum">     231 </span>            :           }
+<span class="lineNum">     232 </span>            :         }
+<span class="lineNum">     233 </span>            :      }
+<span class="lineNum">     234 </span>            :    }
+<span class="lineNum">     235 </span>            :    break;
+<span class="lineNum">     236 </span>            :   case 3: // No need to convert M(i) to maturation body mass.
+<span class="lineNum">     237 </span>            :    {
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :      for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :       if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :         double index=startM*indexer/M(i);//index must be double to avoid conversion errors!</span>
+<span class="lineNum">     244 </span>            :         // add up biomass above startM from all species
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :         if(index&lt;n_points){</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :           sum+=B(i)*</span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :             (_standard_sum[index].second+</span>
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :              (index-int(index))*</span>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :              ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :               _standard_sum[index].second ));</span>
+<span class="lineNum">     251 </span>            :         }
+<span class="lineNum">     252 </span>            :       }
+<span class="lineNum">     253 </span>            :      }
+<span class="lineNum">     254 </span>            :    }
+<span class="lineNum">     255 </span>            :    break;
+<span class="lineNum">     256 </span>            :   case 4: // There IS conversion of M(i) to maturation body mass. Based on Celtic Sea data.
+<span class="lineNum">     257 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     258 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     259 </span>            :    {
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :      double Mkg=0;</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :      double log10Lmax=0;</span>
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :      double Lmax=0;</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :      double proplargefishB=0;</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :      for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :        if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     266 </span>            :          // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :          Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :          log10Lmax=logLmax_logMmat_reg_a_CS+logLmax_logMmat_reg_b_CS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :          Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     270 </span>            :          // Then convert Lmax into proportion
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :          if(Lmax&lt;LFI_L_threshold_CS){</span>
+<span class="lineNum">     272 </span>            :            proplargefishB=0;
+<span class="lineNum">     273 </span>            :          }else{
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :            proplargefishB=pow(Lmax-LFI_L_threshold_CS,proplargefishB_Lmax_reg_a_CS)/</span>
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :              (pow(Lmax-LFI_L_threshold_CS,proplargefishB_Lmax_reg_a_CS)+pow(proplargefishB_Lmax_reg_b_CS,proplargefishB_Lmax_reg_a_CS));</span>
+<span class="lineNum">     276 </span>            :          }
+<span class="lineNum">     277 </span>            :          // Add biomass of large fish to sum
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :          sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     279 </span>            :        }
+<span class="lineNum">     280 </span>            :      }
+<span class="lineNum">     281 </span>            :    }
+<span class="lineNum">     282 </span>            :    break;
+<span class="lineNum">     283 </span>            :   case 5: // There IS conversion of M(i) to maturation body mass. Based on North Sea data, not corrected for q.
+<span class="lineNum">     284 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     285 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     286 </span>            :     {
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     290 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     293 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS+logLmax_logMmat_reg_b_NS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     297 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     299 </span>            :             proplargefishB=0;
+<span class="lineNum">     300 </span>            :           }else{
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_noqcorrection)/</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :               (pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_noqcorrection)</span>
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :                +pow(proplargefishB_Lmax_reg_b_NS_noqcorrection,proplargefishB_Lmax_reg_a_NS_noqcorrection));</span>
+<span class="lineNum">     304 </span>            :           }
+<span class="lineNum">     305 </span>            :           // Add biomass of large fish to sum
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     307 </span>            :         }
+<span class="lineNum">     308 </span>            :       }
+<span class="lineNum">     309 </span>            :     }
+<span class="lineNum">     310 </span>            :     break;
+<span class="lineNum">     311 </span>            :   case 6: // There IS conversion of M(i) to maturation body mass. Based on North Sea data, corrected for q.
+<span class="lineNum">     312 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     313 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     314 </span>            :     {
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     318 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     321 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     322 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS+logLmax_logMmat_reg_b_NS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     325 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     327 </span>            :             proplargefishB=0;
+<span class="lineNum">     328 </span>            :           }else{
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_qcorrection)/</span>
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :               (pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_qcorrection)</span>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :                +pow(proplargefishB_Lmax_reg_b_NS_qcorrection,proplargefishB_Lmax_reg_a_NS_qcorrection));</span>
+<span class="lineNum">     332 </span>            :           }
+<span class="lineNum">     333 </span>            :           // Add biomass of large fish to sum
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     335 </span>            :         }
+<span class="lineNum">     336 </span>            :       }
+<span class="lineNum">     337 </span>            :     }
+<span class="lineNum">     338 </span>            :     break;
+<span class="lineNum">     339 </span>            :   case 7: // There IS conversion of M(i) to maturation body mass. Based on Celtic Sea data with RMA regression.
+<span class="lineNum">     340 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     341 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     342 </span>            :     {
+<span class="lineNum">     343 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     345 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     349 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     350 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_CS_RMA+logLmax_logMmat_reg_b_CS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     353 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_CS){</span>
+<span class="lineNum">     355 </span>            :             proplargefishB=0;
+<span class="lineNum">     356 </span>            :           }else{
+<span class="lineNum">     357 </span><span class="lineNoCov">          0 :             proplargefishB=proplargefishB_logLmax_reg_a_CS_RMA+proplargefishB_logLmax_reg_b_CS_RMA*(log10Lmax-(log(LFI_L_threshold_CS)/log(10)));</span>
+<span class="lineNum">     358 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">     360 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">     362 </span>            :           }
+<span class="lineNum">     363 </span>            :           // Add biomass of large fish to sum
+<span class="lineNum">     364 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     365 </span>            :         }
+<span class="lineNum">     366 </span>            :       }
+<span class="lineNum">     367 </span>            :     }
+<span class="lineNum">     368 </span>            :     break;
+<span class="lineNum">     369 </span>            :   case 8: // There IS conversion of M(i) to maturation body mass. Based on North Sea data, not corrected for q.
+<span class="lineNum">     370 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     371 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     372 </span>            :     {
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     377 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     378 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     379 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     380 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     381 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS_RMA+logLmax_logMmat_reg_b_NS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     383 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     385 </span>            :             proplargefishB=0;
+<span class="lineNum">     386 </span>            :           }else{
+<span class="lineNum">     387 </span>            :             proplargefishB=proplargefishB_logLmax_reg_a_NS_noqcorrection_RMA
+<span class="lineNum">     388 </span><span class="lineNoCov">          0 :               +proplargefishB_logLmax_reg_b_NS_noqcorrection_RMA*(log10Lmax-(log(LFI_L_threshold_NS)/log(10)));</span>
+<span class="lineNum">     389 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">     390 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">     391 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">     393 </span>            :           }
+<span class="lineNum">     394 </span>            :           // Add biomass of large fish to sum
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     396 </span>            :         }
+<span class="lineNum">     397 </span>            :       }
+<span class="lineNum">     398 </span>            :     }
+<span class="lineNum">     399 </span>            :     break;
+<span class="lineNum">     400 </span>            :   case 9: // There IS conversion of M(i) to maturation body mass. Based on North Sea data, corrected for q.
+<span class="lineNum">     401 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     402 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     403 </span>            :     {
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     410 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     411 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     412 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS_RMA+logLmax_logMmat_reg_b_NS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     414 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">     415 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     416 </span>            :             proplargefishB=0;
+<span class="lineNum">     417 </span>            :           }else{
+<span class="lineNum">     418 </span>            :             proplargefishB=proplargefishB_logLmax_reg_a_NS_qcorrection_RMA
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :               +proplargefishB_logLmax_reg_b_NS_qcorrection_RMA*(log10Lmax-(log(LFI_L_threshold_NS)/log(10)));</span>
+<span class="lineNum">     420 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">     422 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">     424 </span>            :           }
+<span class="lineNum">     425 </span>            :           // Add biomass of large fish to sum
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     427 </span>            :         }
+<span class="lineNum">     428 </span>            :       }
+<span class="lineNum">     429 </span>            :     }
+<span class="lineNum">     430 </span>            :     break;
+<span class="lineNum">     431 </span>            :   default:
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;mass_integrator_version &quot; &lt;&lt; mass_integrator_version &lt;&lt; &quot; unknown&quot;);</span>
+<span class="lineNum">     433 </span>            :   }
+<span class="lineNum">     434 </span>            : 
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :   return sum;</span>
+<span class="lineNum">     436 </span>            : }
+<span class="lineNum">     437 </span>            :   
+<span class="lineNum">     438 </span>            : void
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 : Mass_Integrator::spectrum(const sequence&lt; double &gt; &amp; B,</span>
+<span class="lineNum">     440 </span>            :                           const sequence&lt; double &gt; &amp; M,
+<span class="lineNum">     441 </span>            :                           const char * filename,
+<span class="lineNum">     442 </span>            :                           const bool take_log10){
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :   const double step_factor=1.1;</span>
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :   const double bin_center_factor=sqrt(step_factor);</span>
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 :   const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :   const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     447 </span><span class="lineNoCov">          0 :   stringstream Bname;</span>
+<span class="lineNum">     448 </span><span class="lineNoCov">          0 :   Bname &lt;&lt; &quot;B&quot; &lt;&lt; filename ;</span>
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :   ofstream spectrum(filename);</span>
+<span class="lineNum">     450 </span><span class="lineNoCov">          0 :   ofstream Bspectrum(Bname.str().c_str());</span>
+<span class="lineNum">     451 </span>            :   
+<span class="lineNum">     452 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(M.size()&gt;0);</span>
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span><span class="lineNoCov">          0 :   double minM=M(0),maxM=M(0);</span>
+<span class="lineNum">     455 </span><span class="lineNoCov">          0 :   for(int i=M.size();i--&gt;0;){</span>
+<span class="lineNum">     456 </span><span class="lineNoCov">          0 :     minM=min&lt;double&gt;(M(i),minM);</span>
+<span class="lineNum">     457 </span><span class="lineNoCov">          0 :     maxM=max&lt;double&gt;(M(i),maxM);</span>
+<span class="lineNum">     458 </span>            :   }
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span><span class="lineNoCov">          0 :   double unit_mass=eval(&quot;1*kilogram&quot;);</span>
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span><span class="lineNoCov">          0 :   if(mass_integrator_version&gt;2){</span>
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :     for(double m=minM;m&lt;maxM*xmax;m*=step_factor){</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :       double b=(integrate(B,M,m)-integrate(B,M,m*step_factor))/</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :         (m*(step_factor-1));</span>
+<span class="lineNum">     466 </span><span class="lineNoCov">          0 :       spectrum &lt;&lt; m*bin_center_factor/unit_mass &lt;&lt; &quot; &quot;</span>
+<span class="lineNum">     467 </span><span class="lineNoCov">          0 :                &lt;&lt; b</span>
+<span class="lineNum">     468 </span><span class="lineNoCov">          0 :                &lt;&lt; endl;</span>
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :       Bspectrum &lt;&lt; m*bin_center_factor/unit_mass &lt;&lt; &quot; &quot;</span>
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :                 &lt;&lt; m*sqrt(step_factor)*b/unit_mass</span>
+<span class="lineNum">     471 </span>            :                 &lt;&lt; endl;
+<span class="lineNum">     472 </span>            :     }
+<span class="lineNum">     473 </span>            :   }else{ // This is for case where M for each species is Mav rather than the maturation body mass. 
+<span class="lineNum">     474 </span>            :     // Mav is multiplied by a factor conversion_factor_to_Mmat to convert to the maturation body mass. 
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :     for(double m=minM*conversion_factor_to_Mmat;m&lt;maxM*xmax*conversion_factor_to_Mmat;m*=step_factor){</span>
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :       double b=(integrate(B,M,m)-integrate(B,M,m*step_factor))/</span>
+<span class="lineNum">     477 </span><span class="lineNoCov">          0 :         (m*(step_factor-1));</span>
+<span class="lineNum">     478 </span><span class="lineNoCov">          0 :       if(take_log10){</span>
+<span class="lineNum">     479 </span><span class="lineNoCov">          0 :         spectrum &lt;&lt; log10(m*bin_center_factor/unit_mass) &lt;&lt; &quot; &quot;</span>
+<span class="lineNum">     480 </span><span class="lineNoCov">          0 :                  &lt;&lt; log10(b+1e-100)</span>
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :                  &lt;&lt; endl;</span>
+<span class="lineNum">     482 </span><span class="lineNoCov">          0 :         Bspectrum &lt;&lt; log10(m*bin_center_factor/unit_mass) &lt;&lt; &quot; &quot;</span>
+<span class="lineNum">     483 </span><span class="lineNoCov">          0 :                   &lt;&lt; log10(m*sqrt(step_factor)*b/unit_mass+1e-100)</span>
+<span class="lineNum">     484 </span>            :                   &lt;&lt; endl;
+<span class="lineNum">     485 </span>            :       }else{
+<span class="lineNum">     486 </span><span class="lineNoCov">          0 :         spectrum &lt;&lt; m*bin_center_factor/unit_mass &lt;&lt; &quot; &quot;</span>
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :                  &lt;&lt; b</span>
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :                  &lt;&lt; endl;</span>
+<span class="lineNum">     489 </span><span class="lineNoCov">          0 :         Bspectrum &lt;&lt; m*bin_center_factor/unit_mass &lt;&lt; &quot; &quot;</span>
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :                   &lt;&lt; m*sqrt(step_factor)*b/unit_mass</span>
+<span class="lineNum">     491 </span>            :                   &lt;&lt; endl;
+<span class="lineNum">     492 </span>            :       } 
+<span class="lineNum">     493 </span>            :     }
+<span class="lineNum">     494 </span>            :   }
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">     496 </span>            : 
+<span class="lineNum">     497 </span>            : // Computes the biomass of all species with M above and below 2 thresholds. 
+<span class="lineNum">     498 </span>            : // No integration is involved, but function is here
+<span class="lineNum">     499 </span>            : // because it is used to calculate LSI, and other functions
+<span class="lineNum">     500 </span>            : // here are used to calcualte the LFI. 
+<span class="lineNum">     501 </span>            : double 
+<span class="lineNum">     502 </span><span class="lineNoCov">          0 : Mass_Integrator::integrateLSI(const sequence&lt; double &gt; &amp; B,</span>
+<span class="lineNum">     503 </span>            :                            const sequence&lt; double &gt; &amp; M,
+<span class="lineNum">     504 </span>            :                               double Mlowerthreshold, double Mupperthreshold){
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(B.size()==M.size());</span>
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :   for(int i=B.size();i--&gt;0;){</span>
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :     if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){</span>
+<span class="lineNum">     509 </span><span class="lineNoCov">          0 :       sum+=B(i);</span>
+<span class="lineNum">     510 </span>            :     }
+<span class="lineNum">     511 </span>            :   }
+<span class="lineNum">     512 </span><span class="lineNoCov">          0 :   return sum;</span>
+<span class="lineNum">     513 </span>            : }
+<span class="lineNum">     514 </span>            : 
+<span class="lineNum">     515 </span>            : // integrateProportion is same as integrate except that it works out the proportion of the biomass of species 
+<span class="lineNum">     516 </span>            : // within a certain range of body masses that is above the LFI body mass threshold.
+<span class="lineNum">     517 </span>            : double 
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 : Mass_Integrator::integrateProportion(const sequence&lt; double &gt; &amp; B,</span>
+<span class="lineNum">     519 </span>            :                            const sequence&lt; double &gt; &amp; M,
+<span class="lineNum">     520 </span>            :                                      double Mlowerthreshold, double Mupperthreshold, double LFIMthreshold){
+<span class="lineNum">     521 </span><span class="lineNoCov">          0 :   ALWAYS_ASSERT(B.size()==M.size());</span>
+<span class="lineNum">     522 </span><span class="lineNoCov">          0 :   double sum=0;</span>
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :   double sumtotalbiomass=0;</span>
+<span class="lineNum">     524 </span><span class="lineNoCov">          0 :   double proportion=0;</span>
+<span class="lineNum">     525 </span>            : 
+<span class="lineNum">     526 </span><span class="lineNoCov">          0 :   switch(mass_integrator_version){</span>
+<span class="lineNum">     527 </span>            :   case 1: // M(i) is Mav rather than the maturation body mass.
+<span class="lineNum">     528 </span>            :     // Hence, M(i) is multiplied by factor conversion_factor_to_Mmat to convert to maturation body mass.
+<span class="lineNum">     529 </span>            :    {
+<span class="lineNum">     530 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     531 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     532 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :      for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     534 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with Mav &gt; some threshold</span>
+<span class="lineNum">     535 </span><span class="lineNoCov">          0 :           double index=(LFIMthreshold*indexer)/(M(i)*conversion_factor_to_Mmat);//index must be double to avoid conversion errors!</span>
+<span class="lineNum">     536 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     537 </span>            :           // add up biomass above LFIMthreshold from all species
+<span class="lineNum">     538 </span><span class="lineNoCov">          0 :           if(index&lt;n_points){</span>
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 :             sum+=B(i)*</span>
+<span class="lineNum">     540 </span><span class="lineNoCov">          0 :               (_standard_sum[index].second+</span>
+<span class="lineNum">     541 </span><span class="lineNoCov">          0 :                (index-int(index))*</span>
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :                ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     543 </span><span class="lineNoCov">          0 :                 _standard_sum[index].second ));</span>
+<span class="lineNum">     544 </span>            :           }
+<span class="lineNum">     545 </span>            :         }
+<span class="lineNum">     546 </span>            :      }
+<span class="lineNum">     547 </span>            :    }
+<span class="lineNum">     548 </span>            :   case 2: // M(i) is Mav rather than the maturation body mass.
+<span class="lineNum">     549 </span>            :     // Hence, M(i) is multiplied by factor conversion_factor_to_Mmat to convert to maturation body mass.
+<span class="lineNum">     550 </span>            :    {
+<span class="lineNum">     551 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     552 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     553 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :      for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with Mav &gt; some threshold</span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :           double index=(LFIMthreshold*indexer)/(M(i)*conversion_factor_to_Mmat);//index must be double to avoid conversion errors!</span>
+<span class="lineNum">     557 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     558 </span>            :           // add up biomass above LFIMthreshold from all species
+<span class="lineNum">     559 </span><span class="lineNoCov">          0 :           if(index&lt;n_points){</span>
+<span class="lineNum">     560 </span><span class="lineNoCov">          0 :             sum+=B(i)*</span>
+<span class="lineNum">     561 </span><span class="lineNoCov">          0 :               (_standard_sum[index].second+</span>
+<span class="lineNum">     562 </span><span class="lineNoCov">          0 :                (index-int(index))*</span>
+<span class="lineNum">     563 </span><span class="lineNoCov">          0 :                ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     564 </span><span class="lineNoCov">          0 :                 _standard_sum[index].second ));</span>
+<span class="lineNum">     565 </span>            :           }
+<span class="lineNum">     566 </span>            :         }
+<span class="lineNum">     567 </span>            :      }
+<span class="lineNum">     568 </span>            :    }
+<span class="lineNum">     569 </span>            :    break;
+<span class="lineNum">     570 </span>            :   case 3: // No need to convert M(i) to maturation body mass.
+<span class="lineNum">     571 </span>            :    {
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     573 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     574 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 :      for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     576 </span><span class="lineNoCov">          0 :        if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass &gt; some threshold</span>
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :          double index=LFIMthreshold*indexer/M(i);//index must be double to avoid conversion errors!</span>
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :          sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     579 </span>            :          // add up biomass above LFIMthreshold from all species
+<span class="lineNum">     580 </span><span class="lineNoCov">          0 :          if(index&lt;n_points){</span>
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 :            sum+=B(i)*</span>
+<span class="lineNum">     582 </span><span class="lineNoCov">          0 :              (_standard_sum[index].second+</span>
+<span class="lineNum">     583 </span><span class="lineNoCov">          0 :               (index-int(index))*</span>
+<span class="lineNum">     584 </span><span class="lineNoCov">          0 :               ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     585 </span><span class="lineNoCov">          0 :                _standard_sum[index].second ));</span>
+<span class="lineNum">     586 </span>            :          }
+<span class="lineNum">     587 </span>            :        }
+<span class="lineNum">     588 </span>            :      }
+<span class="lineNum">     589 </span>            :    }
+<span class="lineNum">     590 </span>            :    break;
+<span class="lineNum">     591 </span>            :   case 4: // M(i) IS converted to maturation body mass. Based on Celtic Sea data.
+<span class="lineNum">     592 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     593 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     594 </span>            :     {
+<span class="lineNum">     595 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     596 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     597 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     599 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     600 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     601 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     602 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     603 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_CS+logLmax_logMmat_reg_b_CS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     604 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     605 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     606 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_CS){</span>
+<span class="lineNum">     607 </span>            :             proplargefishB=0;
+<span class="lineNum">     608 </span>            :           }else{
+<span class="lineNum">     609 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_CS,proplargefishB_Lmax_reg_a_CS)/</span>
+<span class="lineNum">     610 </span><span class="lineNoCov">          0 :               (pow(Lmax-LFI_L_threshold_CS,proplargefishB_Lmax_reg_a_CS)+pow(proplargefishB_Lmax_reg_b_CS,proplargefishB_Lmax_reg_a_CS));</span>
+<span class="lineNum">     611 </span>            :           }
+<span class="lineNum">     612 </span>            :           // Add total biomss to sumtotalbiomss and biomass of large fish to sum
+<span class="lineNum">     613 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     614 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     615 </span>            :         }
+<span class="lineNum">     616 </span>            :       }
+<span class="lineNum">     617 </span>            :     }
+<span class="lineNum">     618 </span>            :     break;
+<span class="lineNum">     619 </span>            :   case 5: // M(i) IS converted to maturation body mass. Based on North Sea data, not corrected for q.
+<span class="lineNum">     620 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     621 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     622 </span>            :     {
+<span class="lineNum">     623 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     624 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     625 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     626 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     627 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     628 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     629 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     630 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     631 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS+logLmax_logMmat_reg_b_NS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     632 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     633 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     634 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     635 </span>            :             proplargefishB=0;
+<span class="lineNum">     636 </span>            :           }else{
+<span class="lineNum">     637 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_noqcorrection)/</span>
+<span class="lineNum">     638 </span><span class="lineNoCov">          0 :               (pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_noqcorrection)</span>
+<span class="lineNum">     639 </span><span class="lineNoCov">          0 :                +pow(proplargefishB_Lmax_reg_b_NS_noqcorrection,proplargefishB_Lmax_reg_a_NS_noqcorrection));</span>
+<span class="lineNum">     640 </span>            :           }
+<span class="lineNum">     641 </span>            :           // Add total biomss to sumtotalbiomss and biomass of large fish to sum
+<span class="lineNum">     642 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     643 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     644 </span>            :         }
+<span class="lineNum">     645 </span>            :       }
+<span class="lineNum">     646 </span>            :     }
+<span class="lineNum">     647 </span>            :     break;
+<span class="lineNum">     648 </span>            :   case 6: // M(i) IS converted to maturation body mass. Based on North Sea data, corrected for q.
+<span class="lineNum">     649 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     650 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     651 </span>            :     {
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     653 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     654 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     655 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     656 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     657 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     658 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     659 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS+logLmax_logMmat_reg_b_NS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     661 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     662 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     663 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     664 </span>            :             proplargefishB=0;
+<span class="lineNum">     665 </span>            :           }else{
+<span class="lineNum">     666 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_qcorrection)/</span>
+<span class="lineNum">     667 </span><span class="lineNoCov">          0 :               (pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_qcorrection)</span>
+<span class="lineNum">     668 </span><span class="lineNoCov">          0 :                +pow(proplargefishB_Lmax_reg_b_NS_qcorrection,proplargefishB_Lmax_reg_a_NS_qcorrection));</span>
+<span class="lineNum">     669 </span>            :           }
+<span class="lineNum">     670 </span>            :           // Add total biomss to sumtotalbiomss and biomass of large fish to sum
+<span class="lineNum">     671 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     672 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     673 </span>            :         }
+<span class="lineNum">     674 </span>            :       }
+<span class="lineNum">     675 </span>            :     }
+<span class="lineNum">     676 </span>            :     break;
+<span class="lineNum">     677 </span>            :   case 7: // M(i) IS converted to maturation body mass. Based on Celtic Sea data.
+<span class="lineNum">     678 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     679 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     680 </span>            :     {
+<span class="lineNum">     681 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     682 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     683 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     684 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     685 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     686 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     687 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     688 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_CS_RMA+logLmax_logMmat_reg_b_CS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     690 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     691 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">     692 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_CS){</span>
+<span class="lineNum">     693 </span>            :             proplargefishB=0;
+<span class="lineNum">     694 </span>            :           }else{
+<span class="lineNum">     695 </span><span class="lineNoCov">          0 :             proplargefishB=proplargefishB_logLmax_reg_a_CS_RMA+proplargefishB_logLmax_reg_b_CS_RMA*(log10Lmax-(log(LFI_L_threshold_CS)/log(10)));</span>
+<span class="lineNum">     696 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">     697 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">     698 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">     699 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">     700 </span>            :           }
+<span class="lineNum">     701 </span>            :           // Add total biomss to sumtotalbiomss and biomass of large fish to sum
+<span class="lineNum">     702 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     703 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     704 </span>            :         }
+<span class="lineNum">     705 </span>            :       }
+<span class="lineNum">     706 </span>            :     }
+<span class="lineNum">     707 </span>            :     break;
+<span class="lineNum">     708 </span>            :   case 8: // M(i) IS converted to maturation body mass. Based on North Sea data, not corrected for q.
+<span class="lineNum">     709 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     710 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     711 </span>            :     {
+<span class="lineNum">     712 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     713 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     715 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     716 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     717 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     718 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     719 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     720 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS_RMA+logLmax_logMmat_reg_b_NS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     722 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">     723 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     724 </span>            :             proplargefishB=0;
+<span class="lineNum">     725 </span>            :           }else{
+<span class="lineNum">     726 </span>            :             proplargefishB=proplargefishB_logLmax_reg_a_NS_noqcorrection_RMA
+<span class="lineNum">     727 </span><span class="lineNoCov">          0 :               +proplargefishB_logLmax_reg_b_NS_noqcorrection_RMA*(log10Lmax-(log(LFI_L_threshold_NS)/log(10)));</span>
+<span class="lineNum">     728 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">     729 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">     730 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">     731 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">     732 </span>            :           }
+<span class="lineNum">     733 </span>            :           // Add total biomss to sumtotalbiomss and biomass of large fish to sum
+<span class="lineNum">     734 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     735 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     736 </span>            :         }
+<span class="lineNum">     737 </span>            :       }
+<span class="lineNum">     738 </span>            :     }
+<span class="lineNum">     739 </span>            :     break;
+<span class="lineNum">     740 </span>            :   case 9: // M(i) IS converted to maturation body mass. Based on North Sea data, corrected for q.
+<span class="lineNum">     741 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     742 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     743 </span>            :     {
+<span class="lineNum">     744 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     745 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     746 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     747 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     748 </span><span class="lineNoCov">          0 :       for(int i=B.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     749 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     750 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     751 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     752 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS_RMA+logLmax_logMmat_reg_b_NS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     753 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     754 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">     755 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     756 </span>            :             proplargefishB=0;
+<span class="lineNum">     757 </span>            :           }else{
+<span class="lineNum">     758 </span>            :             proplargefishB=proplargefishB_logLmax_reg_a_NS_qcorrection_RMA
+<span class="lineNum">     759 </span><span class="lineNoCov">          0 :               +proplargefishB_logLmax_reg_b_NS_qcorrection_RMA*(log10Lmax-(log(LFI_L_threshold_NS)/log(10)));</span>
+<span class="lineNum">     760 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">     762 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">     763 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">     764 </span>            :           }
+<span class="lineNum">     765 </span>            :           // Add total biomss to sumtotalbiomss and biomass of large fish to sum
+<span class="lineNum">     766 </span><span class="lineNoCov">          0 :           sumtotalbiomass+=B(i);</span>
+<span class="lineNum">     767 </span><span class="lineNoCov">          0 :           sum+=B(i)*proplargefishB;</span>
+<span class="lineNum">     768 </span>            :         }
+<span class="lineNum">     769 </span>            :       }
+<span class="lineNum">     770 </span>            :     }
+<span class="lineNum">     771 </span>            :     break;
+<span class="lineNum">     772 </span>            :   default:
+<span class="lineNum">     773 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;mass_integrator_version &quot; &lt;&lt; mass_integrator_version &lt;&lt; &quot; unknown&quot;);</span>
+<span class="lineNum">     774 </span>            :   }
+<span class="lineNum">     775 </span>            : 
+<span class="lineNum">     776 </span><span class="lineNoCov">          0 :   if(sumtotalbiomass==0){</span>
+<span class="lineNum">     777 </span>            :     proportion=-1;
+<span class="lineNum">     778 </span>            :   } else{
+<span class="lineNum">     779 </span><span class="lineNoCov">          0 :     proportion=sum/sumtotalbiomass;</span>
+<span class="lineNum">     780 </span>            :   }
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :   return proportion;</span>
+<span class="lineNum">     782 </span>            : }
+<span class="lineNum">     783 </span>            : 
+<span class="lineNum">     784 </span>            : // integrateThresholdSpecies outputs a list showing the proportion of biomass above a bodymass threshold
+<span class="lineNum">     785 </span>            : // for each species with M above and below 2 thresholds. 
+<span class="lineNum">     786 </span>            : sequence&lt; double &gt; 
+<span class="lineNum">     787 </span><span class="lineNoCov">          0 : Mass_Integrator::integrateThresholdSpecies(const sequence&lt; double &gt; &amp; M, </span>
+<span class="lineNum">     788 </span>            :                                            double startM, double Mlowerthreshold, double Mupperthreshold){
+<span class="lineNum">     789 </span><span class="lineNoCov">          0 :   sequence&lt; double &gt; LFIalphas;</span>
+<span class="lineNum">     790 </span>            : 
+<span class="lineNum">     791 </span><span class="lineNoCov">          0 :   switch(mass_integrator_version){</span>
+<span class="lineNum">     792 </span>            :   case 1: // M(i) is Mav rather than the maturation body mass.
+<span class="lineNum">     793 </span>            :     // Hence, M(i) is multiplied by factor conversion_factor_to_Mmat to convert to maturation body mass.
+<span class="lineNum">     794 </span>            :    {
+<span class="lineNum">     795 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     796 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     797 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     798 </span><span class="lineNoCov">          0 :      for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     799 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with Mav above and below 2 thresholds</span>
+<span class="lineNum">     800 </span><span class="lineNoCov">          0 :           double index=(startM*indexer)/(M(i)*conversion_factor_to_Mmat);//index must be double to avoid</span>
+<span class="lineNum">     801 </span>            :           //conversion errors!
+<span class="lineNum">     802 </span>            :   
+<span class="lineNum">     803 </span>            :           // calculate proportion of biomass above startM for a species and append to LFIalphas
+<span class="lineNum">     804 </span>            :           // if(index&gt;=n_points), then this is 0
+<span class="lineNum">     805 </span><span class="lineNoCov">          0 :           if(index&lt;n_points){</span>
+<span class="lineNum">     806 </span><span class="lineNoCov">          0 :             LFIalphas.push_back(</span>
+<span class="lineNum">     807 </span><span class="lineNoCov">          0 :               (_standard_sum[index].second+</span>
+<span class="lineNum">     808 </span><span class="lineNoCov">          0 :                (index-int(index))*</span>
+<span class="lineNum">     809 </span><span class="lineNoCov">          0 :                ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 :                 _standard_sum[index].second ))</span>
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :                                 );</span>
+<span class="lineNum">     812 </span>            :             //cout &lt;&lt; &quot;M(&quot; &lt;&lt; i &lt;&lt; &quot;) in IntegrateThresholdSpecies = &quot; &lt;&lt; M(i) &lt;&lt; endl;
+<span class="lineNum">     813 </span>            :           }else{
+<span class="lineNum">     814 </span><span class="lineNoCov">          0 :             LFIalphas.push_back(0);</span>
+<span class="lineNum">     815 </span>            :           }
+<span class="lineNum">     816 </span>            :         }
+<span class="lineNum">     817 </span>            :       }
+<span class="lineNum">     818 </span>            :    }
+<span class="lineNum">     819 </span>            :   case 2: // M(i) is Mav rather than the maturation body mass.
+<span class="lineNum">     820 </span>            :     // Hence, M(i) is multiplied by factor conversion_factor_to_Mmat to convert to maturation body mass.
+<span class="lineNum">     821 </span>            :    {
+<span class="lineNum">     822 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     823 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     824 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     825 </span><span class="lineNoCov">          0 :      for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     826 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with Mav above and below 2 thresholds</span>
+<span class="lineNum">     827 </span><span class="lineNoCov">          0 :           double index=(startM*indexer)/(M(i)*conversion_factor_to_Mmat);//index must be double to avoid</span>
+<span class="lineNum">     828 </span>            :           //conversion errors!
+<span class="lineNum">     829 </span>            :   
+<span class="lineNum">     830 </span>            :           // calculate proportion of biomass above startM for a species and append to LFIalphas
+<span class="lineNum">     831 </span>            :           // if(index&gt;=n_points), then this is 0
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :           if(index&lt;n_points){</span>
+<span class="lineNum">     833 </span><span class="lineNoCov">          0 :             LFIalphas.push_back(</span>
+<span class="lineNum">     834 </span><span class="lineNoCov">          0 :               (_standard_sum[index].second+</span>
+<span class="lineNum">     835 </span><span class="lineNoCov">          0 :                (index-int(index))*</span>
+<span class="lineNum">     836 </span><span class="lineNoCov">          0 :                ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     837 </span><span class="lineNoCov">          0 :                 _standard_sum[index].second ))</span>
+<span class="lineNum">     838 </span><span class="lineNoCov">          0 :                                 );</span>
+<span class="lineNum">     839 </span>            :             //cout &lt;&lt; &quot;M(&quot; &lt;&lt; i &lt;&lt; &quot;) in IntegrateThresholdSpecies = &quot; &lt;&lt; M(i) &lt;&lt; endl;
+<span class="lineNum">     840 </span>            :           }else{
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 :             LFIalphas.push_back(0);</span>
+<span class="lineNum">     842 </span>            :           }
+<span class="lineNum">     843 </span>            :         }
+<span class="lineNum">     844 </span>            :       }     
+<span class="lineNum">     845 </span>            :    }
+<span class="lineNum">     846 </span>            :    break;
+<span class="lineNum">     847 </span>            :   case 3: // No need to convert M(i) to maturation body mass.
+<span class="lineNum">     848 </span>            :    {
+<span class="lineNum">     849 </span><span class="lineNoCov">          0 :      const int n_points=_standard_sum.size();</span>
+<span class="lineNum">     850 </span><span class="lineNoCov">          0 :      const double xmax=_standard_sum[n_points-1].first;</span>
+<span class="lineNum">     851 </span><span class="lineNoCov">          0 :      const double indexer=(n_points-1)/xmax;</span>
+<span class="lineNum">     852 </span><span class="lineNoCov">          0 :      for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     853 </span><span class="lineNoCov">          0 :       if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     854 </span><span class="lineNoCov">          0 :         double index=startM*indexer/M(i);//index must be double to avoid</span>
+<span class="lineNum">     855 </span>            :         //conversion errors!
+<span class="lineNum">     856 </span>            :   
+<span class="lineNum">     857 </span>            :         // calculate proportion of biomass above startM for a species and append to LFIalphas
+<span class="lineNum">     858 </span>            :         // if(index&gt;=n_points), then this is 0
+<span class="lineNum">     859 </span><span class="lineNoCov">          0 :         if(index&lt;n_points){</span>
+<span class="lineNum">     860 </span><span class="lineNoCov">          0 :           LFIalphas.push_back(</span>
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :             (_standard_sum[index].second+</span>
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 :              (index-int(index))*</span>
+<span class="lineNum">     863 </span><span class="lineNoCov">          0 :              ((index+1&lt;n_points ? _standard_sum[index+1].second : 0)-</span>
+<span class="lineNum">     864 </span><span class="lineNoCov">          0 :               _standard_sum[index].second ))</span>
+<span class="lineNum">     865 </span><span class="lineNoCov">          0 :                               );</span>
+<span class="lineNum">     866 </span>            :         }else{
+<span class="lineNum">     867 </span><span class="lineNoCov">          0 :           LFIalphas.push_back(0);</span>
+<span class="lineNum">     868 </span>            :         }
+<span class="lineNum">     869 </span>            :       }
+<span class="lineNum">     870 </span>            :      }
+<span class="lineNum">     871 </span>            :    }
+<span class="lineNum">     872 </span>            :    break;
+<span class="lineNum">     873 </span>            :   case 4: // M(i) IS converted to maturation body mass. Based on data for Celtic Sea.
+<span class="lineNum">     874 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     875 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     876 </span>            :     {
+<span class="lineNum">     877 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     878 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     879 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     880 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     881 </span><span class="lineNoCov">          0 :       for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     882 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     883 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     884 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     885 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_CS+logLmax_logMmat_reg_b_CS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     886 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     887 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     888 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_CS){</span>
+<span class="lineNum">     889 </span>            :             proplargefishB=0;
+<span class="lineNum">     890 </span>            :           }else{
+<span class="lineNum">     891 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_CS,proplargefishB_Lmax_reg_a_CS)/</span>
+<span class="lineNum">     892 </span><span class="lineNoCov">          0 :              (pow(Lmax-LFI_L_threshold_CS,proplargefishB_Lmax_reg_a_CS)+pow(proplargefishB_Lmax_reg_b_CS,proplargefishB_Lmax_reg_a_CS));</span>
+<span class="lineNum">     893 </span>            :           }
+<span class="lineNum">     894 </span>            :           // Add proportion of large fish to LFIalphas
+<span class="lineNum">     895 </span>            :           LFIalphas.push_back(proplargefishB);
+<span class="lineNum">     896 </span>            :         }
+<span class="lineNum">     897 </span>            :       }
+<span class="lineNum">     898 </span>            :     }
+<span class="lineNum">     899 </span>            :     break;
+<span class="lineNum">     900 </span>            :   case 5: // M(i) IS converted to maturation body mass. Based on data for North Sea, not corrected for q.
+<span class="lineNum">     901 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     902 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     903 </span>            :     {
+<span class="lineNum">     904 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     905 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     906 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     907 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     908 </span><span class="lineNoCov">          0 :       for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     909 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     910 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     911 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     912 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS+logLmax_logMmat_reg_b_NS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     913 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     914 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     915 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     916 </span>            :             proplargefishB=0;
+<span class="lineNum">     917 </span>            :           }else{
+<span class="lineNum">     918 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_noqcorrection)/</span>
+<span class="lineNum">     919 </span><span class="lineNoCov">          0 :              (pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_noqcorrection)</span>
+<span class="lineNum">     920 </span><span class="lineNoCov">          0 :               +pow(proplargefishB_Lmax_reg_b_NS_noqcorrection,proplargefishB_Lmax_reg_a_NS_noqcorrection));</span>
+<span class="lineNum">     921 </span>            :           }
+<span class="lineNum">     922 </span>            :           // Add proportion of large fish to LFIalphas
+<span class="lineNum">     923 </span>            :           LFIalphas.push_back(proplargefishB);
+<span class="lineNum">     924 </span>            :         }
+<span class="lineNum">     925 </span>            :       }
+<span class="lineNum">     926 </span>            :     }
+<span class="lineNum">     927 </span>            :     break;
+<span class="lineNum">     928 </span>            :   case 6: // M(i) IS converted to maturation body mass. Based on data for North Sea, corrected for q.
+<span class="lineNum">     929 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted curve relating this proportion to Lmax
+<span class="lineNum">     930 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     931 </span>            :     {
+<span class="lineNum">     932 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     933 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     934 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     935 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     936 </span><span class="lineNoCov">          0 :       for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     937 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     938 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     939 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     940 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS+logLmax_logMmat_reg_b_NS*(log(Mkg)/log(10));</span>
+<span class="lineNum">     941 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     942 </span>            :           // Then convert Lmax into proportion
+<span class="lineNum">     943 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">     944 </span>            :             proplargefishB=0;
+<span class="lineNum">     945 </span>            :           }else{
+<span class="lineNum">     946 </span><span class="lineNoCov">          0 :             proplargefishB=pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_qcorrection)/</span>
+<span class="lineNum">     947 </span><span class="lineNoCov">          0 :              (pow(Lmax-LFI_L_threshold_NS,proplargefishB_Lmax_reg_a_NS_qcorrection)</span>
+<span class="lineNum">     948 </span><span class="lineNoCov">          0 :               +pow(proplargefishB_Lmax_reg_b_NS_qcorrection,proplargefishB_Lmax_reg_a_NS_qcorrection));</span>
+<span class="lineNum">     949 </span>            :           }
+<span class="lineNum">     950 </span>            :           // Add proportion of large fish to LFIalphas
+<span class="lineNum">     951 </span>            :           LFIalphas.push_back(proplargefishB);
+<span class="lineNum">     952 </span>            :         }
+<span class="lineNum">     953 </span>            :       }
+<span class="lineNum">     954 </span>            :     }
+<span class="lineNum">     955 </span>            :     break;
+<span class="lineNum">     956 </span>            :   case 7: // M(i) IS converted to maturation body mass. Based on data for Celtic Sea.
+<span class="lineNum">     957 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     958 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     959 </span>            :     {
+<span class="lineNum">     960 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     961 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     962 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     963 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     964 </span><span class="lineNoCov">          0 :       for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     965 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     966 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     967 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     968 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_CS_RMA+logLmax_logMmat_reg_b_CS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     969 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">     970 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">     971 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_CS){</span>
+<span class="lineNum">     972 </span>            :             proplargefishB=0;
+<span class="lineNum">     973 </span>            :           }else{
+<span class="lineNum">     974 </span><span class="lineNoCov">          0 :             proplargefishB=proplargefishB_logLmax_reg_a_CS_RMA+proplargefishB_logLmax_reg_b_CS_RMA*(log10Lmax-(log(LFI_L_threshold_CS)/log(10)));</span>
+<span class="lineNum">     975 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">     976 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">     977 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">     978 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">     979 </span>            :           }
+<span class="lineNum">     980 </span>            :           // Add proportion of large fish to LFIalphas
+<span class="lineNum">     981 </span>            :           LFIalphas.push_back(proplargefishB);
+<span class="lineNum">     982 </span>            :         }
+<span class="lineNum">     983 </span>            :       }
+<span class="lineNum">     984 </span>            :     }
+<span class="lineNum">     985 </span>            :     break;
+<span class="lineNum">     986 </span>            :   case 8: // M(i) IS converted to maturation body mass. Based on data for North Sea, not corrected for q.
+<span class="lineNum">     987 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">     988 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">     989 </span>            :     {
+<span class="lineNum">     990 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">     991 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">     992 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">     993 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">     994 </span><span class="lineNoCov">          0 :       for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">     995 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">     996 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">     997 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">     998 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS_RMA+logLmax_logMmat_reg_b_NS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">     999 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">    1000 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">    1001 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">    1002 </span>            :             proplargefishB=0;
+<span class="lineNum">    1003 </span>            :           }else{
+<span class="lineNum">    1004 </span>            :             proplargefishB=proplargefishB_logLmax_reg_a_NS_noqcorrection_RMA
+<span class="lineNum">    1005 </span><span class="lineNoCov">          0 :               +proplargefishB_logLmax_reg_b_NS_noqcorrection_RMA*(log10Lmax-(log(LFI_L_threshold_NS)/log(10)));</span>
+<span class="lineNum">    1006 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">    1007 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">    1008 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">    1009 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">    1010 </span>            :           }
+<span class="lineNum">    1011 </span>            :           // Add proportion of large fish to LFIalphas
+<span class="lineNum">    1012 </span>            :           LFIalphas.push_back(proplargefishB);
+<span class="lineNum">    1013 </span>            :         }
+<span class="lineNum">    1014 </span>            :       }
+<span class="lineNum">    1015 </span>            :     }
+<span class="lineNum">    1016 </span>            :     break;
+<span class="lineNum">    1017 </span>            :   case 9: // M(i) IS converted to maturation body mass. Based on data for North Sea, corrected for q.
+<span class="lineNum">    1018 </span>            :     // For each species, the proportion of biomass due to large fish is taken from a fitted straight line relating this proportion to log10Lmax
+<span class="lineNum">    1019 </span>            :     // M(i) is first converted to Lmax using a regression line.
+<span class="lineNum">    1020 </span>            :     {
+<span class="lineNum">    1021 </span><span class="lineNoCov">          0 :       double Mkg=0;</span>
+<span class="lineNum">    1022 </span><span class="lineNoCov">          0 :       double log10Lmax=0;</span>
+<span class="lineNum">    1023 </span><span class="lineNoCov">          0 :       double Lmax=0;</span>
+<span class="lineNum">    1024 </span><span class="lineNoCov">          0 :       double proplargefishB=0;</span>
+<span class="lineNum">    1025 </span><span class="lineNoCov">          0 :       for(int i=M.size();i--&gt;0;){// for each species</span>
+<span class="lineNum">    1026 </span><span class="lineNoCov">          0 :         if((M(i)&gt;Mlowerthreshold)&amp;&amp;(M(i)&lt;Mupperthreshold)){// only consider those species with maturation body mass above and below 2 thresholds</span>
+<span class="lineNum">    1027 </span>            :           // First convert M(i) into maturation body mass and then Lmax
+<span class="lineNum">    1028 </span><span class="lineNoCov">          0 :           Mkg=(M(i)*conversion_factor_to_Mmat)/1000;</span>
+<span class="lineNum">    1029 </span><span class="lineNoCov">          0 :           log10Lmax=logLmax_logMmat_reg_a_NS_RMA+logLmax_logMmat_reg_b_NS_RMA*(log(Mkg)/log(10));</span>
+<span class="lineNum">    1030 </span><span class="lineNoCov">          0 :           Lmax=pow(10,log10Lmax);</span>
+<span class="lineNum">    1031 </span>            :           // Then convert log10Lmax into proportion
+<span class="lineNum">    1032 </span><span class="lineNoCov">          0 :           if(Lmax&lt;LFI_L_threshold_NS){</span>
+<span class="lineNum">    1033 </span>            :             proplargefishB=0;
+<span class="lineNum">    1034 </span>            :           }else{
+<span class="lineNum">    1035 </span>            :             proplargefishB=proplargefishB_logLmax_reg_a_NS_qcorrection_RMA
+<span class="lineNum">    1036 </span><span class="lineNoCov">          0 :               +proplargefishB_logLmax_reg_b_NS_qcorrection_RMA*(log10Lmax-(log(LFI_L_threshold_NS)/log(10)));</span>
+<span class="lineNum">    1037 </span>            :             // If &gt;1, set to 1
+<span class="lineNum">    1038 </span><span class="lineNoCov">          0 :             if(proplargefishB&gt;1){proplargefishB=1;}</span>
+<span class="lineNum">    1039 </span>            :             // If &lt;0, set to 0
+<span class="lineNum">    1040 </span><span class="lineNoCov">          0 :             if(proplargefishB&lt;0){proplargefishB=0;}</span>
+<span class="lineNum">    1041 </span>            :           }
+<span class="lineNum">    1042 </span>            :           // Add proportion of large fish to LFIalphas
+<span class="lineNum">    1043 </span>            :           LFIalphas.push_back(proplargefishB);
+<span class="lineNum">    1044 </span>            :         }
+<span class="lineNum">    1045 </span>            :       }
+<span class="lineNum">    1046 </span>            :     }
+<span class="lineNum">    1047 </span>            :     break;
+<span class="lineNum">    1048 </span>            :   default:
+<span class="lineNum">    1049 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;mass_integrator_version &quot; &lt;&lt; mass_integrator_version &lt;&lt; &quot; unknown&quot;);</span>
+<span class="lineNum">    1050 </span>            :   }
+<span class="lineNum">    1051 </span>            : 
+<span class="lineNum">    1052 </span><span class="lineNoCov">          0 :   return LFIalphas;</span>
+<span class="lineNum">    1053 </span>            : }
+<span class="lineNum">    1054 </span>            : 
+<span class="lineNum">    1055 </span>            : 
+<span class="lineNum">    1056 </span>            : const int Mass_Integrator::sum_data_length=401;
+<span class="lineNum">    1057 </span>            : const double Mass_Integrator::sum_data[][2]={
+<span class="lineNum">    1058 </span>            :   {0,   1},
+<span class="lineNum">    1059 </span>            :   {0.01,   0.7900922626281807},
+<span class="lineNum">    1060 </span>            :   {0.02,   0.7455683129398812},
+<span class="lineNum">    1061 </span>            :   {0.02999999999999999,   0.7157141924088227},
+<span class="lineNum">    1062 </span>            :   {0.04,   0.6926201378338531},
+<span class="lineNum">    1063 </span>            :   {0.05,   0.6735275302842935},
+<span class="lineNum">    1064 </span>            :   {0.05999999999999999,   0.6571174126288373},
+<span class="lineNum">    1065 </span>            :   {0.07,   0.6426472299717093},
+<span class="lineNum">    1066 </span>            :   {0.08,   0.6296538230022664},
+<span class="lineNum">    1067 </span>            :   {0.08999999999999999,   0.6178271945175133},
+<span class="lineNum">    1068 </span>            :   {0.1,   0.6069487788303948},
+<span class="lineNum">    1069 </span>            :   {0.11,   0.5968580996175924},
+<span class="lineNum">    1070 </span>            :   {0.12,   0.5874337491167599},
+<span class="lineNum">    1071 </span>            :   {0.13,   0.5785812721840545},
+<span class="lineNum">    1072 </span>            :   {0.14,   0.5702257021603396},
+<span class="lineNum">    1073 </span>            :   {0.1499999999999999,   0.562306474039871},
+<span class="lineNum">    1074 </span>            :   {0.16,   0.5547738611720035},
+<span class="lineNum">    1075 </span>            :   {0.17,   0.5475864836762642},
+<span class="lineNum">    1076 </span>            :   {0.1799999999999999,   0.5407095634149987},
+<span class="lineNum">    1077 </span>            :   {0.19,   0.5341134848301302},
+<span class="lineNum">    1078 </span>            :   {0.2,   0.5277728515877809},
+<span class="lineNum">    1079 </span>            :   {0.2099999999999999,   0.521665725436624},
+<span class="lineNum">    1080 </span>            :   {0.22,   0.5157729592273012},
+<span class="lineNum">    1081 </span>            :   {0.23,   0.5100778206211684},
+<span class="lineNum">    1082 </span>            :   {0.2399999999999999,   0.5045654474094557},
+<span class="lineNum">    1083 </span>            :   {0.25,   0.4992227432467749},
+<span class="lineNum">    1084 </span>            :   {0.26,   0.4940380131724699},
+<span class="lineNum">    1085 </span>            :   {0.27,   0.4890007405228247},
+<span class="lineNum">    1086 </span>            :   {0.28,   0.4841014968770232},
+<span class="lineNum">    1087 </span>            :   {0.2899999999999999,   0.4793318004508849},
+<span class="lineNum">    1088 </span>            :   {0.2999999999999999,   0.4746838809408141},
+<span class="lineNum">    1089 </span>            :   {0.31,   0.470150773323879},
+<span class="lineNum">    1090 </span>            :   {0.32,   0.4657260107090854},
+<span class="lineNum">    1091 </span>            :   {0.33,   0.461403791630859},
+<span class="lineNum">    1092 </span>            :   {0.34,   0.4571786828126178},
+<span class="lineNum">    1093 </span>            :   {0.35,   0.4530457838628146},
+<span class="lineNum">    1094 </span>            :   {0.3599999999999999,   0.4490004668838966},
+<span class="lineNum">    1095 </span>            :   {0.37,   0.4450385941849708},
+<span class="lineNum">    1096 </span>            :   {0.38,   0.4411561781230792},
+<span class="lineNum">    1097 </span>            :   {0.39,   0.4373496323144558},
+<span class="lineNum">    1098 </span>            :   {0.4,   0.4336155625956116},
+<span class="lineNum">    1099 </span>            :   {0.41,   0.4299507966417111},
+<span class="lineNum">    1100 </span>            :   {0.4199999999999999,   0.4263524303335386},
+<span class="lineNum">    1101 </span>            :   {0.4299999999999999,   0.4228176592009721},
+<span class="lineNum">    1102 </span>            :   {0.44,   0.4193439435655309},
+<span class="lineNum">    1103 </span>            :   {0.45,   0.4159288101594134},
+<span class="lineNum">    1104 </span>            :   {0.46,   0.4125699902374538},
+<span class="lineNum">    1105 </span>            :   {0.47,   0.4092653619878295},
+<span class="lineNum">    1106 </span>            :   {0.4799999999999999,   0.4060128305281181},
+<span class="lineNum">    1107 </span>            :   {0.4899999999999999,   0.4028104950315428},
+<span class="lineNum">    1108 </span>            :   {0.5,   0.3996565481533047},
+<span class="lineNum">    1109 </span>            :   {0.51,   0.3965492094501639},
+<span class="lineNum">    1110 </span>            :   {0.52,   0.3934868457893873},
+<span class="lineNum">    1111 </span>            :   {0.53,   0.3904678725221881},
+<span class="lineNum">    1112 </span>            :   {0.54,   0.3874907687662739},
+<span class="lineNum">    1113 </span>            :   {0.55,   0.3845540969598932},
+<span class="lineNum">    1114 </span>            :   {0.56,   0.3816564437600102},
+<span class="lineNum">    1115 </span>            :   {0.57,   0.3787964737315122},
+<span class="lineNum">    1116 </span>            :   {0.5799999999999999,   0.3759728740489636},
+<span class="lineNum">    1117 </span>            :   {0.5899999999999999,   0.3731843760321692},
+<span class="lineNum">    1118 </span>            :   {0.5999999999999999,   0.3704297466728583},
+<span class="lineNum">    1119 </span>            :   {0.6099999999999999,   0.3677077710632741},
+<span class="lineNum">    1120 </span>            :   {0.62,   0.3650172608406364},
+<span class="lineNum">    1121 </span>            :   {0.63,   0.3623570309741427},
+<span class="lineNum">    1122 </span>            :   {0.64,   0.359725916664612},
+<span class="lineNum">    1123 </span>            :   {0.65,   0.3571227576563361},
+<span class="lineNum">    1124 </span>            :   {0.66,   0.3545463871137856},
+<span class="lineNum">    1125 </span>            :   {0.67,   0.3519956343440533},
+<span class="lineNum">    1126 </span>            :   {0.68,   0.3494693115067749},
+<span class="lineNum">    1127 </span>            :   {0.69,   0.3469662167977828},
+<span class="lineNum">    1128 </span>            :   {0.7,   0.3444851174151882},
+<span class="lineNum">    1129 </span>            :   {0.7099999999999999,   0.3420247563234138},
+<span class="lineNum">    1130 </span>            :   {0.7199999999999999,   0.339583833362786},
+<span class="lineNum">    1131 </span>            :   {0.7299999999999999,   0.3371610096618546},
+<span class="lineNum">    1132 </span>            :   {0.7399999999999999,   0.3347548955908347},
+<span class="lineNum">    1133 </span>            :   {0.75,   0.3323640473505051},
+<span class="lineNum">    1134 </span>            :   {0.76,   0.3299869583161712},
+<span class="lineNum">    1135 </span>            :   {0.77,   0.3276220560633538},
+<span class="lineNum">    1136 </span>            :   {0.78,   0.3252676956702573},
+<span class="lineNum">    1137 </span>            :   {0.79,   0.3229221550770961},
+<span class="lineNum">    1138 </span>            :   {0.8,   0.3205836559999081},
+<span class="lineNum">    1139 </span>            :   {0.81,   0.3182502873502238},
+<span class="lineNum">    1140 </span>            :   {0.82,   0.3159200221409738},
+<span class="lineNum">    1141 </span>            :   {0.83,   0.3135908320987847},
+<span class="lineNum">    1142 </span>            :   {0.8399999999999999,   0.3112605884514878},
+<span class="lineNum">    1143 </span>            :   {0.8499999999999999,   0.3089269983093888},
+<span class="lineNum">    1144 </span>            :   {0.8599999999999999,   0.3065877457215142},
+<span class="lineNum">    1145 </span>            :   {0.87,   0.3042403936678463},
+<span class="lineNum">    1146 </span>            :   {0.88,   0.3018824404754522},
+<span class="lineNum">    1147 </span>            :   {0.89,   0.2995113252187974},
+<span class="lineNum">    1148 </span>            :   {0.9,   0.2971244058177229},
+<span class="lineNum">    1149 </span>            :   {0.91,   0.2947190201833527},
+<span class="lineNum">    1150 </span>            :   {0.92,   0.2922924633887011},
+<span class="lineNum">    1151 </span>            :   {0.93,   0.2898420288658483},
+<span class="lineNum">    1152 </span>            :   {0.94,   0.2873650195754731},
+<span class="lineNum">    1153 </span>            :   {0.95,   0.284858796009157},
+<span class="lineNum">    1154 </span>            :   {0.9599999999999999,   0.2823207453066692},
+<span class="lineNum">    1155 </span>            :   {0.9699999999999999,   0.2797484126003904},
+<span class="lineNum">    1156 </span>            :   {0.9799999999999999,   0.2771394096891017},
+<span class="lineNum">    1157 </span>            :   {0.9899999999999999,   0.2744915442973346},
+<span class="lineNum">    1158 </span>            :   {1.,   0.2718028394901176},
+<span class="lineNum">    1159 </span>            :   {1.01,   0.2690714632753657},
+<span class="lineNum">    1160 </span>            :   {1.02,   0.2662959602951487},
+<span class="lineNum">    1161 </span>            :   {1.03,   0.2634750356687274},
+<span class="lineNum">    1162 </span>            :   {1.04,   0.2606078493038269},
+<span class="lineNum">    1163 </span>            :   {1.05,   0.2576937613620397},
+<span class="lineNum">    1164 </span>            :   {1.06,   0.2547326244790618},
+<span class="lineNum">    1165 </span>            :   {1.07,   0.2517245518458485},
+<span class="lineNum">    1166 </span>            :   {1.08,   0.2486701257692813},
+<span class="lineNum">    1167 </span>            :   {1.09,   0.2455702622398257},
+<span class="lineNum">    1168 </span>            :   {1.1,   0.2424262734516164},
+<span class="lineNum">    1169 </span>            :   {1.11,   0.2392398678488733},
+<span class="lineNum">    1170 </span>            :   {1.12,   0.2360130535970648},
+<span class="lineNum">    1171 </span>            :   {1.13,   0.2327482555822421},
+<span class="lineNum">    1172 </span>            :   {1.14,   0.2294481066187802},
+<span class="lineNum">    1173 </span>            :   {1.15,   0.2261156283763675},
+<span class="lineNum">    1174 </span>            :   {1.159999999999999,   0.2227539718895366},
+<span class="lineNum">    1175 </span>            :   {1.169999999999999,   0.2193666128181927},
+<span class="lineNum">    1176 </span>            :   {1.179999999999999,   0.2159571139576319},
+<span class="lineNum">    1177 </span>            :   {1.189999999999999,   0.2125291649939169},
+<span class="lineNum">    1178 </span>            :   {1.2,   0.2090866012849112},
+<span class="lineNum">    1179 </span>            :   {1.21,   0.2056332665604093},
+<span class="lineNum">    1180 </span>            :   {1.22,   0.2021730335557937},
+<span class="lineNum">    1181 </span>            :   {1.23,   0.1987097450055109},
+<span class="lineNum">    1182 </span>            :   {1.24,   0.1952472302028992},
+<span class="lineNum">    1183 </span>            :   {1.25,   0.1917891896057431},
+<span class="lineNum">    1184 </span>            :   {1.26,   0.1883392303889769},
+<span class="lineNum">    1185 </span>            :   {1.27,   0.1849009003808382},
+<span class="lineNum">    1186 </span>            :   {1.28,   0.181477484994502},
+<span class="lineNum">    1187 </span>            :   {1.29,   0.1780721950997978},
+<span class="lineNum">    1188 </span>            :   {1.3,   0.1746880901479451},
+<span class="lineNum">    1189 </span>            :   {1.31,   0.171327930549113},
+<span class="lineNum">    1190 </span>            :   {1.32,   0.1679944299877997},
+<span class="lineNum">    1191 </span>            :   {1.33,   0.1646900490536796},
+<span class="lineNum">    1192 </span>            :   {1.34,   0.1614170037984831},
+<span class="lineNum">    1193 </span>            :   {1.35,   0.158177461169107},
+<span class="lineNum">    1194 </span>            :   {1.36,   0.1549732716471956},
+<span class="lineNum">    1195 </span>            :   {1.37,   0.1518061327762833},
+<span class="lineNum">    1196 </span>            :   {1.38,   0.1486776733652268},
+<span class="lineNum">    1197 </span>            :   {1.39,   0.1455891775684632},
+<span class="lineNum">    1198 </span>            :   {1.4,   0.1425418256649517},
+<span class="lineNum">    1199 </span>            :   {1.409999999999999,   0.1395367745016039},
+<span class="lineNum">    1200 </span>            :   {1.419999999999999,   0.1365749003963651},
+<span class="lineNum">    1201 </span>            :   {1.429999999999999,   0.1336568975460718},
+<span class="lineNum">    1202 </span>            :   {1.439999999999999,   0.130783456038564},
+<span class="lineNum">    1203 </span>            :   {1.45,   0.1279551352699365},
+<span class="lineNum">    1204 </span>            :   {1.46,   0.1251722579152436},
+<span class="lineNum">    1205 </span>            :   {1.47,   0.1224351224271231},
+<span class="lineNum">    1206 </span>            :   {1.48,   0.1197439923655623},
+<span class="lineNum">    1207 </span>            :   {1.49,   0.1170989322023125},
+<span class="lineNum">    1208 </span>            :   {1.5,   0.1144999377411368},
+<span class="lineNum">    1209 </span>            :   {1.51,   0.1119470002953051},
+<span class="lineNum">    1210 </span>            :   {1.52,   0.1094400036407489},
+<span class="lineNum">    1211 </span>            :   {1.53,   0.1069787250716325},
+<span class="lineNum">    1212 </span>            :   {1.54,   0.1045629376624174},
+<span class="lineNum">    1213 </span>            :   {1.55,   0.1021923845008498},
+<span class="lineNum">    1214 </span>            :   {1.56,   0.09986669355313396},
+<span class="lineNum">    1215 </span>            :   {1.57,   0.09758546532276728},
+<span class="lineNum">    1216 </span>            :   {1.58,   0.09534830031324743},
+<span class="lineNum">    1217 </span>            :   {1.59,   0.09315477711964599},
+<span class="lineNum">    1218 </span>            :   {1.6,   0.091004393515325},
+<span class="lineNum">    1219 </span>            :   {1.61,   0.08889663084048654},
+<span class="lineNum">    1220 </span>            :   {1.62,   0.08683097046753567},
+<span class="lineNum">    1221 </span>            :   {1.63,   0.08480688465679811},
+<span class="lineNum">    1222 </span>            :   {1.64,   0.08282380066835655},
+<span class="lineNum">    1223 </span>            :   {1.65,   0.08088113394838344},
+<span class="lineNum">    1224 </span>            :   {1.66,   0.07897830004951347},
+<span class="lineNum">    1225 </span>            :   {1.669999999999999,   0.07711471135138534},
+<span class="lineNum">    1226 </span>            :   {1.679999999999999,   0.0752897602467943},
+<span class="lineNum">    1227 </span>            :   {1.689999999999999,   0.07350283332381983},
+<span class="lineNum">    1228 </span>            :   {1.7,   0.07175331733819151},
+<span class="lineNum">    1229 </span>            :   {1.71,   0.07004059818441048},
+<span class="lineNum">    1230 </span>            :   {1.72,   0.06836405750735039},
+<span class="lineNum">    1231 </span>            :   {1.73,   0.06672307861286634},
+<span class="lineNum">    1232 </span>            :   {1.74,   0.0651170451732312},
+<span class="lineNum">    1233 </span>            :   {1.75,   0.06354534045290397},
+<span class="lineNum">    1234 </span>            :   {1.76,   0.06200735060344292},
+<span class="lineNum">    1235 </span>            :   {1.77,   0.06050247297660111},
+<span class="lineNum">    1236 </span>            :   {1.78,   0.05903010619292305},
+<span class="lineNum">    1237 </span>            :   {1.79,   0.05758964887295327},
+<span class="lineNum">    1238 </span>            :   {1.8,   0.05618049987728011},
+<span class="lineNum">    1239 </span>            :   {1.81,   0.05480207017524264},
+<span class="lineNum">    1240 </span>            :   {1.82,   0.05345378758573021},
+<span class="lineNum">    1241 </span>            :   {1.83,   0.05213508113135065},
+<span class="lineNum">    1242 </span>            :   {1.84,   0.05084537983471187},
+<span class="lineNum">    1243 </span>            :   {1.85,   0.0495841130919906},
+<span class="lineNum">    1244 </span>            :   {1.86,   0.04835072587204182},
+<span class="lineNum">    1245 </span>            :   {1.87,   0.04714468389885166},
+<span class="lineNum">    1246 </span>            :   {1.88,   0.04596545432996464},
+<span class="lineNum">    1247 </span>            :   {1.89,   0.0448125043229253},
+<span class="lineNum">    1248 </span>            :   {1.9,   0.04368530070482718},
+<span class="lineNum">    1249 </span>            :   {1.91,   0.0425833222783822},
+<span class="lineNum">    1250 </span>            :   {1.919999999999999,   0.0415060786284063},
+<span class="lineNum">    1251 </span>            :   {1.929999999999999,   0.04045308300215866},
+<span class="lineNum">    1252 </span>            :   {1.939999999999999,   0.03942384864689854},
+<span class="lineNum">    1253 </span>            :   {1.95,   0.03841788880988518},
+<span class="lineNum">    1254 </span>            :   {1.96,   0.03743471673888003},
+<span class="lineNum">    1255 </span>            :   {1.97,   0.03647385571344126},
+<span class="lineNum">    1256 </span>            :   {1.98,   0.03553486346850241},
+<span class="lineNum">    1257 </span>            :   {1.99,   0.03461730507689867},
+<span class="lineNum">    1258 </span>            :   {2.,   0.03372074561146527},
+<span class="lineNum">    1259 </span>            :   {2.01,   0.03284475014503736},
+<span class="lineNum">    1260 </span>            :   {2.02,   0.03198888375045021},
+<span class="lineNum">    1261 </span>            :   {2.03,   0.03115271142597061},
+<span class="lineNum">    1262 </span>            :   {2.04,   0.03033582302381576},
+<span class="lineNum">    1263 </span>            :   {2.049999999999999,   0.0295378372990688},
+<span class="lineNum">    1264 </span>            :   {2.06,   0.02875837410969898},
+<span class="lineNum">    1265 </span>            :   {2.069999999999999,   0.02799705331367566},
+<span class="lineNum">    1266 </span>            :   {2.08,   0.02725349476896807},
+<span class="lineNum">    1267 </span>            :   {2.089999999999999,   0.02652731833354557},
+<span class="lineNum">    1268 </span>            :   {2.1,   0.0258181438653774},
+<span class="lineNum">    1269 </span>            :   {2.109999999999999,   0.02512559455446672},
+<span class="lineNum">    1270 </span>            :   {2.12,   0.0244493267536247},
+<span class="lineNum">    1271 </span>            :   {2.129999999999999,   0.02378901520509857},
+<span class="lineNum">    1272 </span>            :   {2.14,   0.02314433479797067},
+<span class="lineNum">    1273 </span>            :   {2.149999999999999,   0.02251496042132341},
+<span class="lineNum">    1274 </span>            :   {2.16,   0.02190056696423911},
+<span class="lineNum">    1275 </span>            :   {2.169999999999999,   0.02130082931580023},
+<span class="lineNum">    1276 </span>            :   {2.18,   0.02071542236508907},
+<span class="lineNum">    1277 </span>            :   {2.189999999999999,   0.0201440237899837},
+<span class="lineNum">    1278 </span>            :   {2.2,   0.01958634001118242},
+<span class="lineNum">    1279 </span>            :   {2.21,   0.01904209381694553},
+<span class="lineNum">    1280 </span>            :   {2.22,   0.01851100813996137},
+<span class="lineNum">    1281 </span>            :   {2.23,   0.01799280591291836},
+<span class="lineNum">    1282 </span>            :   {2.24,   0.01748721006850485},
+<span class="lineNum">    1283 </span>            :   {2.25,   0.01699394353940928},
+<span class="lineNum">    1284 </span>            :   {2.26,   0.01651272925831998},
+<span class="lineNum">    1285 </span>            :   {2.27,   0.01604329250207586},
+<span class="lineNum">    1286 </span>            :   {2.28,   0.01558538316565289},
+<span class="lineNum">    1287 </span>            :   {2.29,   0.01513876527748285},
+<span class="lineNum">    1288 </span>            :   {2.3,   0.01470320298600347},
+<span class="lineNum">    1289 </span>            :   {2.31,   0.01427846043965253},
+<span class="lineNum">    1290 </span>            :   {2.319999999999999,   0.01386430178686778},
+<span class="lineNum">    1291 </span>            :   {2.33,   0.01346049117608694},
+<span class="lineNum">    1292 </span>            :   {2.339999999999999,   0.01306679275574781},
+<span class="lineNum">    1293 </span>            :   {2.35,   0.01268297027030631},
+<span class="lineNum">    1294 </span>            :   {2.359999999999999,   0.01230880355414076},
+<span class="lineNum">    1295 </span>            :   {2.37,   0.01194409540726601},
+<span class="lineNum">    1296 </span>            :   {2.379999999999999,   0.01158864978157816},
+<span class="lineNum">    1297 </span>            :   {2.39,   0.01124227062897323},
+<span class="lineNum">    1298 </span>            :   {2.399999999999999,   0.01090476190134731},
+<span class="lineNum">    1299 </span>            :   {2.41,   0.01057592755059643},
+<span class="lineNum">    1300 </span>            :   {2.419999999999999,   0.01025557152861669},
+<span class="lineNum">    1301 </span>            :   {2.43,   0.009943497787304123},
+<span class="lineNum">    1302 </span>            :   {2.439999999999999,   0.009639510278554806},
+<span class="lineNum">    1303 </span>            :   {2.45,   0.009343414557771899},
+<span class="lineNum">    1304 </span>            :   {2.46,   0.009055039859720854},
+<span class="lineNum">    1305 </span>            :   {2.47,   0.008774225072280152},
+<span class="lineNum">    1306 </span>            :   {2.48,   0.008500807705872961},
+<span class="lineNum">    1307 </span>            :   {2.49,   0.008234625270922399},
+<span class="lineNum">    1308 </span>            :   {2.5,   0.007975515277851636},
+<span class="lineNum">    1309 </span>            :   {2.51,   0.007723315237083791},
+<span class="lineNum">    1310 </span>            :   {2.52,   0.007477862659042031},
+<span class="lineNum">    1311 </span>            :   {2.53,   0.00723899511876773},
+<span class="lineNum">    1312 </span>            :   {2.54,   0.007006558446688978},
+<span class="lineNum">    1313 </span>            :   {2.55,   0.0067804137212534},
+<span class="lineNum">    1314 </span>            :   {2.56,   0.006560423553798731},
+<span class="lineNum">    1315 </span>            :   {2.569999999999999,   0.006346450555662675},
+<span class="lineNum">    1316 </span>            :   {2.58,   0.006138357338182938},
+<span class="lineNum">    1317 </span>            :   {2.589999999999999,   0.005936006512697251},
+<span class="lineNum">    1318 </span>            :   {2.6,   0.005739260690543312},
+<span class="lineNum">    1319 </span>            :   {2.609999999999999,   0.005547982483058852},
+<span class="lineNum">    1320 </span>            :   {2.62,   0.005362038487449716},
+<span class="lineNum">    1321 </span>            :   {2.629999999999999,   0.005181309667224106},
+<span class="lineNum">    1322 </span>            :   {2.64,   0.005005680035070529},
+<span class="lineNum">    1323 </span>            :   {2.649999999999999,   0.004835033602600032},
+<span class="lineNum">    1324 </span>            :   {2.66,   0.00466925438142363},
+<span class="lineNum">    1325 </span>            :   {2.669999999999999,   0.004508226383152373},
+<span class="lineNum">    1326 </span>            :   {2.68,   0.004351833619397275},
+<span class="lineNum">    1327 </span>            :   {2.689999999999999,   0.004199960101769384},
+<span class="lineNum">    1328 </span>            :   {2.7,   0.004052491470775737},
+<span class="lineNum">    1329 </span>            :   {2.71,   0.003909324993562715},
+<span class="lineNum">    1330 </span>            :   {2.72,   0.003770362771400424},
+<span class="lineNum">    1331 </span>            :   {2.73,   0.003635506907188176},
+<span class="lineNum">    1332 </span>            :   {2.74,   0.003504659503825254},
+<span class="lineNum">    1333 </span>            :   {2.75,   0.003377722664210968},
+<span class="lineNum">    1334 </span>            :   {2.76,   0.003254598491244603},
+<span class="lineNum">    1335 </span>            :   {2.77,   0.003135189087825467},
+<span class="lineNum">    1336 </span>            :   {2.78,   0.003019397079710264},
+<span class="lineNum">    1337 </span>            :   {2.79,   0.002907133447883749},
+<span class="lineNum">    1338 </span>            :   {2.8,   0.002798315623787628},
+<span class="lineNum">    1339 </span>            :   {2.81,   0.002692861180337578},
+<span class="lineNum">    1340 </span>            :   {2.819999999999999,   0.00259068769044926},
+<span class="lineNum">    1341 </span>            :   {2.83,   0.002491712727038338},
+<span class="lineNum">    1342 </span>            :   {2.839999999999999,   0.002395853863020486},
+<span class="lineNum">    1343 </span>            :   {2.85,   0.002303028671311364},
+<span class="lineNum">    1344 </span>            :   {2.859999999999999,   0.002213154828110786},
+<span class="lineNum">    1345 </span>            :   {2.87,   0.002126155289814357},
+<span class="lineNum">    1346 </span>            :   {2.879999999999999,   0.002041960301379671},
+<span class="lineNum">    1347 </span>            :   {2.89,   0.00196050059411347},
+<span class="lineNum">    1348 </span>            :   {2.899999999999999,   0.001881706899322511},
+<span class="lineNum">    1349 </span>            :   {2.91,   0.001805509948313539},
+<span class="lineNum">    1350 </span>            :   {2.919999999999999,   0.001731840472393309},
+<span class="lineNum">    1351 </span>            :   {2.93,   0.001660629202868567},
+<span class="lineNum">    1352 </span>            :   {2.939999999999999,   0.001591806873664225},
+<span class="lineNum">    1353 </span>            :   {2.95,   0.001525307028042598},
+<span class="lineNum">    1354 </span>            :   {2.96,   0.001461070563807542},
+<span class="lineNum">    1355 </span>            :   {2.97,   0.001399039494877415},
+<span class="lineNum">    1356 </span>            :   {2.98,   0.001339155835170592},
+<span class="lineNum">    1357 </span>            :   {2.99,   0.001281361598605433},
+<span class="lineNum">    1358 </span>            :   {3.,   0.00122559879910031},
+<span class="lineNum">    1359 </span>            :   {3.01,   0.001171809450573585},
+<span class="lineNum">    1360 </span>            :   {3.02,   0.001119935566943628},
+<span class="lineNum">    1361 </span>            :   {3.03,   0.001069920762100524},
+<span class="lineNum">    1362 </span>            :   {3.04,   0.001021715079655693},
+<span class="lineNum">    1363 </span>            :   {3.05,   0.0009752696988383236},
+<span class="lineNum">    1364 </span>            :   {3.06,   0.0009305357806096034},
+<span class="lineNum">    1365 </span>            :   {3.07,   0.0008874644859307138},
+<span class="lineNum">    1366 </span>            :   {3.08,   0.0008460069757628434},
+<span class="lineNum">    1367 </span>            :   {3.089999999999999,   0.0008061144110671743},
+<span class="lineNum">    1368 </span>            :   {3.1,   0.0007677382198571249},
+<span class="lineNum">    1369 </span>            :   {3.109999999999999,   0.0007308338464508743},
+<span class="lineNum">    1370 </span>            :   {3.12,   0.0006953598088182133},
+<span class="lineNum">    1371 </span>            :   {3.129999999999999,   0.0006612747006141005},
+<span class="lineNum">    1372 </span>            :   {3.14,   0.0006285371154934881},
+<span class="lineNum">    1373 </span>            :   {3.149999999999999,   0.0005971056471113339},
+<span class="lineNum">    1374 </span>            :   {3.16,   0.0005669388891225906},
+<span class="lineNum">    1375 </span>            :   {3.169999999999999,   0.0005379954702951382},
+<span class="lineNum">    1376 </span>            :   {3.18,   0.0005102363788637357},
+<span class="lineNum">    1377 </span>            :   {3.189999999999999,   0.0004836263636656396},
+<span class="lineNum">    1378 </span>            :   {3.2,   0.0004581305046013722},
+<span class="lineNum">    1379 </span>            :   {3.21,   0.0004337138815714604},
+<span class="lineNum">    1380 </span>            :   {3.22,   0.0004103415744764269},
+<span class="lineNum">    1381 </span>            :   {3.23,   0.0003879786632167984},
+<span class="lineNum">    1382 </span>            :   {3.24,   0.00036659022769637},
+<span class="lineNum">    1383 </span>            :   {3.25,   0.0003461424299213639},
+<span class="lineNum">    1384 </span>            :   {3.26,   0.0003266052068696228},
+<span class="lineNum">    1385 </span>            :   {3.27,   0.0003079493048225441},
+<span class="lineNum">    1386 </span>            :   {3.28,   0.0002901454700615217},
+<span class="lineNum">    1387 </span>            :   {3.29,   0.0002731644488679525},
+<span class="lineNum">    1388 </span>            :   {3.3,   0.0002569769875232306},
+<span class="lineNum">    1389 </span>            :   {3.31,   0.000241553832308753},
+<span class="lineNum">    1390 </span>            :   {3.32,   0.0002268661589508481},
+<span class="lineNum">    1391 </span>            :   {3.33,   0.0002128882887683201},
+<span class="lineNum">    1392 </span>            :   {3.339999999999999,   0.0001995958744531829},
+<span class="lineNum">    1393 </span>            :   {3.35,   0.0001869645689390867},
+<span class="lineNum">    1394 </span>            :   {3.359999999999999,   0.0001749700251596833},
+<span class="lineNum">    1395 </span>            :   {3.37,   0.0001635878960486223},
+<span class="lineNum">    1396 </span>            :   {3.379999999999999,   0.0001527938345395556},
+<span class="lineNum">    1397 </span>            :   {3.39,   0.0001425635867335079},
+<span class="lineNum">    1398 </span>            :   {3.399999999999999,   0.0001328750524440808},
+<span class="lineNum">    1399 </span>            :   {3.41,   0.000123708242914454},
+<span class="lineNum">    1400 </span>            :   {3.419999999999999,   0.000115043253240417},
+<span class="lineNum">    1401 </span>            :   {3.43,   0.0001068601785177576},
+<span class="lineNum">    1402 </span>            :   {3.439999999999999,   0.00009913911384226513},
+<span class="lineNum">    1403 </span>            :   {3.45,   0.00009186015430972743},
+<span class="lineNum">    1404 </span>            :   {3.46,   0.00008500341025529345},
+<span class="lineNum">    1405 </span>            :   {3.47,   0.00007855042615973278},
+<span class="lineNum">    1406 </span>            :   {3.48,   0.00007248462445438934},
+<span class="lineNum">    1407 </span>            :   {3.49,   0.00006678943963467043},
+<span class="lineNum">    1408 </span>            :   {3.5,   0.0000614483061959845},
+<span class="lineNum">    1409 </span>            :   {3.51,   0.00005644465863373897},
+<span class="lineNum">    1410 </span>            :   {3.52,   0.00005176211552402465},
+<span class="lineNum">    1411 </span>            :   {3.53,   0.00004738587884370828},
+<span class="lineNum">    1412 </span>            :   {3.54,   0.00004330187677882647},
+<span class="lineNum">    1413 </span>            :   {3.55,   0.00003949603952379541},
+<span class="lineNum">    1414 </span>            :   {3.56,   0.00003595429727303197},
+<span class="lineNum">    1415 </span>            :   {3.57,   0.00003266262135512502},
+<span class="lineNum">    1416 </span>            :   {3.58,   0.00002960809431030573},
+<span class="lineNum">    1417 </span>            :   {3.589999999999999,   0.00002677887560085258},
+<span class="lineNum">    1418 </span>            :   {3.6,   0.00002416316310743469},
+<span class="lineNum">    1419 </span>            :   {3.609999999999999,   0.00002174915471072154},
+<span class="lineNum">    1420 </span>            :   {3.62,   0.00001952507009393599},
+<span class="lineNum">    1421 </span>            :   {3.629999999999999,   0.00001747994897262958},
+<span class="lineNum">    1422 </span>            :   {3.64,   0.00001560385164822105},
+<span class="lineNum">    1423 </span>            :   {3.649999999999999,   0.00001388689929402965},
+<span class="lineNum">    1424 </span>            :   {3.66,   0.0000123192130833743},
+<span class="lineNum">    1425 </span>            :   {3.669999999999999,   0.00001089091505461895},
+<span class="lineNum">    1426 </span>            :   {3.68,   9.592664761949843e-6},
+<span class="lineNum">    1427 </span>            :   {3.689999999999999,   8.416400503805155e-6},
+<span class="lineNum">    1428 </span>            :   {3.7,   7.354228339796448e-6},
+<span class="lineNum">    1429 </span>            :   {3.71,   6.39825432953548e-6},
+<span class="lineNum">    1430 </span>            :   {3.72,   5.540584532633831e-6},
+<span class="lineNum">    1431 </span>            :   {3.73,   4.773425383659846e-6},
+<span class="lineNum">    1432 </span>            :   {3.74,   4.090046438552644e-6},
+<span class="lineNum">    1433 </span>            :   {3.75,   3.484313718986277e-6},
+<span class="lineNum">    1434 </span>            :   {3.76,   2.949696142662469e-6},
+<span class="lineNum">    1435 </span>            :   {3.77,   2.479982657921501e-6},
+<span class="lineNum">    1436 </span>            :   {3.78,   2.069906772025203e-6},
+<span class="lineNum">    1437 </span>            :   {3.79,   1.713762615413793e-6},
+<span class="lineNum">    1438 </span>            :   {3.8,   1.406339416130424e-6},
+<span class="lineNum">    1439 </span>            :   {3.81,   1.143206496869819e-6},
+<span class="lineNum">    1440 </span>            :   {3.82,   9.201362588984711e-7},
+<span class="lineNum">    1441 </span>            :   {3.83,   7.326254079389377e-7},
+<span class="lineNum">    1442 </span>            :   {3.839999999999999,   5.758880083115572e-7},
+<span class="lineNum">    1443 </span>            :   {3.85,   4.448342062867608e-7},
+<span class="lineNum">    1444 </span>            :   {3.859999999999999,   3.380760351198248e-7},
+<span class="lineNum">    1445 </span>            :   {3.87,   2.521707875854227e-7},
+<span class="lineNum">    1446 </span>            :   {3.879999999999999,   1.839809829125983e-7},
+<span class="lineNum">    1447 </span>            :   {3.89,   1.312709681369503e-7},
+<span class="lineNum">    1448 </span>            :   {3.899999999999999,   9.082770567756031e-8},
+<span class="lineNum">    1449 </span>            :   {3.91,   6.110193090287373e-8},
+<span class="lineNum">    1450 </span>            :   {3.919999999999999,   3.877415793922973e-8},
+<span class="lineNum">    1451 </span>            :   {3.93,   2.372779300192175e-8},
+<span class="lineNum">    1452 </span>            :   {3.939999999999999,   1.386871858013727e-8},
+<span class="lineNum">    1453 </span>            :   {3.95,   7.266974170588816e-9},
+<span class="lineNum">    1454 </span>            :   {3.96,   3.745029133634972e-9},
+<span class="lineNum">    1455 </span>            :   {3.97,   1.258512259687735e-9},
+<span class="lineNum">    1456 </span>            :   {3.98,   2.46215233032655e-10},
+<a name="1457"><span class="lineNum">    1457 </span>            :   {3.99,   1.97948978454335e-11},</a>
+<span class="lineNum">    1458 </span>            :   {4.,   2.130221377363245e-11}
+<span class="lineNum">    1459 </span><span class="lineCov">        135 : };</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

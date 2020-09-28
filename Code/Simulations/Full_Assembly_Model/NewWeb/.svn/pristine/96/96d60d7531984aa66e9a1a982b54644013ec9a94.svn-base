@@ -1,0 +1,622 @@
+# -*- mode: sh -*-
+# $Id$
+
+# This parameter file contains annotations on experiences we had in
+# adjusting the parameters.  Please add your experiences freely (think
+# Wiki).
+
+# Richness scaling factor
+#
+# POINT: this parameter has not direct effect and is used only to
+# scale other parameters in this file in order to scale species
+# richness.  This is done by changing the ratio of niche volumes to
+# the volumes available niche spaces.  Ideally, doubling this
+# parameter doubles richness and leaves everything else unchanged.
+# However, this scaling seems to set on only for x above a certain
+# value (depending on other parameters).  For lower values, less
+# changes in richness then expected are generally observed.
+x=(8)
+
+# Dimensionality of trophic niche space and the of the "plant niche
+# space" that is modeling non-trophic competition between plants.
+#
+# POINT: In theory, higher species richness should be the results of
+# both, higher niche-space dimensions D and higher variability in each
+# dimension.  Since there is no obvious way for how to co-adjust other
+# parameters as we change D, we leave it fixed.  As argued by Rossberg
+# et al. [Ecology, 89(2), 2008, pp. 567–580, online Appendix A], D=5
+# counts by some criteria already as high-dimensional.  Food-web
+# intervality due to phylogenetic correlations is also likely to be
+# found.  When changing D experimentally, it was found that link
+# density scales proportion to D.  This may be related to the fact
+# that (after Euclid) distance-squared in D dimensions is the sum of
+# distances-squared over all D dimensions.
+niche_space_dimensions_D=5
+
+# Mmin is the smallest body size at which a species could just barely
+# survive under "zoo" conditions.  It will can be reached in
+# simulations only by choosing very particular values for other
+# traits, but slightly (3 times) larger sizes have been seen.  This
+# quantity is the main control for absolute body size in the model.
+#
+# POINT: One might consider changing this lower bound to get the
+# largest body sizes into the range where one wants them.  But one can
+# equivalently just scale masses and times in simulation outputs.
+Mmin = 10^(-13)*kilogram
+
+# Technically, Mmin is enforced by increasing respiration rates for
+# small body sizes M.  This exponent determines the rates of increase.
+#
+# POINT: The larger the body_mass_cutoff_exponent, the sharper the
+# cut-off.  (But other factors contribute as well.)
+body_mass_cutoff_exponent = 6
+
+# Mopt is the metabolically optimal body size.  Above this, there are
+# extra costs in being large.  It defines the center of the feasible
+# body size range, and implies an upper cut-off at Mopt^2/Mmin.
+#
+# POINT: The current value 1g is motivated by ecological intuition.
+Mopt = 10^(-3)*kilogram
+
+# Mini is the size at which the first plants and animals enter the
+# simulation. 
+#
+# POINT: Steady states should not depend much on this, but low values
+# are more "realistic".
+Mini = 10^(-10)*kilogram
+
+# The parameter typical_bodymass_ratio_d controls the rate of
+# evolution of body size.  Technically,
+# log^2(typical_bodymass_ratio_d) is the variance of log M in one
+# evolutionary step.
+#
+# POINT: The value 3 seems just right, but please play freely.
+typical_bodymass_ratio_d=3
+
+
+# The following parameters model the shape of the species-level
+# predator-prey mass window.  The "center" is actually just the
+# location of the maximum.  For larger prey, the window drops off with
+# a power of 3/4, for smaller prey, the exponent of is given by alpha
+# below.  alpha=0.05 follows from an unpublished application of the
+# quasi-neutral approximation to Martin's explicitly size-structured
+# model.
+log10_bodymass_ratio_window_center=2
+small_prey_exponent_alpha=0.05
+
+# The fraction of maximum plant assimilation lost through other
+# channels then predation. Equals (1-production efficiency)
+# in the nomenclature of Hendriks [Ecological Modelling 205
+# (2007) 196–208]
+#
+# POINT: Value of 0.5 after Hendriks (2007)
+loss_rate_over_max_production_rate_r=0.5
+
+# Maximum population growth rate of a 1kg plant species.  This value
+# determines overall time scales of plants:
+#
+# POINT: From Niklas & Enquist PNAS 98(5), 2922 (2001), one obtains
+# 0.208/year, or 6.67E-09/second.  The current value is slightly
+# smaller.  Should be chosen according to Hendriks (2007) for
+# consistency.
+growth_rate_allometric_prefactor = 5.2*10^(-09)/second
+
+# Production over respiration for animals:
+#
+# POINT:  Need to double check this value.
+production_over_respiration=2
+
+# The value of conversion_efficiency_epsilon means the product of
+# assimilation efficiency and production efficiency (nomenclature
+# after Hendriks 2007).
+#
+# POINT: Hendriks 2007 gives assimilation efficiencies of 0.4 for
+# herbivores and 0.8 for carnivores.  I suggest using the mean 0.6
+# (also used in Martin's model).
+conversion_efficiency_epsilon=0.6*production_over_respiration/(1+production_over_respiration)
+
+# This value determines overall time scales for animals.  It is the
+# maximum biomass growth rate of populations of 1kg individuals, and
+# determines the "handling times" in the model (see Rossberg 2008,
+# Appendix A).
+#
+# POINT: This is an empirically ill-defined quantity, since it depends
+# on clutch sizes and young survival.  Hendriks (1999) give 0.003/day.
+# From Savage 2004, one would get 2.6*10^(-8)/second, or 0.0024/day.
+# Since this quantity appears to limit the speed of simulations, I
+# doubled it.  Feel free to set to 0.003/day.
+max_growth_rate_allometric_prefactor=0.006/day 
+
+# Allometric exponents:
+#
+# POINT: We use straight values here in order to get scale invariance
+# in the model. This helps with parametrization.
+metabolic_rate_allometric_exponent = 0.75
+attack_rate_allometric_exponent = -0.25
+handling_time_allometric_exponent = 0.25
+growth_rate_allometric_exponent = -0.25
+
+# Number on individuals with which to invade.
+#
+# POINT: For fixed-point (equilibrium) community attractors,
+# increasing this value just shortens the time for invaders to reach
+# their carrying capacity, thus shortening simulation times, but also
+# and bearing the risk that very big (and therefore rate) species
+# invade at an abundance above their carrying capacity.  For
+# oscillatory attractors, the exponential growth of invading
+# populations will be overlaid by an oscillation.  Then the starting
+# point can make a difference.  For chaotic attractors, population
+# growth is a random walk, so the starting point matters even more.  I
+# am not sure which value is best here, and am contemplating that
+# populations at invasion and the extinction threshold should both be
+# given in terms of biomass.  Computationally, this would be much,
+# much better, because right now a lot of computation time is spent
+# waiting for slow invasions/extinctions to finish.
+initial_number_of_individuals=100
+
+# Minium biomass at which to invade or delete species
+#
+# POINT: Much simuation time can be wasted waiting for the rise, decay
+# of rare species, which do not affect the remaining commonity.  We
+# avoid this by cutting off dynamics below a certain minimum biomass
+# level.  Check dynamics.dat to see if this value makes sense.
+minimum_biomass_considered=0.001*kilogram #<- should depend on carring cap.!
+
+# Area of simulated system.  
+#
+# POINT: Internally, the model is formulated in terms of absolute
+# biomasses and populations numbers.  This parameter is used to
+# convert to densities.  If you believe that the size of the largest
+# species is limited by system size [This seems to be the case, e.g.,
+# in lakes.  After Drenner and Mazumder 1999 (Ecol), for example, the
+# size of Tuesday Lake (famous for data sets) is 1000ha(??)], choose
+# this value according to your study system.  Otherwise, make sure it
+# is large enough NOT to limit the size of the largest species.  Since
+# we have to wait for abundances to grow from
+# initial_number_of_individuals to the carrying capacity, making this
+# value too large slows down simulations.
+area_per_compartment=1000*ha 
+
+# Primary production (not areal primary production!) of dominating
+# plant species
+#
+# POINT: Areal primary production of dominating plants is mostly
+# independent of size.  The parameter value is used to infer the
+# magnitude of plant-plant competition strengths, in particular the
+# carrying capacities (self competition).  Problem is: in our
+# interpretation of the model, no plant species covers the full system
+# area all of the time, and different plant species can co-exist in
+# the system area without much interfering with each other (narrow
+# niches).  To get the full-system primary production right, this
+# value needs to be adjusted.  It should also be scaled with species
+# richness (i.e. x).  Then again, all this is no big issue, because
+# this is the only model parameter (except for area_per_compartment)
+# containing absolute densities (aggressivity is not, because it
+# evolves freely).  Thus, simulation results should be scale invariant
+# with respect to changes in dominating_species_primary_production.
+# We can just re-scale the outputs.
+#
+# Peters (1993) p. 170 mentions a total net primary production of "1
+# to 50 tons dry mass ha^-1 y^-1".  Some other source gives a mean
+# ocean primary production of 14*gram/year/meter^2.
+dominating_species_primary_production=area_per_compartment*14*gram/year/meter^2
+
+
+# Aggressivity: The model evolves the attack rates (a constant that is
+# scaling interaction strength of a consumer) of species without any
+# trade-off.  That is, it assumes that arbitrarily large and small
+# attack rates are physiologically viable.  Aggressivity (symbol g in
+# Rossberg 2008) is defined as attack rate divided by the the "raw"
+# respiration rate (i.e., without corrections for costly traits).  It
+# has units of inverse mass density. Why evolve aggressivity?  It
+# turns out the aggressivity needs to be in a rather narrow band in
+# order for nice communities to emerge.  Its value should roughly be
+# the inverse mass density of producers, which in turn is determined
+# by the size of the smallest producers (near Mmin) and
+# dominating_species_primary_production above.  If aggressivity is, in
+# fact, in this range in nature (which remains to be confirmed), this
+# can only be understood as a result of evolution.  We model evolution
+# here, so we should evolve aggressivity.  Evolution of aggressivity
+# also seems to help keeping the ratio of plant:animal richness near
+# 2:1.
+#
+# POINT: With too large aggressivity, the distribution of
+# vulnerabilities in trait space looks as if a bomb had exploded:
+# Everything attempts to evolve away from everything.  Further,
+# species richness goes down, link density goes down, animal richness
+# approaches plant richness (and near 1:1 communities usually crash).
+# Evolution of too large aggressivities can lead to community
+# evolutionary suicide, in particular if the "otherwebs" mechanism is
+# not used.
+#
+# With too small aggressivities, animals cannot invade or animal
+# richness remains low.  Plants, released from grazing, evolve to
+# large body sizes.
+#
+# The good range of aggressivity extends over about one order of
+# magnitude, where the precise value has only subtle effects.  This is
+# because, as long as animal population growth is limited by "handling
+# times" (or making love and children), aggressivity does not affect
+# dynamics.  It matters only in times of starvation.  Strange enough,
+# the community can nevertheless evolve to reasonable aggressivity if
+# the evolutionary parameters below are chosen well.
+
+# Aggressivity of first invading animal.
+#
+# POINT: To get a good value, increase the exponent until animals can
+# invade at all, and then add a factor 10 or so.
+initial_aggressivity=10^5*meter^2/kilogram
+
+# Rates of aggressivity evolution and the evolutionary bias towards
+# laziness.  
+#
+# log^2(typical_aggressivity_ratio_da) is the variance of mutations of
+# log(aggressivity) in speciations.  At the same time, the bias
+# log(aggressivity_decay) is added.
+#
+# POINT: The model has the tendency to oscillate if system-level
+# aggressivity and species richness evolve on similar time scales
+# (richness increases at low aggressivity, and aggressivity increases
+# at high richness, and then it goes and vice versa, completing a full
+# cycle).  This may or may not be realistic.  In any case, its a
+# nuisance.  Making aggressivity evolve slowly should reduce this
+# effect and, by simple, general ODE arguments, eventually remove it.
+# However, too slow an evolution rate makes simulations painful.  The
+# exponents on parameter values below are meant to slow down
+# aggressivity evolution.  The exponent for
+# typical_aggressivity_ratio_da (e.g. 1/2=sqrt(1/4)) should be the
+# square root of the exponent for aggressivity_decay (e.g. 1/4) for a
+# consist scaling (e.g. by a factor 4 slower).
+#
+# It is recommended to keep typical_aggressivity_ratio_da fixed, and
+# to adjust aggressivity_decay down or up if mean aggressivity goes
+# too much up or down.
+typical_aggressivity_ratio_da=(1.1)^(1/2)
+aggressivity_decay=0.94^(1/4)
+
+
+# Change the followig parameters to access older versions of the code
+# (Rossberg 2008 is not accessible anymore.  The libraries it used
+# were discontinued.  Sorry.):
+animal_physiology_version=2
+plant_physiology_version=2
+trait_space_model=3
+big_plants_eaten=0
+plant_shadowing=0
+plant_hardening_time=0
+invade_by_biomass=0
+
+### The following controls niche (or trait) space and evolution in
+### niche space
+
+# These parameters are irrelevant when trait_space_model==3.
+flat_foraging_distribution=1
+flat_vulnerability_distribution=0
+flat_plant_distribution=0
+
+# (**) With trait_space_model==3, limits to the variability of traits
+# are controlled by trade-offs in respiration rate, just as is the
+# case for body size.  The "variability" values and Mmin combine in
+# their adverse effect on respiration and, in principle, species can
+# choose to trade off one against the other.  Therefore, there are no
+# sharp limits anymore.  Yet, the "variability" values roughly give
+# the standard deviations of traits found in simulations.
+
+# The "plant niche- or trait space" models all non-trophic competition
+# between plants.
+#
+# POINT: The ratio of accessible niche space volume to niche volume should be
+# chose so small that it dominantly controls plant species richness
+# (very important).  Plant niche space will then become "packed".
+# This makes simulations easier, and also is, I think, realistic: As a
+# result, plant vulnerability traits will not be packed, so that we
+# can see phylogenetic clustering of vulnerability traits in food
+# webs.
+
+# Variability of plant traits (approx. standard deviation, SD in one
+# dimension):
+plant_trait_variability=(1*x)^(1/niche_space_dimensions_D)
+# Width of plant competition kernel, i.e. the niche width:
+plant_niche_width_w_r=(9)^(1/niche_space_dimensions_D)
+
+# SD of mutation of plant traits in each dimension in a speciation step.
+#
+# POINT: Effect unclear.  I keep it high in order to get a swift
+# filling of plant niche space.  Too large values makes it difficult
+# to find successful mutants (out of bounds).
+mu_G=1*1^(1/niche_space_dimensions_D)
+
+
+# Variability of vulnerability traits of plants (approx. SD in one
+# dimension):
+#
+# POINT: What the plant_trait_variability is for plants, the
+# plant_vulnerability_variability is for herbivore.  Its size controls
+# the available niche space, and therefore herbivore richness.
+# However, things are more complex: other forces controlling richness
+# seem to be at work, too.  Adjust parameter so as to get a
+# plants:herbivores ratio of about 1:3.  See also (**) above.
+plant_vulnerability_variability=0.5*x^(1/niche_space_dimensions_D)
+
+# Variability of vulnerability traits of animals (approx. SD in one
+# dimension):
+#
+# POINT: Assuming that plant vulnerabilities and animal
+# vulnerabilities fill their respective parts of trophic niche space
+# with the same density, and that foraging traits cover the volume of
+# nichespace filled with either plants or animals evenly, we will get
+# a ratio of herbivores:carnivores equal to ratio of volumes occupied
+# by plants and animals.  Inspect's -m option prints this as
+# "animal/plant volume ratio". Changing
+# animal_vulnerability_variability should help adjusting this ratio.
+# I could not fully demonstrate this, yet, though.
+animal_vulnerability_variability=0.5*x^(1/niche_space_dimensions_D)
+
+# plant_vulnerability_separation is half the distance by which the
+# "easy" values of plant and animal vulnerabilities are separated in
+# trophic nice space.
+#
+# POINT: Controls the degree of omnivory (occurrence of combined
+# plant+animal diets).  The smaller, the more omnivory we get.  Too
+# large values will also make it difficult to evolve from a carnivore
+# to a herbivore and vice versa.
+plant_vulnerability_separation=(animal_vulnerability_variability+plant_vulnerability_variability)/4
+
+# In principle, different directions in trait space ("different
+# traits") can contribute to the interaction strength with different
+# weights.  This parameter regulates the weight of the direction along
+# which plants and animals are separated, relative to other
+# directions.
+#
+# POINT: Introduced to reduce the effective forces emerging between
+# the clouds of animal and plant traits (they push and pull each
+# other).  Reducing aggressivity also helps, and is perhaps the saner
+# response if these these forces get out of hand.
+plant_vulnerability_relative_weight=1
+
+# Theoretical variability of foraging traits in trophic niche space.
+#
+# POINT: We assume here (in trait_space_model==3), that variability of
+# foraging traits if effectively limited by the variability of the
+# vulnerability traits of available resources.  There is no
+# physiological cost in changing foraging traits in
+# trait_space_model==3.  Thus, the value has no effect, as long as it
+# is larger than the variability of vulnerability traits.
+foraging_variability_f0=100
+
+# SD of mutation of trophic traits in each dimension in a speciation step.
+#
+# POINT: Apparently, crucial parameters.  Too large values disable any
+# evolution (just random jumping around).  The smaller, the better
+# species adapt to their prey.  In particular, carnivore species,
+# which depend on finding clusters of vulnerability traits in trophic
+# niche space combined with a suitable choice of their own size, will
+# become rare if this is too large.  Those that occur do not survive
+# evolution to larger sizes.  Too small values will terribly slow down
+# simulations, because (1) more steps are needed to move around in
+# niche space and (2) Ancestor and derived species will be very
+# similar, so their competitive interaction becomes very slow.
+#
+# Further, theoretical considerations suggest that the (expected)
+# realized width of the cloud of vulnerability traits is of the order
+# mu_V*S^(1/2) in any given direction, where S is the richness of
+# either plants or animals, respectively, as long as this width is
+# smaller than the physiologically attainable variability (see
+# variabilities above).  (In principle the same holds for foraging
+# traits.)  We probably can assume "all possible trait values
+# realized" in nature, which means that mu_V*S^(1/2) should be larger
+# than the physiological limit.  This must be distinguished from "all
+# possible combinations of trait values are realized", which would
+# correspond to an evenly fill trophic trait space.  This happens at
+# much larger species richnesses (estimate?).  We want the range in
+# between: Extension of trait "clouds" over the full available widths,
+# but clustering at smaller scales.  The -D option of Inspect,
+# producing lists of distances between traits, helps understanding
+# what's doing on in simulations.
+#
+# From the model fits of Rossberg et al. [Journal of Theoretical
+# Biology 241 (2006) 552–563], one gets a median of the ratios of the
+# relaxation times of vulnerability traits to foraging traits of about
+# 1/60, which corresponds to the ratio mu_V^2/mu_F^2 here.  The chosen
+# values should come close to this.
+mu_V_plant=0.06*1^(1/niche_space_dimensions_D)
+mu_V_animal=0.06*1^(1/niche_space_dimensions_D)
+mu_F=0.4*1^(1/niche_space_dimensions_D) #*animal_vulnerability_variability
+
+# Width of trophic interaction kernel.  
+#
+# POINT: Changing this values can be used to adjust consumer link
+# density.  Try to get Zc01 near 8, which is the observed value for
+# fish (Rossberg et al, unpublished).  For smaller communities (S <
+# 200 or so), get it rather bit lower, since the power laws are then
+# truncated at Zc(0.01) already.  Too small values make it difficult
+# for consumers to find appropriate resources (fewer carnivores will
+# be observed, and plants, released from predation pressure, start to
+# evolve to larger sizes).  If this happens, reduce mu_F above.
+trophic_niche_width_w_t=(0.001)^(1/niche_space_dimensions_D)
+
+# Exponent that shapes the plant competition kernel.
+#
+# POINT: According to S. Pigolotti et al. [PRL 98, 258101 (2007)],
+# competitive exclusion becomes poor for values smaller or equal to 2.
+# Set to 4 (and re-adjust other parameters) to get a better defined
+# number of plant species.  But 2 is easier to motivate.
+plant_competition_drop_off_exponent=2
+
+# switching_similarity_width_w_s, controlling the degree of "prey
+# switching".  The smaller, the more switching.
+#
+# POINT: The jury is still out on whether fish really switch, and if
+# it is really required for food-web stability.  Too small values seem
+# to lead to a spontaneous (first order) phase transition in which
+# suddenly competitive exclusion is disabled and species richness
+# grows a lot (indefinitely?).  For
+# plant_competition_drop_off_exponent==2, this threshold is around
+# switching_similarity_width_w_s==trophic_niche_width_w_t, for
+# plant_competition_drop_off_exponent==4, it is around
+# 0.75*trophic_niche_width_w_t.  We should probably keep it larger
+# than this.  To see how much switching is finally occurring in the
+# model, use the -T option of Inspect (column "b").
+switching_similarity_width_w_s=trophic_niche_width_w_t*1.3
+
+# Set this to zero to disable switching and make simulations much
+# faster (code not tested recently!):
+do_switching=1
+
+# Set to non-zero to model yearly variations in primary production
+# (not implemented!)
+relative_yearly_modulation=0
+
+# Turn this on to simulate many communities that are evolutionary (but
+# not population-dynamically) coupled.
+#
+# With invade_from_other==1, the current simulation is invaded by the
+# species from the web most recently saved by other simulations.  With
+# invade_from_other==2, the current simulation waits until until the
+# last number of the web saved by other simulations is the same as the
+# one save by this simulation.  To make this work, use the
+# "runtime_directory_structure" hopefully included in your package.
+# Crucial are the files "otherwebs.txt", which contain the simulation
+# directories of the other communities.
+#
+# POINT: There were some indications that this procedure can stabilize
+# aggressivity.  It may also have other advantages, such as to avoid
+# too much clogging of vulnerabilities in trait space.  The down side
+# of using it is increased computation time.
+invade_from_other=0
+
+# Factor by which the probability of a species from another web to
+# invade is smaller than that for a extant species to "speciate".  No
+# effect if invade_from_other==0.
+#
+# POINT: Too large values lead to too tight coupling.  Then no
+# communities with sane aggressivities will be available if
+# aggressivities here go too large.  Keep it small.
+any_invasion_pressure_q=0.05
+
+# Ratio of probabilities of plant or animal invasion
+#
+# POINT: We do define this by a parameter and not try to find this
+# ratio self-consistently (e.g. depending on the ratio of extant plant
+# to animal species), because (1) the processes controlling it (in
+# reality) are too complex, and (2) it IS controlled by the
+# surrounding communities, and not by the current one.  Although one
+# can bias the extant plant:animal ratios by changing this value up or
+# down, the response is rather weak.  Internal processes (community
+# stability/persistence), seem to be more important.  I suggest to
+# keep it at 1.
+plant_animal_ratio=1
+
+# Values controlling invasion in initial phase of simulation (or after
+# a mass extinction).  First, make sure we have min_number_of_plants,
+# next make sure there is min_number_of_animals, then continue
+# invading according to plant_animal_ratio.
+min_number_of_plants=3
+min_number_of_animals=1
+
+# Fraction of species speciating in each iteration (minus one)
+#
+# POINT: To speed up simulations at high species richness S
+# (specifically, to get rid of one factor S in computational
+# complexity!) several species are speciated or invaded at the same
+# time in each iteration.  The number is chose as
+# int(S*addition_fraction)+1.  This should be OK, as long as the
+# invasion processes do not interfere with each other.  Whether this is
+# the case can be checked by looking at the population trajectories
+# recorded in the file dynamics.dat
+addition_fraction=0.1
+
+# By what amount a population can drop below its threshold_biomass
+# before simulations are interrupted to remove it.
+#
+# POINT: Making this value larger requires less re-starts of
+# simulations during relaxation.
+log_small_value_tolerance=log(100000.001)
+
+# Parameter controlling the addition of "fresh" species (not derived
+# from existing species) in invasions.
+#
+# POINT: Keep it at zero.
+n_neutral=0
+
+# Debugging: Compare the pre-computed and iteratively updated data in
+# memory with freshly computed sets of values after critical
+# operations.  Setting the value to 1 just checks, 2 also prints some
+# data.
+check_data_consistency=0
+
+
+# Max duration of an iteration (in simulated time).
+#
+# POINT: The code contains a sophisticated machinery to check if a
+# community reached a population-dynamical steady state.  If this is
+# found to be the case, the population dynamical simulation for this
+# iteration will stop.  Currently, the machinery works best for
+# chaotic states, somewhat good for oscillatory states, and often good
+# for fixed points.  But sometimes it is confused by populations that
+# are very slowly approaching their equilibrium values.  This is where
+# the cut-off time_between_insertions kicks in.  Making this value too
+# low bears the risk that large species accumulate in simulations,
+# because the waiting time for their extinction is too small.
+time_between_insertions=2000*years
+
+# Remove species if they reach low abundance during simulation?
+#
+# POINT: usually this should be 1
+auto_extinguishing=1
+
+# "time" for the following variables is measured in units of species
+# added.  For historical reasons, you need to multiply each value with
+# time_between_insertions:
+#
+# Obvious:
+time_between_saving=16*time_between_insertions 
+# Stop simulation after this time (alternatively, stop manually by
+# sending a HUP or TERM signal).
+observation_time=200000*time_between_saving # practically infinite
+# Making the following a small multiple of
+# time_between_insertions might(!) save computer memory.
+time_between_re_initialize=2*observation_time 
+# Triggers a small community analysis at intervals:
+time_between_analysis=2*observation_time
+
+# Set this to "random" if you want to seed the random number generator
+# by system time, or otherwise set it to your lucky number.
+random_seed=random
+
+# Sorted matrices and vectors are a variant of spares matrices of
+# vectors, which works for situations where no entries are exactly
+# zero but many are small and even more are very small.
+#
+# POINT: The code files SortedMatrix.cc and SortedVector.cc contain
+# pre-processor directives that include debugging statements when
+# turned on.  Use these to decide how small the smallest matrix or
+# vector elements are that you actually need to keep in memory
+# (truncation epsilon).  matrix_accuracy determines the precision(!)
+# of vector*matrix*vector products in functional
+# responses. vector_accuracy that of vector*vector products. Time
+# critical is matrix_accuracy.  It should be cranked up to the largest
+# numerically acceptable value (compare simulations using the
+# dynamics.dat output file).
+matrix_accuracy=1e-3 # matches DEFAULT_ABSOLUTE_TOLERANCE below
+vector_accuracy=1e-6 # a save guess
+matrix_truncation_epsilon=1e-6 # motivated by numerical precision
+vector_truncation_epsilon=1e-9 # motivated by numerical precision
+
+multithreading_only_fit=1
+
+# Parameter of ODE solver.  The solver operates on logarithmic
+# biomasses.  Therefore, what is "absolute tolerance" here, is
+# "relative tolerance" in terms of biomasses. 
+DEFAULT_ABSOLUTE_TOLERANCE=1e-3 
+DEFAULT_RELATIVE_TOLERANCE=0 # keep this zero.
+
+
+# A bit array to turn on debugging information if code was compile with
+# "DEBUG = yes" in the Makefile
+TRACEFLAG=0
+
+#  LocalWords:  al Mmin Mopt Hendriks Niklas Enquist PNAS Drenner Mazumder da
+#  LocalWords:  aggressivities otherwebs sqrt Inspect's variabilities DPF Zc
+#  LocalWords:  Pigolotti PRL runtime txt dat HUP SortedMatrix SortedVector pre
+#  LocalWords:  Makefile TRACEFLAG

@@ -1,0 +1,499 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/mul_gemm.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - mul_gemm.hpp<span style="font-size: 80%;"> (source / <a href="mul_gemm.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">42</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">13</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2015 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : //! \addtogroup gemm
+<span class="lineNum">      12 </span>            : //! @{
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : //! for tiny square matrices, size &lt;= 4x4
+<span class="lineNum">      17 </span>            : template&lt;const bool do_trans_A=false, const bool use_alpha=false, const bool use_beta=false&gt;
+<span class="lineNum">      18 </span>            : class gemm_emul_tinysq
+<span class="lineNum">      19 </span>            :   {
+<span class="lineNum">      20 </span>            :   public:
+<span class="lineNum">      21 </span>            :   
+<span class="lineNum">      22 </span>            :   
+<span class="lineNum">      23 </span>            :   template&lt;typename eT, typename TA, typename TB&gt;
+<span class="lineNum">      24 </span>            :   arma_hot
+<span class="lineNum">      25 </span>            :   inline
+<a name="26"><span class="lineNum">      26 </span>            :   static</a>
+<span class="lineNum">      27 </span>            :   void
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :   apply</span>
+<span class="lineNum">      29 </span>            :     (
+<span class="lineNum">      30 </span>            :           Mat&lt;eT&gt;&amp; C,
+<span class="lineNum">      31 </span>            :     const TA&amp;      A,
+<span class="lineNum">      32 </span>            :     const TB&amp;      B,
+<span class="lineNum">      33 </span>            :     const eT       alpha = eT(1),
+<span class="lineNum">      34 </span>            :     const eT       beta  = eT(0)
+<span class="lineNum">      35 </span>            :     )
+<span class="lineNum">      36 </span>            :     {
+<span class="lineNum">      37 </span>            :     arma_extra_debug_sigprint();
+<span class="lineNum">      38 </span>            :     
+<span class="lineNum">      39 </span><span class="lineNoCov">          0 :     switch(A.n_rows)</span>
+<span class="lineNum">      40 </span>            :       {
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :       case  4:  gemv_emul_tinysq&lt;do_trans_A, use_alpha, use_beta&gt;::apply( C.colptr(3), A, B.colptr(3), alpha, beta );</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :       case  3:  gemv_emul_tinysq&lt;do_trans_A, use_alpha, use_beta&gt;::apply( C.colptr(2), A, B.colptr(2), alpha, beta );</span>
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :       case  2:  gemv_emul_tinysq&lt;do_trans_A, use_alpha, use_beta&gt;::apply( C.colptr(1), A, B.colptr(1), alpha, beta );</span>
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :       case  1:  gemv_emul_tinysq&lt;do_trans_A, use_alpha, use_beta&gt;::apply( C.colptr(0), A, B.colptr(0), alpha, beta );</span>
+<span class="lineNum">      45 </span>            :       default:  ;
+<span class="lineNum">      46 </span>            :       }
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">      48 </span>            :   
+<span class="lineNum">      49 </span>            :   };
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : //! emulation of gemm(), for non-complex matrices only, as it assumes only simple transposes (ie. doesn't do hermitian transposes)
+<span class="lineNum">      54 </span>            : template&lt;const bool do_trans_A=false, const bool do_trans_B=false, const bool use_alpha=false, const bool use_beta=false&gt;
+<span class="lineNum">      55 </span>            : class gemm_emul_large
+<span class="lineNum">      56 </span>            :   {
+<span class="lineNum">      57 </span>            :   public:
+<span class="lineNum">      58 </span>            :   
+<span class="lineNum">      59 </span>            :   template&lt;typename eT, typename TA, typename TB&gt;
+<span class="lineNum">      60 </span>            :   arma_hot
+<span class="lineNum">      61 </span>            :   inline
+<a name="62"><span class="lineNum">      62 </span>            :   static</a>
+<span class="lineNum">      63 </span>            :   void
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :   apply</span>
+<span class="lineNum">      65 </span>            :     (
+<span class="lineNum">      66 </span>            :           Mat&lt;eT&gt;&amp; C,
+<span class="lineNum">      67 </span>            :     const TA&amp;      A,
+<span class="lineNum">      68 </span>            :     const TB&amp;      B,
+<span class="lineNum">      69 </span>            :     const eT       alpha = eT(1),
+<span class="lineNum">      70 </span>            :     const eT       beta  = eT(0)
+<span class="lineNum">      71 </span>            :     )
+<span class="lineNum">      72 </span>            :     {
+<span class="lineNum">      73 </span>            :     arma_extra_debug_sigprint();
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :     const uword A_n_rows = A.n_rows;</span>
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :     const uword A_n_cols = A.n_cols;</span>
+<span class="lineNum">      77 </span>            :     
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :     const uword B_n_rows = B.n_rows;</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :     const uword B_n_cols = B.n_cols;</span>
+<span class="lineNum">      80 </span>            :     
+<span class="lineNum">      81 </span>            :     if( (do_trans_A == false) &amp;&amp; (do_trans_B == false) )
+<span class="lineNum">      82 </span>            :       {
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :       arma_aligned podarray&lt;eT&gt; tmp(A_n_cols);</span>
+<span class="lineNum">      84 </span>            :       
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :       eT* A_rowdata = tmp.memptr();</span>
+<span class="lineNum">      86 </span>            :       
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :       for(uword row_A=0; row_A &lt; A_n_rows; ++row_A)</span>
+<span class="lineNum">      88 </span>            :         {
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :         tmp.copy_row(A, row_A);</span>
+<span class="lineNum">      90 </span>            :         
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :         for(uword col_B=0; col_B &lt; B_n_cols; ++col_B)</span>
+<span class="lineNum">      92 </span>            :           {
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :           const eT acc = op_dot::direct_dot_arma(B_n_rows, A_rowdata, B.colptr(col_B));</span>
+<span class="lineNum">      94 </span>            :           
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :                if( (use_alpha == false) &amp;&amp; (use_beta == false) )  { C.at(row_A,col_B) =       acc;                          }</span>
+<span class="lineNum">      96 </span>            :           else if( (use_alpha == true ) &amp;&amp; (use_beta == false) )  { C.at(row_A,col_B) = alpha*acc;                          }
+<span class="lineNum">      97 </span>            :           else if( (use_alpha == false) &amp;&amp; (use_beta == true ) )  { C.at(row_A,col_B) =       acc + beta*C.at(row_A,col_B); }
+<span class="lineNum">      98 </span>            :           else if( (use_alpha == true ) &amp;&amp; (use_beta == true ) )  { C.at(row_A,col_B) = alpha*acc + beta*C.at(row_A,col_B); }
+<span class="lineNum">      99 </span>            :           }
+<span class="lineNum">     100 </span>            :         }
+<span class="lineNum">     101 </span>            :       }
+<span class="lineNum">     102 </span>            :     else
+<span class="lineNum">     103 </span>            :     if( (do_trans_A == true) &amp;&amp; (do_trans_B == false) )
+<span class="lineNum">     104 </span>            :       {
+<span class="lineNum">     105 </span>            :       for(uword col_A=0; col_A &lt; A_n_cols; ++col_A)
+<span class="lineNum">     106 </span>            :         {
+<span class="lineNum">     107 </span>            :         // col_A is interpreted as row_A when storing the results in matrix C
+<span class="lineNum">     108 </span>            :         
+<span class="lineNum">     109 </span>            :         const eT* A_coldata = A.colptr(col_A);
+<span class="lineNum">     110 </span>            :         
+<span class="lineNum">     111 </span>            :         for(uword col_B=0; col_B &lt; B_n_cols; ++col_B)
+<span class="lineNum">     112 </span>            :           {
+<span class="lineNum">     113 </span>            :           const eT acc = op_dot::direct_dot_arma(B_n_rows, A_coldata, B.colptr(col_B));
+<span class="lineNum">     114 </span>            :           
+<span class="lineNum">     115 </span>            :                if( (use_alpha == false) &amp;&amp; (use_beta == false) )  { C.at(col_A,col_B) =       acc;                          }
+<span class="lineNum">     116 </span>            :           else if( (use_alpha == true ) &amp;&amp; (use_beta == false) )  { C.at(col_A,col_B) = alpha*acc;                          }
+<span class="lineNum">     117 </span>            :           else if( (use_alpha == false) &amp;&amp; (use_beta == true ) )  { C.at(col_A,col_B) =       acc + beta*C.at(col_A,col_B); }
+<span class="lineNum">     118 </span>            :           else if( (use_alpha == true ) &amp;&amp; (use_beta == true ) )  { C.at(col_A,col_B) = alpha*acc + beta*C.at(col_A,col_B); }
+<span class="lineNum">     119 </span>            :           }
+<span class="lineNum">     120 </span>            :         }
+<span class="lineNum">     121 </span>            :       }
+<span class="lineNum">     122 </span>            :     else
+<span class="lineNum">     123 </span>            :     if( (do_trans_A == false) &amp;&amp; (do_trans_B == true) )
+<span class="lineNum">     124 </span>            :       {
+<span class="lineNum">     125 </span>            :       Mat&lt;eT&gt; BB;
+<span class="lineNum">     126 </span>            :       op_strans::apply_mat_noalias(BB, B);
+<span class="lineNum">     127 </span>            :       
+<span class="lineNum">     128 </span>            :       gemm_emul_large&lt;false, false, use_alpha, use_beta&gt;::apply(C, A, BB, alpha, beta);
+<span class="lineNum">     129 </span>            :       }
+<span class="lineNum">     130 </span>            :     else
+<span class="lineNum">     131 </span>            :     if( (do_trans_A == true) &amp;&amp; (do_trans_B == true) )
+<span class="lineNum">     132 </span>            :       {
+<span class="lineNum">     133 </span>            :       // mat B_tmp = trans(B);
+<span class="lineNum">     134 </span>            :       // dgemm_arma&lt;true, false,  use_alpha, use_beta&gt;::apply(C, A, B_tmp, alpha, beta);
+<span class="lineNum">     135 </span>            :       
+<span class="lineNum">     136 </span>            :       
+<span class="lineNum">     137 </span>            :       // By using the trans(A)*trans(B) = trans(B*A) equivalency,
+<span class="lineNum">     138 </span>            :       // transpose operations are not needed
+<span class="lineNum">     139 </span>            :       
+<span class="lineNum">     140 </span>            :       arma_aligned podarray&lt;eT&gt; tmp(B.n_cols);
+<span class="lineNum">     141 </span>            :       eT* B_rowdata = tmp.memptr();
+<span class="lineNum">     142 </span>            :       
+<span class="lineNum">     143 </span>            :       for(uword row_B=0; row_B &lt; B_n_rows; ++row_B)
+<span class="lineNum">     144 </span>            :         {
+<span class="lineNum">     145 </span>            :         tmp.copy_row(B, row_B);
+<span class="lineNum">     146 </span>            :         
+<span class="lineNum">     147 </span>            :         for(uword col_A=0; col_A &lt; A_n_cols; ++col_A)
+<span class="lineNum">     148 </span>            :           {
+<span class="lineNum">     149 </span>            :           const eT acc = op_dot::direct_dot_arma(A_n_rows, B_rowdata, A.colptr(col_A));
+<span class="lineNum">     150 </span>            :           
+<span class="lineNum">     151 </span>            :                if( (use_alpha == false) &amp;&amp; (use_beta == false) )  { C.at(col_A,row_B) =       acc;                          }
+<span class="lineNum">     152 </span>            :           else if( (use_alpha == true ) &amp;&amp; (use_beta == false) )  { C.at(col_A,row_B) = alpha*acc;                          }
+<span class="lineNum">     153 </span>            :           else if( (use_alpha == false) &amp;&amp; (use_beta == true ) )  { C.at(col_A,row_B) =       acc + beta*C.at(col_A,row_B); }
+<span class="lineNum">     154 </span>            :           else if( (use_alpha == true ) &amp;&amp; (use_beta == true ) )  { C.at(col_A,row_B) = alpha*acc + beta*C.at(col_A,row_B); }
+<span class="lineNum">     155 </span>            :           }
+<span class="lineNum">     156 </span>            :         }
+<span class="lineNum">     157 </span>            :       }
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     159 </span>            :   
+<span class="lineNum">     160 </span>            :   };
+<span class="lineNum">     161 </span>            :   
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            : template&lt;const bool do_trans_A=false, const bool do_trans_B=false, const bool use_alpha=false, const bool use_beta=false&gt;
+<span class="lineNum">     165 </span>            : class gemm_emul
+<span class="lineNum">     166 </span>            :   {
+<span class="lineNum">     167 </span>            :   public:
+<span class="lineNum">     168 </span>            :   
+<span class="lineNum">     169 </span>            :   
+<span class="lineNum">     170 </span>            :   template&lt;typename eT, typename TA, typename TB&gt;
+<span class="lineNum">     171 </span>            :   arma_hot
+<span class="lineNum">     172 </span>            :   inline
+<span class="lineNum">     173 </span>            :   static
+<span class="lineNum">     174 </span>            :   void
+<span class="lineNum">     175 </span>            :   apply
+<span class="lineNum">     176 </span>            :     (
+<span class="lineNum">     177 </span>            :           Mat&lt;eT&gt;&amp; C,
+<span class="lineNum">     178 </span>            :     const TA&amp;      A,
+<span class="lineNum">     179 </span>            :     const TB&amp;      B,
+<span class="lineNum">     180 </span>            :     const eT       alpha = eT(1),
+<span class="lineNum">     181 </span>            :     const eT       beta  = eT(0),
+<span class="lineNum">     182 </span>            :     const typename arma_not_cx&lt;eT&gt;::result* junk = 0
+<span class="lineNum">     183 </span>            :     )
+<span class="lineNum">     184 </span>            :     {
+<span class="lineNum">     185 </span>            :     arma_extra_debug_sigprint();
+<span class="lineNum">     186 </span>            :     arma_ignore(junk);
+<span class="lineNum">     187 </span>            :     
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :     gemm_emul_large&lt;do_trans_A, do_trans_B, use_alpha, use_beta&gt;::apply(C, A, B, alpha, beta);</span>
+<span class="lineNum">     189 </span>            :     }
+<span class="lineNum">     190 </span>            :   
+<span class="lineNum">     191 </span>            :   
+<span class="lineNum">     192 </span>            :   
+<span class="lineNum">     193 </span>            :   template&lt;typename eT&gt;
+<span class="lineNum">     194 </span>            :   arma_hot
+<span class="lineNum">     195 </span>            :   inline
+<span class="lineNum">     196 </span>            :   static
+<span class="lineNum">     197 </span>            :   void
+<span class="lineNum">     198 </span>            :   apply
+<span class="lineNum">     199 </span>            :     (
+<span class="lineNum">     200 </span>            :           Mat&lt;eT&gt;&amp; C,
+<span class="lineNum">     201 </span>            :     const Mat&lt;eT&gt;&amp; A,
+<span class="lineNum">     202 </span>            :     const Mat&lt;eT&gt;&amp; B,
+<span class="lineNum">     203 </span>            :     const eT       alpha = eT(1),
+<span class="lineNum">     204 </span>            :     const eT       beta  = eT(0),
+<span class="lineNum">     205 </span>            :     const typename arma_cx_only&lt;eT&gt;::result* junk = 0
+<span class="lineNum">     206 </span>            :     )
+<span class="lineNum">     207 </span>            :     {
+<span class="lineNum">     208 </span>            :     arma_extra_debug_sigprint();
+<span class="lineNum">     209 </span>            :     arma_ignore(junk);
+<span class="lineNum">     210 </span>            :     
+<span class="lineNum">     211 </span>            :     // &quot;better than nothing&quot; handling of hermitian transposes for complex number matrices
+<span class="lineNum">     212 </span>            :     
+<span class="lineNum">     213 </span>            :     Mat&lt;eT&gt; tmp_A;
+<span class="lineNum">     214 </span>            :     Mat&lt;eT&gt; tmp_B;
+<span class="lineNum">     215 </span>            :     
+<span class="lineNum">     216 </span>            :     if(do_trans_A)  { op_htrans::apply_mat_noalias(tmp_A, A); }
+<span class="lineNum">     217 </span>            :     if(do_trans_B)  { op_htrans::apply_mat_noalias(tmp_B, B); }
+<span class="lineNum">     218 </span>            :     
+<span class="lineNum">     219 </span>            :     const Mat&lt;eT&gt;&amp; AA = (do_trans_A == false) ? A : tmp_A;
+<span class="lineNum">     220 </span>            :     const Mat&lt;eT&gt;&amp; BB = (do_trans_B == false) ? B : tmp_B;
+<span class="lineNum">     221 </span>            :     
+<span class="lineNum">     222 </span>            :     gemm_emul_large&lt;false, false, use_alpha, use_beta&gt;::apply(C, AA, BB, alpha, beta);
+<span class="lineNum">     223 </span>            :     }
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            :   };
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            : //! \brief
+<span class="lineNum">     230 </span>            : //! Wrapper for ATLAS/BLAS dgemm function, using template arguments to control the arguments passed to dgemm.
+<span class="lineNum">     231 </span>            : //! Matrix 'C' is assumed to have been set to the correct size (i.e. taking into account transposes)
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            : template&lt;const bool do_trans_A=false, const bool do_trans_B=false, const bool use_alpha=false, const bool use_beta=false&gt;
+<span class="lineNum">     234 </span>            : class gemm
+<span class="lineNum">     235 </span>            :   {
+<span class="lineNum">     236 </span>            :   public:
+<span class="lineNum">     237 </span>            :   
+<span class="lineNum">     238 </span>            :   template&lt;typename eT, typename TA, typename TB&gt;
+<span class="lineNum">     239 </span>            :   inline
+<a name="240"><span class="lineNum">     240 </span>            :   static</a>
+<span class="lineNum">     241 </span>            :   void
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :   apply_blas_type( Mat&lt;eT&gt;&amp; C, const TA&amp; A, const TB&amp; B, const eT alpha = eT(1), const eT beta = eT(0) )</span>
+<span class="lineNum">     243 </span>            :     {
+<span class="lineNum">     244 </span>            :     arma_extra_debug_sigprint();
+<span class="lineNum">     245 </span>            :     
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :     if( (A.n_rows &lt;= 4) &amp;&amp; (A.n_rows == A.n_cols) &amp;&amp; (A.n_rows == B.n_rows) &amp;&amp; (B.n_rows == B.n_cols) &amp;&amp; (is_cx&lt;eT&gt;::no) ) </span>
+<span class="lineNum">     247 </span>            :       {
+<span class="lineNum">     248 </span>            :       if(do_trans_B == false)
+<span class="lineNum">     249 </span>            :         {
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :         gemm_emul_tinysq&lt;do_trans_A, use_alpha, use_beta&gt;::apply(C, A, B, alpha, beta);</span>
+<span class="lineNum">     251 </span>            :         }
+<span class="lineNum">     252 </span>            :       else
+<span class="lineNum">     253 </span>            :         {
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :         Mat&lt;eT&gt; BB(B.n_rows, B.n_rows);</span>
+<span class="lineNum">     255 </span>            :         
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :         op_strans::apply_mat_noalias_tinysq(BB, B);</span>
+<span class="lineNum">     257 </span>            :         
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :         gemm_emul_tinysq&lt;do_trans_A, use_alpha, use_beta&gt;::apply(C, A, BB, alpha, beta);</span>
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">     260 </span>            :       }
+<span class="lineNum">     261 </span>            :     else
+<span class="lineNum">     262 </span>            :       {
+<span class="lineNum">     263 </span>            :       #if defined(ARMA_USE_ATLAS)
+<span class="lineNum">     264 </span>            :         {
+<span class="lineNum">     265 </span>            :         arma_extra_debug_print(&quot;atlas::cblas_gemm()&quot;);
+<span class="lineNum">     266 </span>            :         
+<span class="lineNum">     267 </span>            :         arma_debug_assert_atlas_size(A,B);
+<span class="lineNum">     268 </span>            :         
+<span class="lineNum">     269 </span>            :         atlas::cblas_gemm&lt;eT&gt;
+<span class="lineNum">     270 </span>            :           (
+<span class="lineNum">     271 </span>            :           atlas::CblasColMajor,
+<span class="lineNum">     272 </span>            :           (do_trans_A) ? ( is_cx&lt;eT&gt;::yes ? CblasConjTrans : atlas::CblasTrans ) : atlas::CblasNoTrans,
+<span class="lineNum">     273 </span>            :           (do_trans_B) ? ( is_cx&lt;eT&gt;::yes ? CblasConjTrans : atlas::CblasTrans ) : atlas::CblasNoTrans,
+<span class="lineNum">     274 </span>            :           C.n_rows,
+<span class="lineNum">     275 </span>            :           C.n_cols,
+<span class="lineNum">     276 </span>            :           (do_trans_A) ? A.n_rows : A.n_cols,
+<span class="lineNum">     277 </span>            :           (use_alpha) ? alpha : eT(1),
+<span class="lineNum">     278 </span>            :           A.mem,
+<span class="lineNum">     279 </span>            :           (do_trans_A) ? A.n_rows : C.n_rows,
+<span class="lineNum">     280 </span>            :           B.mem,
+<span class="lineNum">     281 </span>            :           (do_trans_B) ? C.n_cols : ( (do_trans_A) ? A.n_rows : A.n_cols ),
+<span class="lineNum">     282 </span>            :           (use_beta) ? beta : eT(0),
+<span class="lineNum">     283 </span>            :           C.memptr(),
+<span class="lineNum">     284 </span>            :           C.n_rows
+<span class="lineNum">     285 </span>            :           );
+<span class="lineNum">     286 </span>            :         }
+<span class="lineNum">     287 </span>            :       #elif defined(ARMA_USE_BLAS)
+<span class="lineNum">     288 </span>            :         {
+<span class="lineNum">     289 </span>            :         arma_extra_debug_print(&quot;blas::gemm()&quot;);
+<span class="lineNum">     290 </span>            :         
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :         arma_debug_assert_blas_size(A,B);</span>
+<span class="lineNum">     292 </span>            :         
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :         const char trans_A = (do_trans_A) ? ( is_cx&lt;eT&gt;::yes ? 'C' : 'T' ) : 'N';</span>
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :         const char trans_B = (do_trans_B) ? ( is_cx&lt;eT&gt;::yes ? 'C' : 'T' ) : 'N';</span>
+<span class="lineNum">     295 </span>            :         
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :         const blas_int m   = blas_int(C.n_rows);</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :         const blas_int n   = blas_int(C.n_cols);</span>
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :         const blas_int k   = (do_trans_A) ? blas_int(A.n_rows) : blas_int(A.n_cols);</span>
+<span class="lineNum">     299 </span>            :         
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :         const eT local_alpha = (use_alpha) ? alpha : eT(1);</span>
+<span class="lineNum">     301 </span>            :         
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :         const blas_int lda = (do_trans_A) ? k : m;</span>
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :         const blas_int ldb = (do_trans_B) ? n : k;</span>
+<span class="lineNum">     304 </span>            :         
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :         const eT local_beta  = (use_beta) ? beta : eT(0);</span>
+<span class="lineNum">     306 </span>            :         
+<span class="lineNum">     307 </span>            :         arma_extra_debug_print( arma_str::format(&quot;blas::gemm(): trans_A = %c&quot;) % trans_A );
+<span class="lineNum">     308 </span>            :         arma_extra_debug_print( arma_str::format(&quot;blas::gemm(): trans_B = %c&quot;) % trans_B );
+<span class="lineNum">     309 </span>            :         
+<span class="lineNum">     310 </span><span class="lineNoCov">          0 :         blas::gemm&lt;eT&gt;</span>
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :           (</span>
+<span class="lineNum">     312 </span>            :           &amp;trans_A,
+<span class="lineNum">     313 </span>            :           &amp;trans_B,
+<span class="lineNum">     314 </span>            :           &amp;m,
+<span class="lineNum">     315 </span>            :           &amp;n,
+<span class="lineNum">     316 </span>            :           &amp;k,
+<span class="lineNum">     317 </span>            :           &amp;local_alpha,
+<span class="lineNum">     318 </span>            :           A.mem,
+<span class="lineNum">     319 </span>            :           &amp;lda,
+<span class="lineNum">     320 </span>            :           B.mem,
+<span class="lineNum">     321 </span>            :           &amp;ldb,
+<span class="lineNum">     322 </span>            :           &amp;local_beta,
+<span class="lineNum">     323 </span>            :           C.memptr(),
+<span class="lineNum">     324 </span>            :           &amp;m
+<span class="lineNum">     325 </span>            :           );
+<span class="lineNum">     326 </span>            :         }
+<span class="lineNum">     327 </span>            :       #else
+<span class="lineNum">     328 </span>            :         {
+<span class="lineNum">     329 </span>            :         gemm_emul&lt;do_trans_A, do_trans_B, use_alpha, use_beta&gt;::apply(C,A,B,alpha,beta);
+<span class="lineNum">     330 </span>            :         }
+<span class="lineNum">     331 </span>            :       #endif
+<span class="lineNum">     332 </span>            :       }
+<span class="lineNum">     333 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     334 </span>            :   
+<span class="lineNum">     335 </span>            :   
+<span class="lineNum">     336 </span>            :   
+<span class="lineNum">     337 </span>            :   //! immediate multiplication of matrices A and B, storing the result in C
+<span class="lineNum">     338 </span>            :   template&lt;typename eT, typename TA, typename TB&gt;
+<span class="lineNum">     339 </span>            :   inline
+<span class="lineNum">     340 </span>            :   static
+<span class="lineNum">     341 </span>            :   void
+<span class="lineNum">     342 </span>            :   apply( Mat&lt;eT&gt;&amp; C, const TA&amp; A, const TB&amp; B, const eT alpha = eT(1), const eT beta = eT(0) )
+<span class="lineNum">     343 </span>            :     {
+<span class="lineNum">     344 </span>            :     gemm_emul&lt;do_trans_A, do_trans_B, use_alpha, use_beta&gt;::apply(C,A,B,alpha,beta);
+<span class="lineNum">     345 </span>            :     }
+<span class="lineNum">     346 </span>            :   
+<span class="lineNum">     347 </span>            :   
+<span class="lineNum">     348 </span>            :   
+<span class="lineNum">     349 </span>            :   template&lt;typename TA, typename TB&gt;
+<span class="lineNum">     350 </span>            :   arma_inline
+<span class="lineNum">     351 </span>            :   static
+<span class="lineNum">     352 </span>            :   void
+<span class="lineNum">     353 </span>            :   apply
+<span class="lineNum">     354 </span>            :     (
+<span class="lineNum">     355 </span>            :           Mat&lt;float&gt;&amp; C,
+<span class="lineNum">     356 </span>            :     const TA&amp;         A,
+<span class="lineNum">     357 </span>            :     const TB&amp;         B,
+<span class="lineNum">     358 </span>            :     const float alpha = float(1),
+<span class="lineNum">     359 </span>            :     const float beta  = float(0)
+<span class="lineNum">     360 </span>            :     )
+<span class="lineNum">     361 </span>            :     {
+<span class="lineNum">     362 </span>            :     gemm&lt;do_trans_A, do_trans_B, use_alpha, use_beta&gt;::apply_blas_type(C,A,B,alpha,beta);
+<span class="lineNum">     363 </span>            :     }
+<span class="lineNum">     364 </span>            :   
+<span class="lineNum">     365 </span>            :   
+<span class="lineNum">     366 </span>            :   
+<span class="lineNum">     367 </span>            :   template&lt;typename TA, typename TB&gt;
+<span class="lineNum">     368 </span>            :   arma_inline
+<span class="lineNum">     369 </span>            :   static
+<span class="lineNum">     370 </span>            :   void
+<span class="lineNum">     371 </span>            :   apply
+<span class="lineNum">     372 </span>            :     (
+<span class="lineNum">     373 </span>            :           Mat&lt;double&gt;&amp; C,
+<span class="lineNum">     374 </span>            :     const TA&amp;          A,
+<span class="lineNum">     375 </span>            :     const TB&amp;          B,
+<span class="lineNum">     376 </span>            :     const double alpha = double(1),
+<span class="lineNum">     377 </span>            :     const double beta  = double(0)
+<span class="lineNum">     378 </span>            :     )
+<span class="lineNum">     379 </span>            :     {
+<span class="lineNum">     380 </span><span class="lineNoCov">          0 :     gemm&lt;do_trans_A, do_trans_B, use_alpha, use_beta&gt;::apply_blas_type(C,A,B,alpha,beta);</span>
+<span class="lineNum">     381 </span>            :     }
+<span class="lineNum">     382 </span>            :   
+<span class="lineNum">     383 </span>            :   
+<span class="lineNum">     384 </span>            :   
+<span class="lineNum">     385 </span>            :   template&lt;typename TA, typename TB&gt;
+<span class="lineNum">     386 </span>            :   arma_inline
+<span class="lineNum">     387 </span>            :   static
+<span class="lineNum">     388 </span>            :   void
+<span class="lineNum">     389 </span>            :   apply
+<span class="lineNum">     390 </span>            :     (
+<span class="lineNum">     391 </span>            :           Mat&lt; std::complex&lt;float&gt; &gt;&amp; C,
+<span class="lineNum">     392 </span>            :     const TA&amp;                         A,
+<span class="lineNum">     393 </span>            :     const TB&amp;                         B,
+<span class="lineNum">     394 </span>            :     const std::complex&lt;float&gt; alpha = std::complex&lt;float&gt;(1),
+<span class="lineNum">     395 </span>            :     const std::complex&lt;float&gt; beta  = std::complex&lt;float&gt;(0)
+<span class="lineNum">     396 </span>            :     )
+<span class="lineNum">     397 </span>            :     {
+<span class="lineNum">     398 </span>            :     gemm&lt;do_trans_A, do_trans_B, use_alpha, use_beta&gt;::apply_blas_type(C,A,B,alpha,beta);
+<span class="lineNum">     399 </span>            :     }
+<span class="lineNum">     400 </span>            :   
+<span class="lineNum">     401 </span>            :   
+<span class="lineNum">     402 </span>            :   
+<span class="lineNum">     403 </span>            :   template&lt;typename TA, typename TB&gt;
+<span class="lineNum">     404 </span>            :   arma_inline
+<span class="lineNum">     405 </span>            :   static
+<span class="lineNum">     406 </span>            :   void
+<span class="lineNum">     407 </span>            :   apply
+<span class="lineNum">     408 </span>            :     (
+<span class="lineNum">     409 </span>            :           Mat&lt; std::complex&lt;double&gt; &gt;&amp; C,
+<span class="lineNum">     410 </span>            :     const TA&amp;                          A,
+<span class="lineNum">     411 </span>            :     const TB&amp;                          B,
+<span class="lineNum">     412 </span>            :     const std::complex&lt;double&gt; alpha = std::complex&lt;double&gt;(1),
+<span class="lineNum">     413 </span>            :     const std::complex&lt;double&gt; beta  = std::complex&lt;double&gt;(0)
+<span class="lineNum">     414 </span>            :     )
+<span class="lineNum">     415 </span>            :     {
+<span class="lineNum">     416 </span>            :     gemm&lt;do_trans_A, do_trans_B, use_alpha, use_beta&gt;::apply_blas_type(C,A,B,alpha,beta);
+<span class="lineNum">     417 </span>            :     }
+<span class="lineNum">     418 </span>            :   
+<span class="lineNum">     419 </span>            :   };
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+\contentsline {chapter}{\numberline {1}Types of constraints on attack rates }{10}{chapter.1}
+\contentsline {section}{\numberline {1.1}Evolutionary suicide induced by resource overexploitation}{10}{section.1.1}
+\contentsline {section}{\numberline {1.2}Are attack rates constrained? }{12}{section.1.2}
+\contentsline {section}{\numberline {1.3}Potential mechanisms for constraining attack rates}{16}{section.1.3}
+\contentsline {subsection}{\numberline {1.3.1}Foraging behaviour, prey density and prey switching }{16}{subsection.1.3.1}
+\contentsline {subsection}{\numberline {1.3.2}Predator-prey arms race }{17}{subsection.1.3.2}
+\contentsline {subsection}{\numberline {1.3.3}Genetic trade-offs resulting from pleiotropy and epistasis }{18}{subsection.1.3.3}
+\contentsline {subsection}{\numberline {1.3.4}Physiological constraints }{20}{subsection.1.3.4}
+\contentsline {subsection}{\numberline {1.3.5}Dispersal between patches and the \IeC {\textquotedblleft }rescue effect\IeC {\textquotedblright } }{21}{subsection.1.3.5}
+\contentsline {subsection}{\numberline {1.3.6}Complex food-webs }{23}{subsection.1.3.6}
+\contentsline {subsection}{\numberline {1.3.7}Altruism }{24}{subsection.1.3.7}
+\contentsline {subsection}{\numberline {1.3.8}Mutational load }{27}{subsection.1.3.8}
+\contentsline {section}{\numberline {1.4}Summary}{28}{section.1.4}
+\contentsline {paragraph}{Low prey density:}{28}{section*.3}
+\contentsline {paragraph}{Prey Switching:}{29}{section*.4}
+\contentsline {paragraph}{Trophic levels:}{29}{section*.5}
+\contentsline {paragraph}{Complex food-webs:}{29}{section*.6}
+\contentsline {paragraph}{Foraging and vulnerability traits:}{29}{section*.7}
+\contentsline {paragraph}{Trade-offs and metabolic scaling:}{29}{section*.8}
+\contentsline {paragraph}{Dispersal and the metacommunity:}{30}{section*.9}
+\contentsline {paragraph}{Cheaters:}{30}{section*.10}
+\contentsline {paragraph}{Mutational load:}{31}{section*.11}
+\contentsline {section}{\numberline {1.5}Conclusion }{32}{section.1.5}
+\contentsline {subsection}{\numberline {1.5.1}Part I: Co-evolution of consumers and resources in a simplified meta-community using a bi-partite food-web assembly simulation }{33}{subsection.1.5.1}
+\contentsline {subsection}{\numberline {1.5.2}Part 2: Spatially explicit meta-community model}{34}{subsection.1.5.2}
+\contentsline {chapter}{\numberline {2}Deconstruction of a food-web assembly model }{36}{chapter.2}
+\contentsline {section}{\numberline {2.1}Introduction}{36}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}The evolution of base attack rates in a bi-partite Lotka-Volterra food-web assembly model }{37}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2}Sampling of new species}{38}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3}Macroscopic features of the community assembly model}{40}{subsection.2.1.3}
+\contentsline {subsection}{\numberline {2.1.4}The curse of complexity}{41}{subsection.2.1.4}
+\contentsline {section}{\numberline {2.2}The deconstructed food-web model}{43}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}The deconstructed assembly algorithm}{44}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Comparison of macroscopic features of full and deconstructed community models}{46}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Invasibility criterion}{48}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}Resource Overexploitation}{50}{subsection.2.2.4}
+\contentsline {subsection}{\numberline {2.2.5}Serial extinctions}{52}{subsection.2.2.5}
+\contentsline {subsubsection}{Serial extinction validation algorithm }{53}{section*.19}
+\contentsline {subsection}{\numberline {2.2.6}Exploitative competition}{56}{subsection.2.2.6}
+\contentsline {subsubsection}{Validating the exploitative competition module}{58}{section*.21}
+\contentsline {subsection}{\numberline {2.2.7}Phyrric competition}{60}{subsection.2.2.7}
+\contentsline {subsection}{\numberline {2.2.8}Conclusion}{63}{subsection.2.2.8}
+\contentsline {chapter}{\numberline {3}Ecological mechanisms constraining attack rates via the "live-fast die-young" trade-off }{66}{chapter.3}
+\contentsline {section}{\numberline {3.1}Introduction}{66}{section.3.1}
+\contentsline {section}{\numberline {3.2}Analysis of the Deconstructed Community Assembly Model}{68}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Evolutionary forces}{68}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}The Price equation}{69}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Defining and validating fitness}{70}{subsection.3.2.3}
+\contentsline {subsection}{\numberline {3.2.4}Mechanisms determining $b(a)$ }{75}{subsection.3.2.4}
+\contentsline {paragraph}{Invasion probability of a mutant invader: analytic approximation}{76}{section*.25}
+\contentsline {subsection}{\numberline {3.2.5}Mechanisms determining consumer lifetime }{83}{subsection.3.2.5}
+\contentsline {paragraph}{Exploitative competition}{84}{section*.30}
+\contentsline {section}{\numberline {3.3}Conclusion}{89}{section.3.3}
+\contentsline {chapter}{\numberline {4}Robustness of the "live-fast die-young" trade-off in a metapopulation model. }{93}{chapter.4}
+\contentsline {section}{\numberline {4.1}Introduction}{93}{section.4.1}
+\contentsline {section}{\numberline {4.2}General algorithm for the metapopulation model}{95}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Assumptions regarding the simplified metapopulation model}{96}{subsection.4.2.1}
+\contentsline {section}{\numberline {4.3}Definition of the invasion probability, hazard rate and dispersal rate}{99}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Sampling new mutant $a_{ij}$ values}{100}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Hazard}{100}{subsection.4.3.2}
+\contentsline {section}{\numberline {4.4}Results}{101}{section.4.4}
+\contentsline {section}{\numberline {4.5}Conclusion}{105}{section.4.5}
+\contentsline {chapter}{\numberline {5}Empirical signatures of the live-fast die-young trade-off}{108}{chapter.5}
+\contentsline {section}{\numberline {5.1}Introduction}{108}{section.5.1}
+\contentsline {section}{\numberline {5.2}\IeC {\textquotedblleft }A posteriori\IeC {\textquotedblright } signatures: The saturation of $H_i$}{109}{section.5.2}
+\contentsline {section}{\numberline {5.3}Signatures of the \IeC {\textquotedblleft }live-fast die-young\IeC {\textquotedblright } trade-off }{110}{section.5.3}
+\contentsline {paragraph}{(a)}{110}{section*.39}
+\contentsline {paragraph}{(b)}{110}{section*.40}
+\contentsline {paragraph}{(c)}{110}{section*.41}
+\contentsline {paragraph}{I}{111}{section*.42}
+\contentsline {paragraph}{II}{111}{section*.43}
+\contentsline {section}{\numberline {5.4}Boom-bust species invasions}{113}{section.5.4}
+\contentsline {subsection}{\numberline {5.4.1}Boom-bust and exploitative competition}{114}{subsection.5.4.1}
+\contentsline {subsection}{\numberline {5.4.2}Boom-bust induced by negative feedback}{116}{subsection.5.4.2}
+\contentsline {subsection}{\numberline {5.4.3}Boom-bust induced by negative feedback and competitive exclusion }{116}{subsection.5.4.3}
+\contentsline {subsection}{\numberline {5.4.4}Conclusion }{119}{subsection.5.4.4}
+\contentsline {section}{References}{134}{chapter*.46}

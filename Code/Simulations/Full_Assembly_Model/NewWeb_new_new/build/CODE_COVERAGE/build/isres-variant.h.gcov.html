@@ -1,0 +1,643 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/isres-variant.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - isres-variant.h<span style="font-size: 80%;"> (source / <a href="isres-variant.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">176</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* $Id:$ */</a>
+<span class="lineNum">       2 </span>            : /* The file isres.c from nlopt 2.3, plus necessary header files to
+<span class="lineNum">       3 </span>            :  *  make this run, plus modifications by Axel G. Rossberg to adapt to
+<span class="lineNum">       4 </span>            :  *  the problem of finding MSY finding in the PDMM. */
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : /* Copyright (c) 2007-2012 Massachusetts Institute of Technology
+<span class="lineNum">       7 </span>            :  *
+<span class="lineNum">       8 </span>            :  * Permission is hereby granted, free of charge, to any person obtaining
+<span class="lineNum">       9 </span>            :  * a copy of this software and associated documentation files (the
+<span class="lineNum">      10 </span>            :  * &quot;Software&quot;), to deal in the Software without restriction, including
+<span class="lineNum">      11 </span>            :  * without limitation the rights to use, copy, modify, merge, publish,
+<span class="lineNum">      12 </span>            :  * distribute, sublicense, and/or sell copies of the Software, and to
+<span class="lineNum">      13 </span>            :  * permit persons to whom the Software is furnished to do so, subject to
+<span class="lineNum">      14 </span>            :  * the following conditions:
+<span class="lineNum">      15 </span>            :  * 
+<span class="lineNum">      16 </span>            :  * The above copyright notice and this permission notice shall be
+<span class="lineNum">      17 </span>            :  * included in all copies or substantial portions of the Software.
+<span class="lineNum">      18 </span>            :  * 
+<span class="lineNum">      19 </span>            :  * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+<span class="lineNum">      20 </span>            :  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+<span class="lineNum">      21 </span>            :  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+<span class="lineNum">      22 </span>            :  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+<span class="lineNum">      23 </span>            :  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+<span class="lineNum">      24 </span>            :  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+<span class="lineNum">      25 </span>            :  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+<span class="lineNum">      26 </span>            :  */
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #ifndef NLOPT_UTIL_H
+<span class="lineNum">      29 </span>            : #define NLOPT_UTIL_H
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      32 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : #include &quot;nlopt.h&quot;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : /* workaround for Solaris + gcc 3.4.x bug (see configure.ac) */
+<span class="lineNum">      37 </span>            : #if defined(__GNUC__) &amp;&amp; defined(REPLACEMENT_HUGE_VAL)
+<span class="lineNum">      38 </span>            : #  undef HUGE_VAL
+<span class="lineNum">      39 </span>            : #  define HUGE_VAL REPLACEMENT_HUGE_VAL
+<span class="lineNum">      40 </span>            : #endif
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : #ifndef HAVE_COPYSIGN
+<span class="lineNum">      43 </span>            :    /* not quite right for y == -0, but good enough for us */
+<span class="lineNum">      44 </span>            : #  define copysign(x, y) ((y) &lt; 0 ? -fabs(x) : fabs(x))
+<span class="lineNum">      45 </span>            : #endif
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : #ifdef __cplusplus
+<span class="lineNum">      48 </span>            : extern &quot;C&quot;
+<span class="lineNum">      49 </span>            : {
+<span class="lineNum">      50 </span>            : #endif /* __cplusplus */
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : int nlopt_isinf(double x);
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : /* re-entrant qsort */
+<span class="lineNum">      55 </span>            : extern void nlopt_qsort_r(void *base_, size_t nmemb, size_t size, void *thunk,
+<span class="lineNum">      56 </span>            :                           int (*compar)(void *, const void *, const void *));
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : /* seconds timer */
+<span class="lineNum">      59 </span>            : extern double nlopt_seconds(void);
+<span class="lineNum">      60 </span>            : extern unsigned long nlopt_time_seed(void);
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : /* pseudorandom number generation by Mersenne twister algorithm */
+<span class="lineNum">      63 </span>            : extern void nlopt_init_genrand(unsigned long s);
+<span class="lineNum">      64 </span>            : extern double nlopt_urand(double a, double b);
+<span class="lineNum">      65 </span>            : extern int nlopt_iurand(int n);
+<span class="lineNum">      66 </span>            : extern double nlopt_nrand(double mean, double stddev);
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : /* Sobol' low-discrepancy-sequence generation */
+<span class="lineNum">      69 </span>            : typedef struct nlopt_soboldata_s *nlopt_sobol;
+<span class="lineNum">      70 </span>            : extern nlopt_sobol nlopt_sobol_create(unsigned sdim);
+<span class="lineNum">      71 </span>            : extern void nlopt_sobol_destroy(nlopt_sobol s);
+<span class="lineNum">      72 </span>            : extern void nlopt_sobol_next01(nlopt_sobol s, double *x);
+<span class="lineNum">      73 </span>            : extern void nlopt_sobol_next(nlopt_sobol s, double *x,
+<span class="lineNum">      74 </span>            :                             const double *lb, const double *ub);
+<span class="lineNum">      75 </span>            : extern void nlopt_sobol_skip(nlopt_sobol s, unsigned n, double *x);
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : /* stopping criteria */
+<span class="lineNum">      78 </span>            : typedef struct {
+<span class="lineNum">      79 </span>            :      unsigned n;
+<span class="lineNum">      80 </span>            :      double minf_max;
+<span class="lineNum">      81 </span>            :      double ftol_rel;
+<span class="lineNum">      82 </span>            :      double ftol_abs;
+<span class="lineNum">      83 </span>            :      double xtol_rel;
+<span class="lineNum">      84 </span>            :      const double *xtol_abs;
+<span class="lineNum">      85 </span>            :      int nevals, maxeval;
+<span class="lineNum">      86 </span>            :      double maxtime, start;
+<span class="lineNum">      87 </span>            :      int *force_stop;
+<span class="lineNum">      88 </span>            : } nlopt_stopping;
+<span class="lineNum">      89 </span>            : extern int nlopt_stop_f(const nlopt_stopping *stop, double f, double oldf);
+<span class="lineNum">      90 </span>            : extern int nlopt_stop_ftol(const nlopt_stopping *stop, double f, double oldf);
+<span class="lineNum">      91 </span>            : extern int nlopt_stop_x(const nlopt_stopping *stop, 
+<span class="lineNum">      92 </span>            :                         const double *x, const double *oldx);
+<span class="lineNum">      93 </span>            : extern int nlopt_stop_dx(const nlopt_stopping *stop, 
+<span class="lineNum">      94 </span>            :                          const double *x, const double *dx);
+<span class="lineNum">      95 </span>            : extern int nlopt_stop_xs(const nlopt_stopping *stop, 
+<span class="lineNum">      96 </span>            :                          const double *xs, const double *oldxs,
+<span class="lineNum">      97 </span>            :                          const double *scale_min, const double *scale_max);
+<span class="lineNum">      98 </span>            : extern int nlopt_stop_evals(const nlopt_stopping *stop);
+<span class="lineNum">      99 </span>            : extern int nlopt_stop_time_(double start, double maxtime);
+<span class="lineNum">     100 </span>            : extern int nlopt_stop_time(const nlopt_stopping *stop);
+<span class="lineNum">     101 </span>            : extern int nlopt_stop_evalstime(const nlopt_stopping *stop);
+<span class="lineNum">     102 </span>            : extern int nlopt_stop_forced(const nlopt_stopping *stop);
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            : /* for local optimizations, temporarily setting eval/time limits */
+<span class="lineNum">     105 </span>            : extern nlopt_result nlopt_optimize_limited(nlopt_opt opt, 
+<span class="lineNum">     106 </span>            :                                            double *x, double *minf,
+<span class="lineNum">     107 </span>            :                                            int maxevals, double maxtime);
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : /* data structure for nonlinear inequality or equality constraint
+<span class="lineNum">     110 </span>            :    (f &lt;= 0 or f = 0, respectively).  tol (&gt;= 0) is a tolerance
+<span class="lineNum">     111 </span>            :    that is used for stopping criteria -- the point is considered
+<span class="lineNum">     112 </span>            :    &quot;feasible&quot; for purposes of stopping if the constraint is violated
+<span class="lineNum">     113 </span>            :    by at most tol. */
+<span class="lineNum">     114 </span>            : typedef struct {
+<span class="lineNum">     115 </span>            :      unsigned m; /* dimensional of constraint: mf maps R^n -&gt; R^m */
+<span class="lineNum">     116 </span>            :      nlopt_func f; /* one-dimensional constraint, requires m == 1 */
+<span class="lineNum">     117 </span>            :      nlopt_mfunc mf;
+<span class="lineNum">     118 </span>            :      nlopt_precond pre; /* preconditioner for f (NULL if none or if mf) */
+<span class="lineNum">     119 </span>            :      void *f_data;
+<span class="lineNum">     120 </span>            :      double *tol;
+<span class="lineNum">     121 </span>            : } nlopt_constraint;
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            : extern unsigned nlopt_count_constraints(unsigned p, const nlopt_constraint *c);
+<span class="lineNum">     124 </span>            : extern unsigned nlopt_max_constraint_dim(unsigned p, const nlopt_constraint *c);
+<span class="lineNum">     125 </span>            : extern void nlopt_eval_constraint(double *result, double *grad,
+<span class="lineNum">     126 </span>            :                                   const nlopt_constraint *c,
+<span class="lineNum">     127 </span>            :                                   unsigned n, const double *x);
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : /* rescale.c: */
+<span class="lineNum">     130 </span>            : double *nlopt_compute_rescaling(unsigned n, const double *dx);
+<span class="lineNum">     131 </span>            : double *nlopt_new_rescaled(unsigned n, const double *s, const double *x);
+<span class="lineNum">     132 </span>            : void nlopt_rescale(unsigned n, const double *s, const double *x, double *xs);
+<span class="lineNum">     133 </span>            : void nlopt_unscale(unsigned n, const double *s, const double *x, double *xs);
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            : #ifdef __cplusplus
+<span class="lineNum">     136 </span>            : }  /* extern &quot;C&quot; */
+<span class="lineNum">     137 </span>            : #endif /* __cplusplus */
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            : #endif
+<span class="lineNum">     140 </span>            : /* Copyright (c) 2007-2012 Massachusetts Institute of Technology
+<span class="lineNum">     141 </span>            :  *
+<span class="lineNum">     142 </span>            :  * Permission is hereby granted, free of charge, to any person obtaining
+<span class="lineNum">     143 </span>            :  * a copy of this software and associated documentation files (the
+<span class="lineNum">     144 </span>            :  * &quot;Software&quot;), to deal in the Software without restriction, including
+<span class="lineNum">     145 </span>            :  * without limitation the rights to use, copy, modify, merge, publish,
+<span class="lineNum">     146 </span>            :  * distribute, sublicense, and/or sell copies of the Software, and to
+<span class="lineNum">     147 </span>            :  * permit persons to whom the Software is furnished to do so, subject to
+<span class="lineNum">     148 </span>            :  * the following conditions:
+<span class="lineNum">     149 </span>            :  * 
+<span class="lineNum">     150 </span>            :  * The above copyright notice and this permission notice shall be
+<span class="lineNum">     151 </span>            :  * included in all copies or substantial portions of the Software.
+<span class="lineNum">     152 </span>            :  * 
+<span class="lineNum">     153 </span>            :  * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+<span class="lineNum">     154 </span>            :  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+<span class="lineNum">     155 </span>            :  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+<span class="lineNum">     156 </span>            :  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+<span class="lineNum">     157 </span>            :  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+<span class="lineNum">     158 </span>            :  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+<span class="lineNum">     159 </span>            :  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+<span class="lineNum">     160 </span>            :  */
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : #ifndef ISRES_H
+<span class="lineNum">     163 </span>            : #define ISRES_H
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : #include &quot;nlopt.h&quot;
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            : #ifdef __cplusplus
+<span class="lineNum">     168 </span>            : extern &quot;C&quot;
+<span class="lineNum">     169 </span>            : {
+<span class="lineNum">     170 </span>            : #endif /* __cplusplus */
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            : nlopt_result isres_minimize(int n, nlopt_func f, void *f_data,
+<span class="lineNum">     173 </span>            :                             int m, nlopt_constraint *fc, /* fc &lt;= 0  */
+<span class="lineNum">     174 </span>            :                             int p, nlopt_constraint *h, /* h == 0 */
+<span class="lineNum">     175 </span>            :                             const double *lb, const double *ub, /* bounds */
+<span class="lineNum">     176 </span>            :                             double *x, /* in: initial guess, out: minimizer */
+<span class="lineNum">     177 </span>            :                             double *minf,
+<span class="lineNum">     178 </span>            :                             nlopt_stopping *stop,
+<span class="lineNum">     179 </span>            :                             int population); /* init. population */
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            : #ifdef __cplusplus
+<span class="lineNum">     182 </span>            : }  /* extern &quot;C&quot; */
+<span class="lineNum">     183 </span>            : #endif /* __cplusplus */
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            : #endif
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span>            : /* Copyright (c) 2010 Massachusetts Institute of Technology
+<span class="lineNum">     189 </span>            :  *
+<span class="lineNum">     190 </span>            :  * Permission is hereby granted, free of charge, to any person obtaining
+<span class="lineNum">     191 </span>            :  * a copy of this software and associated documentation files (the
+<span class="lineNum">     192 </span>            :  * &quot;Software&quot;), to deal in the Software without restriction, including
+<span class="lineNum">     193 </span>            :  * without limitation the rights to use, copy, modify, merge, publish,
+<span class="lineNum">     194 </span>            :  * distribute, sublicense, and/or sell copies of the Software, and to
+<span class="lineNum">     195 </span>            :  * permit persons to whom the Software is furnished to do so, subject to
+<span class="lineNum">     196 </span>            :  * the following conditions:
+<span class="lineNum">     197 </span>            :  * 
+<span class="lineNum">     198 </span>            :  * The above copyright notice and this permission notice shall be
+<span class="lineNum">     199 </span>            :  * included in all copies or substantial portions of the Software.
+<span class="lineNum">     200 </span>            :  * 
+<span class="lineNum">     201 </span>            :  * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+<span class="lineNum">     202 </span>            :  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+<span class="lineNum">     203 </span>            :  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+<span class="lineNum">     204 </span>            :  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+<span class="lineNum">     205 </span>            :  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+<span class="lineNum">     206 </span>            :  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+<span class="lineNum">     207 </span>            :  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+<span class="lineNum">     208 </span>            :  */
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">     211 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">     212 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            : /* Copyright (c) 2010 Massachusetts Institute of Technology
+<span class="lineNum">     216 </span>            :  *
+<span class="lineNum">     217 </span>            :  * Permission is hereby granted, free of charge, to any person obtaining
+<span class="lineNum">     218 </span>            :  * a copy of this software and associated documentation files (the
+<span class="lineNum">     219 </span>            :  * &quot;Software&quot;), to deal in the Software without restriction, including
+<span class="lineNum">     220 </span>            :  * without limitation the rights to use, copy, modify, merge, publish,
+<span class="lineNum">     221 </span>            :  * distribute, sublicense, and/or sell copies of the Software, and to
+<span class="lineNum">     222 </span>            :  * permit persons to whom the Software is furnished to do so, subject to
+<span class="lineNum">     223 </span>            :  * the following conditions:
+<span class="lineNum">     224 </span>            :  * 
+<span class="lineNum">     225 </span>            :  * The above copyright notice and this permission notice shall be
+<span class="lineNum">     226 </span>            :  * included in all copies or substantial portions of the Software.
+<span class="lineNum">     227 </span>            :  * 
+<span class="lineNum">     228 </span>            :  * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+<span class="lineNum">     229 </span>            :  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+<span class="lineNum">     230 </span>            :  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+<span class="lineNum">     231 </span>            :  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+<span class="lineNum">     232 </span>            :  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+<span class="lineNum">     233 </span>            :  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+<span class="lineNum">     234 </span>            :  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+<span class="lineNum">     235 </span>            :  */
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">     238 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">     239 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">     240 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            : /* #include &quot;isres.h&quot; done above */
+<span class="lineNum">     243 </span>            : 
+<span class="lineNum">     244 </span>            : /* Improved Stochastic Ranking Evolution Strategy (ISRES) algorithm
+<span class="lineNum">     245 </span>            :    for nonlinearly-constrained global optimization, based on
+<span class="lineNum">     246 </span>            :    the method described in:
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span>            :    Thomas Philip Runarsson and Xin Yao, &quot;Search biases in constrained
+<span class="lineNum">     249 </span>            :    evolutionary optimization,&quot; IEEE Trans. on Systems, Man, and Cybernetics
+<span class="lineNum">     250 </span>            :    Part C: Applications and Reviews, vol. 35 (no. 2), pp. 233-243 (2005).
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :    It is a refinement of an earlier method described in:
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :    Thomas P. Runarsson and Xin Yao, &quot;Stochastic ranking for constrained
+<span class="lineNum">     255 </span>            :    evolutionary optimization,&quot; IEEE Trans. Evolutionary Computation,
+<span class="lineNum">     256 </span>            :    vol. 4 (no. 3), pp. 284-294 (2000).
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            :    This is an independent implementation by S. G. Johnson (2009) based
+<span class="lineNum">     259 </span>            :    on the papers above.  Runarsson also has his own Matlab implemention
+<span class="lineNum">     260 </span>            :    available from his web page: http://www3.hi.is/~tpr
+<a name="261"><span class="lineNum">     261 </span>            : */</a>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 : static int key_compare(void *keys_, const void *a_, const void *b_)</span>
+<span class="lineNum">     264 </span>            : {
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :      const double *keys = (const double *) keys_;</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :      const int *a = (const int *) a_;</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :      const int *b = (const int *) b_;</span>
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :      return keys[*a] &lt; keys[*b] ? -1 : (keys[*a] &gt; keys[*b] ? +1 : 0);</span>
+<span class="lineNum">     269 </span>            : }
+<span class="lineNum">     270 </span>            : 
+<a name="271"><span class="lineNum">     271 </span><span class="lineNoCov">          0 : static unsigned imax2(unsigned a, unsigned b) { return (a &gt; b ? a : b); }</span></a>
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 : nlopt_result isres_minimize(int n, nlopt_func f, void *f_data,</span>
+<span class="lineNum">     274 </span>            :                             int m, nlopt_constraint *fc, /* fc &lt;= 0 */
+<span class="lineNum">     275 </span>            :                             int p, nlopt_constraint *h, /* h == 0 */
+<span class="lineNum">     276 </span>            :                             const double *lb, const double *ub, /* bounds */
+<span class="lineNum">     277 </span>            :                             double *x, /* in: initial guess, out: minimizer */
+<span class="lineNum">     278 </span>            :                             double *minf,
+<span class="lineNum">     279 </span>            :                             nlopt_stopping *stop,
+<span class="lineNum">     280 </span>            :                             int population) /* pop. size (= 0 for default) */
+<span class="lineNum">     281 </span>            : {
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :      const double ALPHA = 0.5; /* here hard-coded as &quot;sqrt(..)&quot; */</span>
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :      const double GAMMA = 0.85; /* step-reduction factor from paper */</span>
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 :      const double PHI = 1.0/ALPHA; /* adjusted expected rate of convergence */</span>
+<span class="lineNum">     285 </span><span class="lineNoCov">          0 :      const double PF = 0.45; /* fitness probability, from paper */</span>
+<span class="lineNum">     286 </span><span class="lineNoCov">          0 :      const double SURVIVOR = 1.0/7.0; /* survivor fraction, from paper */</span>
+<span class="lineNum">     287 </span>            :      int survivors;
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :      nlopt_result ret = NLOPT_SUCCESS;</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :      double *sigmas = 0, *xs; /* population-by-n arrays (row-major) */</span>
+<span class="lineNum">     290 </span>            :      double *fval; /* population array of function vals */
+<span class="lineNum">     291 </span>            :      double *penalty; /* population array of penalty vals */
+<span class="lineNum">     292 </span>            :      double *x0;
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :      int *rank, *irank = 0;</span>
+<span class="lineNum">     294 </span>            :      int k, i, j, c;
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :      int mp = m + p;</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :      double minf_penalty = HUGE_VAL, minf_gpenalty = HUGE_VAL;</span>
+<span class="lineNum">     297 </span>            :      double taup, tau;
+<span class="lineNum">     298 </span><span class="lineNoCov">          0 :      double *results = 0; /* scratch space for mconstraint results */</span>
+<span class="lineNum">     299 </span>            :      unsigned ires;
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :      int denovo = 1; /* indicates are we doing the first iteration */</span>
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :      FILE* saved_state = NULL;</span>
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :      *minf = HUGE_VAL;</span>
+<span class="lineNum">     306 </span>            : 
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :      if (!population) population = 20 * (n + 1);</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :      if (population &lt; 1) return NLOPT_INVALID_ARGS;</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :      survivors = ceil(population * SURVIVOR);</span>
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span><span class="lineNoCov">          0 :      taup = PHI / sqrt(2*n);</span>
+<span class="lineNum">     312 </span><span class="lineNoCov">          0 :      tau = PHI / sqrt(2*sqrt(n));</span>
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span>            :      /* we don't handle unbounded search regions */
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :      for (j = 0; j &lt; n; ++j) if (nlopt_isinf(lb[j]) || nlopt_isinf(ub[j]))</span>
+<span class="lineNum">     316 </span>            :                                   return NLOPT_INVALID_ARGS;
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span><span class="lineNoCov">          0 :      ires = imax2(nlopt_max_constraint_dim(m, fc),</span>
+<span class="lineNum">     319 </span><span class="lineNoCov">          0 :                   nlopt_max_constraint_dim(p, h));</span>
+<span class="lineNum">     320 </span><span class="lineNoCov">          0 :      results = (double *) malloc(ires * sizeof(double));</span>
+<span class="lineNum">     321 </span><span class="lineNoCov">          0 :      if (ires &gt; 0 &amp;&amp; !results) return NLOPT_OUT_OF_MEMORY;</span>
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :      sigmas = (double*) malloc(sizeof(double) * (population*n*2</span>
+<span class="lineNum">     324 </span><span class="lineNoCov">          0 :                                                  + population</span>
+<span class="lineNum">     325 </span><span class="lineNoCov">          0 :                                                  + population</span>
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :                                                  + n));</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :      if (!sigmas) { free(results); return NLOPT_OUT_OF_MEMORY; }</span>
+<span class="lineNum">     328 </span><span class="lineNoCov">          0 :      xs = sigmas + population*n;</span>
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :      fval = xs + population*n;</span>
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :      penalty = fval + population;</span>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :      x0 = penalty + population;</span>
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span><span class="lineNoCov">          0 :      irank = (int*) malloc(sizeof(int) * 2 * population);</span>
+<span class="lineNum">     334 </span><span class="lineNoCov">          0 :      if (!irank) { ret = NLOPT_OUT_OF_MEMORY; goto done; }</span>
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 :      rank = irank + population;</span>
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :      saved_state=fopen(&quot;isres-state.bin&quot;,&quot;r&quot;);</span>
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :      if(saved_state!=NULL){</span>
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :        printf(&quot;!!!! READING OPTIMIZER STATE FROM isres-state.bin\n&quot;);</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :        fread(sigmas,sizeof(double),population*n,saved_state);</span>
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :        fread(xs,sizeof(double),population*n,saved_state);</span>
+<span class="lineNum">     342 </span><span class="lineNoCov">          0 :        if(ferror(saved_state)){</span>
+<span class="lineNum">     343 </span><span class="lineNoCov">          0 :          printf(&quot;!!!! READ OF SAVED STATE FAILED. EXITING\n&quot;);</span>
+<span class="lineNum">     344 </span><span class="lineNoCov">          0 :          exit(1);</span>
+<span class="lineNum">     345 </span>            :        }
+<span class="lineNum">     346 </span><span class="lineNoCov">          0 :        if(fclose(saved_state)){</span>
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :          printf(&quot;!!!! READ OF SAVED STATE FAILED. EXITING\n&quot;);</span>
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :          exit(1);</span>
+<span class="lineNum">     349 </span>            :        }
+<span class="lineNum">     350 </span>            :        printf(&quot;!!!! DONE\n&quot;);
+<span class="lineNum">     351 </span>            :      }else{
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 :        for (k = 0; k &lt; population; ++k) {</span>
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :          for (j = 0; j &lt; n; ++j) {</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :            sigmas[k*n+j] = (ub[j] - lb[j]) / sqrt(n);</span>
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :            xs[k*n+j] = nlopt_urand(lb[j], ub[j]);</span>
+<span class="lineNum">     356 </span>            :          }
+<span class="lineNum">     357 </span>            :        }
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :        memcpy(xs, x, sizeof(double) * n); /* use input x for xs_0 */</span>
+<span class="lineNum">     359 </span>            :      }
+<span class="lineNum">     360 </span>            : 
+<span class="lineNum">     361 </span>            :      while (1) { /* each loop body = one generation */
+<span class="lineNum">     362 </span>            :           
+<span class="lineNum">     363 </span>            :           /* First, save state just in case we are killed */
+<span class="lineNum">     364 </span><span class="lineNoCov">          0 :           if(!denovo){</span>
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :             saved_state=fopen(&quot;isres-state.bin&quot;,&quot;w&quot;);</span>
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 :             if(saved_state!=NULL){</span>
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :               printf(&quot;!!!! WRITING OPTIMIZER STATE TO isres-state.bin\n&quot;);</span>
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :               int c=fwrite(sigmas,sizeof(double),population*n,saved_state);</span>
+<span class="lineNum">     369 </span><span class="lineNoCov">          0 :               c=fwrite(xs,sizeof(double),population*n,saved_state);</span>
+<span class="lineNum">     370 </span><span class="lineNoCov">          0 :               if(ferror(saved_state)){</span>
+<span class="lineNum">     371 </span>            :                 printf(&quot;!!!! WRITE OF SAVED STATE FAILED!\n&quot;);
+<span class="lineNum">     372 </span>            :               }
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :               fclose(saved_state);</span>
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :               printf(&quot;!!!! DONE\n&quot;);fflush(stdout);</span>
+<span class="lineNum">     375 </span>            :             }
+<span class="lineNum">     376 </span>            :           }
+<span class="lineNum">     377 </span>            : 
+<span class="lineNum">     378 </span>            :           int all_feasible = 1;
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span>            :           /* evaluate f and constraint violations for whole population */
+<span class="lineNum">     381 </span><span class="lineNoCov">          0 :           for (k = 0; k &lt; population; ++k) {</span>
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 :                int feasible = 1;</span>
+<span class="lineNum">     383 </span>            :                double gpenalty;
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :                stop-&gt;nevals++;</span>
+<span class="lineNum">     385 </span><span class="lineNoCov">          0 :                fval[k] = f(n, xs + k*n, NULL, f_data);</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :                if (nlopt_stop_forced(stop)) { </span>
+<span class="lineNum">     387 </span>            :                     ret = NLOPT_FORCED_STOP; goto done; }
+<span class="lineNum">     388 </span><span class="lineNoCov">          0 :                penalty[k] = 0;</span>
+<span class="lineNum">     389 </span><span class="lineNoCov">          0 :                for (c = 0; c &lt; m; ++c) { /* inequality constraints */</span>
+<span class="lineNum">     390 </span><span class="lineNoCov">          0 :                     nlopt_eval_constraint(results, NULL,</span>
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 :                                           fc + c, n, xs + k*n);</span>
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :                     if (nlopt_stop_forced(stop)) { </span>
+<span class="lineNum">     393 </span>            :                          ret = NLOPT_FORCED_STOP; goto done; }
+<span class="lineNum">     394 </span><span class="lineNoCov">          0 :                     for (ires = 0; ires &lt; fc[c].m; ++ires) {</span>
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :                          double gval = results[ires];</span>
+<span class="lineNum">     396 </span><span class="lineNoCov">          0 :                          if (gval &gt; fc[c].tol[ires]) feasible = 0;</span>
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :                          if (gval &lt; 0) gval = 0;</span>
+<span class="lineNum">     398 </span><span class="lineNoCov">          0 :                          penalty[k] += gval*gval;</span>
+<span class="lineNum">     399 </span>            :                     }
+<span class="lineNum">     400 </span>            :                }
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 :                gpenalty = penalty[k];</span>
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :                for (c = m; c &lt; mp; ++c) { /* equality constraints */</span>
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :                     nlopt_eval_constraint(results, NULL,</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :                                           h + (c-m), n, xs + k*n);</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :                     if (nlopt_stop_forced(stop)) { </span>
+<span class="lineNum">     406 </span>            :                          ret = NLOPT_FORCED_STOP; goto done; }
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :                     for (ires = 0; ires &lt; h[c-m].m; ++ires) {</span>
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :                          double hval = results[ires];</span>
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :                          if (fabs(hval) &gt; h[c-m].tol[ires]) feasible = 0;</span>
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :                          penalty[k] += hval*hval;</span>
+<span class="lineNum">     411 </span>            :                     }
+<span class="lineNum">     412 </span>            :                }
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :                if (penalty[k] &gt; 0) all_feasible = 0;</span>
+<span class="lineNum">     414 </span>            : 
+<span class="lineNum">     415 </span>            :                /* convergence criteria (FIXME: improve?) */
+<span class="lineNum">     416 </span>            : 
+<span class="lineNum">     417 </span>            :                /* FIXME: with equality constraints, how do
+<span class="lineNum">     418 </span>            :                   we decide which solution is the &quot;best&quot; so far?
+<span class="lineNum">     419 </span>            :                   ... need some total order on the solutions? */
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span><span class="lineNoCov">          0 :                if ((penalty[k] &lt;= minf_penalty || feasible)</span>
+<span class="lineNum">     422 </span><span class="lineNoCov">          0 :                    &amp;&amp; (fval[k] &lt;= *minf || minf_gpenalty &gt; 0)</span>
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :                    &amp;&amp; ((feasible ? 0 : penalty[k]) != minf_penalty</span>
+<span class="lineNum">     424 </span><span class="lineNoCov">          0 :                        || fval[k] != *minf)) {</span>
+<span class="lineNum">     425 </span><span class="lineNoCov">          0 :                     if (fval[k] &lt; stop-&gt;minf_max &amp;&amp; feasible) </span>
+<span class="lineNum">     426 </span>            :                          ret = NLOPT_MINF_MAX_REACHED;
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :                     else if (!nlopt_isinf(*minf)) {</span>
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :                          if (nlopt_stop_f(stop, fval[k], *minf)</span>
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :                              &amp;&amp; nlopt_stop_f(stop, feasible ? 0 : penalty[k], </span>
+<span class="lineNum">     430 </span>            :                                              minf_penalty))
+<span class="lineNum">     431 </span>            :                               ret = NLOPT_FTOL_REACHED;
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :                          else if (nlopt_stop_x(stop, xs+k*n, x))</span>
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :                               ret = NLOPT_XTOL_REACHED;</span>
+<span class="lineNum">     434 </span>            :                     }
+<span class="lineNum">     435 </span><span class="lineNoCov">          0 :                     memcpy(x, xs+k*n, sizeof(double)*n);</span>
+<span class="lineNum">     436 </span><span class="lineNoCov">          0 :                     *minf = fval[k];</span>
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :                     minf_penalty = feasible ? 0 : penalty[k];</span>
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :                     minf_gpenalty = feasible ? 0 : gpenalty;</span>
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :                     if (ret != NLOPT_SUCCESS) goto done;</span>
+<span class="lineNum">     440 </span>            :                }
+<span class="lineNum">     441 </span>            : 
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 :                if (nlopt_stop_forced(stop)) ret = NLOPT_FORCED_STOP;</span>
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :                else if (nlopt_stop_evals(stop)) ret = NLOPT_MAXEVAL_REACHED;</span>
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :                else if (nlopt_stop_time(stop)) ret = NLOPT_MAXTIME_REACHED;</span>
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 :                if (ret != NLOPT_SUCCESS) goto done;</span>
+<span class="lineNum">     446 </span>            :                
+<span class="lineNum">     447 </span>            :           }
+<span class="lineNum">     448 </span>            : 
+<span class="lineNum">     449 </span>            :           /* stop also if all x in population are close to each other */
+<span class="lineNum">     450 </span><span class="lineNoCov">          0 :           for(k = 0; k &lt; population ; ++k){</span>
+<span class="lineNum">     451 </span><span class="lineNoCov">          0 :             for(i = k+1; i &lt; population ; ++i){</span>
+<span class="lineNum">     452 </span><span class="lineNoCov">          0 :               if( !nlopt_stop_x(stop, xs+k*n, xs+i*n) )</span>
+<span class="lineNum">     453 </span>            :                 goto not_internal_xtol;
+<span class="lineNum">     454 </span>            :             }
+<span class="lineNum">     455 </span>            :           }
+<span class="lineNum">     456 </span>            :           ret = NLOPT_XTOL_REACHED;
+<span class="lineNum">     457 </span>            :           goto done;
+<span class="lineNum">     458 </span>            :      not_internal_xtol:
+<span class="lineNum">     459 </span>            :           
+<span class="lineNum">     460 </span>            :           denovo = 0; /* no need to evaluate survivors again */
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span>            :           /* &quot;selection&quot; step: rank the population */
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :           for (k = 0; k &lt; population; ++k) irank[k] = k;</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :           if (all_feasible) /* special case: rank by objective function */</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :                nlopt_qsort_r(irank, population, sizeof(int), fval,key_compare);</span>
+<span class="lineNum">     466 </span>            :           else {
+<span class="lineNum">     467 </span>            :                /* Runarsson &amp; Yao's stochastic ranking of the population */
+<span class="lineNum">     468 </span><span class="lineNoCov">          0 :                for (i = 0; i &lt; population; ++i) {</span>
+<span class="lineNum">     469 </span>            :                     int swapped = 0;
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :                     for (j = 0; j &lt; population-1; ++j) {</span>
+<span class="lineNum">     471 </span><span class="lineNoCov">          0 :                          double u = nlopt_urand(0,1);</span>
+<span class="lineNum">     472 </span><span class="lineNoCov">          0 :                          if (u &lt; PF || (penalty[irank[j]] == 0</span>
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :                                         &amp;&amp; penalty[irank[j+1]] == 0)) {</span>
+<span class="lineNum">     474 </span><span class="lineNoCov">          0 :                               if (fval[irank[j]] &gt; fval[irank[j+1]]) {</span>
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :                                    int irankj = irank[j];</span>
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :                                    irank[j] = irank[j+1];</span>
+<span class="lineNum">     477 </span><span class="lineNoCov">          0 :                                    irank[j+1] = irankj;</span>
+<span class="lineNum">     478 </span><span class="lineNoCov">          0 :                                    swapped = 1;</span>
+<span class="lineNum">     479 </span>            :                               }
+<span class="lineNum">     480 </span>            :                          }
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :                          else if (penalty[irank[j]] &gt; penalty[irank[j+1]]) {</span>
+<span class="lineNum">     482 </span><span class="lineNoCov">          0 :                               int irankj = irank[j];</span>
+<span class="lineNum">     483 </span><span class="lineNoCov">          0 :                               irank[j] = irank[j+1];</span>
+<span class="lineNum">     484 </span><span class="lineNoCov">          0 :                               irank[j+1] = irankj;</span>
+<span class="lineNum">     485 </span><span class="lineNoCov">          0 :                               swapped = 1;</span>
+<span class="lineNum">     486 </span>            :                          }
+<span class="lineNum">     487 </span>            :                     }
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :                     if (!swapped) break;</span>
+<span class="lineNum">     489 </span>            :                }
+<span class="lineNum">     490 </span>            :           }
+<span class="lineNum">     491 </span>            :           
+<span class="lineNum">     492 </span>            :           /* compute rank from irank */
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :           for(k = 0; k &lt; population; ++k){</span>
+<span class="lineNum">     494 </span><span class="lineNoCov">          0 :             rank[irank[k]] = k;</span>
+<span class="lineNum">     495 </span>            :           }
+<span class="lineNum">     496 </span>            : 
+<span class="lineNum">     497 </span>            :           /* OLD: evolve the population: differential evolution for
+<span class="lineNum">     498 </span>            :                   the best survivors, and standard mutation of the
+<span class="lineNum">     499 </span>            :                   best survivors for the rest: */
+<span class="lineNum">     500 </span>            :           /* NOW: evolve the population: &quot;survivors&quot; actually survive,
+<span class="lineNum">     501 </span>            :                   differential evolution for the survivors gives some
+<span class="lineNum">     502 </span>            :                   offspring, the rest is generated through standard
+<span class="lineNum">     503 </span>            :                   mutation. */
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :           for (k = survivors; k &lt; population; ++k) { /* standard mutation */</span>
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :                double taup_rand = taup * nlopt_nrand(0,1);</span>
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :                int rk = irank[k], ri;</span>
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :                i = k % survivors;</span>
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :                ri = irank[i];</span>
+<span class="lineNum">     509 </span><span class="lineNoCov">          0 :                for (j = 0; j &lt; n; ++j) {</span>
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 :                     double sigmamax = (ub[j] - lb[j]) / sqrt(n);</span>
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :                     sigmas[rk*n+j] = sigmas[ri*n+j] </span>
+<span class="lineNum">     512 </span><span class="lineNoCov">          0 :                          * exp(taup_rand + tau*nlopt_nrand(0,1));</span>
+<span class="lineNum">     513 </span><span class="lineNoCov">          0 :                     if (sigmas[rk*n+j] &gt; sigmamax)</span>
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :                          sigmas[rk*n+j] = sigmamax;</span>
+<span class="lineNum">     515 </span>            :                     do {
+<span class="lineNum">     516 </span><span class="lineNoCov">          0 :                          xs[rk*n+j] = xs[ri*n+j] </span>
+<span class="lineNum">     517 </span><span class="lineNoCov">          0 :                               + sigmas[rk*n+j] * nlopt_nrand(0,1);</span>
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :                     } while (xs[rk*n+j] &lt; lb[j] || xs[rk*n+j] &gt; ub[j]);</span>
+<span class="lineNum">     519 </span><span class="lineNoCov">          0 :                     sigmas[rk*n+j] = sigmas[ri*n+j] * </span>
+<span class="lineNum">     520 </span><span class="lineNoCov">          0 :                       sqrt( sigmas[rk*n+j]/sigmas[ri*n+j] );</span>
+<span class="lineNum">     521 </span>            : /* This gives a heritability of log(sigma) of h^2=0.5^2=0.25, which
+<span class="lineNum">     522 </span>            :  * appears reasonable in view of empirical values of h^2 around 0.3
+<span class="lineNum">     523 </span>            :  * in data such as in
+<span class="lineNum">     524 </span>            :  * http://www.genetics.org/content/130/1/195.full.pdf or
+<span class="lineNum">     525 </span>            :  * http://bio.fsu.edu/~dhoule/Publications/Hansen@@11h2ev.pdf (though
+<span class="lineNum">     526 </span>            :  * this is not heritability of evolvability). */
+<span class="lineNum">     527 </span>            :                         }
+<span class="lineNum">     528 </span>            :           }
+<span class="lineNum">     529 </span><span class="lineNoCov">          0 :           memcpy(x0, xs+irank[0]*n, n * sizeof(double));</span>
+<span class="lineNum">     530 </span><span class="lineNoCov">          0 :           for (k = 0; k&lt; survivors; ++k){/* differential variation */</span>
+<span class="lineNum">     531 </span><span class="lineNoCov">          0 :                double taup_rand = taup * nlopt_nrand(0,1);</span>
+<span class="lineNum">     532 </span><span class="lineNoCov">          0 :                int rk = irank[k], ri;</span>
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :                i = k;</span>
+<span class="lineNum">     534 </span><span class="lineNoCov">          0 :                ri = irank[i];</span>
+<span class="lineNum">     535 </span><span class="lineNoCov">          0 :                for (j = 0; j &lt; n; ++j) {</span>
+<span class="lineNum">     536 </span><span class="lineNoCov">          0 :                     double xi = xs[ri*n+j];</span>
+<span class="lineNum">     537 </span><span class="lineNoCov">          0 :                     if (i+1 &lt; survivors)</span>
+<span class="lineNum">     538 </span>            :                          xs[rk*n+j] = 
+<span class="lineNum">     539 </span><span class="lineNoCov">          0 :                             xi + GAMMA * (x0[j] - xs[irank[i+1]*n+j]);</span>
+<span class="lineNum">     540 </span><span class="lineNoCov">          0 :                     if (i+1 == survivors</span>
+<span class="lineNum">     541 </span><span class="lineNoCov">          0 :                         || xs[rk*n+j] &lt; lb[j] || xs[rk*n+j] &gt; ub[j]) {</span>
+<span class="lineNum">     542 </span>            :                          /* standard mutation for last survivor and
+<span class="lineNum">     543 </span>            :                             for any survivor components that are now
+<span class="lineNum">     544 </span>            :                             outside the bounds */
+<span class="lineNum">     545 </span><span class="lineNoCov">          0 :                          double sigmamax = (ub[j] - lb[j]) / sqrt(n);</span>
+<span class="lineNum">     546 </span><span class="lineNoCov">          0 :                          double sigi = sigmas[ri*n+j]; </span>
+<span class="lineNum">     547 </span>            :                          sigmas[rk*n+j] = sigi 
+<span class="lineNum">     548 </span><span class="lineNoCov">          0 :                            * exp(taup_rand + tau*nlopt_nrand(0,1));</span>
+<span class="lineNum">     549 </span><span class="lineNoCov">          0 :                          if (sigmas[rk*n+j] &gt; sigmamax)</span>
+<span class="lineNum">     550 </span><span class="lineNoCov">          0 :                               sigmas[rk*n+j] = sigmamax;</span>
+<span class="lineNum">     551 </span>            :                          do {
+<span class="lineNum">     552 </span>            :                               xs[rk*n+j] = xi 
+<span class="lineNum">     553 </span><span class="lineNoCov">          0 :                                    + sigmas[rk*n+j] * nlopt_nrand(0,1);</span>
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :                          } while (xs[rk*n+j] &lt; lb[j] || xs[rk*n+j] &gt; ub[j]);</span>
+<span class="lineNum">     555 </span><span class="lineNoCov">          0 :                          sigmas[rk*n+j] = sigi * </span>
+<span class="lineNum">     556 </span><span class="lineNoCov">          0 :                            sqrt( sigmas[rk*n+j]/sigi );</span>
+<span class="lineNum">     557 </span>            :                     }
+<span class="lineNum">     558 </span>            :                }
+<span class="lineNum">     559 </span>            :           }
+<span class="lineNum">     560 </span>            :      }
+<span class="lineNum">     561 </span>            : 
+<span class="lineNum">     562 </span>            : done:
+<span class="lineNum">     563 </span><span class="lineNoCov">          0 :      if (irank) free(irank);</span>
+<span class="lineNum">     564 </span><span class="lineNoCov">          0 :      if (sigmas) free(sigmas);</span>
+<span class="lineNum">     565 </span><span class="lineNoCov">          0 :      if (results) free(results);</span>
+<span class="lineNum">     566 </span>            :      return ret;
+<span class="lineNum">     567 </span>            : }
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/SortedMatrix.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - SortedMatrix.h<span style="font-size: 80%;"> (source / <a href="SortedMatrix.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntryLo">15.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">66.7 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: SortedMatrix.h 2108 2011-05-17 00:02:55Z axel $
+<span class="lineNum">       3 </span>            : #ifndef _SORTEDMATRIX_H_
+<span class="lineNum">       4 </span>            : #define _SORTEDMATRIX_H_
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : //#include &lt;set&gt;
+<span class="lineNum">       7 </span>            : #include &lt;vector&gt;
+<span class="lineNum">       8 </span>            : #include &lt;algorithm&gt;
+<span class="lineNum">       9 </span>            : #include &lt;hash_map&gt;
+<span class="lineNum">      10 </span>            : #include &lt;float.h&gt;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &lt;boost/serialization/split_member.hpp&gt;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &quot;vector_with_max.h&quot;
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : /// Matrix class optimized for situation where most entries are small.
+<span class="lineNum">      17 </span>            : /** This allows a fast computation of sandwich products of the form
+<span class="lineNum">      18 </span>            :     a^T*M*b, where a and b are vectors, and M is a SortedMatrix. This
+<span class="lineNum">      19 </span>            :     works by representing the matrix as a list of entries sorted by
+<a name="20"><span class="lineNum">      20 </span>            :     falling magnitude. When computing a^T*M*b, only the largest</a>
+<span class="lineNum">      21 </span>            :     contributions are taken into account. */ 
+<span class="lineNum">      22 </span><span class="lineCov">     719144 : class SortedMatrix </span>
+<span class="lineNum">      23 </span>            : {
+<span class="lineNum">      24 </span>            : public:  
+<span class="lineNum">      25 </span>            :   typedef short int index_t;
+<span class="lineNum">      26 </span>            : private:
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            :   /// Row and column of a matrix entry.
+<span class="lineNum">      29 </span>            :   class __attribute__ ((packed)) location_t{
+<span class="lineNum">      30 </span>            :   public:
+<span class="lineNum">      31 </span>            :       index_t row,column;
+<span class="lineNum">      32 </span><span class="lineNoCov">          0 :     location_t(index_t r,index_t c):row(r),column(c){};</span>
+<span class="lineNum">      33 </span>            :     bool operator==(const location_t &amp; other) const{
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :       return row==other.row &amp;&amp; column==other.column;</span>
+<span class="lineNum">      35 </span>            :     }
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :     bool unused(){return row&lt;0;};</span>
+<span class="lineNum">      37 </span>            :   };
+<span class="lineNum">      38 </span>            :   struct location_t_hash{
+<span class="lineNum">      39 </span>            :     size_t operator()( const location_t&amp; l ) const
+<span class="lineNum">      40 </span>            :     {
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :       const size_t someprime=3571;</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :       return size_t(l.row)^(size_t(l.column)*someprime);</span>
+<span class="lineNum">      43 </span>            :       //return size_t(l.row)+(size_t(l.column)&lt;&lt;(8*sizeof(index_t)));
+<span class="lineNum">      44 </span>            :     }
+<span class="lineNum">      45 </span>            :   };
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            :   /// A matrix entry (value and location)
+<span class="lineNum">      48 </span>            :   class entry_t:public location_t{
+<span class="lineNum">      49 </span>            :   public:
+<span class="lineNum">      50 </span>            :     double value; 
+<span class="lineNum">      51 </span><span class="lineCov">         45 :     entry_t(const location_t &amp; l,double v):location_t(l),value(v){};</span>
+<span class="lineNum">      52 </span>            :     entry_t(index_t r, index_t c,double v):location_t(r,c),value(v){};
+<span class="lineNum">      53 </span>            :   };
+<span class="lineNum">      54 </span>            :   
+<span class="lineNum">      55 </span>            :   class larger_value_than{
+<span class="lineNum">      56 </span>            :   public:
+<span class="lineNum">      57 </span>            :     inline bool operator()(const entry_t e1,const entry_t e2);
+<span class="lineNum">      58 </span>            :   };
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            :   class has_row_or_colum_equal_to_either_of{
+<span class="lineNum">      62 </span>            :     typedef std::pair&lt;SortedMatrix::location_t, int&gt;  arg_t;
+<span class="lineNum">      63 </span>            :   private:
+<span class="lineNum">      64 </span>            :     index_t a,b;
+<span class="lineNum">      65 </span>            :   public:
+<span class="lineNum">      66 </span>            :     has_row_or_colum_equal_to_either_of(index_t A,index_t B):
+<span class="lineNum">      67 </span>            :       a(A),b(B) {};
+<span class="lineNum">      68 </span>            :     bool operator()(arg_t lp) const{
+<span class="lineNum">      69 </span>            :       return 
+<span class="lineNum">      70 </span>            :         (lp.first.row==a) || (lp.first.column==a) || 
+<span class="lineNum">      71 </span>            :         (lp.first.row==b) || (lp.first.column==b);
+<span class="lineNum">      72 </span>            :     }
+<span class="lineNum">      73 </span>            :   };
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :   class has_location{
+<span class="lineNum">      76 </span>            :     const location_t loc;
+<span class="lineNum">      77 </span>            :   public:
+<span class="lineNum">      78 </span>            :     has_location(location_t l):loc(l){};
+<span class="lineNum">      79 </span>            :     bool operator()(entry_t other){
+<span class="lineNum">      80 </span>            :       return location_t(other)==loc;
+<span class="lineNum">      81 </span>            :     }
+<span class="lineNum">      82 </span>            :   };
+<span class="lineNum">      83 </span>            :     
+<span class="lineNum">      84 </span>            :   //typedef std::set&lt; entry_t, larger_value_than &gt; _container;
+<span class="lineNum">      85 </span>            :   typedef std::vector&lt; entry_t &gt; _container;
+<span class="lineNum">      86 </span>            :   mutable _container _entries;
+<span class="lineNum">      87 </span>            :   
+<span class="lineNum">      88 </span>            :   typedef __gnu_cxx::hash_map&lt; location_t, int, location_t_hash &gt; locator_t;
+<span class="lineNum">      89 </span>            :   mutable locator_t locator;
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :   int _size;
+<span class="lineNum">      92 </span>            :   double _accuracy; // controls when to stop summations
+<span class="lineNum">      93 </span>            :   double _truncation_epsilon; // controls which matrix elements to keep
+<span class="lineNum">      94 </span>            : public:
+<span class="lineNum">      95 </span>            :   typedef enum {asymmetric,symmetric} symmetry_t;
+<span class="lineNum">      96 </span>            : private:
+<span class="lineNum">      97 </span>            :   symmetry_t _symmetry;
+<span class="lineNum">      98 </span>            :   mutable bool _clean;
+<span class="lineNum">      99 </span>            :   
+<span class="lineNum">     100 </span>            : private:
+<span class="lineNum">     101 </span>            :   friend class boost::serialization::access;
+<span class="lineNum">     102 </span>            :   template&lt;class Archive&gt;
+<span class="lineNum">     103 </span>            :   void save(Archive &amp; ar, const unsigned int version) const
+<span class="lineNum">     104 </span>            :   {
+<span class="lineNum">     105 </span>            :     cleanup();
+<span class="lineNum">     106 </span>            :     ar &amp; _accuracy &amp; _truncation_epsilon &amp; _size;
+<span class="lineNum">     107 </span>            :     ar &amp; _entries;
+<span class="lineNum">     108 </span>            :   }
+<span class="lineNum">     109 </span>            :   template&lt;class Archive&gt;
+<span class="lineNum">     110 </span>            :   void load(Archive &amp; ar, const unsigned int version)
+<span class="lineNum">     111 </span>            :   {
+<span class="lineNum">     112 </span>            :     ar &amp; _accuracy &amp; _truncation_epsilon &amp; _size;
+<span class="lineNum">     113 </span>            :     ar &amp; _entries;
+<span class="lineNum">     114 </span>            :     _clean=false;
+<span class="lineNum">     115 </span>            :     cleanup();
+<span class="lineNum">     116 </span>            :   }
+<span class="lineNum">     117 </span>            :   BOOST_SERIALIZATION_SPLIT_MEMBER()
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            : private:
+<span class="lineNum">     121 </span>            :   void cleanup_helper() const;
+<span class="lineNum">     122 </span>            : public:
+<span class="lineNum">     123 </span>            :   inline void cleanup() const;
+<span class="lineNum">     124 </span>            :   static double &amp;default_accuracy,&amp;default_truncation_epsilon;
+<span class="lineNum">     125 </span>            :   static const entry_t unused_entry; 
+<span class="lineNum">     126 </span>            :   class active_reference_t;
+<span class="lineNum">     127 </span>            :   class const_active_reference_t;
+<span class="lineNum">     128 </span>            :   class incomplete_location_t;
+<span class="lineNum">     129 </span>            : public:
+<span class="lineNum">     130 </span>            :   SortedMatrix(symmetry_t s=asymmetric);
+<span class="lineNum">     131 </span>            :   // access to individual matrix entries is expensive for
+<span class="lineNum">     132 </span>            :   // this class...
+<span class="lineNum">     133 </span>            :   inline incomplete_location_t operator[](index_t r);
+<span class="lineNum">     134 </span>            :   int size() const {return _size;};
+<span class="lineNum">     135 </span>            :   void resize(int size);
+<span class="lineNum">     136 </span>            :   void move(index_t from, index_t to);
+<span class="lineNum">     137 </span><span class="lineCov">       1704 :   void clear(){_entries.clear(); locator.clear();_clean=true;}</span>
+<span class="lineNum">     138 </span>            :   // ...but multiplication of vectors from both sides can be very fast:
+<span class="lineNum">     139 </span>            :   double sandwich_product(const double* v1, double max_v1, 
+<span class="lineNum">     140 </span>            :                           const double* v2, double max_v2)const;
+<span class="lineNum">     141 </span>            :   inline 
+<span class="lineNum">     142 </span>            :   double sandwich_product(const vector_with_max &amp; v1,
+<span class="lineNum">     143 </span>            :                           const vector_with_max &amp; v2)const;
+<span class="lineNum">     144 </span>            :   bool operator==(const SortedMatrix &amp; other);
+<span class="lineNum">     145 </span>            :   double truncation_epsilon(){return _truncation_epsilon;}
+<span class="lineNum">     146 </span>            :   double accuracy() const {return _accuracy;}
+<span class="lineNum">     147 </span>            :   friend std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, const SortedMatrix &amp;m);
+<span class="lineNum">     148 </span>            :   friend class packed_simulation;
+<span class="lineNum">     149 </span>            : };
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : // Inline implementation details:
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : /// Updates a SortedMatrix upon assignment of entries.
+<span class="lineNum">     154 </span>            : class SortedMatrix::active_reference_t{
+<span class="lineNum">     155 </span>            :     const location_t loc;
+<span class="lineNum">     156 </span>            :     SortedMatrix &amp; origin;
+<span class="lineNum">     157 </span>            :     double get_value() const;
+<span class="lineNum">     158 </span>            :     void set_value(double v) const;
+<span class="lineNum">     159 </span>            :   public:
+<span class="lineNum">     160 </span>            :     active_reference_t(const location_t l, SortedMatrix &amp; m):loc(l),origin(m){};
+<span class="lineNum">     161 </span>            :     operator double () const{
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 :       return get_value();</span>
+<span class="lineNum">     163 </span>            :     }
+<span class="lineNum">     164 </span>            :     double operator=(double v) const{
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :       set_value(v);</span>
+<span class="lineNum">     166 </span>            :       return v;
+<span class="lineNum">     167 </span>            :     }
+<span class="lineNum">     168 </span>            :   };
+<span class="lineNum">     169 </span>            : class SortedMatrix::incomplete_location_t{//only the row is known
+<span class="lineNum">     170 </span>            :   const index_t row;
+<span class="lineNum">     171 </span>            :   SortedMatrix &amp; origin;
+<span class="lineNum">     172 </span>            : public:
+<span class="lineNum">     173 </span>            :   explicit incomplete_location_t(index_t r,SortedMatrix &amp; o):row(r),origin(o){};
+<span class="lineNum">     174 </span>            :   active_reference_t operator[](index_t c) const{
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :     return active_reference_t(location_t(row,c),origin);</span>
+<span class="lineNum">     176 </span>            :   }
+<span class="lineNum">     177 </span>            : };
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            : inline SortedMatrix::incomplete_location_t SortedMatrix::operator[](index_t r){
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :   return incomplete_location_t(r,*this);</span>
+<span class="lineNum">     182 </span>            : }
+<span class="lineNum">     183 </span>            :   
+<span class="lineNum">     184 </span>            : inline bool 
+<span class="lineNum">     185 </span>            : SortedMatrix::larger_value_than::operator()(const entry_t e1,const entry_t e2){
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :   if(fabs(e1.value) != fabs(e2.value))</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :     return e1.value&gt;e2.value;</span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :   if(e1.row != e2.row)</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :     return e1.row &lt; e2.row;</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :   return e1.column &lt; e2.column;</span>
+<span class="lineNum">     191 </span>            : }
+<span class="lineNum">     192 </span>            : inline void SortedMatrix::cleanup() const{
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :   if(!_clean) cleanup_helper();</span>
+<span class="lineNum">     194 </span>            : }
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            : inline double 
+<span class="lineNum">     197 </span>            : SortedMatrix::sandwich_product(const vector_with_max &amp; v1,
+<span class="lineNum">     198 </span>            :                                const vector_with_max &amp; v2)const{
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :   return sandwich_product(v1.get_data(),v1.get_max(),</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :                           v2.get_data(),v2.get_max());</span>
+<span class="lineNum">     201 </span>            : }
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            : void SortedMatrix_tester();
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span>            : #endif // _SORTEDMATRIX_H_
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

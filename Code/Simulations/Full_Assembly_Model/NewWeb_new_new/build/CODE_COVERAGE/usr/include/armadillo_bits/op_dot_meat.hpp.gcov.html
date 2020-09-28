@@ -1,0 +1,670 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/op_dot_meat.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - op_dot_meat.hpp<span style="font-size: 80%;"> (source / <a href="op_dot_meat.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2014 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : //! \addtogroup op_dot
+<span class="lineNum">      12 </span>            : //! @{
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : //! for two arrays, generic version for non-complex values
+<span class="lineNum">      17 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      18 </span>            : arma_hot
+<span class="lineNum">      19 </span>            : arma_inline
+<span class="lineNum">      20 </span>            : typename arma_not_cx&lt;eT&gt;::result
+<span class="lineNum">      21 </span>            : op_dot::direct_dot_arma(const uword n_elem, const eT* const A, const eT* const B)
+<span class="lineNum">      22 </span>            :   {
+<span class="lineNum">      23 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      24 </span>            :   
+<span class="lineNum">      25 </span>            :   #if defined(__FINITE_MATH_ONLY__) &amp;&amp; (__FINITE_MATH_ONLY__ &gt; 0)
+<span class="lineNum">      26 </span>            :     {
+<span class="lineNum">      27 </span>            :     eT val = eT(0);
+<span class="lineNum">      28 </span>            :     
+<span class="lineNum">      29 </span>            :     for(uword i=0; i&lt;n_elem; ++i)
+<span class="lineNum">      30 </span>            :       {
+<span class="lineNum">      31 </span>            :       val += A[i] * B[i];
+<span class="lineNum">      32 </span>            :       }
+<span class="lineNum">      33 </span>            :     
+<span class="lineNum">      34 </span>            :     return val;
+<span class="lineNum">      35 </span>            :     }
+<span class="lineNum">      36 </span>            :   #else
+<span class="lineNum">      37 </span>            :     {
+<span class="lineNum">      38 </span>            :     eT val1 = eT(0);
+<span class="lineNum">      39 </span>            :     eT val2 = eT(0);
+<span class="lineNum">      40 </span>            :     
+<span class="lineNum">      41 </span>            :     uword i, j;
+<span class="lineNum">      42 </span>            :     
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :     for(i=0, j=1; j&lt;n_elem; i+=2, j+=2)</span>
+<span class="lineNum">      44 </span>            :       {
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :       val1 += A[i] * B[i];</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :       val2 += A[j] * B[j];</span>
+<span class="lineNum">      47 </span>            :       }
+<span class="lineNum">      48 </span>            :     
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 :     if(i &lt; n_elem)</span>
+<span class="lineNum">      50 </span>            :       {
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :       val1 += A[i] * B[i];</span>
+<span class="lineNum">      52 </span>            :       }
+<span class="lineNum">      53 </span>            :     
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :     return val1 + val2;</span>
+<span class="lineNum">      55 </span>            :     }
+<span class="lineNum">      56 </span>            :   #endif
+<span class="lineNum">      57 </span>            :   }
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : //! for two arrays, generic version for complex values
+<span class="lineNum">      62 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      63 </span>            : arma_hot
+<span class="lineNum">      64 </span>            : inline
+<span class="lineNum">      65 </span>            : typename arma_cx_only&lt;eT&gt;::result
+<span class="lineNum">      66 </span>            : op_dot::direct_dot_arma(const uword n_elem, const eT* const A, const eT* const B)
+<span class="lineNum">      67 </span>            :   {
+<span class="lineNum">      68 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      69 </span>            :   
+<span class="lineNum">      70 </span>            :   typedef typename get_pod_type&lt;eT&gt;::result T;
+<span class="lineNum">      71 </span>            :   
+<span class="lineNum">      72 </span>            :   T val_real = T(0);
+<span class="lineNum">      73 </span>            :   T val_imag = T(0);
+<span class="lineNum">      74 </span>            :   
+<span class="lineNum">      75 </span>            :   for(uword i=0; i&lt;n_elem; ++i)
+<span class="lineNum">      76 </span>            :     {
+<span class="lineNum">      77 </span>            :     const std::complex&lt;T&gt;&amp; X = A[i];
+<span class="lineNum">      78 </span>            :     const std::complex&lt;T&gt;&amp; Y = B[i];
+<span class="lineNum">      79 </span>            :     
+<span class="lineNum">      80 </span>            :     const T a = X.real();
+<span class="lineNum">      81 </span>            :     const T b = X.imag();
+<span class="lineNum">      82 </span>            :     
+<span class="lineNum">      83 </span>            :     const T c = Y.real();
+<span class="lineNum">      84 </span>            :     const T d = Y.imag();
+<span class="lineNum">      85 </span>            :     
+<span class="lineNum">      86 </span>            :     val_real += (a*c) - (b*d);
+<span class="lineNum">      87 </span>            :     val_imag += (a*d) + (b*c);
+<span class="lineNum">      88 </span>            :     }
+<span class="lineNum">      89 </span>            :   
+<span class="lineNum">      90 </span>            :   return std::complex&lt;T&gt;(val_real, val_imag);
+<span class="lineNum">      91 </span>            :   }
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : //! for two arrays, float and double version
+<span class="lineNum">      96 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      97 </span>            : arma_hot
+<a name="98"><span class="lineNum">      98 </span>            : inline</a>
+<span class="lineNum">      99 </span>            : typename arma_real_only&lt;eT&gt;::result
+<span class="lineNum">     100 </span><span class="lineNoCov">          0 : op_dot::direct_dot(const uword n_elem, const eT* const A, const eT* const B)</span>
+<span class="lineNum">     101 </span>            :   {
+<span class="lineNum">     102 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     103 </span>            :   
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :   if( n_elem &lt;= 32u )</span>
+<span class="lineNum">     105 </span>            :     {
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :     return op_dot::direct_dot_arma(n_elem, A, B);</span>
+<span class="lineNum">     107 </span>            :     }
+<span class="lineNum">     108 </span>            :   else
+<span class="lineNum">     109 </span>            :     {
+<span class="lineNum">     110 </span>            :     #if defined(ARMA_USE_ATLAS)
+<span class="lineNum">     111 </span>            :       {
+<span class="lineNum">     112 </span>            :       arma_extra_debug_print(&quot;atlas::cblas_dot()&quot;);
+<span class="lineNum">     113 </span>            :       
+<span class="lineNum">     114 </span>            :       return atlas::cblas_dot(n_elem, A, B);
+<span class="lineNum">     115 </span>            :       }
+<span class="lineNum">     116 </span>            :     #elif defined(ARMA_USE_BLAS)
+<span class="lineNum">     117 </span>            :       {
+<span class="lineNum">     118 </span>            :       arma_extra_debug_print(&quot;blas::dot()&quot;);
+<span class="lineNum">     119 </span>            :       
+<span class="lineNum">     120 </span><span class="lineNoCov">          0 :       return blas::dot(n_elem, A, B);</span>
+<span class="lineNum">     121 </span>            :       }
+<span class="lineNum">     122 </span>            :     #else
+<span class="lineNum">     123 </span>            :       {
+<span class="lineNum">     124 </span>            :       return op_dot::direct_dot_arma(n_elem, A, B);
+<span class="lineNum">     125 </span>            :       }
+<span class="lineNum">     126 </span>            :     #endif
+<span class="lineNum">     127 </span>            :     }
+<span class="lineNum">     128 </span>            :   }
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : //! for two arrays, complex version
+<span class="lineNum">     133 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     134 </span>            : inline
+<span class="lineNum">     135 </span>            : arma_hot
+<span class="lineNum">     136 </span>            : typename arma_cx_only&lt;eT&gt;::result
+<span class="lineNum">     137 </span>            : op_dot::direct_dot(const uword n_elem, const eT* const A, const eT* const B)
+<span class="lineNum">     138 </span>            :   {
+<span class="lineNum">     139 </span>            :   if( n_elem &lt;= 16u )
+<span class="lineNum">     140 </span>            :     {
+<span class="lineNum">     141 </span>            :     return op_dot::direct_dot_arma(n_elem, A, B);
+<span class="lineNum">     142 </span>            :     }
+<span class="lineNum">     143 </span>            :   else
+<span class="lineNum">     144 </span>            :     {
+<span class="lineNum">     145 </span>            :     #if defined(ARMA_USE_ATLAS)
+<span class="lineNum">     146 </span>            :       {
+<span class="lineNum">     147 </span>            :       arma_extra_debug_print(&quot;atlas::cblas_cx_dot()&quot;);
+<span class="lineNum">     148 </span>            :       
+<span class="lineNum">     149 </span>            :       return atlas::cblas_cx_dot(n_elem, A, B);
+<span class="lineNum">     150 </span>            :       }
+<span class="lineNum">     151 </span>            :     #elif defined(ARMA_USE_BLAS)
+<span class="lineNum">     152 </span>            :       {
+<span class="lineNum">     153 </span>            :       arma_extra_debug_print(&quot;blas::dot()&quot;);
+<span class="lineNum">     154 </span>            :       
+<span class="lineNum">     155 </span>            :       return blas::dot(n_elem, A, B);
+<span class="lineNum">     156 </span>            :       }
+<span class="lineNum">     157 </span>            :     #else
+<span class="lineNum">     158 </span>            :       {
+<span class="lineNum">     159 </span>            :       return op_dot::direct_dot_arma(n_elem, A, B);
+<span class="lineNum">     160 </span>            :       }
+<span class="lineNum">     161 </span>            :     #endif
+<span class="lineNum">     162 </span>            :     }
+<span class="lineNum">     163 </span>            :   }
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            : //! for two arrays, integral version
+<span class="lineNum">     168 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     169 </span>            : arma_hot
+<span class="lineNum">     170 </span>            : inline
+<span class="lineNum">     171 </span>            : typename arma_integral_only&lt;eT&gt;::result
+<span class="lineNum">     172 </span>            : op_dot::direct_dot(const uword n_elem, const eT* const A, const eT* const B)
+<span class="lineNum">     173 </span>            :   {
+<span class="lineNum">     174 </span>            :   return op_dot::direct_dot_arma(n_elem, A, B);
+<span class="lineNum">     175 </span>            :   }
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            : //! for three arrays
+<span class="lineNum">     181 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     182 </span>            : arma_hot
+<span class="lineNum">     183 </span>            : inline
+<span class="lineNum">     184 </span>            : eT
+<span class="lineNum">     185 </span>            : op_dot::direct_dot(const uword n_elem, const eT* const A, const eT* const B, const eT* C)
+<span class="lineNum">     186 </span>            :   {
+<span class="lineNum">     187 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     188 </span>            :   
+<span class="lineNum">     189 </span>            :   eT val = eT(0);
+<span class="lineNum">     190 </span>            :   
+<span class="lineNum">     191 </span>            :   for(uword i=0; i&lt;n_elem; ++i)
+<span class="lineNum">     192 </span>            :     {
+<span class="lineNum">     193 </span>            :     val += A[i] * B[i] * C[i];
+<span class="lineNum">     194 </span>            :     }
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            :   return val;
+<span class="lineNum">     197 </span>            :   }
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     202 </span>            : arma_hot
+<span class="lineNum">     203 </span>            : inline
+<span class="lineNum">     204 </span>            : typename T1::elem_type
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 : op_dot::apply(const T1&amp; X, const T2&amp; Y)</span>
+<span class="lineNum">     206 </span>            :   {
+<span class="lineNum">     207 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     208 </span>            :   
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :   const bool prefer_at_accessor = (Proxy&lt;T1&gt;::prefer_at_accessor) || (Proxy&lt;T2&gt;::prefer_at_accessor);</span>
+<span class="lineNum">     210 </span>            :   
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :   const bool have_direct_mem = ((is_Mat&lt;T1&gt;::value || is_subview_col&lt;T1&gt;::value) &amp;&amp; (is_Mat&lt;T2&gt;::value || is_subview_col&lt;T2&gt;::value));</span>
+<span class="lineNum">     212 </span>            :   
+<span class="lineNum">     213 </span>            :   if(prefer_at_accessor || have_direct_mem)
+<span class="lineNum">     214 </span>            :     {
+<span class="lineNum">     215 </span>            :     const quasi_unwrap&lt;T1&gt; A(X);
+<span class="lineNum">     216 </span>            :     const quasi_unwrap&lt;T2&gt; B(Y);
+<span class="lineNum">     217 </span>            :     
+<span class="lineNum">     218 </span>            :     arma_debug_check( (A.M.n_elem != B.M.n_elem), &quot;dot(): objects must have the same number of elements&quot; );
+<span class="lineNum">     219 </span>            :     
+<span class="lineNum">     220 </span>            :     return op_dot::direct_dot(A.M.n_elem, A.M.memptr(), B.M.memptr());
+<span class="lineNum">     221 </span>            :     }
+<span class="lineNum">     222 </span>            :   else
+<span class="lineNum">     223 </span>            :     {
+<span class="lineNum">     224 </span>            :     if(is_subview_row&lt;T1&gt;::value &amp;&amp; is_subview_row&lt;T2&gt;::value)
+<span class="lineNum">     225 </span>            :       {
+<span class="lineNum">     226 </span>            :       typedef typename T1::elem_type eT;
+<span class="lineNum">     227 </span>            :       
+<span class="lineNum">     228 </span>            :       const subview_row&lt;eT&gt;&amp; A = reinterpret_cast&lt; const subview_row&lt;eT&gt;&amp; &gt;(X);
+<span class="lineNum">     229 </span>            :       const subview_row&lt;eT&gt;&amp; B = reinterpret_cast&lt; const subview_row&lt;eT&gt;&amp; &gt;(Y);
+<span class="lineNum">     230 </span>            :       
+<span class="lineNum">     231 </span>            :       if( (A.m.n_rows == 1) &amp;&amp; (B.m.n_rows == 1) )
+<span class="lineNum">     232 </span>            :         {
+<span class="lineNum">     233 </span>            :         arma_debug_check( (A.n_elem != B.n_elem), &quot;dot(): objects must have the same number of elements&quot; );
+<span class="lineNum">     234 </span>            :         
+<span class="lineNum">     235 </span>            :         const eT* A_mem = A.m.memptr();
+<span class="lineNum">     236 </span>            :         const eT* B_mem = B.m.memptr();
+<span class="lineNum">     237 </span>            :         
+<span class="lineNum">     238 </span>            :         return op_dot::direct_dot(A.n_elem, &amp;A_mem[A.aux_col1], &amp;B_mem[B.aux_col1]);
+<span class="lineNum">     239 </span>            :         }
+<span class="lineNum">     240 </span>            :       }
+<span class="lineNum">     241 </span>            :     
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :     const Proxy&lt;T1&gt; PA(X);</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :     const Proxy&lt;T2&gt; PB(Y);</span>
+<span class="lineNum">     244 </span>            :     
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :     arma_debug_check( (PA.get_n_elem() != PB.get_n_elem()), &quot;dot(): objects must have the same number of elements&quot; );</span>
+<span class="lineNum">     246 </span>            :     
+<span class="lineNum">     247 </span>            :     if(is_Mat&lt;typename Proxy&lt;T1&gt;::stored_type&gt;::value &amp;&amp; is_Mat&lt;typename Proxy&lt;T2&gt;::stored_type&gt;::value)
+<span class="lineNum">     248 </span>            :       {
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :       const quasi_unwrap&lt;typename Proxy&lt;T1&gt;::stored_type&gt; A(PA.Q);</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :       const quasi_unwrap&lt;typename Proxy&lt;T2&gt;::stored_type&gt; B(PB.Q);</span>
+<span class="lineNum">     251 </span>            :       
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :       return op_dot::direct_dot(A.M.n_elem, A.M.memptr(), B.M.memptr());</span>
+<span class="lineNum">     253 </span>            :       }
+<span class="lineNum">     254 </span>            :     
+<span class="lineNum">     255 </span>            :     return op_dot::apply_proxy(PA,PB);
+<span class="lineNum">     256 </span>            :     }
+<span class="lineNum">     257 </span>            :   }
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     262 </span>            : arma_hot
+<span class="lineNum">     263 </span>            : inline
+<span class="lineNum">     264 </span>            : typename arma_not_cx&lt;typename T1::elem_type&gt;::result
+<span class="lineNum">     265 </span>            : op_dot::apply_proxy(const Proxy&lt;T1&gt;&amp; PA, const Proxy&lt;T2&gt;&amp; PB)
+<span class="lineNum">     266 </span>            :   {
+<span class="lineNum">     267 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     268 </span>            :   
+<span class="lineNum">     269 </span>            :   typedef typename T1::elem_type      eT;
+<span class="lineNum">     270 </span>            :   typedef typename Proxy&lt;T1&gt;::ea_type ea_type1;
+<span class="lineNum">     271 </span>            :   typedef typename Proxy&lt;T2&gt;::ea_type ea_type2;
+<span class="lineNum">     272 </span>            :   
+<span class="lineNum">     273 </span>            :   const uword N = PA.get_n_elem();
+<span class="lineNum">     274 </span>            :   
+<span class="lineNum">     275 </span>            :   ea_type1 A = PA.get_ea();
+<span class="lineNum">     276 </span>            :   ea_type2 B = PB.get_ea();
+<span class="lineNum">     277 </span>            :   
+<span class="lineNum">     278 </span>            :   eT val1 = eT(0);
+<span class="lineNum">     279 </span>            :   eT val2 = eT(0);
+<span class="lineNum">     280 </span>            :   
+<span class="lineNum">     281 </span>            :   uword i,j;
+<span class="lineNum">     282 </span>            :   
+<span class="lineNum">     283 </span>            :   for(i=0, j=1; j&lt;N; i+=2, j+=2)
+<span class="lineNum">     284 </span>            :     {
+<span class="lineNum">     285 </span>            :     val1 += A[i] * B[i];
+<span class="lineNum">     286 </span>            :     val2 += A[j] * B[j];
+<span class="lineNum">     287 </span>            :     }
+<span class="lineNum">     288 </span>            :   
+<span class="lineNum">     289 </span>            :   if(i &lt; N)
+<span class="lineNum">     290 </span>            :     {
+<span class="lineNum">     291 </span>            :     val1 += A[i] * B[i];
+<span class="lineNum">     292 </span>            :     }
+<span class="lineNum">     293 </span>            :   
+<span class="lineNum">     294 </span>            :   return val1 + val2;
+<span class="lineNum">     295 </span>            :   }
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     300 </span>            : arma_hot
+<span class="lineNum">     301 </span>            : inline
+<span class="lineNum">     302 </span>            : typename arma_cx_only&lt;typename T1::elem_type&gt;::result
+<span class="lineNum">     303 </span>            : op_dot::apply_proxy(const Proxy&lt;T1&gt;&amp; PA, const Proxy&lt;T2&gt;&amp; PB)
+<span class="lineNum">     304 </span>            :   {
+<span class="lineNum">     305 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     306 </span>            :   
+<span class="lineNum">     307 </span>            :   typedef typename T1::elem_type            eT;
+<span class="lineNum">     308 </span>            :   typedef typename get_pod_type&lt;eT&gt;::result  T;
+<span class="lineNum">     309 </span>            :   
+<span class="lineNum">     310 </span>            :   typedef typename Proxy&lt;T1&gt;::ea_type ea_type1;
+<span class="lineNum">     311 </span>            :   typedef typename Proxy&lt;T2&gt;::ea_type ea_type2;
+<span class="lineNum">     312 </span>            :   
+<span class="lineNum">     313 </span>            :   const uword N = PA.get_n_elem();
+<span class="lineNum">     314 </span>            :   
+<span class="lineNum">     315 </span>            :   ea_type1 A = PA.get_ea();
+<span class="lineNum">     316 </span>            :   ea_type2 B = PB.get_ea();
+<span class="lineNum">     317 </span>            :   
+<span class="lineNum">     318 </span>            :   T val_real = T(0);
+<span class="lineNum">     319 </span>            :   T val_imag = T(0);
+<span class="lineNum">     320 </span>            :   
+<span class="lineNum">     321 </span>            :   for(uword i=0; i&lt;N; ++i)
+<span class="lineNum">     322 </span>            :     {
+<span class="lineNum">     323 </span>            :     const std::complex&lt;T&gt; xx = A[i];
+<span class="lineNum">     324 </span>            :     const std::complex&lt;T&gt; yy = B[i];
+<span class="lineNum">     325 </span>            :     
+<span class="lineNum">     326 </span>            :     const T a = xx.real();
+<span class="lineNum">     327 </span>            :     const T b = xx.imag();
+<span class="lineNum">     328 </span>            :     
+<span class="lineNum">     329 </span>            :     const T c = yy.real();
+<span class="lineNum">     330 </span>            :     const T d = yy.imag();
+<span class="lineNum">     331 </span>            :     
+<span class="lineNum">     332 </span>            :     val_real += (a*c) - (b*d);
+<span class="lineNum">     333 </span>            :     val_imag += (a*d) + (b*c);
+<span class="lineNum">     334 </span>            :     }
+<span class="lineNum">     335 </span>            :   
+<span class="lineNum">     336 </span>            :   return std::complex&lt;T&gt;(val_real, val_imag);
+<span class="lineNum">     337 </span>            :   }
+<span class="lineNum">     338 </span>            : 
+<span class="lineNum">     339 </span>            : 
+<span class="lineNum">     340 </span>            : 
+<span class="lineNum">     341 </span>            : //
+<span class="lineNum">     342 </span>            : // op_norm_dot
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     347 </span>            : arma_hot
+<span class="lineNum">     348 </span>            : inline
+<span class="lineNum">     349 </span>            : typename T1::elem_type
+<span class="lineNum">     350 </span>            : op_norm_dot::apply(const T1&amp; X, const T2&amp; Y)
+<span class="lineNum">     351 </span>            :   {
+<span class="lineNum">     352 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     353 </span>            :   
+<span class="lineNum">     354 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     355 </span>            :   typedef typename T1::pod_type   T;
+<span class="lineNum">     356 </span>            :   
+<span class="lineNum">     357 </span>            :   const quasi_unwrap&lt;T1&gt; tmp1(X);
+<span class="lineNum">     358 </span>            :   const quasi_unwrap&lt;T2&gt; tmp2(Y);
+<span class="lineNum">     359 </span>            :   
+<span class="lineNum">     360 </span>            :   const Col&lt;eT&gt; A( const_cast&lt;eT*&gt;(tmp1.M.memptr()), tmp1.M.n_elem, false );
+<span class="lineNum">     361 </span>            :   const Col&lt;eT&gt; B( const_cast&lt;eT*&gt;(tmp2.M.memptr()), tmp2.M.n_elem, false );
+<span class="lineNum">     362 </span>            :   
+<span class="lineNum">     363 </span>            :   arma_debug_check( (A.n_elem != B.n_elem), &quot;norm_dot(): objects must have the same number of elements&quot; );
+<span class="lineNum">     364 </span>            :   
+<span class="lineNum">     365 </span>            :   const T denom = norm(A,2) * norm(B,2);
+<span class="lineNum">     366 </span>            :   
+<span class="lineNum">     367 </span>            :   return (denom != T(0)) ? ( op_dot::apply(A,B) / denom ) : eT(0);
+<span class="lineNum">     368 </span>            :   }
+<span class="lineNum">     369 </span>            : 
+<span class="lineNum">     370 </span>            : 
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span>            : //
+<span class="lineNum">     373 </span>            : // op_cdot
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span>            : 
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     378 </span>            : arma_hot
+<span class="lineNum">     379 </span>            : inline
+<span class="lineNum">     380 </span>            : eT
+<span class="lineNum">     381 </span>            : op_cdot::direct_cdot_arma(const uword n_elem, const eT* const A, const eT* const B)
+<span class="lineNum">     382 </span>            :   {
+<span class="lineNum">     383 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     384 </span>            :   
+<span class="lineNum">     385 </span>            :   typedef typename get_pod_type&lt;eT&gt;::result T;
+<span class="lineNum">     386 </span>            :   
+<span class="lineNum">     387 </span>            :   T val_real = T(0);
+<span class="lineNum">     388 </span>            :   T val_imag = T(0);
+<span class="lineNum">     389 </span>            :   
+<span class="lineNum">     390 </span>            :   for(uword i=0; i&lt;n_elem; ++i)
+<span class="lineNum">     391 </span>            :     {
+<span class="lineNum">     392 </span>            :     const std::complex&lt;T&gt;&amp; X = A[i];
+<span class="lineNum">     393 </span>            :     const std::complex&lt;T&gt;&amp; Y = B[i];
+<span class="lineNum">     394 </span>            :     
+<span class="lineNum">     395 </span>            :     const T a = X.real();
+<span class="lineNum">     396 </span>            :     const T b = X.imag();
+<span class="lineNum">     397 </span>            :     
+<span class="lineNum">     398 </span>            :     const T c = Y.real();
+<span class="lineNum">     399 </span>            :     const T d = Y.imag();
+<span class="lineNum">     400 </span>            :     
+<span class="lineNum">     401 </span>            :     val_real += (a*c) + (b*d);
+<span class="lineNum">     402 </span>            :     val_imag += (a*d) - (b*c);
+<span class="lineNum">     403 </span>            :     }
+<span class="lineNum">     404 </span>            :   
+<span class="lineNum">     405 </span>            :   return std::complex&lt;T&gt;(val_real, val_imag);
+<span class="lineNum">     406 </span>            :   }
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span>            : 
+<span class="lineNum">     410 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     411 </span>            : arma_hot
+<span class="lineNum">     412 </span>            : inline
+<span class="lineNum">     413 </span>            : eT
+<span class="lineNum">     414 </span>            : op_cdot::direct_cdot(const uword n_elem, const eT* const A, const eT* const B)
+<span class="lineNum">     415 </span>            :   {
+<span class="lineNum">     416 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     417 </span>            :   
+<span class="lineNum">     418 </span>            :   if( n_elem &lt;= 32u )
+<span class="lineNum">     419 </span>            :     {
+<span class="lineNum">     420 </span>            :     return op_cdot::direct_cdot_arma(n_elem, A, B);
+<span class="lineNum">     421 </span>            :     }
+<span class="lineNum">     422 </span>            :   else
+<span class="lineNum">     423 </span>            :     {
+<span class="lineNum">     424 </span>            :     #if defined(ARMA_USE_BLAS)
+<span class="lineNum">     425 </span>            :       {
+<span class="lineNum">     426 </span>            :       arma_extra_debug_print(&quot;blas::gemv()&quot;);
+<span class="lineNum">     427 </span>            :       
+<span class="lineNum">     428 </span>            :       // using gemv() workaround due to compatibility issues with cdotc() and zdotc()
+<span class="lineNum">     429 </span>            :       
+<span class="lineNum">     430 </span>            :       const char trans   = 'C';
+<span class="lineNum">     431 </span>            :       
+<span class="lineNum">     432 </span>            :       const blas_int m   = blas_int(n_elem);
+<span class="lineNum">     433 </span>            :       const blas_int n   = 1;
+<span class="lineNum">     434 </span>            :       //const blas_int lda = (n_elem &gt; 0) ? blas_int(n_elem) : blas_int(1);
+<span class="lineNum">     435 </span>            :       const blas_int inc = 1;
+<span class="lineNum">     436 </span>            :       
+<span class="lineNum">     437 </span>            :       const eT alpha     = eT(1);
+<span class="lineNum">     438 </span>            :       const eT beta      = eT(0);
+<span class="lineNum">     439 </span>            :       
+<span class="lineNum">     440 </span>            :       eT result[2];  // paranoia: using two elements instead of one
+<span class="lineNum">     441 </span>            :       
+<span class="lineNum">     442 </span>            :       //blas::gemv(&amp;trans, &amp;m, &amp;n, &amp;alpha, A, &amp;lda, B, &amp;inc, &amp;beta, &amp;result[0], &amp;inc);
+<span class="lineNum">     443 </span>            :       blas::gemv(&amp;trans, &amp;m, &amp;n, &amp;alpha, A, &amp;m, B, &amp;inc, &amp;beta, &amp;result[0], &amp;inc);
+<span class="lineNum">     444 </span>            :       
+<span class="lineNum">     445 </span>            :       return result[0];
+<span class="lineNum">     446 </span>            :       }
+<span class="lineNum">     447 </span>            :     #elif defined(ARMA_USE_ATLAS)
+<span class="lineNum">     448 </span>            :       {
+<span class="lineNum">     449 </span>            :       // TODO: use dedicated atlas functions cblas_cdotc_sub() and cblas_zdotc_sub() and retune threshold
+<span class="lineNum">     450 </span>            : 
+<span class="lineNum">     451 </span>            :       return op_cdot::direct_cdot_arma(n_elem, A, B);
+<span class="lineNum">     452 </span>            :       }
+<span class="lineNum">     453 </span>            :     #else
+<span class="lineNum">     454 </span>            :       {
+<span class="lineNum">     455 </span>            :       return op_cdot::direct_cdot_arma(n_elem, A, B);
+<span class="lineNum">     456 </span>            :       }
+<span class="lineNum">     457 </span>            :     #endif
+<span class="lineNum">     458 </span>            :     }
+<span class="lineNum">     459 </span>            :   }
+<span class="lineNum">     460 </span>            : 
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span>            : 
+<span class="lineNum">     463 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     464 </span>            : arma_hot
+<span class="lineNum">     465 </span>            : inline
+<span class="lineNum">     466 </span>            : typename T1::elem_type
+<span class="lineNum">     467 </span>            : op_cdot::apply(const T1&amp; X, const T2&amp; Y)
+<span class="lineNum">     468 </span>            :   {
+<span class="lineNum">     469 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     470 </span>            :   
+<span class="lineNum">     471 </span>            :   if( (is_Mat&lt;T1&gt;::value == true) &amp;&amp; (is_Mat&lt;T2&gt;::value == true) )
+<span class="lineNum">     472 </span>            :     {
+<span class="lineNum">     473 </span>            :     return op_cdot::apply_unwrap(X,Y);
+<span class="lineNum">     474 </span>            :     }
+<span class="lineNum">     475 </span>            :   else
+<span class="lineNum">     476 </span>            :     {
+<span class="lineNum">     477 </span>            :     return op_cdot::apply_proxy(X,Y);
+<span class="lineNum">     478 </span>            :     }
+<span class="lineNum">     479 </span>            :   }
+<span class="lineNum">     480 </span>            : 
+<span class="lineNum">     481 </span>            : 
+<span class="lineNum">     482 </span>            : 
+<span class="lineNum">     483 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     484 </span>            : arma_hot
+<span class="lineNum">     485 </span>            : inline
+<span class="lineNum">     486 </span>            : typename T1::elem_type
+<span class="lineNum">     487 </span>            : op_cdot::apply_unwrap(const T1&amp; X, const T2&amp; Y)
+<span class="lineNum">     488 </span>            :   {
+<span class="lineNum">     489 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     490 </span>            :   
+<span class="lineNum">     491 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     492 </span>            :   
+<span class="lineNum">     493 </span>            :   const unwrap&lt;T1&gt; tmp1(X);
+<span class="lineNum">     494 </span>            :   const unwrap&lt;T2&gt; tmp2(Y);
+<span class="lineNum">     495 </span>            :   
+<span class="lineNum">     496 </span>            :   const Mat&lt;eT&gt;&amp; A = tmp1.M;
+<span class="lineNum">     497 </span>            :   const Mat&lt;eT&gt;&amp; B = tmp2.M;
+<span class="lineNum">     498 </span>            :   
+<span class="lineNum">     499 </span>            :   arma_debug_check( (A.n_elem != B.n_elem), &quot;cdot(): objects must have the same number of elements&quot; );
+<span class="lineNum">     500 </span>            :   
+<span class="lineNum">     501 </span>            :   return op_cdot::direct_cdot( A.n_elem, A.mem, B.mem );
+<span class="lineNum">     502 </span>            :   }
+<span class="lineNum">     503 </span>            : 
+<span class="lineNum">     504 </span>            : 
+<span class="lineNum">     505 </span>            : 
+<span class="lineNum">     506 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     507 </span>            : arma_hot
+<span class="lineNum">     508 </span>            : inline
+<span class="lineNum">     509 </span>            : typename T1::elem_type
+<span class="lineNum">     510 </span>            : op_cdot::apply_proxy(const T1&amp; X, const T2&amp; Y)
+<span class="lineNum">     511 </span>            :   {
+<span class="lineNum">     512 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     513 </span>            :   
+<span class="lineNum">     514 </span>            :   typedef typename T1::elem_type            eT;
+<span class="lineNum">     515 </span>            :   typedef typename get_pod_type&lt;eT&gt;::result  T;
+<span class="lineNum">     516 </span>            :   
+<span class="lineNum">     517 </span>            :   typedef typename Proxy&lt;T1&gt;::ea_type ea_type1;
+<span class="lineNum">     518 </span>            :   typedef typename Proxy&lt;T2&gt;::ea_type ea_type2;
+<span class="lineNum">     519 </span>            :   
+<span class="lineNum">     520 </span>            :   const bool prefer_at_accessor = (Proxy&lt;T1&gt;::prefer_at_accessor) || (Proxy&lt;T2&gt;::prefer_at_accessor);
+<span class="lineNum">     521 </span>            :   
+<span class="lineNum">     522 </span>            :   if(prefer_at_accessor == false)
+<span class="lineNum">     523 </span>            :     {
+<span class="lineNum">     524 </span>            :     const Proxy&lt;T1&gt; PA(X);
+<span class="lineNum">     525 </span>            :     const Proxy&lt;T2&gt; PB(Y);
+<span class="lineNum">     526 </span>            :     
+<span class="lineNum">     527 </span>            :     const uword N = PA.get_n_elem();
+<span class="lineNum">     528 </span>            :     
+<span class="lineNum">     529 </span>            :     arma_debug_check( (N != PB.get_n_elem()), &quot;cdot(): objects must have the same number of elements&quot; );
+<span class="lineNum">     530 </span>            :     
+<span class="lineNum">     531 </span>            :     ea_type1 A = PA.get_ea();
+<span class="lineNum">     532 </span>            :     ea_type2 B = PB.get_ea();
+<span class="lineNum">     533 </span>            :     
+<span class="lineNum">     534 </span>            :     T val_real = T(0);
+<span class="lineNum">     535 </span>            :     T val_imag = T(0);
+<span class="lineNum">     536 </span>            :     
+<span class="lineNum">     537 </span>            :     for(uword i=0; i&lt;N; ++i)
+<span class="lineNum">     538 </span>            :       {
+<span class="lineNum">     539 </span>            :       const std::complex&lt;T&gt; AA = A[i];
+<span class="lineNum">     540 </span>            :       const std::complex&lt;T&gt; BB = B[i];
+<span class="lineNum">     541 </span>            :       
+<span class="lineNum">     542 </span>            :       const T a = AA.real();
+<span class="lineNum">     543 </span>            :       const T b = AA.imag();
+<span class="lineNum">     544 </span>            :       
+<span class="lineNum">     545 </span>            :       const T c = BB.real();
+<span class="lineNum">     546 </span>            :       const T d = BB.imag();
+<span class="lineNum">     547 </span>            :       
+<span class="lineNum">     548 </span>            :       val_real += (a*c) + (b*d);
+<span class="lineNum">     549 </span>            :       val_imag += (a*d) - (b*c);
+<span class="lineNum">     550 </span>            :       }
+<span class="lineNum">     551 </span>            :     
+<span class="lineNum">     552 </span>            :     return std::complex&lt;T&gt;(val_real, val_imag);
+<span class="lineNum">     553 </span>            :     }
+<span class="lineNum">     554 </span>            :   else
+<span class="lineNum">     555 </span>            :     {
+<span class="lineNum">     556 </span>            :     return op_cdot::apply_unwrap( X, Y );
+<span class="lineNum">     557 </span>            :     }
+<span class="lineNum">     558 </span>            :   }
+<span class="lineNum">     559 </span>            : 
+<span class="lineNum">     560 </span>            : 
+<span class="lineNum">     561 </span>            : 
+<span class="lineNum">     562 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     563 </span>            : arma_hot
+<span class="lineNum">     564 </span>            : inline
+<span class="lineNum">     565 </span>            : typename promote_type&lt;typename T1::elem_type, typename T2::elem_type&gt;::result
+<span class="lineNum">     566 </span>            : op_dot_mixed::apply(const T1&amp; A, const T2&amp; B)
+<span class="lineNum">     567 </span>            :   {
+<span class="lineNum">     568 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     569 </span>            :   
+<span class="lineNum">     570 </span>            :   typedef typename T1::elem_type in_eT1;
+<span class="lineNum">     571 </span>            :   typedef typename T2::elem_type in_eT2;
+<span class="lineNum">     572 </span>            :   
+<span class="lineNum">     573 </span>            :   typedef typename promote_type&lt;in_eT1, in_eT2&gt;::result out_eT;
+<span class="lineNum">     574 </span>            :   
+<span class="lineNum">     575 </span>            :   const Proxy&lt;T1&gt; PA(A);
+<span class="lineNum">     576 </span>            :   const Proxy&lt;T2&gt; PB(B);
+<span class="lineNum">     577 </span>            :   
+<span class="lineNum">     578 </span>            :   const uword N = PA.get_n_elem();
+<span class="lineNum">     579 </span>            :   
+<span class="lineNum">     580 </span>            :   arma_debug_check( (N != PB.get_n_elem()), &quot;dot(): objects must have the same number of elements&quot; );
+<span class="lineNum">     581 </span>            :   
+<span class="lineNum">     582 </span>            :   out_eT acc = out_eT(0);
+<span class="lineNum">     583 </span>            :   
+<span class="lineNum">     584 </span>            :   for(uword i=0; i &lt; N; ++i)
+<span class="lineNum">     585 </span>            :     {
+<span class="lineNum">     586 </span>            :     acc += upgrade_val&lt;in_eT1,in_eT2&gt;::apply(PA[i]) * upgrade_val&lt;in_eT1,in_eT2&gt;::apply(PB[i]);
+<span class="lineNum">     587 </span>            :     }
+<span class="lineNum">     588 </span>            :   
+<span class="lineNum">     589 </span>            :   return acc;
+<span class="lineNum">     590 </span>            :   }
+<span class="lineNum">     591 </span>            : 
+<span class="lineNum">     592 </span>            : 
+<span class="lineNum">     593 </span>            : 
+<span class="lineNum">     594 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

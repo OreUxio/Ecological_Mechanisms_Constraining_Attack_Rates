@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/random.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - random.h<span style="font-size: 80%;"> (source / <a href="random.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // $Id: random.h 2345 2013-12-13 10:52:12Z axel $</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : /// \file The project's interfact to random-number generators.
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : #ifndef __RANDOM_H__
+<span class="lineNum">       6 </span>            : #define __RANDOM_H__
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : // a fast random 32 bit interger
+<span class="lineNum">       9 </span>            : inline unsigned int random_int();
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      12 </span>            : #include &lt;boost/random/mersenne_twister.hpp&gt;
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : typedef boost::mt19937 myRandomEngine_t;
+<span class="lineNum">      15 </span>            : extern myRandomEngine_t myRandomEngine;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : // a random 32 bit random integer 
+<span class="lineNum">      18 </span>            : inline unsigned int random_int(){
+<span class="lineNum">      19 </span><span class="lineCov">        698 :   return myRandomEngine();</span>
+<span class="lineNum">      20 </span>            : }
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : // a uniformly distributed random number:
+<span class="lineNum">      23 </span>            : double unirand();
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : // a random interger uniformly distributed between 0 and upper_bound-1
+<span class="lineNum">      26 </span>            : int random_integer(int upper_bound);
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : // a random double uniformly distributed between 0 and upper_bound
+<span class="lineNum">      29 </span>            : double random_double(double upper_bound);
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : //**// starting form here we swich to using libCLHEP:
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : double gaussian(double mean, double std);
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : int poisson(double mu);
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : double random_exponential(double mean);
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : // sets the seed for all random number generators:
+<span class="lineNum">      40 </span>            : void set_random_seed(long int i);
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : /// member randint(i) generates random numbers &lt; i
+<span class="lineNum">      43 </span>            : class randint{
+<span class="lineNum">      44 </span>            : public:
+<span class="lineNum">      45 </span>            :   unsigned operator()(unsigned i){
+<span class="lineNum">      46 </span>            :     return unsigned(i*unirand());
+<span class="lineNum">      47 </span>            :   }
+<span class="lineNum">      48 </span>            : };
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : /// Permutation, defined here for random permutations
+<span class="lineNum">      51 </span><span class="lineCov">         90 : class permutation : public std::vector&lt;int&gt; {</span>
+<span class="lineNum">      52 </span>            : public:
+<span class="lineNum">      53 </span><span class="lineCov">         90 :   permutation(int size=0):std::vector&lt;int&gt;(size){};</span>
+<span class="lineNum">      54 </span>            :   permutation inverse();
+<span class="lineNum">      55 </span>            : };
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : permutation random_permutation(int s);
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : #endif // __RANDOM_H__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

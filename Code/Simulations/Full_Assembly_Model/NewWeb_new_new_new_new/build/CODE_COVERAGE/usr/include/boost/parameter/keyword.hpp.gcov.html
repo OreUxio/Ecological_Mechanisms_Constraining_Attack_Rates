@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/boost/parameter/keyword.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/parameter</a> - keyword.hpp<span style="font-size: 80%;"> (source / <a href="keyword.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright Daniel Wallin, David Abrahams 2005. Use, modification and</a>
+<span class="lineNum">       2 </span>            : // distribution is subject to the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef KEYWORD_050328_HPP
+<span class="lineNum">       7 </span>            : #define KEYWORD_050328_HPP
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;boost/parameter/aux_/unwrap_cv_reference.hpp&gt;
+<span class="lineNum">      10 </span>            : #include &lt;boost/parameter/aux_/tag.hpp&gt;
+<span class="lineNum">      11 </span>            : #include &lt;boost/parameter/aux_/default.hpp&gt;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : namespace boost { namespace parameter {
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : // Instances of unique specializations of keyword&lt;...&gt; serve to
+<span class="lineNum">      16 </span>            : // associate arguments with parameter names.  For example:
+<span class="lineNum">      17 </span>            : //
+<span class="lineNum">      18 </span>            : //    struct rate_;           // parameter names
+<span class="lineNum">      19 </span>            : //    struct skew_;
+<span class="lineNum">      20 </span>            : //    namespace
+<span class="lineNum">      21 </span>            : //    {
+<span class="lineNum">      22 </span>            : //      keyword&lt;rate_&gt; rate;  // keywords
+<span class="lineNum">      23 </span>            : //      keyword&lt;skew_&gt; skew;
+<span class="lineNum">      24 </span>            : //    }
+<span class="lineNum">      25 </span>            : //
+<span class="lineNum">      26 </span>            : //    ...
+<span class="lineNum">      27 </span>            : //
+<span class="lineNum">      28 </span>            : //    f(rate = 1, skew = 2.4);
+<span class="lineNum">      29 </span>            : //
+<span class="lineNum">      30 </span>            : template &lt;class Tag&gt;
+<span class="lineNum">      31 </span>            : struct keyword
+<span class="lineNum">      32 </span>            : {
+<span class="lineNum">      33 </span>            :     template &lt;class T&gt;
+<span class="lineNum">      34 </span>            :     typename aux::tag&lt;Tag, T&gt;::type const
+<span class="lineNum">      35 </span>            :     operator=(T&amp; x) const
+<span class="lineNum">      36 </span>            :     {
+<span class="lineNum">      37 </span>            :         typedef typename aux::tag&lt;Tag, T&gt;::type result;
+<span class="lineNum">      38 </span>            :         return result(x);
+<span class="lineNum">      39 </span>            :     }
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">      42 </span>            :     aux::default_&lt;Tag, Default&gt;
+<span class="lineNum">      43 </span>            :     operator|(Default&amp; default_) const
+<span class="lineNum">      44 </span>            :     {
+<span class="lineNum">      45 </span>            :         return aux::default_&lt;Tag, Default&gt;(default_);
+<span class="lineNum">      46 </span>            :     }
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">      49 </span>            :     aux::lazy_default&lt;Tag, Default&gt;
+<span class="lineNum">      50 </span>            :     operator||(Default&amp; default_) const
+<span class="lineNum">      51 </span>            :     {
+<span class="lineNum">      52 </span>            :         return aux::lazy_default&lt;Tag, Default&gt;(default_);
+<span class="lineNum">      53 </span>            :     }
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : #if !BOOST_WORKAROUND(BOOST_MSVC, &lt; 1300)  // avoid partial ordering bugs
+<span class="lineNum">      56 </span>            :     template &lt;class T&gt;
+<span class="lineNum">      57 </span>            :     typename aux::tag&lt;Tag, T const&gt;::type const
+<span class="lineNum">      58 </span>            :     operator=(T const&amp; x) const
+<span class="lineNum">      59 </span>            :     {
+<span class="lineNum">      60 </span>            :         typedef typename aux::tag&lt;Tag, T const&gt;::type result;
+<span class="lineNum">      61 </span>            :         return result(x);
+<span class="lineNum">      62 </span>            :     }
+<span class="lineNum">      63 </span>            : #endif 
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            : #if !BOOST_WORKAROUND(BOOST_MSVC, &lt; 1300)  // avoid partial ordering bugs
+<span class="lineNum">      66 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">      67 </span>            :     aux::default_&lt;Tag, const Default&gt;
+<span class="lineNum">      68 </span>            :     operator|(const Default&amp; default_) const
+<span class="lineNum">      69 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, == 1300)
+<span class="lineNum">      70 </span>            :         volatile
+<span class="lineNum">      71 </span>            : #endif 
+<span class="lineNum">      72 </span>            :     {
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :         return aux::default_&lt;Tag, const Default&gt;(default_);</span>
+<span class="lineNum">      74 </span>            :     }
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">      77 </span>            :     aux::lazy_default&lt;Tag, Default&gt;
+<span class="lineNum">      78 </span>            :     operator||(Default const&amp; default_) const
+<span class="lineNum">      79 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, == 1300)
+<span class="lineNum">      80 </span>            :         volatile
+<span class="lineNum">      81 </span>            : #endif 
+<span class="lineNum">      82 </span>            :     {
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :         return aux::lazy_default&lt;Tag, Default&gt;(default_);</span>
+<span class="lineNum">      84 </span>            :     }
+<span class="lineNum">      85 </span>            : #endif
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            :  public: // Insurance against ODR violations
+<span class="lineNum">      88 </span>            :     
+<span class="lineNum">      89 </span>            :     // People will need to define these keywords in header files.  To
+<span class="lineNum">      90 </span>            :     // prevent ODR violations, it's important that the keyword used in
+<span class="lineNum">      91 </span>            :     // every instantiation of a function template is the same object.
+<span class="lineNum">      92 </span>            :     // We provide a reference to a common instance of each keyword
+<span class="lineNum">      93 </span>            :     // object and prevent construction by users.
+<span class="lineNum">      94 </span>            :     static keyword&lt;Tag&gt; const instance;
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            :     // This interface is deprecated
+<span class="lineNum">      97 </span>            :     static keyword&lt;Tag&gt;&amp; get()
+<span class="lineNum">      98 </span>            :     {
+<span class="lineNum">      99 </span>            :         return const_cast&lt;keyword&lt;Tag&gt;&amp;&gt;(instance);
+<span class="lineNum">     100 </span>            :     }
+<span class="lineNum">     101 </span>            : };
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : template &lt;class Tag&gt;
+<span class="lineNum">     104 </span>            : keyword&lt;Tag&gt; const keyword&lt;Tag&gt;::instance = {};
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            : // Reduces boilerplate required to declare and initialize keywords
+<span class="lineNum">     107 </span>            : // without violating ODR.  Declares a keyword tag type with the given
+<span class="lineNum">     108 </span>            : // name in namespace tag_namespace, and declares and initializes a
+<span class="lineNum">     109 </span>            : // reference in an anonymous namespace to a singleton instance of that
+<span class="lineNum">     110 </span>            : // type.
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, &lt; 1300)
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : # define BOOST_PARAMETER_KEYWORD(tag_namespace,name)                    \
+<span class="lineNum">     115 </span>            :     namespace tag_namespace                                             \
+<span class="lineNum">     116 </span>            :     {                                                                   \
+<span class="lineNum">     117 </span>            :       struct name                                                       \
+<span class="lineNum">     118 </span>            :       {                                                                 \
+<span class="lineNum">     119 </span>            :           static char const* keyword_name()                             \
+<span class="lineNum">     120 </span>            :           {                                                             \
+<span class="lineNum">     121 </span>            :               return #name;                                             \
+<span class="lineNum">     122 </span>            :           }                                                             \
+<span class="lineNum">     123 </span>            :       };                                                                \
+<span class="lineNum">     124 </span>            :     }                                                                   \
+<span class="lineNum">     125 </span>            :     static ::boost::parameter::keyword&lt;tag_namespace::name&gt; const&amp; name \
+<span class="lineNum">     126 </span>            :        = ::boost::parameter::keyword&lt;tag_namespace::name&gt;::instance;
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : #else
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : #define BOOST_PARAMETER_KEYWORD(tag_namespace,name)                 \
+<span class="lineNum">     131 </span>            :     namespace tag_namespace                                         \
+<span class="lineNum">     132 </span>            :     {                                                               \
+<span class="lineNum">     133 </span>            :       struct name                                                   \
+<span class="lineNum">     134 </span>            :       {                                                             \
+<span class="lineNum">     135 </span>            :           static char const* keyword_name()                         \
+<span class="lineNum">     136 </span>            :           {                                                         \
+<span class="lineNum">     137 </span>            :               return #name;                                         \
+<span class="lineNum">     138 </span>            :           }                                                         \
+<span class="lineNum">     139 </span>            :       };                                                            \
+<span class="lineNum">     140 </span>            :     }                                                               \
+<span class="lineNum">     141 </span>            :     namespace                                                       \
+<span class="lineNum">     142 </span>            :     {                                                               \
+<span class="lineNum">     143 </span>            :        ::boost::parameter::keyword&lt;tag_namespace::name&gt; const&amp; name \
+<span class="lineNum">     144 </span>            :        = ::boost::parameter::keyword&lt;tag_namespace::name&gt;::instance;\
+<span class="lineNum">     145 </span>            :     }
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : #endif
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : }} // namespace boost::parameter
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : #endif // KEYWORD_050328_HPP
+<span class="lineNum">     152 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

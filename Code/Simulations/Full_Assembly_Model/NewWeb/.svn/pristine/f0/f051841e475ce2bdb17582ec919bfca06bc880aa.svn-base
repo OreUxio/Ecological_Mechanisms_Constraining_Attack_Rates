@@ -1,0 +1,99 @@
+// $Id$
+
+#include <limits.h>
+#include <stdio.h>
+#include "three_column_files.h"
+
+using namespace std;
+
+// helper:
+static bool separator_then_digit(FILE * f){
+  char c=getc(f);
+  if(c!=','){
+    ungetc(c,f);
+    return false;
+  }
+  c=getc(f);
+  if(c < '0' || c > '9' ){
+    ungetc(c,f);
+    return false;
+  }else{
+    ungetc(c,f);
+    return true;
+  }
+}
+
+
+Interaction_Matrix load_three_column_file(string & in_file_name){
+  ////this is a text file food web, skip all rOops stuff
+  //first, find the size of the web:
+  int maxindex=0;
+  int minindex=INT_MAX;
+  {
+    // the programmer does not like c++ style file i/o:
+    cout << "Reading " << in_file_name << endl;
+    FILE* webf=fopen(in_file_name.c_str(),"r");
+    if(webf==0)
+      FATAL_ERROR("problem opening " << in_file_name);
+    while(!feof(webf)){
+      int index;
+      if(fscanf(webf,"%i",&index)){
+	if(index>maxindex) maxindex=index;
+	if(index<minindex) minindex=index;
+      }
+      char c;
+      do{
+	c=fgetc(webf);
+      }while((c<'0' || c>'9') && !feof(webf));
+      ungetc(c,webf);
+    }
+    fclose(webf);
+  }
+  Interaction_Matrix im(maxindex-minindex+1);
+  im.label_species_by_index();
+  if(minindex)
+    cout << "!!!! Species index in file starts from " 
+	 << minindex << endl;
+  {
+    // the programmer does not like c++ style file i/o:
+    FILE* webf=fopen(in_file_name.c_str(),"r");
+    if(webf==0) FATAL_ERROR("Could not open input file");
+    while(!feof(webf)){
+      int predator_index;
+      if(fscanf(webf,"%i",&predator_index)<1)
+	WARNING("Unexpected trouble reading file");
+      int prey_start_index;
+      if(!separator_then_digit(webf))
+	FATAL_ERROR("Unexpected trouble reading file");
+      fscanf(webf,"%i",&prey_start_index);
+      int prey_stop_index=prey_start_index;
+      if(separator_then_digit(webf))
+	fscanf(webf,"%i",&prey_stop_index);
+      // 	cout << predator_index << "\t" 
+      // 	     << prey_start_index << "\t"
+      // 	     << prey_stop_index << endl;
+      ASSERT(prey_stop_index>=prey_start_index);
+      for(int i=prey_start_index;i<=prey_stop_index;i++){
+	im[predator_index-minindex][i-minindex]=
+	  NetworkAnalysis::eats;
+      }
+      while(fgetc(webf)!='\n' && !feof(webf)){} // drop the rest of the line
+      ungetc(getc(webf),webf); // force eof at end of file
+    }
+    fclose(webf);
+  }
+  return im;
+}
+
+#include <fstream>
+
+void save_three_column_file(Interaction_Matrix & m,const char * name){
+  ofstream os(name);
+  for(int i=0;i<m.size();i++){
+    for(int j=0;j<m.size();j++){
+      if(m[i][j]==NetworkAnalysis::eats){
+	os << i << "," << j << "," << endl;
+      }
+    }
+  }
+}

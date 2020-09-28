@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/gmm_diag_bones.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - gmm_diag_bones.hpp<span style="font-size: 80%;"> (source / <a href="gmm_diag_bones.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2014-2016 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : //! \addtogroup gmm_diag
+<span class="lineNum">      12 </span>            : //! @{
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span><span class="lineCov">       3375 : struct gmm_dist_mode { const uword id;  inline explicit gmm_dist_mode(const uword in_id) : id(in_id) {} };</span>
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : inline bool operator==(const gmm_dist_mode&amp; a, const gmm_dist_mode&amp; b) { return (a.id == b.id); }
+<span class="lineNum">      18 </span>            : inline bool operator!=(const gmm_dist_mode&amp; a, const gmm_dist_mode&amp; b) { return (a.id != b.id); }
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span><span class="lineCov">       2250 : struct gmm_dist_eucl : public gmm_dist_mode { inline gmm_dist_eucl() : gmm_dist_mode(1) {} };</span>
+<span class="lineNum">      21 </span><span class="lineCov">       2250 : struct gmm_dist_maha : public gmm_dist_mode { inline gmm_dist_maha() : gmm_dist_mode(2) {} };</span>
+<span class="lineNum">      22 </span><span class="lineCov">       2250 : struct gmm_dist_prob : public gmm_dist_mode { inline gmm_dist_prob() : gmm_dist_mode(3) {} };</span>
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span><span class="lineCov">       1125 : static const gmm_dist_eucl eucl_dist;</span>
+<span class="lineNum">      25 </span><span class="lineCov">       1125 : static const gmm_dist_maha maha_dist;</span>
+<span class="lineNum">      26 </span><span class="lineCov">       1125 : static const gmm_dist_prob prob_dist;</span>
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span><span class="lineCov">       5625 : struct gmm_seed_mode { const uword id; inline explicit gmm_seed_mode(const uword in_id) : id(in_id) {} };</span>
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : inline bool operator==(const gmm_seed_mode&amp; a, const gmm_seed_mode&amp; b) { return (a.id == b.id); }
+<span class="lineNum">      33 </span>            : inline bool operator!=(const gmm_seed_mode&amp; a, const gmm_seed_mode&amp; b) { return (a.id != b.id); }
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span><span class="lineCov">       2250 : struct gmm_seed_keep_existing : public gmm_seed_mode { inline gmm_seed_keep_existing() : gmm_seed_mode(1) {} };</span>
+<span class="lineNum">      36 </span><span class="lineCov">       2250 : struct gmm_seed_static_subset : public gmm_seed_mode { inline gmm_seed_static_subset() : gmm_seed_mode(2) {} };</span>
+<span class="lineNum">      37 </span><span class="lineCov">       2250 : struct gmm_seed_static_spread : public gmm_seed_mode { inline gmm_seed_static_spread() : gmm_seed_mode(3) {} };</span>
+<span class="lineNum">      38 </span><span class="lineCov">       2250 : struct gmm_seed_random_subset : public gmm_seed_mode { inline gmm_seed_random_subset() : gmm_seed_mode(4) {} };</span>
+<span class="lineNum">      39 </span><span class="lineCov">       2250 : struct gmm_seed_random_spread : public gmm_seed_mode { inline gmm_seed_random_spread() : gmm_seed_mode(5) {} };</span>
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span><span class="lineCov">       1125 : static const gmm_seed_keep_existing keep_existing;</span>
+<span class="lineNum">      42 </span><span class="lineCov">       1125 : static const gmm_seed_static_subset static_subset;</span>
+<span class="lineNum">      43 </span><span class="lineCov">       1125 : static const gmm_seed_static_spread static_spread;</span>
+<span class="lineNum">      44 </span><span class="lineCov">       1125 : static const gmm_seed_random_subset random_subset;</span>
+<span class="lineNum">      45 </span><span class="lineCov">       1125 : static const gmm_seed_random_spread random_spread;</span>
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : namespace gmm_priv
+<span class="lineNum">      49 </span>            : {
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : struct gmm_empty_arg {};
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : #if defined(_OPENMP)
+<span class="lineNum">      55 </span>            :   struct arma_omp_state
+<span class="lineNum">      56 </span>            :     {
+<span class="lineNum">      57 </span>            :     const int orig_dynamic_state;
+<span class="lineNum">      58 </span>            :     
+<span class="lineNum">      59 </span>            :     inline  arma_omp_state() : orig_dynamic_state(omp_get_dynamic()) { omp_set_dynamic(0); }
+<span class="lineNum">      60 </span>            :     inline ~arma_omp_state() { omp_set_dynamic(orig_dynamic_state); }
+<span class="lineNum">      61 </span>            :     };
+<span class="lineNum">      62 </span>            : #else
+<span class="lineNum">      63 </span>            :   struct arma_omp_state {};
+<span class="lineNum">      64 </span>            : #endif
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      69 </span>            : class gmm_diag
+<span class="lineNum">      70 </span>            :   {
+<span class="lineNum">      71 </span>            :   public:
+<span class="lineNum">      72 </span>            :   
+<span class="lineNum">      73 </span>            :   arma_aligned const Mat&lt;eT&gt; means;
+<span class="lineNum">      74 </span>            :   arma_aligned const Mat&lt;eT&gt; dcovs;
+<span class="lineNum">      75 </span>            :   arma_aligned const Row&lt;eT&gt; hefts;
+<span class="lineNum">      76 </span>            :   
+<span class="lineNum">      77 </span>            :   //
+<span class="lineNum">      78 </span>            :   //
+<span class="lineNum">      79 </span>            :   
+<span class="lineNum">      80 </span>            :   inline ~gmm_diag();
+<span class="lineNum">      81 </span>            :   inline  gmm_diag();
+<span class="lineNum">      82 </span>            :   
+<span class="lineNum">      83 </span>            :   inline                  gmm_diag(const gmm_diag&amp; x);
+<span class="lineNum">      84 </span>            :   inline const gmm_diag&amp; operator=(const gmm_diag&amp; x);
+<span class="lineNum">      85 </span>            :   
+<span class="lineNum">      86 </span>            :   inline      gmm_diag(const uword in_n_dims, const uword in_n_gaus);
+<span class="lineNum">      87 </span>            :   inline void    reset(const uword in_n_dims, const uword in_n_gaus);
+<span class="lineNum">      88 </span>            :   inline void    reset();
+<span class="lineNum">      89 </span>            :   
+<span class="lineNum">      90 </span>            :   template&lt;typename T1, typename T2, typename T3&gt;
+<span class="lineNum">      91 </span>            :   inline void set_params(const Base&lt;eT,T1&gt;&amp; in_means, const Base&lt;eT,T2&gt;&amp; in_dcovs, const Base&lt;eT,T3&gt;&amp; in_hefts);
+<span class="lineNum">      92 </span>            :   
+<span class="lineNum">      93 </span>            :   template&lt;typename T1&gt; inline void set_means(const Base&lt;eT,T1&gt;&amp; in_means);
+<span class="lineNum">      94 </span>            :   template&lt;typename T1&gt; inline void set_dcovs(const Base&lt;eT,T1&gt;&amp; in_dcovs);
+<span class="lineNum">      95 </span>            :   template&lt;typename T1&gt; inline void set_hefts(const Base&lt;eT,T1&gt;&amp; in_hefts);
+<span class="lineNum">      96 </span>            :   
+<span class="lineNum">      97 </span>            :   inline uword n_dims() const;
+<span class="lineNum">      98 </span>            :   inline uword n_gaus() const;
+<span class="lineNum">      99 </span>            :   
+<span class="lineNum">     100 </span>            :   inline bool load(const std::string name);
+<span class="lineNum">     101 </span>            :   inline bool save(const std::string name) const;
+<span class="lineNum">     102 </span>            :   
+<span class="lineNum">     103 </span>            :   inline Col&lt;eT&gt; generate()              const;
+<span class="lineNum">     104 </span>            :   inline Mat&lt;eT&gt; generate(const uword N) const;
+<span class="lineNum">     105 </span>            :   
+<span class="lineNum">     106 </span>            :   template&lt;typename T1&gt; inline eT      log_p(const T1&amp; expr, const gmm_empty_arg&amp; junk1 = gmm_empty_arg(), typename enable_if&lt;((is_arma_type&lt;T1&gt;::value) &amp;&amp; (resolves_to_colvector&lt;T1&gt;::value == true ))&gt;::result* junk2 = 0) const;
+<span class="lineNum">     107 </span>            :   template&lt;typename T1&gt; inline eT      log_p(const T1&amp; expr, const uword gaus_id,                          typename enable_if&lt;((is_arma_type&lt;T1&gt;::value) &amp;&amp; (resolves_to_colvector&lt;T1&gt;::value == true ))&gt;::result* junk2 = 0) const;
+<span class="lineNum">     108 </span>            :   
+<span class="lineNum">     109 </span>            :   template&lt;typename T1&gt; inline Row&lt;eT&gt; log_p(const T1&amp; expr, const gmm_empty_arg&amp; junk1 = gmm_empty_arg(), typename enable_if&lt;((is_arma_type&lt;T1&gt;::value) &amp;&amp; (resolves_to_colvector&lt;T1&gt;::value == false))&gt;::result* junk2 = 0) const;
+<span class="lineNum">     110 </span>            :   template&lt;typename T1&gt; inline Row&lt;eT&gt; log_p(const T1&amp; expr, const uword gaus_id,                          typename enable_if&lt;((is_arma_type&lt;T1&gt;::value) &amp;&amp; (resolves_to_colvector&lt;T1&gt;::value == false))&gt;::result* junk2 = 0) const;
+<span class="lineNum">     111 </span>            :   
+<span class="lineNum">     112 </span>            :   template&lt;typename T1&gt; inline eT  avg_log_p(const Base&lt;eT,T1&gt;&amp; expr)                      const;
+<span class="lineNum">     113 </span>            :   template&lt;typename T1&gt; inline eT  avg_log_p(const Base&lt;eT,T1&gt;&amp; expr, const uword gaus_id) const;
+<span class="lineNum">     114 </span>            :   
+<span class="lineNum">     115 </span>            :   template&lt;typename T1&gt; inline uword   assign(const T1&amp; expr, const gmm_dist_mode&amp; dist, typename enable_if&lt;((is_arma_type&lt;T1&gt;::value) &amp;&amp; (resolves_to_colvector&lt;T1&gt;::value == true ))&gt;::result* junk = 0) const;
+<span class="lineNum">     116 </span>            :   template&lt;typename T1&gt; inline urowvec assign(const T1&amp; expr, const gmm_dist_mode&amp; dist, typename enable_if&lt;((is_arma_type&lt;T1&gt;::value) &amp;&amp; (resolves_to_colvector&lt;T1&gt;::value == false))&gt;::result* junk = 0) const;
+<span class="lineNum">     117 </span>            :   
+<span class="lineNum">     118 </span>            :   template&lt;typename T1&gt; inline urowvec  raw_hist(const Base&lt;eT,T1&gt;&amp; expr, const gmm_dist_mode&amp; dist_mode) const;
+<span class="lineNum">     119 </span>            :   template&lt;typename T1&gt; inline Row&lt;eT&gt; norm_hist(const Base&lt;eT,T1&gt;&amp; expr, const gmm_dist_mode&amp; dist_mode) const;
+<span class="lineNum">     120 </span>            :   
+<span class="lineNum">     121 </span>            :   template&lt;typename T1&gt;
+<span class="lineNum">     122 </span>            :   inline
+<span class="lineNum">     123 </span>            :   bool
+<span class="lineNum">     124 </span>            :   learn
+<span class="lineNum">     125 </span>            :     (
+<span class="lineNum">     126 </span>            :     const Base&lt;eT,T1&gt;&amp;    data,
+<span class="lineNum">     127 </span>            :     const uword           n_gaus,
+<span class="lineNum">     128 </span>            :     const gmm_dist_mode&amp;  dist_mode,
+<span class="lineNum">     129 </span>            :     const gmm_seed_mode&amp;  seed_mode,
+<span class="lineNum">     130 </span>            :     const uword           km_iter,
+<span class="lineNum">     131 </span>            :     const uword           em_iter,
+<span class="lineNum">     132 </span>            :     const eT              var_floor,
+<span class="lineNum">     133 </span>            :     const bool            print_mode
+<span class="lineNum">     134 </span>            :     );
+<span class="lineNum">     135 </span>            :   
+<span class="lineNum">     136 </span>            :   
+<span class="lineNum">     137 </span>            :   template&lt;typename T1&gt;
+<span class="lineNum">     138 </span>            :   inline
+<span class="lineNum">     139 </span>            :   bool
+<span class="lineNum">     140 </span>            :   kmeans_wrapper
+<span class="lineNum">     141 </span>            :     (
+<span class="lineNum">     142 </span>            :            Mat&lt;eT&gt;&amp;       user_means,
+<span class="lineNum">     143 </span>            :     const Base&lt;eT,T1&gt;&amp;    data,
+<span class="lineNum">     144 </span>            :     const uword           n_gaus,
+<span class="lineNum">     145 </span>            :     const gmm_seed_mode&amp;  seed_mode,
+<span class="lineNum">     146 </span>            :     const uword           km_iter,
+<span class="lineNum">     147 </span>            :     const bool            print_mode
+<span class="lineNum">     148 </span>            :     );
+<span class="lineNum">     149 </span>            :   
+<span class="lineNum">     150 </span>            :   
+<span class="lineNum">     151 </span>            :   //
+<span class="lineNum">     152 </span>            :   
+<span class="lineNum">     153 </span>            :   protected:
+<span class="lineNum">     154 </span>            :   
+<span class="lineNum">     155 </span>            :   
+<span class="lineNum">     156 </span>            :   arma_aligned Row&lt;eT&gt; log_det_etc;
+<span class="lineNum">     157 </span>            :   arma_aligned Row&lt;eT&gt; log_hefts;
+<span class="lineNum">     158 </span>            :   arma_aligned Col&lt;eT&gt; mah_aux;
+<span class="lineNum">     159 </span>            :   
+<span class="lineNum">     160 </span>            :   //
+<span class="lineNum">     161 </span>            :   
+<span class="lineNum">     162 </span>            :   inline void init(const gmm_diag&amp; x);
+<span class="lineNum">     163 </span>            :   
+<span class="lineNum">     164 </span>            :   inline void init(const uword in_n_dim, const uword in_n_gaus);
+<span class="lineNum">     165 </span>            :   
+<span class="lineNum">     166 </span>            :   inline void init_constants();
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :   inline umat internal_gen_boundaries(const uword N) const;
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            :   inline eT internal_scalar_log_p(const eT* x                     ) const;
+<span class="lineNum">     171 </span>            :   inline eT internal_scalar_log_p(const eT* x, const uword gaus_id) const;
+<span class="lineNum">     172 </span>            :   
+<span class="lineNum">     173 </span>            :   template&lt;typename T1&gt; inline Row&lt;eT&gt; internal_vec_log_p(const T1&amp; X                     ) const;
+<span class="lineNum">     174 </span>            :   template&lt;typename T1&gt; inline Row&lt;eT&gt; internal_vec_log_p(const T1&amp; X, const uword gaus_id) const;
+<span class="lineNum">     175 </span>            :   
+<span class="lineNum">     176 </span>            :   template&lt;typename T1&gt; inline eT internal_avg_log_p(const T1&amp; X                     ) const;
+<span class="lineNum">     177 </span>            :   template&lt;typename T1&gt; inline eT internal_avg_log_p(const T1&amp; X, const uword gaus_id) const;
+<span class="lineNum">     178 </span>            :   
+<span class="lineNum">     179 </span>            :   template&lt;typename T1&gt; inline uword internal_scalar_assign(const T1&amp; X, const gmm_dist_mode&amp; dist_mode) const;
+<span class="lineNum">     180 </span>            :   
+<span class="lineNum">     181 </span>            :   template&lt;typename T1&gt; inline void internal_vec_assign(urowvec&amp; out, const T1&amp; X, const gmm_dist_mode&amp; dist_mode) const;
+<span class="lineNum">     182 </span>            :   
+<span class="lineNum">     183 </span>            :   inline void internal_raw_hist(urowvec&amp; hist, const Mat&lt;eT&gt;&amp; X, const gmm_dist_mode&amp; dist_mode) const;
+<span class="lineNum">     184 </span>            :   
+<span class="lineNum">     185 </span>            :   //
+<span class="lineNum">     186 </span>            :   
+<span class="lineNum">     187 </span>            :   template&lt;uword dist_id&gt; inline void generate_initial_means(const Mat&lt;eT&gt;&amp; X, const gmm_seed_mode&amp; seed);
+<span class="lineNum">     188 </span>            :   
+<span class="lineNum">     189 </span>            :   template&lt;uword dist_id&gt; inline void generate_initial_dcovs_and_hefts(const Mat&lt;eT&gt;&amp; X, const eT var_floor);
+<span class="lineNum">     190 </span>            :   
+<span class="lineNum">     191 </span>            :   template&lt;uword dist_id&gt; inline bool km_iterate(const Mat&lt;eT&gt;&amp; X, const uword max_iter, const bool verbose, const char* signature);
+<span class="lineNum">     192 </span>            :   
+<span class="lineNum">     193 </span>            :   template&lt;uword dist_id&gt; inline void km_update_stats(const Mat&lt;eT&gt;&amp; X, const uword start_index, const uword end_index, const Mat&lt;eT&gt;&amp; old_means, field&lt; running_mean_vec&lt;eT&gt; &gt;&amp; running_means) const;
+<span class="lineNum">     194 </span>            :   
+<span class="lineNum">     195 </span>            :   //
+<span class="lineNum">     196 </span>            :   
+<span class="lineNum">     197 </span>            :   inline bool em_iterate(const Mat&lt;eT&gt;&amp; X, const uword max_iter, const eT var_floor, const bool verbose);
+<span class="lineNum">     198 </span>            :   
+<span class="lineNum">     199 </span>            :   inline void em_update_params(const Mat&lt;eT&gt;&amp; X, const umat&amp; boundaries, field&lt; Mat&lt;eT&gt; &gt;&amp; t_acc_means, field&lt; Mat&lt;eT&gt; &gt;&amp; t_acc_dcovs, field&lt; Col&lt;eT&gt; &gt;&amp; t_acc_norm_lhoods, field&lt; Col&lt;eT&gt; &gt;&amp; t_gaus_log_lhoods, Col&lt;eT&gt;&amp; t_progress_log_lhoods);
+<span class="lineNum">     200 </span>            :   
+<span class="lineNum">     201 </span>            :   inline void em_generate_acc(const Mat&lt;eT&gt;&amp; X, const uword start_index, const uword end_index, Mat&lt;eT&gt;&amp; acc_means, Mat&lt;eT&gt;&amp; acc_dcovs, Col&lt;eT&gt;&amp; acc_norm_lhoods, Col&lt;eT&gt;&amp; gaus_log_lhoods, eT&amp; progress_log_lhood) const;
+<span class="lineNum">     202 </span>            :   
+<span class="lineNum">     203 </span>            :   inline void em_fix_params(const eT var_floor);
+<span class="lineNum">     204 </span>            :   };
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span>            : }
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : 
+<span class="lineNum">     209 </span>            : typedef gmm_priv::gmm_diag&lt;double&gt;  gmm_diag;
+<span class="lineNum">     210 </span>            : typedef gmm_priv::gmm_diag&lt;float&gt;  fgmm_diag;
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,633 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/op_htrans_meat.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - op_htrans_meat.hpp<span style="font-size: 80%;"> (source / <a href="op_htrans_meat.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2015 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : // Written by Ryan Curtin
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : //! \addtogroup op_htrans
+<span class="lineNum">      13 </span>            : //! @{
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      18 </span>            : arma_hot
+<span class="lineNum">      19 </span>            : arma_inline
+<span class="lineNum">      20 </span>            : void
+<span class="lineNum">      21 </span>            : op_htrans::apply_mat_noalias(Mat&lt;eT&gt;&amp; out, const Mat&lt;eT&gt;&amp; A, const typename arma_not_cx&lt;eT&gt;::result* junk)
+<span class="lineNum">      22 </span>            :   {
+<span class="lineNum">      23 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      24 </span>            :   arma_ignore(junk);
+<span class="lineNum">      25 </span>            :   
+<span class="lineNum">      26 </span>            :   op_strans::apply_mat_noalias(out, A);
+<span class="lineNum">      27 </span>            :   }
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      32 </span>            : arma_hot
+<span class="lineNum">      33 </span>            : inline
+<span class="lineNum">      34 </span>            : void
+<span class="lineNum">      35 </span>            : op_htrans::apply_mat_noalias(Mat&lt;eT&gt;&amp; out, const Mat&lt;eT&gt;&amp; A, const typename arma_cx_only&lt;eT&gt;::result* junk)
+<span class="lineNum">      36 </span>            :   {
+<span class="lineNum">      37 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      38 </span>            :   arma_ignore(junk);
+<span class="lineNum">      39 </span>            :   
+<span class="lineNum">      40 </span>            :   const uword A_n_rows = A.n_rows;
+<span class="lineNum">      41 </span>            :   const uword A_n_cols = A.n_cols;
+<span class="lineNum">      42 </span>            :   
+<span class="lineNum">      43 </span>            :   out.set_size(A_n_cols, A_n_rows);
+<span class="lineNum">      44 </span>            :   
+<span class="lineNum">      45 </span>            :   if( (A_n_cols == 1) || (A_n_rows == 1) )
+<span class="lineNum">      46 </span>            :     {
+<span class="lineNum">      47 </span>            :     const uword n_elem = A.n_elem;
+<span class="lineNum">      48 </span>            :     
+<span class="lineNum">      49 </span>            :     const eT* A_mem   = A.memptr();
+<span class="lineNum">      50 </span>            :           eT* out_mem = out.memptr();
+<span class="lineNum">      51 </span>            :     
+<span class="lineNum">      52 </span>            :     for(uword i=0; i &lt; n_elem; ++i)
+<span class="lineNum">      53 </span>            :       {
+<span class="lineNum">      54 </span>            :       out_mem[i] = std::conj(A_mem[i]);
+<span class="lineNum">      55 </span>            :       }
+<span class="lineNum">      56 </span>            :     }
+<span class="lineNum">      57 </span>            :   else
+<span class="lineNum">      58 </span>            :     {
+<span class="lineNum">      59 </span>            :     eT* outptr = out.memptr();
+<span class="lineNum">      60 </span>            :     
+<span class="lineNum">      61 </span>            :     for(uword k=0; k &lt; A_n_rows; ++k)
+<span class="lineNum">      62 </span>            :       {
+<span class="lineNum">      63 </span>            :       const eT* Aptr = &amp;(A.at(k,0));
+<span class="lineNum">      64 </span>            :       
+<span class="lineNum">      65 </span>            :       for(uword j=0; j &lt; A_n_cols; ++j)
+<span class="lineNum">      66 </span>            :         {
+<span class="lineNum">      67 </span>            :         (*outptr) = std::conj(*Aptr);
+<span class="lineNum">      68 </span>            :         
+<span class="lineNum">      69 </span>            :         Aptr += A_n_rows;
+<span class="lineNum">      70 </span>            :         outptr++;
+<span class="lineNum">      71 </span>            :         }
+<span class="lineNum">      72 </span>            :       }
+<span class="lineNum">      73 </span>            :     }
+<span class="lineNum">      74 </span>            :   }
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      79 </span>            : arma_hot
+<span class="lineNum">      80 </span>            : arma_inline
+<span class="lineNum">      81 </span>            : void
+<span class="lineNum">      82 </span>            : op_htrans::apply_mat_inplace(Mat&lt;eT&gt;&amp; out, const typename arma_not_cx&lt;eT&gt;::result* junk)
+<span class="lineNum">      83 </span>            :   {
+<span class="lineNum">      84 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      85 </span>            :   arma_ignore(junk);
+<span class="lineNum">      86 </span>            :   
+<span class="lineNum">      87 </span>            :   op_strans::apply_mat_inplace(out);
+<span class="lineNum">      88 </span>            :   }
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">      93 </span>            : arma_hot
+<span class="lineNum">      94 </span>            : inline
+<span class="lineNum">      95 </span>            : void
+<span class="lineNum">      96 </span>            : op_htrans::apply_mat_inplace(Mat&lt;eT&gt;&amp; out, const typename arma_cx_only&lt;eT&gt;::result* junk)
+<span class="lineNum">      97 </span>            :   {
+<span class="lineNum">      98 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      99 </span>            :   arma_ignore(junk);
+<span class="lineNum">     100 </span>            :   
+<span class="lineNum">     101 </span>            :   const uword n_rows = out.n_rows;
+<span class="lineNum">     102 </span>            :   const uword n_cols = out.n_cols;
+<span class="lineNum">     103 </span>            :     
+<span class="lineNum">     104 </span>            :   if(n_rows == n_cols)
+<span class="lineNum">     105 </span>            :     {
+<span class="lineNum">     106 </span>            :     arma_extra_debug_print(&quot;doing in-place hermitian transpose of a square matrix&quot;);
+<span class="lineNum">     107 </span>            :     
+<span class="lineNum">     108 </span>            :     for(uword col=0; col &lt; n_cols; ++col)
+<span class="lineNum">     109 </span>            :       {
+<span class="lineNum">     110 </span>            :       eT* coldata = out.colptr(col);
+<span class="lineNum">     111 </span>            :       
+<span class="lineNum">     112 </span>            :       out.at(col,col) = std::conj( out.at(col,col) );
+<span class="lineNum">     113 </span>            :       
+<span class="lineNum">     114 </span>            :       for(uword row=(col+1); row &lt; n_rows; ++row)
+<span class="lineNum">     115 </span>            :         {
+<span class="lineNum">     116 </span>            :         const eT val1 = std::conj(coldata[row]);
+<span class="lineNum">     117 </span>            :         const eT val2 = std::conj(out.at(col,row));
+<span class="lineNum">     118 </span>            :         
+<span class="lineNum">     119 </span>            :         out.at(col,row) = val1;
+<span class="lineNum">     120 </span>            :         coldata[row]    = val2;
+<span class="lineNum">     121 </span>            :         }
+<span class="lineNum">     122 </span>            :       }
+<span class="lineNum">     123 </span>            :     }
+<span class="lineNum">     124 </span>            :   else
+<span class="lineNum">     125 </span>            :     {
+<span class="lineNum">     126 </span>            :     Mat&lt;eT&gt; tmp;
+<span class="lineNum">     127 </span>            :     
+<span class="lineNum">     128 </span>            :     op_htrans::apply_mat_noalias(tmp, out);
+<span class="lineNum">     129 </span>            :     
+<span class="lineNum">     130 </span>            :     out.steal_mem(tmp);
+<span class="lineNum">     131 </span>            :     }
+<span class="lineNum">     132 </span>            :   }
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     137 </span>            : arma_hot
+<span class="lineNum">     138 </span>            : arma_inline
+<span class="lineNum">     139 </span>            : void
+<span class="lineNum">     140 </span>            : op_htrans::apply_mat(Mat&lt;eT&gt;&amp; out, const Mat&lt;eT&gt;&amp; A, const typename arma_not_cx&lt;eT&gt;::result* junk)
+<span class="lineNum">     141 </span>            :   {
+<span class="lineNum">     142 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     143 </span>            :   arma_ignore(junk);
+<span class="lineNum">     144 </span>            :   
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :   op_strans::apply_mat(out, A);</span>
+<span class="lineNum">     146 </span>            :   }
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     151 </span>            : arma_hot
+<span class="lineNum">     152 </span>            : inline
+<span class="lineNum">     153 </span>            : void
+<span class="lineNum">     154 </span>            : op_htrans::apply_mat(Mat&lt;eT&gt;&amp; out, const Mat&lt;eT&gt;&amp; A, const typename arma_cx_only&lt;eT&gt;::result* junk)
+<span class="lineNum">     155 </span>            :   {
+<span class="lineNum">     156 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     157 </span>            :   arma_ignore(junk);
+<span class="lineNum">     158 </span>            :   
+<span class="lineNum">     159 </span>            :   if(&amp;out != &amp;A)
+<span class="lineNum">     160 </span>            :     {
+<span class="lineNum">     161 </span>            :     op_htrans::apply_mat_noalias(out, A);
+<span class="lineNum">     162 </span>            :     }
+<span class="lineNum">     163 </span>            :   else
+<span class="lineNum">     164 </span>            :     {
+<span class="lineNum">     165 </span>            :     op_htrans::apply_mat_inplace(out);
+<span class="lineNum">     166 </span>            :     }
+<span class="lineNum">     167 </span>            :   }
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     172 </span>            : arma_hot
+<span class="lineNum">     173 </span>            : inline
+<span class="lineNum">     174 </span>            : void
+<span class="lineNum">     175 </span>            : op_htrans::apply_proxy(Mat&lt;typename T1::elem_type&gt;&amp; out, const T1&amp; X)
+<span class="lineNum">     176 </span>            :   {
+<span class="lineNum">     177 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     178 </span>            :   
+<span class="lineNum">     179 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     180 </span>            :   
+<span class="lineNum">     181 </span>            :   const Proxy&lt;T1&gt; P(X);
+<span class="lineNum">     182 </span>            :   
+<span class="lineNum">     183 </span>            :   // allow detection of in-place transpose
+<span class="lineNum">     184 </span>            :   if( (is_Mat&lt;typename Proxy&lt;T1&gt;::stored_type&gt;::value == true) &amp;&amp; (Proxy&lt;T1&gt;::fake_mat == false) )
+<span class="lineNum">     185 </span>            :     {
+<span class="lineNum">     186 </span>            :     const unwrap&lt;typename Proxy&lt;T1&gt;::stored_type&gt; tmp(P.Q);
+<span class="lineNum">     187 </span>            :     
+<span class="lineNum">     188 </span>            :     op_htrans::apply_mat(out, tmp.M);
+<span class="lineNum">     189 </span>            :     }
+<span class="lineNum">     190 </span>            :   else
+<span class="lineNum">     191 </span>            :     {
+<span class="lineNum">     192 </span>            :     const uword n_rows = P.get_n_rows();
+<span class="lineNum">     193 </span>            :     const uword n_cols = P.get_n_cols();
+<span class="lineNum">     194 </span>            :     
+<span class="lineNum">     195 </span>            :     const bool is_alias = P.is_alias(out);
+<span class="lineNum">     196 </span>            :     
+<span class="lineNum">     197 </span>            :     if( (resolves_to_vector&lt;T1&gt;::value == true) &amp;&amp; (Proxy&lt;T1&gt;::prefer_at_accessor == false) )
+<span class="lineNum">     198 </span>            :       {
+<span class="lineNum">     199 </span>            :       if(is_alias == false)
+<span class="lineNum">     200 </span>            :         {
+<span class="lineNum">     201 </span>            :         out.set_size(n_cols, n_rows);
+<span class="lineNum">     202 </span>            :         
+<span class="lineNum">     203 </span>            :         eT* out_mem = out.memptr();
+<span class="lineNum">     204 </span>            :         
+<span class="lineNum">     205 </span>            :         const uword n_elem = P.get_n_elem();
+<span class="lineNum">     206 </span>            :         
+<span class="lineNum">     207 </span>            :         typename Proxy&lt;T1&gt;::ea_type Pea = P.get_ea();
+<span class="lineNum">     208 </span>            :         
+<span class="lineNum">     209 </span>            :         for(uword i=0; i &lt; n_elem; ++i)
+<span class="lineNum">     210 </span>            :           {
+<span class="lineNum">     211 </span>            :           out_mem[i] = std::conj(Pea[i]);
+<span class="lineNum">     212 </span>            :           }
+<span class="lineNum">     213 </span>            :         }
+<span class="lineNum">     214 </span>            :       else  // aliasing
+<span class="lineNum">     215 </span>            :         {
+<span class="lineNum">     216 </span>            :         Mat&lt;eT&gt; out2(n_cols, n_rows);
+<span class="lineNum">     217 </span>            :         
+<span class="lineNum">     218 </span>            :         eT* out_mem = out2.memptr();
+<span class="lineNum">     219 </span>            :         
+<span class="lineNum">     220 </span>            :         const uword n_elem = P.get_n_elem();
+<span class="lineNum">     221 </span>            :         
+<span class="lineNum">     222 </span>            :         typename Proxy&lt;T1&gt;::ea_type Pea = P.get_ea();
+<span class="lineNum">     223 </span>            :         
+<span class="lineNum">     224 </span>            :         for(uword i=0; i &lt; n_elem; ++i)
+<span class="lineNum">     225 </span>            :           {
+<span class="lineNum">     226 </span>            :           out_mem[i] = std::conj(Pea[i]);
+<span class="lineNum">     227 </span>            :           }
+<span class="lineNum">     228 </span>            :         
+<span class="lineNum">     229 </span>            :         out.steal_mem(out2);
+<span class="lineNum">     230 </span>            :         }
+<span class="lineNum">     231 </span>            :       }
+<span class="lineNum">     232 </span>            :     else
+<span class="lineNum">     233 </span>            :       {
+<span class="lineNum">     234 </span>            :       if(is_alias == false)
+<span class="lineNum">     235 </span>            :         {
+<span class="lineNum">     236 </span>            :         out.set_size(n_cols, n_rows);
+<span class="lineNum">     237 </span>            :         
+<span class="lineNum">     238 </span>            :         eT* outptr = out.memptr();
+<span class="lineNum">     239 </span>            :         
+<span class="lineNum">     240 </span>            :         for(uword k=0; k &lt; n_rows; ++k)
+<span class="lineNum">     241 </span>            :           {
+<span class="lineNum">     242 </span>            :           for(uword j=0; j &lt; n_cols; ++j)
+<span class="lineNum">     243 </span>            :             {
+<span class="lineNum">     244 </span>            :             (*outptr) = std::conj(P.at(k,j));
+<span class="lineNum">     245 </span>            :             
+<span class="lineNum">     246 </span>            :             outptr++;
+<span class="lineNum">     247 </span>            :             }
+<span class="lineNum">     248 </span>            :           }
+<span class="lineNum">     249 </span>            :         }
+<span class="lineNum">     250 </span>            :       else // aliasing
+<span class="lineNum">     251 </span>            :         {
+<span class="lineNum">     252 </span>            :         Mat&lt;eT&gt; out2(n_cols, n_rows);
+<span class="lineNum">     253 </span>            :         
+<span class="lineNum">     254 </span>            :         eT* out2ptr = out2.memptr();
+<span class="lineNum">     255 </span>            :         
+<span class="lineNum">     256 </span>            :         for(uword k=0; k &lt; n_rows; ++k)
+<span class="lineNum">     257 </span>            :           {
+<span class="lineNum">     258 </span>            :           for(uword j=0; j &lt; n_cols; ++j)
+<span class="lineNum">     259 </span>            :             {
+<span class="lineNum">     260 </span>            :             (*out2ptr) = std::conj(P.at(k,j));
+<span class="lineNum">     261 </span>            :             
+<span class="lineNum">     262 </span>            :             out2ptr++;
+<span class="lineNum">     263 </span>            :             }
+<span class="lineNum">     264 </span>            :           }
+<span class="lineNum">     265 </span>            :         
+<span class="lineNum">     266 </span>            :         out.steal_mem(out2);
+<span class="lineNum">     267 </span>            :         }
+<span class="lineNum">     268 </span>            :       }
+<span class="lineNum">     269 </span>            :     }
+<span class="lineNum">     270 </span>            :   }
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     275 </span>            : arma_hot
+<span class="lineNum">     276 </span>            : inline
+<span class="lineNum">     277 </span>            : void
+<span class="lineNum">     278 </span>            : op_htrans::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Op&lt;T1,op_htrans&gt;&amp; in, const typename arma_not_cx&lt;typename T1::elem_type&gt;::result* junk)
+<span class="lineNum">     279 </span>            :   {
+<span class="lineNum">     280 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     281 </span>            :   arma_ignore(junk);
+<span class="lineNum">     282 </span>            :   
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :   op_strans::apply_proxy(out, in.m);</span>
+<span class="lineNum">     284 </span>            :   }
+<span class="lineNum">     285 </span>            : 
+<span class="lineNum">     286 </span>            : 
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     289 </span>            : arma_hot
+<span class="lineNum">     290 </span>            : inline
+<span class="lineNum">     291 </span>            : void
+<span class="lineNum">     292 </span>            : op_htrans::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Op&lt;T1,op_htrans&gt;&amp; in, const typename arma_cx_only&lt;typename T1::elem_type&gt;::result* junk)
+<span class="lineNum">     293 </span>            :   {
+<span class="lineNum">     294 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     295 </span>            :   arma_ignore(junk);
+<span class="lineNum">     296 </span>            :   
+<span class="lineNum">     297 </span>            :   op_htrans::apply_proxy(out, in.m);
+<span class="lineNum">     298 </span>            :   }
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     303 </span>            : arma_hot
+<span class="lineNum">     304 </span>            : inline
+<span class="lineNum">     305 </span>            : void
+<span class="lineNum">     306 </span>            : op_htrans::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Op&lt; Op&lt;T1, op_trimat&gt;, op_htrans&gt;&amp; in)
+<span class="lineNum">     307 </span>            :   {
+<span class="lineNum">     308 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     309 </span>            :   
+<span class="lineNum">     310 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     311 </span>            :   
+<span class="lineNum">     312 </span>            :   const unwrap&lt;T1&gt;   tmp(in.m.m);
+<span class="lineNum">     313 </span>            :   const Mat&lt;eT&gt;&amp; A = tmp.M;
+<span class="lineNum">     314 </span>            :   
+<span class="lineNum">     315 </span>            :   const bool upper = in.m.aux_uword_a;
+<span class="lineNum">     316 </span>            :   
+<span class="lineNum">     317 </span>            :   op_trimat::apply_htrans(out, A, upper);
+<span class="lineNum">     318 </span>            :   }
+<span class="lineNum">     319 </span>            : 
+<span class="lineNum">     320 </span>            : 
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            : //
+<span class="lineNum">     323 </span>            : // op_htrans2
+<span class="lineNum">     324 </span>            : 
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : 
+<span class="lineNum">     327 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     328 </span>            : arma_hot
+<span class="lineNum">     329 </span>            : arma_inline
+<span class="lineNum">     330 </span>            : void
+<span class="lineNum">     331 </span>            : op_htrans2::apply_noalias(Mat&lt;eT&gt;&amp; out, const Mat&lt;eT&gt;&amp; A, const eT val)
+<span class="lineNum">     332 </span>            :   {
+<span class="lineNum">     333 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     334 </span>            :   
+<span class="lineNum">     335 </span>            :   const uword A_n_rows = A.n_rows;
+<span class="lineNum">     336 </span>            :   const uword A_n_cols = A.n_cols;
+<span class="lineNum">     337 </span>            :   
+<span class="lineNum">     338 </span>            :   out.set_size(A_n_cols, A_n_rows);
+<span class="lineNum">     339 </span>            :   
+<span class="lineNum">     340 </span>            :   if( (A_n_cols == 1) || (A_n_rows == 1) )
+<span class="lineNum">     341 </span>            :     {
+<span class="lineNum">     342 </span>            :     const uword n_elem = A.n_elem;
+<span class="lineNum">     343 </span>            :     
+<span class="lineNum">     344 </span>            :     const eT* A_mem   = A.memptr();
+<span class="lineNum">     345 </span>            :           eT* out_mem = out.memptr();
+<span class="lineNum">     346 </span>            :     
+<span class="lineNum">     347 </span>            :     for(uword i=0; i &lt; n_elem; ++i)
+<span class="lineNum">     348 </span>            :       {
+<span class="lineNum">     349 </span>            :       out_mem[i] = val * std::conj(A_mem[i]);
+<span class="lineNum">     350 </span>            :       }
+<span class="lineNum">     351 </span>            :     }
+<span class="lineNum">     352 </span>            :   else
+<span class="lineNum">     353 </span>            :     {
+<span class="lineNum">     354 </span>            :     eT* outptr = out.memptr();
+<span class="lineNum">     355 </span>            :     
+<span class="lineNum">     356 </span>            :     for(uword k=0; k &lt; A_n_rows; ++k)
+<span class="lineNum">     357 </span>            :       {
+<span class="lineNum">     358 </span>            :       const eT* Aptr = &amp;(A.at(k,0));
+<span class="lineNum">     359 </span>            :       
+<span class="lineNum">     360 </span>            :       for(uword j=0; j &lt; A_n_cols; ++j)
+<span class="lineNum">     361 </span>            :         {
+<span class="lineNum">     362 </span>            :         (*outptr) = val * std::conj(*Aptr);
+<span class="lineNum">     363 </span>            :         
+<span class="lineNum">     364 </span>            :         Aptr += A_n_rows;
+<span class="lineNum">     365 </span>            :         outptr++;
+<span class="lineNum">     366 </span>            :         }
+<span class="lineNum">     367 </span>            :       }
+<span class="lineNum">     368 </span>            :     }
+<span class="lineNum">     369 </span>            :   }
+<span class="lineNum">     370 </span>            : 
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span>            : 
+<span class="lineNum">     373 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     374 </span>            : arma_hot
+<span class="lineNum">     375 </span>            : inline
+<span class="lineNum">     376 </span>            : void
+<span class="lineNum">     377 </span>            : op_htrans2::apply(Mat&lt;eT&gt;&amp; out, const Mat&lt;eT&gt;&amp; A, const eT val)
+<span class="lineNum">     378 </span>            :   {
+<span class="lineNum">     379 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     380 </span>            :   
+<span class="lineNum">     381 </span>            :   if(&amp;out != &amp;A)
+<span class="lineNum">     382 </span>            :     {
+<span class="lineNum">     383 </span>            :     op_htrans2::apply_noalias(out, A, val);
+<span class="lineNum">     384 </span>            :     }
+<span class="lineNum">     385 </span>            :   else
+<span class="lineNum">     386 </span>            :     {
+<span class="lineNum">     387 </span>            :     const uword n_rows = out.n_rows;
+<span class="lineNum">     388 </span>            :     const uword n_cols = out.n_cols;
+<span class="lineNum">     389 </span>            :       
+<span class="lineNum">     390 </span>            :     if(n_rows == n_cols)
+<span class="lineNum">     391 </span>            :       {
+<span class="lineNum">     392 </span>            :       arma_extra_debug_print(&quot;doing in-place hermitian transpose of a square matrix&quot;);
+<span class="lineNum">     393 </span>            :       
+<span class="lineNum">     394 </span>            :       // TODO: do multiplication while swapping
+<span class="lineNum">     395 </span>            :       
+<span class="lineNum">     396 </span>            :       for(uword col=0; col &lt; n_cols; ++col)
+<span class="lineNum">     397 </span>            :         {
+<span class="lineNum">     398 </span>            :         eT* coldata = out.colptr(col);
+<span class="lineNum">     399 </span>            :         
+<span class="lineNum">     400 </span>            :         out.at(col,col) = std::conj( out.at(col,col) );
+<span class="lineNum">     401 </span>            :         
+<span class="lineNum">     402 </span>            :         for(uword row=(col+1); row &lt; n_rows; ++row)
+<span class="lineNum">     403 </span>            :           {
+<span class="lineNum">     404 </span>            :           const eT val1 = std::conj(coldata[row]);
+<span class="lineNum">     405 </span>            :           const eT val2 = std::conj(out.at(col,row));
+<span class="lineNum">     406 </span>            :           
+<span class="lineNum">     407 </span>            :           out.at(col,row) = val1;
+<span class="lineNum">     408 </span>            :           coldata[row]    = val2;
+<span class="lineNum">     409 </span>            :           }
+<span class="lineNum">     410 </span>            :         }
+<span class="lineNum">     411 </span>            :       
+<span class="lineNum">     412 </span>            :       arrayops::inplace_mul( out.memptr(), val, out.n_elem );
+<span class="lineNum">     413 </span>            :       }
+<span class="lineNum">     414 </span>            :     else
+<span class="lineNum">     415 </span>            :       {
+<span class="lineNum">     416 </span>            :       Mat&lt;eT&gt; tmp;
+<span class="lineNum">     417 </span>            :       op_htrans2::apply_noalias(tmp, A, val);
+<span class="lineNum">     418 </span>            :       
+<span class="lineNum">     419 </span>            :       out.steal_mem(tmp);
+<span class="lineNum">     420 </span>            :       }
+<span class="lineNum">     421 </span>            :     }
+<span class="lineNum">     422 </span>            :   }
+<span class="lineNum">     423 </span>            : 
+<span class="lineNum">     424 </span>            : 
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     427 </span>            : arma_hot
+<span class="lineNum">     428 </span>            : inline
+<span class="lineNum">     429 </span>            : void
+<span class="lineNum">     430 </span>            : op_htrans2::apply_proxy(Mat&lt;typename T1::elem_type&gt;&amp; out, const T1&amp; X, const typename T1::elem_type val)
+<span class="lineNum">     431 </span>            :   {
+<span class="lineNum">     432 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     433 </span>            :   
+<span class="lineNum">     434 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     435 </span>            :   
+<span class="lineNum">     436 </span>            :   const Proxy&lt;T1&gt; P(X);
+<span class="lineNum">     437 </span>            :   
+<span class="lineNum">     438 </span>            :   // allow detection of in-place transpose
+<span class="lineNum">     439 </span>            :   if( (is_Mat&lt;typename Proxy&lt;T1&gt;::stored_type&gt;::value == true) &amp;&amp; (Proxy&lt;T1&gt;::fake_mat == false) )
+<span class="lineNum">     440 </span>            :     {
+<span class="lineNum">     441 </span>            :     const unwrap&lt;typename Proxy&lt;T1&gt;::stored_type&gt; tmp(P.Q);
+<span class="lineNum">     442 </span>            :     
+<span class="lineNum">     443 </span>            :     op_htrans2::apply(out, tmp.M, val);
+<span class="lineNum">     444 </span>            :     }
+<span class="lineNum">     445 </span>            :   else
+<span class="lineNum">     446 </span>            :     {
+<span class="lineNum">     447 </span>            :     const uword n_rows = P.get_n_rows();
+<span class="lineNum">     448 </span>            :     const uword n_cols = P.get_n_cols();
+<span class="lineNum">     449 </span>            :     
+<span class="lineNum">     450 </span>            :     const bool is_alias = P.is_alias(out);
+<span class="lineNum">     451 </span>            :     
+<span class="lineNum">     452 </span>            :     if( (resolves_to_vector&lt;T1&gt;::value == true) &amp;&amp; (Proxy&lt;T1&gt;::prefer_at_accessor == false) )
+<span class="lineNum">     453 </span>            :       {
+<span class="lineNum">     454 </span>            :       if(is_alias == false)
+<span class="lineNum">     455 </span>            :         {
+<span class="lineNum">     456 </span>            :         out.set_size(n_cols, n_rows);
+<span class="lineNum">     457 </span>            :         
+<span class="lineNum">     458 </span>            :         eT* out_mem = out.memptr();
+<span class="lineNum">     459 </span>            :         
+<span class="lineNum">     460 </span>            :         const uword n_elem = P.get_n_elem();
+<span class="lineNum">     461 </span>            :         
+<span class="lineNum">     462 </span>            :         typename Proxy&lt;T1&gt;::ea_type Pea = P.get_ea();
+<span class="lineNum">     463 </span>            :         
+<span class="lineNum">     464 </span>            :         for(uword i=0; i &lt; n_elem; ++i)
+<span class="lineNum">     465 </span>            :           {
+<span class="lineNum">     466 </span>            :           out_mem[i] = val * std::conj(Pea[i]);
+<span class="lineNum">     467 </span>            :           }
+<span class="lineNum">     468 </span>            :         }
+<span class="lineNum">     469 </span>            :       else  // aliasing
+<span class="lineNum">     470 </span>            :         {
+<span class="lineNum">     471 </span>            :         Mat&lt;eT&gt; out2(n_cols, n_rows);
+<span class="lineNum">     472 </span>            :         
+<span class="lineNum">     473 </span>            :         eT* out_mem = out2.memptr();
+<span class="lineNum">     474 </span>            :         
+<span class="lineNum">     475 </span>            :         const uword n_elem = P.get_n_elem();
+<span class="lineNum">     476 </span>            :         
+<span class="lineNum">     477 </span>            :         typename Proxy&lt;T1&gt;::ea_type Pea = P.get_ea();
+<span class="lineNum">     478 </span>            :         
+<span class="lineNum">     479 </span>            :         for(uword i=0; i &lt; n_elem; ++i)
+<span class="lineNum">     480 </span>            :           {
+<span class="lineNum">     481 </span>            :           out_mem[i] = val * std::conj(Pea[i]);
+<span class="lineNum">     482 </span>            :           }
+<span class="lineNum">     483 </span>            :         
+<span class="lineNum">     484 </span>            :         out.steal_mem(out2);
+<span class="lineNum">     485 </span>            :         }
+<span class="lineNum">     486 </span>            :       }
+<span class="lineNum">     487 </span>            :     else
+<span class="lineNum">     488 </span>            :       {
+<span class="lineNum">     489 </span>            :       if(is_alias == false)
+<span class="lineNum">     490 </span>            :         {
+<span class="lineNum">     491 </span>            :         out.set_size(n_cols, n_rows);
+<span class="lineNum">     492 </span>            :         
+<span class="lineNum">     493 </span>            :         eT* outptr = out.memptr();
+<span class="lineNum">     494 </span>            :         
+<span class="lineNum">     495 </span>            :         for(uword k=0; k &lt; n_rows; ++k)
+<span class="lineNum">     496 </span>            :           {
+<span class="lineNum">     497 </span>            :           for(uword j=0; j &lt; n_cols; ++j)
+<span class="lineNum">     498 </span>            :             {
+<span class="lineNum">     499 </span>            :             (*outptr) = val * std::conj(P.at(k,j));
+<span class="lineNum">     500 </span>            :             
+<span class="lineNum">     501 </span>            :             outptr++;
+<span class="lineNum">     502 </span>            :             }
+<span class="lineNum">     503 </span>            :           }
+<span class="lineNum">     504 </span>            :         }
+<span class="lineNum">     505 </span>            :       else // aliasing
+<span class="lineNum">     506 </span>            :         {
+<span class="lineNum">     507 </span>            :         Mat&lt;eT&gt; out2(n_cols, n_rows);
+<span class="lineNum">     508 </span>            :         
+<span class="lineNum">     509 </span>            :         eT* out2ptr = out2.memptr();
+<span class="lineNum">     510 </span>            :         
+<span class="lineNum">     511 </span>            :         for(uword k=0; k &lt; n_rows; ++k)
+<span class="lineNum">     512 </span>            :           {
+<span class="lineNum">     513 </span>            :           for(uword j=0; j &lt; n_cols; ++j)
+<span class="lineNum">     514 </span>            :             {
+<span class="lineNum">     515 </span>            :             (*out2ptr) = val * std::conj(P.at(k,j));
+<span class="lineNum">     516 </span>            :             
+<span class="lineNum">     517 </span>            :             out2ptr++;
+<span class="lineNum">     518 </span>            :             }
+<span class="lineNum">     519 </span>            :           }
+<span class="lineNum">     520 </span>            :         
+<span class="lineNum">     521 </span>            :         out.steal_mem(out2);
+<span class="lineNum">     522 </span>            :         }
+<span class="lineNum">     523 </span>            :       }
+<span class="lineNum">     524 </span>            :     }
+<span class="lineNum">     525 </span>            :   }
+<span class="lineNum">     526 </span>            : 
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span>            : 
+<span class="lineNum">     529 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     530 </span>            : arma_hot
+<span class="lineNum">     531 </span>            : inline
+<span class="lineNum">     532 </span>            : void
+<span class="lineNum">     533 </span>            : op_htrans2::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Op&lt;T1,op_htrans2&gt;&amp; in, const typename arma_not_cx&lt;typename T1::elem_type&gt;::result* junk)
+<span class="lineNum">     534 </span>            :   {
+<span class="lineNum">     535 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     536 </span>            :   arma_ignore(junk);
+<span class="lineNum">     537 </span>            :   
+<span class="lineNum">     538 </span>            :   op_strans2::apply_proxy(out, in.m, in.aux);
+<span class="lineNum">     539 </span>            :   }
+<span class="lineNum">     540 </span>            : 
+<span class="lineNum">     541 </span>            : 
+<span class="lineNum">     542 </span>            : 
+<span class="lineNum">     543 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     544 </span>            : arma_hot
+<span class="lineNum">     545 </span>            : inline
+<span class="lineNum">     546 </span>            : void
+<span class="lineNum">     547 </span>            : op_htrans2::apply(Mat&lt;typename T1::elem_type&gt;&amp; out, const Op&lt;T1,op_htrans2&gt;&amp; in, const typename arma_cx_only&lt;typename T1::elem_type&gt;::result* junk)
+<span class="lineNum">     548 </span>            :   {
+<span class="lineNum">     549 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     550 </span>            :   arma_ignore(junk);
+<span class="lineNum">     551 </span>            :   
+<span class="lineNum">     552 </span>            :   op_htrans2::apply_proxy(out, in.m, in.aux);
+<span class="lineNum">     553 </span>            :   }
+<span class="lineNum">     554 </span>            : 
+<span class="lineNum">     555 </span>            : 
+<span class="lineNum">     556 </span>            : 
+<span class="lineNum">     557 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

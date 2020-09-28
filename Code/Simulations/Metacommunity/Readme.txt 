@@ -1,0 +1,5 @@
+Metacommunity.R - Simulates the approximated metacommunity assembly model analysed in Chapter 4.
+
+	- Requires: ../../Data/mu_sd_num_dt.RData, and ../../Data/95_optimised_K.RData to run
+
+	- Saves simulation data in ../Data/Metacommunity/New/ as *_*_meta.txt

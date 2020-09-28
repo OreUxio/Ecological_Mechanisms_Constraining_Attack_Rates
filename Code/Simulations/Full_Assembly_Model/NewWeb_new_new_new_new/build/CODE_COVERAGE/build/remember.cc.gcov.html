@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/remember.cc</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - remember.cc<span style="font-size: 80%;"> (source / <a href="remember.cc.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">44</td>
+            <td class="headerCovTableEntry">61</td>
+            <td class="headerCovTableEntryLo">72.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: remember.cc 703 2006-10-25 01:27:47Z cvsrep $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #include &quot;remember.h&quot;
+<span class="lineNum">       5 </span>            : 
+<a name="6"><span class="lineNum">       6 </span>            : XERCES_CPP_NAMESPACE_USE</a>
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span><span class="lineCov">       8980 : int remember::sync(const char * node_name,permanent * p){</span>
+<span class="lineNum">       9 </span><span class="lineCov">       8980 :   DOMElement* child=0;</span>
+<span class="lineNum">      10 </span><span class="lineCov">       8980 :   switch(read_or_write()){</span>
+<span class="lineNum">      11 </span>            :   case rememberWrite:
+<span class="lineNum">      12 </span>            :     {
+<span class="lineNum">      13 </span><span class="lineNoCov">          0 :       child = the_doc-&gt;createElement(toXMLCh(node_name));</span>
+<span class="lineNum">      14 </span><span class="lineNoCov">          0 :       the_parent_node-&gt;appendChild(child);</span>
+<span class="lineNum">      15 </span><span class="lineNoCov">          0 :       remember rem(the_doc,child,read_or_write());</span>
+<span class="lineNum">      16 </span><span class="lineNoCov">          0 :       p-&gt;fix(&amp;rem);</span>
+<span class="lineNum">      17 </span><span class="lineNoCov">          0 :       p-&gt;data_mapping();</span>
+<span class="lineNum">      18 </span>            :     }
+<span class="lineNum">      19 </span><span class="lineNoCov">          0 :     break;</span>
+<span class="lineNum">      20 </span>            :   case rememberRead:
+<span class="lineNum">      21 </span>            :     {
+<span class="lineNum">      22 </span>            :       //find the relevant data
+<span class="lineNum">      23 </span>            :       DOMNodeList * children =
+<span class="lineNum">      24 </span><span class="lineCov">       8980 :         the_parent_node-&gt;getChildNodes();</span>
+<span class="lineNum">      25 </span><span class="lineCov">       9880 :       for(unsigned int i=0;i&lt;children-&gt;getLength();i++){</span>
+<span class="lineNum">      26 </span>            :         //      std::cout &lt;&lt; tochar(children-&gt;item(i)-&gt;getNodeName()) &lt;&lt; std::endl;
+<span class="lineNum">      27 </span><span class="lineCov">       9340 :         if(children-&gt;item(i)-&gt;getNodeType()==DOMNode::ELEMENT_NODE)</span>
+<span class="lineNum">      28 </span>            :           child=
+<span class="lineNum">      29 </span><span class="lineCov">       9025 :             static_cast&lt;DOMElement*&gt;(children-&gt;item(i));</span>
+<span class="lineNum">      30 </span>            :         else
+<span class="lineNum">      31 </span>            :           child=0;
+<span class="lineNum">      32 </span><span class="lineCov">      27390 :         if(child &amp;&amp; 0==strcmp(tochar(child-&gt;getNodeName()),node_name))</span>
+<span class="lineNum">      33 </span>            :           break;
+<span class="lineNum">      34 </span>            :         else
+<span class="lineNum">      35 </span><span class="lineCov">        450 :           child=0;</span>
+<span class="lineNum">      36 </span>            :       }
+<span class="lineNum">      37 </span><span class="lineCov">       8980 :       if(!child){</span>
+<span class="lineNum">      38 </span><span class="lineCov">         90 :         return 1;</span>
+<span class="lineNum">      39 </span>            :       }
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :       // remove all non-element grand-children (such as blank space,
+<span class="lineNum">      42 </span>            :       // comments), since they will slow down browsing:
+<span class="lineNum">      43 </span><span class="lineCov">       8890 :       DOMNode * grandchild=child-&gt;getFirstChild();</span>
+<span class="lineNum">      44 </span><span class="lineCov">     300770 :       while(grandchild){</span>
+<span class="lineNum">      45 </span>            : //      std::cout &lt;&lt; &quot; -&gt; &quot; &lt;&lt; tochar(the_parent_node-&gt;getNodeName());
+<span class="lineNum">      46 </span>            : //      std::cout &lt;&lt; &quot; -&gt; &quot; &lt;&lt; tochar(child-&gt;getNodeName());
+<span class="lineNum">      47 </span>            : //      std::cout &lt;&lt; &quot; -&gt; &quot; &lt;&lt; tochar(grandchild-&gt;getNodeName()) &lt;&lt; std::endl;
+<span class="lineNum">      48 </span><span class="lineCov">    1017135 :         if(grandchild-&gt;getNodeType()!=DOMNode::ELEMENT_NODE || </span>
+<span class="lineNum">      49 </span><span class="lineCov">     857860 :            !strcmp(tochar(grandchild-&gt;getNodeName()),&quot;#text&quot;) ){</span>
+<span class="lineNum">      50 </span>            : //        std::cout &lt;&lt; &quot;deleting &quot; &lt;&lt; std::endl;
+<span class="lineNum">      51 </span><span class="lineCov">     150385 :           DOMNode * nextgrandchild=grandchild-&gt;getNextSibling();</span>
+<span class="lineNum">      52 </span><span class="lineCov">     150385 :           child-&gt;removeChild(grandchild)-&gt;release();</span>
+<span class="lineNum">      53 </span>            :           grandchild=nextgrandchild;
+<span class="lineNum">      54 </span>            :         }else{
+<span class="lineNum">      55 </span><span class="lineCov">     141495 :           grandchild=grandchild-&gt;getNextSibling();</span>
+<span class="lineNum">      56 </span>            :         }
+<span class="lineNum">      57 </span>            :       }
+<span class="lineNum">      58 </span>            :       
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :       //recurse into the data
+<span class="lineNum">      61 </span><span class="lineCov">      17780 :       remember rem(the_doc,child,read_or_write());</span>
+<span class="lineNum">      62 </span><span class="lineCov">      17780 :       p-&gt;fix(&amp;rem);</span>
+<span class="lineNum">      63 </span><span class="lineCov">       8890 :       p-&gt;data_mapping();</span>
+<span class="lineNum">      64 </span>            :       
+<span class="lineNum">      65 </span>            : #ifdef DEBUGGING
+<span class="lineNum">      66 </span>            :       //check if we got everything
+<span class="lineNum">      67 </span>            :       children = child-&gt;getChildNodes();
+<span class="lineNum">      68 </span>            :       bool warning_done=false;
+<span class="lineNum">      69 </span>            :       for(unsigned int i=0;i&lt;children-&gt;getLength();i++){
+<span class="lineNum">      70 </span>            :         DOMElement *e;
+<span class="lineNum">      71 </span>            :         if(children-&gt;item(i)-&gt;getNodeType()==DOMNode::ELEMENT_NODE)
+<span class="lineNum">      72 </span>            :           e=
+<span class="lineNum">      73 </span>            :             static_cast&lt;DOMElement*&gt;(children-&gt;item(i));
+<span class="lineNum">      74 </span>            :         else
+<span class="lineNum">      75 </span>            :           e=0;
+<span class="lineNum">      76 </span>            :         if(e){
+<span class="lineNum">      77 </span>            :           if(!warning_done){
+<span class="lineNum">      78 </span>            :             WARNING(&quot;the following elements are ignored:&quot;);
+<span class="lineNum">      79 </span>            :             warning_done=true;
+<span class="lineNum">      80 </span>            :           }
+<span class="lineNum">      81 </span>            :           WARNING(tochar(e-&gt;getTagName()));
+<span class="lineNum">      82 </span>            :         }
+<span class="lineNum">      83 </span>            :       }
+<span class="lineNum">      84 </span>            : #endif
+<span class="lineNum">      85 </span>            :       
+<span class="lineNum">      86 </span>            :       //delete this node
+<span class="lineNum">      87 </span><span class="lineCov">       8890 :       the_parent_node-&gt;removeChild(child);</span>
+<span class="lineNum">      88 </span><span class="lineCov">       8890 :       child-&gt;release();</span>
+<span class="lineNum">      89 </span>            :     }
+<span class="lineNum">      90 </span><span class="lineCov">       8890 :     break;</span>
+<span class="lineNum">      91 </span>            :   default:
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;wrong remember direction&quot;);</span>
+<span class="lineNum">      93 </span>            :   }
+<span class="lineNum">      94 </span>            :   return 0;
+<span class="lineNum">      95 </span>            : };
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : // a special version for strings:
+<span class="lineNum">      98 </span><span class="lineCov">         45 : int remember::sync(const char * node_name,std::string &amp; x){</span>
+<span class="lineNum">      99 </span><span class="lineCov">         45 :   XERCES_CPP_NAMESPACE_QUALIFIER DOMNode* child=0;</span>
+<span class="lineNum">     100 </span><span class="lineCov">         45 :   switch(read_or_write()){</span>
+<span class="lineNum">     101 </span>            :   case rememberWrite:
+<span class="lineNum">     102 </span>            :     {
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :       child = the_doc-&gt;createElement(toXMLCh(node_name));</span>
+<span class="lineNum">     104 </span><span class="lineNoCov">          0 :       the_parent_node-&gt;appendChild(child);</span>
+<span class="lineNum">     105 </span><span class="lineNoCov">          0 :       std::ostringstream os;</span>
+<span class="lineNum">     106 </span><span class="lineNoCov">          0 :       os &lt;&lt; std::setprecision(20) &lt;&lt; x;</span>
+<span class="lineNum">     107 </span>            :       XERCES_CPP_NAMESPACE_QUALIFIER DOMText * contents;
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :       contents = the_doc-&gt;createTextNode(toXMLCh(os.str().c_str()));</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :       child-&gt;appendChild(contents);</span>
+<span class="lineNum">     110 </span>            :     }
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :     break;</span>
+<span class="lineNum">     112 </span>            :   case rememberRead:
+<span class="lineNum">     113 </span>            :     {
+<span class="lineNum">     114 </span>            :         //find the relevant data
+<span class="lineNum">     115 </span>            :       XERCES_CPP_NAMESPACE_QUALIFIER DOMNodeList * children =
+<span class="lineNum">     116 </span><span class="lineCov">         45 :         the_parent_node-&gt;getChildNodes();</span>
+<span class="lineNum">     117 </span><span class="lineCov">        315 :       for(unsigned int i=0;i&lt;children-&gt;getLength();i++){</span>
+<span class="lineNum">     118 </span>            :         //std::cout &lt;&lt; tochar(children-&gt;item(i)-&gt;getNodeName()) &lt;&lt; std::endl;
+<span class="lineNum">     119 </span><span class="lineCov">        180 :         if(children-&gt;item(i)-&gt;getNodeType()==XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::ELEMENT_NODE)</span>
+<span class="lineNum">     120 </span>            :           child=
+<span class="lineNum">     121 </span><span class="lineCov">         90 :             static_cast&lt;XERCES_CPP_NAMESPACE_QUALIFIER DOMElement*&gt;(children-&gt;item(i));</span>
+<span class="lineNum">     122 </span>            :         else
+<span class="lineNum">     123 </span>            :           child=0;
+<span class="lineNum">     124 </span><span class="lineCov">        360 :         if(child &amp;&amp; 0==strcmp(tochar(child-&gt;getNodeName()),node_name))</span>
+<span class="lineNum">     125 </span>            :           break;
+<span class="lineNum">     126 </span>            :         else
+<span class="lineNum">     127 </span><span class="lineCov">        135 :           child=0;</span>
+<span class="lineNum">     128 </span>            :       }
+<span class="lineNum">     129 </span><span class="lineCov">         45 :       if(!child){</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :         return 1;</span>
+<span class="lineNum">     131 </span>            :       }
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            :       XERCES_CPP_NAMESPACE_QUALIFIER DOMNode * contents=
+<span class="lineNum">     134 </span><span class="lineCov">         45 :         child-&gt;getFirstChild();</span>
+<span class="lineNum">     135 </span><span class="lineCov">         45 :       if(!contents){</span>
+<span class="lineNum">     136 </span>            :         return 1;
+<span class="lineNum">     137 </span>            :       }
+<span class="lineNum">     138 </span><span class="lineCov">         45 :       if(contents-&gt;getNodeType()!=</span>
+<span class="lineNum">     139 </span>            :          XERCES_CPP_NAMESPACE_QUALIFIER DOMNode::TEXT_NODE)
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :         FATAL_ERROR(&quot;syntax_error&quot;);</span>
+<span class="lineNum">     141 </span>            :       XERCES_CPP_NAMESPACE_QUALIFIER DOMText * text=
+<span class="lineNum">     142 </span><span class="lineCov">         45 :         (XERCES_CPP_NAMESPACE_QUALIFIER DOMText *) contents;</span>
+<span class="lineNum">     143 </span><span class="lineCov">         90 :       std::istringstream is;</span>
+<span class="lineNum">     144 </span><span class="lineCov">        315 :       x=std::string(tochar(text-&gt;getData()));</span>
+<span class="lineNum">     145 </span><span class="lineCov">         45 :       the_parent_node-&gt;removeChild(child);</span>
+<span class="lineNum">     146 </span><span class="lineCov">         45 :       child-&gt;release();</span>
+<span class="lineNum">     147 </span>            :     }
+<span class="lineNum">     148 </span><span class="lineCov">         45 :     break;</span>
+<span class="lineNum">     149 </span>            :   default:
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :     FATAL_ERROR(&quot;wrong remember direction&quot;);</span>
+<a name="151"><span class="lineNum">     151 </span>            :   }</a>
+<span class="lineNum">     152 </span>            :   return 0;
+<span class="lineNum">     153 </span><span class="lineCov">         90 : };</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

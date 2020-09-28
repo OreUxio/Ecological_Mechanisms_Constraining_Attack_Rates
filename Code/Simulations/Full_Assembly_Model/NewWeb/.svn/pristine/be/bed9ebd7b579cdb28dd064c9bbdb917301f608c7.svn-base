@@ -1,0 +1,58 @@
+#!/bin/sh 
+# $Id$	
+
+# Sync current directory with the appropriate build directory on the
+# appropriate machine and then call gmake in this build directory.
+
+# The destination is given by the first argument.
+
+MAKE=make
+
+if [ "$1" = "-f" ]; then
+#     echo "Do you really want to force overwriting and remaking? (yes/no)"
+#     read answer
+#     if [ "$answer" != "yes" ]; then
+# 	exit 1
+#     fi
+    force=1
+    shift
+else
+    force=0
+fi
+
+case $1 in
+    local|localhost)
+	[ -d ../build ] || \
+	    (echo "$0:message: creating ../build directory" 1>&2 ; \
+	    mkdir ../build)
+	rsync --recursive -v --checksum --links --perms --cvs-exclude * ../build/
+	cd ../build/
+	shift
+	exec $MAKE "${@}"
+	;;
+    delllogin)
+	builddir=NewWeb/build
+	if [ $USER = tfung ]; then
+	    rsync --rsh="ssh -l tfung" --recursive --update --links --perms --cvs-exclude --exclude='*.d' --exclude='*.d1' *.{c,cc,h,hpp} Makefile tfung@delllogin:NewWeb/build/
+	    shift
+	    ssh -l tfung delllogin "cd ${builddir};make ${@}"
+	else
+	    rsync -v --rsh="ssh" --recursive --update --links --perms --cvs-exclude --exclude '*.o' * arossberg@delllogin.qub.ac.uk:$builddir
+	    shift
+	    ssh arossberg@delllogin.qub.ac.uk "cd ${builddir};make ${@} 2>&1"
+	fi
+	;;
+    grace)
+	if [ X"$GRACEUSER"X = XX ]; then
+	    echo "$0:error: environmental variable GRACEUSER not set to grace user name." 1>&2 ; exit 1
+	fi
+	builddir=NewWeb/build
+	rsync -v --rsh="ssh" --recursive --update --links --perms --cvs-exclude --exclude '*.o' * ${GRACEUSER}@grace.uea.ac.uk:$builddir
+	shift
+	ssh -Y ${GRACEUSER}@grace.uea.ac.uk "source .profile;cd ${builddir};make ${@} 2>&1"
+	;;
+    *)
+	echo "$0:error: destination $1 unknown" 1>&2 ; exit 1
+esac
+
+

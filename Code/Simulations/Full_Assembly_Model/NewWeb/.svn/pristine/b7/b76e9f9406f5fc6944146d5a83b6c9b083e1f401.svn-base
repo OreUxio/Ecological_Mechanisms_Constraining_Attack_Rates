@@ -1,0 +1,757 @@
+// $Id$
+#include <string>
+std::string version("$Id$");
+//extern std::string compilation_time;
+
+#define SAVE_DISTANCES
+
+#include <signal.h>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
+#include "parsecfg.h" // include this header file when use parsecfg lib
+#include "error.h"    // my error handlers
+#include "standardize.h"
+#include "cfgPermanent.h"
+#include "Statistics.h"
+#include "NetworkAnalysis.h"
+#include "random.h"   // these are only to enforce linking
+#include "linpack_eigen.h"
+
+#ifdef GET_INDIRECT_DEPENDENCIES
+#include "evaluate.h"
+#endif
+
+using namespace std;
+
+static int random_seed=1;
+
+// Median:
+static double r1=1.4;
+static double rp=1-0.014;
+static double lambda=0.005;
+static double pv=0.009;
+static double pf=0.068;
+static double C0=0.12;
+static double w_size=0;
+static double ppmr=0;
+static int target_S0=0;
+static int n_samples=1;
+
+static double rm=1;
+static double D=0.05*0.05;
+
+
+// Manage adjustable parameters:
+#include "cfgList.h"
+static cfgStruct cfg[] = 
+{
+  CFGINT(random_seed),
+  CFGDOUBLE(r1),
+  CFGDOUBLE(rp),
+  CFGDOUBLE(lambda),
+  CFGDOUBLE(C0),
+  CFGDOUBLE(pv),
+  CFGDOUBLE(pf),
+  CFGDOUBLE(w_size),
+  CFGDOUBLE(ppmr),
+  CFGINT(target_S0),
+  CFGINT(n_samples),
+  {0, CFG_END, 0}
+};
+static cfg_add dummy(cfg);
+
+string in_file_name="Matching.cfg";
+double kappa,rho;
+
+void read_parameters_from_in_file(){
+  std::cout << "reading parameter file " << in_file_name << std::endl;
+  cfgStruct * cfg_list=full_cfg_list();
+  if (cfgParse(in_file_name.c_str(), cfg_list, CFG_SIMPLE) == -1)
+    FATAL_ERROR("error reading parameter file");
+  delete [] cfg_list; //this is a raw array, we need to deallocate by hand
+}
+
+void read_arguments(int argc,char *argv[]){
+  int c;
+ 
+  while(1){
+    c=getopt(argc, argv, "hvpm:P");
+    if (c == -1)
+      break;
+    
+    switch(c){
+    case 'v':
+      printf("%s\n",version.c_str());
+      exit(0);
+      break;
+    case 'h':
+    default:
+        fprintf(stdout,"\nusage: %s [foodweb_file|config_file...]\n",argv[0]);
+        exit(c=='h'?0:1);
+      }
+  }
+  argc-=optind-1;
+  argv+=optind-1;
+
+  if(argc<=1){
+    read_parameters_from_in_file();
+    return;
+  }
+}
+
+
+void set_n_clades(int & n_clades){
+  // n_clades is Poisson distibuted:
+  const double mu=-kappa*log(1-rho); //expectation value
+  // n_clades=poisson(mu);
+  // return;
+  //// hand made:
+  const double full=exp(mu);
+  const double target=full*unirand();
+  //  REPORT(mu);
+  //  REPORT(target);
+  int k=0;
+  double last=1;
+  double sum=1;
+  while(sum<target){
+    //    REPORT(sum);
+    //    REPORT(last);
+    k++;
+    last*=mu/k;
+    sum+=last;
+  }
+  //  REPORT(k);
+  n_clades=k;
+}
+
+int random_clade_size(){
+  // clade size is log-series distributed_clades is Poisson distibuted:
+  const double mu=-kappa*log(1-rho); //expectation value
+  // n_clades=poisson(mu);
+  // return;
+  //// hand made:
+  const double full=-log(1-rho);
+  const double target=full*unirand();
+  int k=1;
+  double last=rho;
+  double sum=rho;
+  while(sum<target){
+    k++;
+    last=last*rho;
+    sum+=last/k;
+  }
+  return k;
+}
+
+class degree_t:public  sequence< sequence < int > >{
+public:
+  int & operator()(int i,int j){
+    if(i>=j)
+      return (*this)[i][j];
+    else
+      return (*this)[j][i];
+  }
+};
+
+// symmetrize indices
+#define DEGREEP(I,J) ((I)>=(J)?degree_of_relation_plus_one[(I)][(J)]:degree_of_relation_plus_one[(J)][(I)])
+
+///// TRASH:
+// static inline int & DEGREEP(int i,int j){
+//   if(i>=j){
+//     return degree_of_relation_plus_one[i][j];
+//   }else{
+//     return degree_of_relation_plus_one[j][i];
+//   }
+// }
+
+void link_trees(int s1,int s2,int &open_degrees,
+		degree_t &degree_of_relation_plus_one ,
+		int virtual_start){
+  // from the distances in the two trees starting at s1 and at s2
+  // compute the distances between all members of s1 and s2.
+
+  // all species
+  for(int i=degree_of_relation_plus_one.size();
+      i-->0;){
+    if(DEGREEP(i,s1) && i!=s1){
+      // i is a proper subtree of s1
+      for(int j=degree_of_relation_plus_one.size();j-->0;){
+	if(DEGREEP(j,s2) && j!=s2){
+	  // j is a proper subtree of s2
+// 	  REPORT(i);
+// 	  REPORT(DEGREEP(i,s1));
+// 	  REPORT(j);
+// 	  REPORT(DEGREEP(j,s2));
+	  DEGREEP(i,j)=DEGREEP(i,s1)+DEGREEP(j,s2);
+	  if(i<virtual_start && j<virtual_start){
+	    open_degrees--;
+	  }
+	}
+      }
+    }
+  }
+  for(int i=degree_of_relation_plus_one.size();
+      i-->0;){
+    if(i!=s1 && i!=s2){
+      if(DEGREEP(i,s1)){
+	DEGREEP(i,s2)=DEGREEP(i,s1)+1;
+	if(i<virtual_start && s2<virtual_start)
+	  open_degrees--;
+      }else if(DEGREEP(i,s2)){
+	DEGREEP(i,s1)=DEGREEP(i,s2)+1;
+	if(i<virtual_start && s1<virtual_start)
+	  open_degrees--;
+      }
+    }
+  }
+  DEGREEP(s1,s2)=2;
+  if(s1<virtual_start && s2<virtual_start){
+    open_degrees--;
+  }
+}
+
+void get_degrees_of_relation(const int clade_size,
+			     degree_t & degree_of_relation_plus_one){
+  sequence< char > exists;
+
+  for(int i=clade_size;i-->0;){
+    degree_of_relation_plus_one[i]*=0;
+    degree_of_relation_plus_one[i][i]=1;
+    exists[i]=true;
+  }
+
+  int open_degrees=(clade_size*(clade_size-1))/2;
+  int n_species=clade_size;
+  int n_sites=n_species; //some sites later become empty!!
+  double pfrac=rho/(1+rho);
+  while(open_degrees){
+    if(unirand()<pfrac){
+      // add one species (extinction backward in time)
+      //!!!!! we might want to reuse some site here instead!!
+      if(n_sites<n_species+clade_size){
+	exists[n_sites]=true;
+	degree_of_relation_plus_one[n_sites]*=0;
+	degree_of_relation_plus_one[n_sites][n_sites]=1;
+	n_sites++;
+	n_species++;
+      }else{//recycle:
+	int reborn=clade_size;
+	while(exists[reborn]) reborn++;
+	exists[reborn]=true;
+	for(int i=n_sites;i-->0;){
+	  degree_of_relation_plus_one(i,reborn)=0;
+	}
+	degree_of_relation_plus_one(reborn,reborn)=1;
+	n_species++;
+      }
+    }else{
+      // link two species (speciation backward in time)
+      int parent,child;
+      
+      // get parent
+      do{
+	parent=random_integer(n_sites);
+      }while(!exists[parent]);
+      
+      // get child
+      do{
+	child=random_integer(n_sites);
+      }while(parent==child || !exists[child]);
+      
+//       REPORT(parent);
+//       REPORT(child);
+
+      link_trees(parent,child,open_degrees,
+		 degree_of_relation_plus_one,clade_size);
+
+      exists[child]=false;
+      n_species--;
+    }
+    // REPORT(exists);
+    // REPORT(open_degrees);
+    // REPORT(n_species);
+    // TREE_REPORT(n_sites);
+  }
+}
+
+using namespace CLHEP;
+
+void get_central_multi_normal(HepMatrix & cov,
+			      HepVector & result){
+  int n=cov.num_col();
+  HepMatrix & M=cov;
+  HepVector xi(n);
+  CholeskyL(M);
+  for(int i=n;i-->0;){
+    xi[i]=gaussian(0,1);
+  }
+  result=M*xi;
+  return;
+}
+
+void get_log_body_size(const int clade_size,
+		       degree_t & degree_of_relation_plus_one,
+		       sequence< double > & log_body_size){
+  if(clade_size==1){
+    log_body_size[0]=unirand();
+    return;
+  }
+  const int size_m=clade_size-1;
+  HepMatrix cov(size_m,size_m,0);
+  for(int i=size_m;i-->0;){
+    cov[i][i]=DEGREEP(i,size_m)-1;
+    for(int j=i;j-->0;){
+      cov[i][j]=cov[j][i]=
+	(DEGREEP(i,size_m)+
+	 DEGREEP(j,size_m)-
+	 DEGREEP(i,j)-1
+	 )/2;
+    }
+  }
+  HepVector size_spread;
+  get_central_multi_normal(cov,size_spread);
+  
+  sequence< double >  clade_body_size;
+  double size_offset=unirand()-0.5;
+  clade_body_size[size_m]=size_offset;
+  for(int i=size_m;i-->0;){
+    clade_body_size[i]=size_spread[i]*sqrt(D)+size_offset;
+  }
+  
+  for(int i=clade_size;i-->0;){
+    double s=clade_body_size[i];
+    while(s>=1 || s<0){
+      if(s>=1) 
+	s=2-s;
+      else
+	s=-s;
+    }
+    log_body_size[i]=s;
+  }
+}
+
+class memory_power{
+  const double base;
+  sequence < double > pow;
+  memory_power():base(0){};//no default constructor;
+public:
+  memory_power(double b);
+  double operator()(int i);
+};
+
+memory_power::memory_power(double b):
+  base(b),pow(1)
+{
+  pow[0]=1;
+};
+
+double memory_power::operator()(int i){
+  ASSERT(i>=0);
+  if(i>=pow.size()){
+    for(int j=pow.size();j<=i;j++){
+      pow[j]=pow(j-1)*base;
+    }
+  }
+  return pow[i];
+}
+
+class higher_in {
+private:
+  sequence< double > the_mass;
+public:
+  higher_in(sequence< double > & m):the_mass(m){};
+  bool operator()(int s1, int s2){
+    return 
+      (the_mass[s1] >= the_mass[s2]);
+  }
+};
+
+double smax(sequence< double > x){
+  if(x.size()==0)
+    return 0;
+  double xmax=x[0];
+  for(int i=x.size();i-->0;){
+    if(x[i]>xmax) xmax=x[i];
+  }
+  return xmax;
+}
+
+// to compute inverse error function:
+#include <gsl/gsl_roots.h>
+#include <gsl/gsl_sf.h>
+typedef double function_t(double);
+double solver_f (double x, void * p) {
+  return ((function_t*) p)(x);
+}
+double find_root(function_t *f,double minx,double maxx){
+  const gsl_root_fsolver_type * T
+    = gsl_root_fsolver_brent;
+  gsl_root_fsolver * S
+    = gsl_root_fsolver_alloc (T);
+  gsl_function F;
+  F.function = &solver_f;
+  F.params = (void *)f;
+  gsl_root_fsolver_set(S,&F, minx,maxx);
+  double best_root;
+  do{
+    int error=gsl_root_fsolver_iterate(S);
+    assert(error==0);
+    best_root=gsl_root_fsolver_root(S);
+  }while(gsl_root_fsolver_x_upper(S)-gsl_root_fsolver_x_lower(S)>0.00001);
+  double result=gsl_root_fsolver_root(S);
+  gsl_root_fsolver_free(S);
+  return result;
+}
+double x0_condition(double x){
+  //printf("%f -> %f\n",x,gauss_int(x));
+  return gsl_sf_erf_Q(x)-C0;
+}
+// end inverse error function
+
+int main(int argc,char *argv[]){
+  set_new_handler(outOfMemory); 
+  signal_handling();
+  cout << version << endl;
+  system("/bin/date");
+  read_arguments(argc,argv);
+  // read parameter file:
+  if (cfgParse(in_file_name.c_str(), full_cfg_list(), CFG_SIMPLE) == -1)
+    FATAL_ERROR("error reading parameter file");
+
+  REPORT(random_seed);
+  set_random_seed(random_seed);
+
+  rm=1;
+
+//   //Bengueal Current
+//   r1=2.8;
+//   rp=1-0.080;
+//   lambda=0.027;
+//   C0=0.38;
+//   pv=0.003;
+//   pf=0.32;
+  
+//   //Reef
+//   r1=0.48;
+//   rp=1-0.0082;
+//   lambda=0.068;
+//   C0=0.29;
+//   pv=0.008;
+//   pf=0.39;
+  
+//   //Coachella Valley 
+//   r1=1.4;
+//   rp=1-0.049;
+//   lambda=0.034;
+//   C0=0.71;
+//   pv=0.002;
+//   pf=0.10;
+
+//   // Ythan 1
+//   r1=1.0;
+//   rp=1-0.010;
+//   lambda=0.0029;
+//   C0=0.08;
+//   pv=0.033;
+//   pf=0.037;
+
+//   // Scotch Broom
+//   r1=1.3;
+//   rp=1-0.0067;
+//   lambda=0.001;
+//   C0=0.03;
+//   pv=0.031;
+//   pf=0.006;
+  
+//   //British Grassland 
+//   r1=1.4;
+//   rp=1-0.014;
+//   lambda=0;
+//   C0=0.09;
+//   pv=0.014;
+//   pf=0.013;
+
+//   //Tester 
+//   r1=0.5;
+//   rp=1-0.025;
+//   lambda=0.01;
+//   C0=0.2;
+//   pv=0.001;
+//   pf=0.5;
+
+//   //Little Rock Lake (THIS ONE LOOKS DIFFERENT FROM PAPER!)
+//   r1=1.3;
+//   rp=1-0.0092;
+//   lambda=0.25;
+//   C0=0.12;
+//   pv=0.001;
+//   pf=0.043;
+
+//   //El Verde Rainforest 
+//   r1=0.76;
+//   rp=1-0.0054;
+//   lambda=0.12;
+//   C0=0.09;
+//   pv=0.015;
+//   pf=0.036;
+
+  //!!! BUG IN PAPER !!!
+
+  kappa=r1/rp;
+  rho=rp/rm;
+
+  double q=1;
+
+  REPORT(1-rho);
+  REPORT(D);
+  REPORT(pv);
+  REPORT(pf);
+
+  // re-normalize parameters:
+  double rho_small=rho;
+  rho=rho/(rho+(1-rho)*q);
+  D=D*(1-rho)/(1-rho_small);
+  pv=pv*(1-rho)/(1-rho_small+2*pv*(rho_small-rho));
+  pf=pf*(1-rho)/(1-rho_small+2*pv*(rho_small-rho));
+
+  REPORT(1-rho);
+  REPORT(D);
+  REPORT(pv);
+  REPORT(pf);
+
+
+  int n_clades;
+  sequence< int > clade_size;
+  sequence< sequence< double > > log_body_size;
+  sequence< degree_t > degrees;
+  sequence< int > offset;
+  sequence< HepMatrix > fCholesky,vCholesky;
+  memory_power pow_f(1-2*pf),pow_v(1-2*pv);
+
+  if(0){
+    rho=0.1;
+    sequence< double > dist,ndist;
+    for(int i=100000;i--!=0;){
+      if(i%1000==0)
+	cerr << "\r" << i << "      ";
+      cerr.flush();
+      const int n=random_clade_size();
+      degree_t length;
+      get_degrees_of_relation(n,length);
+      //      if(n>1)dist[length(0,1)-1]+=1.0;
+      for(int j=n;j-->0;){
+	for(int k=j;k-->0;){
+	  dist[length(j,k)-1]++;
+	}
+      }
+      if(n>1) ndist[n]++;
+    }
+    cerr << endl;
+    dist/=sum(dist);
+    ndist/=sum(ndist);
+    double m=0;
+    for(int i=dist.size();i-->0;){
+      m+=i*dist[i];
+    }
+    cerr << "numerical mean :" << m << endl;
+    cerr << "predicted mean :" << rho/(1-rho)+1 << endl;
+
+    for(int i=1;i<dist.size();i++){
+      if(dist[i])
+	cout << i << " " << dist[i] << endl;
+    }
+    exit(0);
+  }
+
+  for(int repetition=n_samples;repetition-->0;){
+
+    int S0;
+    while(true){
+      do{
+	set_n_clades(n_clades);
+      }while(n_clades==0);
+    
+      S0=0;
+      for(int i=0;i<n_clades;i++){
+	offset[i]=S0;
+	clade_size[i]=random_clade_size();
+	S0+=clade_size[i];
+      }
+      if( (not target_S0) or (target_S0 == S0)){
+	break;
+      }
+    }
+    REPORT(n_clades);
+    sequence< double > max_degree;
+    for(int i=0;i<n_clades;i++){
+      REPORT(i);
+      REPORT(clade_size[i]);
+      get_degrees_of_relation(clade_size[i],degrees[i]);
+      get_log_body_size(clade_size[i],degrees[i],log_body_size[i]);
+      fCholesky[i]=HepMatrix(clade_size[i],clade_size[i]);
+      vCholesky[i]=HepMatrix(clade_size[i],clade_size[i]);
+      for(int k=clade_size[i];k-->0;){
+	for(int l=clade_size[i];l-->0;){
+	  fCholesky[i][k][l]=
+	    pow_f(degrees[i](k,l)-1);
+	  vCholesky[i][k][l]=
+	    pow_v(degrees[i](k,l)-1);
+	}
+      }
+      CholeskyL(fCholesky[i]);
+      CholeskyL(vCholesky[i]);
+
+      for(int j=0;j<clade_size[i];j++){
+	// REPORT(degrees[i][j]);
+      }
+      //    REPORT(log_body_size[i]);
+      degrees[i].resize(clade_size[i]);
+      max_degree[i]=
+	smax(Map(::smax,sequence< sequence< double > >(degrees[i])));
+    }
+    REPORT(max_degree/clade_size);
+    REPORT(mean(max_degree/clade_size));
+ 
+#ifdef SAVE_DISTANCES
+      static ofstream distances("distances.dat");
+      distances << S0 << endl;
+#endif
+
+    // compute links:
+    Interaction_Matrix m(S0);
+    HepMatrix phylo_distance(S0,S0);
+    for(int i=S0;i-->0;){
+      for(int j=S0;j-->0;){
+	m[i][j]=NetworkAnalysis::none;
+      }
+    }
+
+    average_meter x2av;
+    double x0=find_root(x0_condition,-5,5);
+    REPORT(x0);
+
+    double y[S0][S0];
+    vector< double > x_list(S0*S0);int x_list_ptr=0;
+    for(int f=n_clades;f-->0;){
+      for(int v=n_clades;v-->0;){
+	HepMatrix x(clade_size[f],clade_size[v]);
+	for(int fi=clade_size[f];fi-->0;){
+	  for(int vi=clade_size[v];vi-->0;){
+	    x[fi][vi]=gaussian(0,1);
+	  }
+	}
+	x=(fCholesky[f]*x*vCholesky[v].T());
+      
+	for(int fi=clade_size[f];fi-->0;){
+	  for(int vi=clade_size[v];vi-->0;){
+#ifdef SAVE_DISTANCES
+	    phylo_distance[offset[f]+fi][offset[v]+vi]=
+	      (v==f ? degrees[v](fi,vi) : 0 ) - 1;
+#endif
+	    x2av.sample(x[fi][vi]*x[fi][vi]);
+	    y[offset[f]+fi][offset[v]+vi]=x[fi][vi];
+	    if(w_size){
+	      double size_weight=
+		-pow(log_body_size[v][vi]+ppmr-log_body_size[f][fi],2)/
+		pow(w_size,2);
+	      x_list[x_list_ptr++]=
+		y[offset[f]+fi][offset[v]+vi]+=size_weight;
+	    }
+	  }
+	}
+      }
+    }
+    if(w_size){
+      sort(x_list.begin(),x_list.end());
+      double target_C=C0*(1-(1-lambda)*(1-lambda)/2);
+      double adjusted_x0;
+      if(target_C<=0)
+	adjusted_x0=HUGE;
+      else
+	adjusted_x0=x_list[int(S0*S0*(1-target_C))];
+      REPORT(adjusted_x0);
+      x0=adjusted_x0;
+    }
+
+    for(int f=n_clades;f-->0;){
+      for(int v=n_clades;v-->0;){
+	for(int fi=clade_size[f];fi-->0;){
+	  for(int vi=clade_size[v];vi-->0;){
+	    if(w_size ||
+	       log_body_size[f][fi]>log_body_size[v][vi]-lambda ){
+	      if(y[offset[f]+fi][offset[v]+vi] > x0){
+		m[offset[f]+fi][offset[v]+vi]=
+		  NetworkAnalysis::eats;
+	      }
+	    }
+	  }
+	}
+      }
+    }
+    
+#ifdef SAVE_DISTANCES
+    for(int i=0;i<S0;++i){
+      for(int j=0;j<S0;++j){
+	distances << phylo_distance[i][j] << " ";
+      }
+      distances << endl;
+    }
+#endif
+    
+    if(q<1){
+      // select random subweb
+      simple_vector<bool> random_selection(S0);
+      for(int i=S0;i-->0;){
+	random_selection[i]=(unirand()<q);
+      }
+      m=m.select(random_selection);
+    }
+    
+    REPORT(x2av.readout());
+    
+    ///// Check size sorting
+    sequence< double > all_sizes(S0);
+    for(int i=0;i<n_clades;i++){
+      for(int si=0;si<clade_size[i];si++)
+	all_sizes[offset[i]+si]=log_body_size[i][si];
+    }
+#ifdef SAVE_DISTANCES
+    static ofstream sizes("sizes.dat");
+    sizes << all_sizes << endl;
+#endif
+    permutation perm(S0);
+    for(int i=0;i<S0;i++){
+      perm[i]=i;
+    }
+    stable_sort(perm.begin(),perm.end(),higher_in(all_sizes));
+    permutation p2=perm.inverse();
+#ifdef SAVE_DISTANCES
+    static ofstream FoodWebs("FoodWebs.dat");
+    m.tPrint(FoodWebs);
+#endif
+    m.permute(p2).tPrint();
+    sort(all_sizes.rbegin(),all_sizes.rend());
+    cout << all_sizes << endl;
+
+  
+  
+    //   Interaction_Matrix ms=standardize(m).random_shuffle().tsort();
+    //   ms.Print();
+    //   ms.pgm_write("img.pgm");
+
+    REPORT(m.connectance_C());
+    REPORT(1-m.Number_of_Species_S()/double(m.Number_of_Species_S()));
+    REPORT(C0);
+    REPORT(C0*(1-(1-lambda)*(1-lambda)/2));
+    sequence<double> p=m.props();
+    sequence<string> names=Interaction_Matrix::prop_names();
+    for(unsigned int j=0;j<names.size();j++){
+      cout << names[j] << " " << p[j]
+	   << endl;
+      }
+
+  }
+}

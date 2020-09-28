@@ -1,0 +1,49 @@
+// -*- mode: c++ -*-
+// $Id$
+#ifndef _MORANI_H_
+#define _MORANI_H_
+
+#include "topology_generator.h"
+#include "memory_power.h"
+
+#include <set>
+#include <CLHEP/Matrix/Matrix.h>
+
+class MoranI : public Topology_Generator
+{
+  class degree_t:public  sequence< sequence < double > >{
+  public:
+    double & operator()(int i,int j){
+      if(i>=j)
+	return (*this)[i][j];
+      else
+	return (*this)[j][i];
+    }
+  };
+  
+  typedef std::set < int > descendants_set_t;
+  typedef descendants_set_t::iterator diter;
+
+  degree_t get_degrees_of_separation(const int S0);
+  CLHEP::HepMatrix get_spread_covariance(const int clade_size,degree_t degrees);
+  void truncate_body_sizes(sequence< double > & clade_body_size);
+  inline double variance(const int S0,double time_since_speciaton);
+  void adapt_foragers(CLHEP::HepMatrix & fi,const CLHEP::HepMatrix & ri,double w2);
+protected:
+  CLHEP::
+  HepMatrix neutral_resource_traits(const int S0,double & total_variance);
+  const int _ndim;
+  const double _D_bodymass;
+  const double _C0;
+  const double _lambda;
+  const double _saturation;
+  const double _q;
+  const int _correct_correlations;
+  const bool _adaptation;
+public:
+  MoranI(int ndim,double D_bodymass,double C0,double lambda,
+	 double saturation,double q,int co_co,bool adaptation);
+  virtual Interaction_Matrix draw_sample(const double rS0);
+};
+
+#endif // _MORANI_H_

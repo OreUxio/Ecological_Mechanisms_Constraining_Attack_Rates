@@ -1,0 +1,813 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/subview_elem2_meat.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - subview_elem2_meat.hpp<span style="font-size: 80%;"> (source / <a href="subview_elem2_meat.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">62</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2012-2015 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : //! \addtogroup subview_elem2
+<span class="lineNum">      12 </span>            : //! @{
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">      16 </span>            : inline
+<span class="lineNum">      17 </span>            : subview_elem2&lt;eT,T1,T2&gt;::~subview_elem2()
+<span class="lineNum">      18 </span>            :   {
+<span class="lineNum">      19 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      20 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">      24 </span>            : arma_inline
+<span class="lineNum">      25 </span>            : subview_elem2&lt;eT,T1,T2&gt;::subview_elem2
+<span class="lineNum">      26 </span>            :   (
+<span class="lineNum">      27 </span>            :   const Mat&lt;eT&gt;&amp;        in_m,
+<span class="lineNum">      28 </span>            :   const Base&lt;uword,T1&gt;&amp; in_ri,
+<span class="lineNum">      29 </span>            :   const Base&lt;uword,T2&gt;&amp; in_ci,
+<span class="lineNum">      30 </span>            :   const bool            in_all_rows,
+<span class="lineNum">      31 </span>            :   const bool            in_all_cols
+<span class="lineNum">      32 </span>            :   )
+<span class="lineNum">      33 </span>            :   : m        (in_m       )
+<span class="lineNum">      34 </span>            :   , base_ri  (in_ri      )
+<span class="lineNum">      35 </span>            :   , base_ci  (in_ci      )
+<span class="lineNum">      36 </span>            :   , all_rows (in_all_rows)
+<span class="lineNum">      37 </span><span class="lineNoCov">          0 :   , all_cols (in_all_cols)</span>
+<span class="lineNum">      38 </span>            :   {
+<span class="lineNum">      39 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      40 </span>            :   }
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">      45 </span>            : template&lt;typename op_type&gt;
+<span class="lineNum">      46 </span>            : inline
+<span class="lineNum">      47 </span>            : void
+<span class="lineNum">      48 </span>            : subview_elem2&lt;eT,T1,T2&gt;::inplace_op(const eT val)
+<span class="lineNum">      49 </span>            :   {
+<span class="lineNum">      50 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      51 </span>            :   
+<span class="lineNum">      52 </span>            :   Mat&lt;eT&gt;&amp; m_local = const_cast&lt; Mat&lt;eT&gt;&amp; &gt;(m);
+<span class="lineNum">      53 </span>            :   
+<span class="lineNum">      54 </span>            :   const uword m_n_rows = m_local.n_rows;
+<span class="lineNum">      55 </span>            :   const uword m_n_cols = m_local.n_cols;
+<span class="lineNum">      56 </span>            :   
+<span class="lineNum">      57 </span>            :   if( (all_rows == false) &amp;&amp; (all_cols == false) )
+<span class="lineNum">      58 </span>            :     {
+<span class="lineNum">      59 </span>            :     const unwrap_check_mixed&lt;T1&gt; tmp1(base_ri.get_ref(), m_local);
+<span class="lineNum">      60 </span>            :     const unwrap_check_mixed&lt;T2&gt; tmp2(base_ci.get_ref(), m_local);
+<span class="lineNum">      61 </span>            :     
+<span class="lineNum">      62 </span>            :     const umat&amp; ri = tmp1.M;
+<span class="lineNum">      63 </span>            :     const umat&amp; ci = tmp2.M;
+<span class="lineNum">      64 </span>            :     
+<span class="lineNum">      65 </span>            :     arma_debug_check
+<span class="lineNum">      66 </span>            :       (
+<span class="lineNum">      67 </span>            :       ( ((ri.is_vec() == false) &amp;&amp; (ri.is_empty() == false)) || ((ci.is_vec() == false) &amp;&amp; (ci.is_empty() == false)) ),
+<span class="lineNum">      68 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">      69 </span>            :       );
+<span class="lineNum">      70 </span>            :     
+<span class="lineNum">      71 </span>            :     const uword* ri_mem    = ri.memptr();
+<span class="lineNum">      72 </span>            :     const uword  ri_n_elem = ri.n_elem;
+<span class="lineNum">      73 </span>            :     
+<span class="lineNum">      74 </span>            :     const uword* ci_mem    = ci.memptr();
+<span class="lineNum">      75 </span>            :     const uword  ci_n_elem = ci.n_elem;
+<span class="lineNum">      76 </span>            :     
+<span class="lineNum">      77 </span>            :     for(uword ci_count=0; ci_count &lt; ci_n_elem; ++ci_count)
+<span class="lineNum">      78 </span>            :       {
+<span class="lineNum">      79 </span>            :       const uword col = ci_mem[ci_count];
+<span class="lineNum">      80 </span>            :       
+<span class="lineNum">      81 </span>            :       arma_debug_check( (col &gt;= m_n_cols), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">      82 </span>            :       
+<span class="lineNum">      83 </span>            :       for(uword ri_count=0; ri_count &lt; ri_n_elem; ++ri_count)
+<span class="lineNum">      84 </span>            :         {
+<span class="lineNum">      85 </span>            :         const uword row = ri_mem[ri_count];
+<span class="lineNum">      86 </span>            :         
+<span class="lineNum">      87 </span>            :         arma_debug_check( (row &gt;= m_n_rows), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">      88 </span>            :         
+<span class="lineNum">      89 </span>            :         if(is_same_type&lt;op_type, op_internal_equ  &gt;::yes) { m_local.at(row,col)  = val; }
+<span class="lineNum">      90 </span>            :         if(is_same_type&lt;op_type, op_internal_plus &gt;::yes) { m_local.at(row,col) += val; }
+<span class="lineNum">      91 </span>            :         if(is_same_type&lt;op_type, op_internal_minus&gt;::yes) { m_local.at(row,col) -= val; }
+<span class="lineNum">      92 </span>            :         if(is_same_type&lt;op_type, op_internal_schur&gt;::yes) { m_local.at(row,col) *= val; }
+<span class="lineNum">      93 </span>            :         if(is_same_type&lt;op_type, op_internal_div  &gt;::yes) { m_local.at(row,col) /= val; }
+<span class="lineNum">      94 </span>            :         }
+<span class="lineNum">      95 </span>            :       }
+<span class="lineNum">      96 </span>            :     }
+<span class="lineNum">      97 </span>            :   else
+<span class="lineNum">      98 </span>            :   if( (all_rows == true) &amp;&amp; (all_cols == false) )
+<span class="lineNum">      99 </span>            :     {
+<span class="lineNum">     100 </span>            :     const unwrap_check_mixed&lt;T2&gt; tmp2(base_ci.get_ref(), m_local);
+<span class="lineNum">     101 </span>            :     
+<span class="lineNum">     102 </span>            :     const umat&amp; ci = tmp2.M;
+<span class="lineNum">     103 </span>            :     
+<span class="lineNum">     104 </span>            :     arma_debug_check
+<span class="lineNum">     105 </span>            :       (
+<span class="lineNum">     106 </span>            :       ( (ci.is_vec() == false) &amp;&amp; (ci.is_empty() == false) ),
+<span class="lineNum">     107 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     108 </span>            :       );
+<span class="lineNum">     109 </span>            :     
+<span class="lineNum">     110 </span>            :     const uword* ci_mem    = ci.memptr();
+<span class="lineNum">     111 </span>            :     const uword  ci_n_elem = ci.n_elem;
+<span class="lineNum">     112 </span>            :     
+<span class="lineNum">     113 </span>            :     for(uword ci_count=0; ci_count &lt; ci_n_elem; ++ci_count)
+<span class="lineNum">     114 </span>            :       {
+<span class="lineNum">     115 </span>            :       const uword col = ci_mem[ci_count];
+<span class="lineNum">     116 </span>            :       
+<span class="lineNum">     117 </span>            :       arma_debug_check( (col &gt;= m_n_cols), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">     118 </span>            :       
+<span class="lineNum">     119 </span>            :       eT* colptr = m_local.colptr(col);
+<span class="lineNum">     120 </span>            :       
+<span class="lineNum">     121 </span>            :       if(is_same_type&lt;op_type, op_internal_equ  &gt;::yes) { arrayops::inplace_set  (colptr, val, m_n_rows); }
+<span class="lineNum">     122 </span>            :       if(is_same_type&lt;op_type, op_internal_plus &gt;::yes) { arrayops::inplace_plus (colptr, val, m_n_rows); }
+<span class="lineNum">     123 </span>            :       if(is_same_type&lt;op_type, op_internal_minus&gt;::yes) { arrayops::inplace_minus(colptr, val, m_n_rows); }
+<span class="lineNum">     124 </span>            :       if(is_same_type&lt;op_type, op_internal_schur&gt;::yes) { arrayops::inplace_mul  (colptr, val, m_n_rows); }
+<span class="lineNum">     125 </span>            :       if(is_same_type&lt;op_type, op_internal_div  &gt;::yes) { arrayops::inplace_div  (colptr, val, m_n_rows); }
+<span class="lineNum">     126 </span>            :       }
+<span class="lineNum">     127 </span>            :     }
+<span class="lineNum">     128 </span>            :   else
+<span class="lineNum">     129 </span>            :   if( (all_rows == false) &amp;&amp; (all_cols == true) )
+<span class="lineNum">     130 </span>            :     {
+<span class="lineNum">     131 </span>            :     const unwrap_check_mixed&lt;T1&gt; tmp1(base_ri.get_ref(), m_local);
+<span class="lineNum">     132 </span>            :     
+<span class="lineNum">     133 </span>            :     const umat&amp; ri = tmp1.M;
+<span class="lineNum">     134 </span>            :     
+<span class="lineNum">     135 </span>            :     arma_debug_check
+<span class="lineNum">     136 </span>            :       (
+<span class="lineNum">     137 </span>            :       ( (ri.is_vec() == false) &amp;&amp; (ri.is_empty() == false) ),
+<span class="lineNum">     138 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     139 </span>            :       );
+<span class="lineNum">     140 </span>            :     
+<span class="lineNum">     141 </span>            :     const uword* ri_mem    = ri.memptr();
+<span class="lineNum">     142 </span>            :     const uword  ri_n_elem = ri.n_elem;
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :     for(uword col=0; col &lt; m_n_cols; ++col)
+<span class="lineNum">     145 </span>            :       {
+<span class="lineNum">     146 </span>            :       for(uword ri_count=0; ri_count &lt; ri_n_elem; ++ri_count)
+<span class="lineNum">     147 </span>            :         {
+<span class="lineNum">     148 </span>            :         const uword row = ri_mem[ri_count];
+<span class="lineNum">     149 </span>            :         
+<span class="lineNum">     150 </span>            :         arma_debug_check( (row &gt;= m_n_rows), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">     151 </span>            :       
+<span class="lineNum">     152 </span>            :         if(is_same_type&lt;op_type, op_internal_equ  &gt;::yes) { m_local.at(row,col)  = val; }
+<span class="lineNum">     153 </span>            :         if(is_same_type&lt;op_type, op_internal_plus &gt;::yes) { m_local.at(row,col) += val; }
+<span class="lineNum">     154 </span>            :         if(is_same_type&lt;op_type, op_internal_minus&gt;::yes) { m_local.at(row,col) -= val; }
+<span class="lineNum">     155 </span>            :         if(is_same_type&lt;op_type, op_internal_schur&gt;::yes) { m_local.at(row,col) *= val; }
+<span class="lineNum">     156 </span>            :         if(is_same_type&lt;op_type, op_internal_div  &gt;::yes) { m_local.at(row,col) /= val; }
+<span class="lineNum">     157 </span>            :         }
+<span class="lineNum">     158 </span>            :       }
+<span class="lineNum">     159 </span>            :     }
+<span class="lineNum">     160 </span>            :   }
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     165 </span>            : template&lt;typename op_type, typename expr&gt;
+<span class="lineNum">     166 </span>            : inline
+<span class="lineNum">     167 </span>            : void
+<span class="lineNum">     168 </span>            : subview_elem2&lt;eT,T1,T2&gt;::inplace_op(const Base&lt;eT,expr&gt;&amp; x)
+<span class="lineNum">     169 </span>            :   {
+<span class="lineNum">     170 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     171 </span>            :   
+<span class="lineNum">     172 </span>            :   Mat&lt;eT&gt;&amp; m_local = const_cast&lt; Mat&lt;eT&gt;&amp; &gt;(m);
+<span class="lineNum">     173 </span>            :   
+<span class="lineNum">     174 </span>            :   const uword m_n_rows = m_local.n_rows;
+<span class="lineNum">     175 </span>            :   const uword m_n_cols = m_local.n_cols;
+<span class="lineNum">     176 </span>            :   
+<span class="lineNum">     177 </span>            :   const unwrap_check&lt;expr&gt; tmp(x.get_ref(), m_local);
+<span class="lineNum">     178 </span>            :   const Mat&lt;eT&gt;&amp; X       = tmp.M;
+<span class="lineNum">     179 </span>            :   
+<span class="lineNum">     180 </span>            :   if( (all_rows == false) &amp;&amp; (all_cols == false) )
+<span class="lineNum">     181 </span>            :     {
+<span class="lineNum">     182 </span>            :     const unwrap_check_mixed&lt;T1&gt; tmp1(base_ri.get_ref(), m_local);
+<span class="lineNum">     183 </span>            :     const unwrap_check_mixed&lt;T2&gt; tmp2(base_ci.get_ref(), m_local);
+<span class="lineNum">     184 </span>            :     
+<span class="lineNum">     185 </span>            :     const umat&amp; ri = tmp1.M;
+<span class="lineNum">     186 </span>            :     const umat&amp; ci = tmp2.M;
+<span class="lineNum">     187 </span>            :     
+<span class="lineNum">     188 </span>            :     arma_debug_check
+<span class="lineNum">     189 </span>            :       (
+<span class="lineNum">     190 </span>            :       ( ((ri.is_vec() == false) &amp;&amp; (ri.is_empty() == false)) || ((ci.is_vec() == false) &amp;&amp; (ci.is_empty() == false)) ),
+<span class="lineNum">     191 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     192 </span>            :       );
+<span class="lineNum">     193 </span>            :     
+<span class="lineNum">     194 </span>            :     const uword* ri_mem    = ri.memptr();
+<span class="lineNum">     195 </span>            :     const uword  ri_n_elem = ri.n_elem;
+<span class="lineNum">     196 </span>            :     
+<span class="lineNum">     197 </span>            :     const uword* ci_mem    = ci.memptr();
+<span class="lineNum">     198 </span>            :     const uword  ci_n_elem = ci.n_elem;
+<span class="lineNum">     199 </span>            :     
+<span class="lineNum">     200 </span>            :     arma_debug_assert_same_size( ri_n_elem, ci_n_elem, X.n_rows, X.n_cols, &quot;Mat::elem()&quot; );
+<span class="lineNum">     201 </span>            :     
+<span class="lineNum">     202 </span>            :     for(uword ci_count=0; ci_count &lt; ci_n_elem; ++ci_count)
+<span class="lineNum">     203 </span>            :       {
+<span class="lineNum">     204 </span>            :       const uword col = ci_mem[ci_count];
+<span class="lineNum">     205 </span>            :       
+<span class="lineNum">     206 </span>            :       arma_debug_check( (col &gt;= m_n_cols), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">     207 </span>            :       
+<span class="lineNum">     208 </span>            :       for(uword ri_count=0; ri_count &lt; ri_n_elem; ++ri_count)
+<span class="lineNum">     209 </span>            :         {
+<span class="lineNum">     210 </span>            :         const uword row = ri_mem[ri_count];
+<span class="lineNum">     211 </span>            :         
+<span class="lineNum">     212 </span>            :         arma_debug_check( (row &gt;= m_n_rows), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">     213 </span>            :         
+<span class="lineNum">     214 </span>            :         if(is_same_type&lt;op_type, op_internal_equ  &gt;::yes) { m_local.at(row,col)  = X.at(ri_count, ci_count); }
+<span class="lineNum">     215 </span>            :         if(is_same_type&lt;op_type, op_internal_plus &gt;::yes) { m_local.at(row,col) += X.at(ri_count, ci_count); }
+<span class="lineNum">     216 </span>            :         if(is_same_type&lt;op_type, op_internal_minus&gt;::yes) { m_local.at(row,col) -= X.at(ri_count, ci_count); }
+<span class="lineNum">     217 </span>            :         if(is_same_type&lt;op_type, op_internal_schur&gt;::yes) { m_local.at(row,col) *= X.at(ri_count, ci_count); }
+<span class="lineNum">     218 </span>            :         if(is_same_type&lt;op_type, op_internal_div  &gt;::yes) { m_local.at(row,col) /= X.at(ri_count, ci_count); }
+<span class="lineNum">     219 </span>            :         }
+<span class="lineNum">     220 </span>            :       }
+<span class="lineNum">     221 </span>            :     }
+<span class="lineNum">     222 </span>            :   else
+<span class="lineNum">     223 </span>            :   if( (all_rows == true) &amp;&amp; (all_cols == false) )
+<span class="lineNum">     224 </span>            :     {
+<span class="lineNum">     225 </span>            :     const unwrap_check_mixed&lt;T2&gt; tmp2(base_ci.get_ref(), m_local);
+<span class="lineNum">     226 </span>            :     
+<span class="lineNum">     227 </span>            :     const umat&amp; ci = tmp2.M;
+<span class="lineNum">     228 </span>            :     
+<span class="lineNum">     229 </span>            :     arma_debug_check
+<span class="lineNum">     230 </span>            :       (
+<span class="lineNum">     231 </span>            :       ( (ci.is_vec() == false) &amp;&amp; (ci.is_empty() == false) ),
+<span class="lineNum">     232 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     233 </span>            :       );
+<span class="lineNum">     234 </span>            :     
+<span class="lineNum">     235 </span>            :     const uword* ci_mem    = ci.memptr();
+<span class="lineNum">     236 </span>            :     const uword  ci_n_elem = ci.n_elem;
+<span class="lineNum">     237 </span>            :     
+<span class="lineNum">     238 </span>            :     arma_debug_assert_same_size( m_n_rows, ci_n_elem, X.n_rows, X.n_cols, &quot;Mat::elem()&quot; );
+<span class="lineNum">     239 </span>            :     
+<span class="lineNum">     240 </span>            :     for(uword ci_count=0; ci_count &lt; ci_n_elem; ++ci_count)
+<span class="lineNum">     241 </span>            :       {
+<span class="lineNum">     242 </span>            :       const uword col = ci_mem[ci_count];
+<span class="lineNum">     243 </span>            :       
+<span class="lineNum">     244 </span>            :       arma_debug_check( (col &gt;= m_n_cols), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">     245 </span>            :       
+<span class="lineNum">     246 </span>            :             eT* m_colptr = m_local.colptr(col);
+<span class="lineNum">     247 </span>            :       const eT* X_colptr = X.colptr(ci_count);
+<span class="lineNum">     248 </span>            :       
+<span class="lineNum">     249 </span>            :       if(is_same_type&lt;op_type, op_internal_equ  &gt;::yes) { arrayops::copy         (m_colptr, X_colptr, m_n_rows); }
+<span class="lineNum">     250 </span>            :       if(is_same_type&lt;op_type, op_internal_plus &gt;::yes) { arrayops::inplace_plus (m_colptr, X_colptr, m_n_rows); }
+<span class="lineNum">     251 </span>            :       if(is_same_type&lt;op_type, op_internal_minus&gt;::yes) { arrayops::inplace_minus(m_colptr, X_colptr, m_n_rows); }
+<span class="lineNum">     252 </span>            :       if(is_same_type&lt;op_type, op_internal_schur&gt;::yes) { arrayops::inplace_mul  (m_colptr, X_colptr, m_n_rows); }
+<span class="lineNum">     253 </span>            :       if(is_same_type&lt;op_type, op_internal_div  &gt;::yes) { arrayops::inplace_div  (m_colptr, X_colptr, m_n_rows); }
+<span class="lineNum">     254 </span>            :       }
+<span class="lineNum">     255 </span>            :     }
+<span class="lineNum">     256 </span>            :   else
+<span class="lineNum">     257 </span>            :   if( (all_rows == false) &amp;&amp; (all_cols == true) )
+<span class="lineNum">     258 </span>            :     {
+<span class="lineNum">     259 </span>            :     const unwrap_check_mixed&lt;T1&gt; tmp1(base_ri.get_ref(), m_local);
+<span class="lineNum">     260 </span>            :     
+<span class="lineNum">     261 </span>            :     const umat&amp; ri = tmp1.M;
+<span class="lineNum">     262 </span>            :     
+<span class="lineNum">     263 </span>            :     arma_debug_check
+<span class="lineNum">     264 </span>            :       (
+<span class="lineNum">     265 </span>            :       ( (ri.is_vec() == false) &amp;&amp; (ri.is_empty() == false) ),
+<span class="lineNum">     266 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     267 </span>            :       );
+<span class="lineNum">     268 </span>            :     
+<span class="lineNum">     269 </span>            :     const uword* ri_mem    = ri.memptr();
+<span class="lineNum">     270 </span>            :     const uword  ri_n_elem = ri.n_elem;
+<span class="lineNum">     271 </span>            :     
+<span class="lineNum">     272 </span>            :     arma_debug_assert_same_size( ri_n_elem, m_n_cols, X.n_rows, X.n_cols, &quot;Mat::elem()&quot; );
+<span class="lineNum">     273 </span>            :     
+<span class="lineNum">     274 </span>            :     for(uword col=0; col &lt; m_n_cols; ++col)
+<span class="lineNum">     275 </span>            :       {
+<span class="lineNum">     276 </span>            :       for(uword ri_count=0; ri_count &lt; ri_n_elem; ++ri_count)
+<span class="lineNum">     277 </span>            :         {
+<span class="lineNum">     278 </span>            :         const uword row = ri_mem[ri_count];
+<span class="lineNum">     279 </span>            :         
+<span class="lineNum">     280 </span>            :         arma_debug_check( (row &gt;= m_n_rows), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">     281 </span>            :       
+<span class="lineNum">     282 </span>            :         if(is_same_type&lt;op_type, op_internal_equ  &gt;::yes) { m_local.at(row,col)  = X.at(ri_count, col); }
+<span class="lineNum">     283 </span>            :         if(is_same_type&lt;op_type, op_internal_plus &gt;::yes) { m_local.at(row,col) += X.at(ri_count, col); }
+<span class="lineNum">     284 </span>            :         if(is_same_type&lt;op_type, op_internal_minus&gt;::yes) { m_local.at(row,col) -= X.at(ri_count, col); }
+<span class="lineNum">     285 </span>            :         if(is_same_type&lt;op_type, op_internal_schur&gt;::yes) { m_local.at(row,col) *= X.at(ri_count, col); }
+<span class="lineNum">     286 </span>            :         if(is_same_type&lt;op_type, op_internal_div  &gt;::yes) { m_local.at(row,col) /= X.at(ri_count, col); }
+<span class="lineNum">     287 </span>            :         }
+<span class="lineNum">     288 </span>            :       }
+<span class="lineNum">     289 </span>            :     }
+<span class="lineNum">     290 </span>            :   }
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            : //
+<span class="lineNum">     295 </span>            : //
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     300 </span>            : inline
+<span class="lineNum">     301 </span>            : void
+<span class="lineNum">     302 </span>            : subview_elem2&lt;eT,T1,T2&gt;::fill(const eT val)
+<span class="lineNum">     303 </span>            :   {
+<span class="lineNum">     304 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     305 </span>            :   
+<span class="lineNum">     306 </span>            :   inplace_op&lt;op_internal_equ&gt;(val);
+<span class="lineNum">     307 </span>            :   }
+<span class="lineNum">     308 </span>            : 
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     312 </span>            : inline
+<span class="lineNum">     313 </span>            : void
+<span class="lineNum">     314 </span>            : subview_elem2&lt;eT,T1,T2&gt;::zeros()
+<span class="lineNum">     315 </span>            :   {
+<span class="lineNum">     316 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     317 </span>            :   
+<span class="lineNum">     318 </span>            :   inplace_op&lt;op_internal_equ&gt;(eT(0));
+<span class="lineNum">     319 </span>            :   }
+<span class="lineNum">     320 </span>            : 
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     324 </span>            : inline
+<span class="lineNum">     325 </span>            : void
+<span class="lineNum">     326 </span>            : subview_elem2&lt;eT,T1,T2&gt;::ones()
+<span class="lineNum">     327 </span>            :   {
+<span class="lineNum">     328 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     329 </span>            :   
+<span class="lineNum">     330 </span>            :   inplace_op&lt;op_internal_equ&gt;(eT(1));
+<span class="lineNum">     331 </span>            :   }
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     336 </span>            : inline
+<span class="lineNum">     337 </span>            : void
+<span class="lineNum">     338 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator+= (const eT val)
+<span class="lineNum">     339 </span>            :   {
+<span class="lineNum">     340 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     341 </span>            :   
+<span class="lineNum">     342 </span>            :   inplace_op&lt;op_internal_plus&gt;(val);
+<span class="lineNum">     343 </span>            :   }
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : 
+<span class="lineNum">     347 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     348 </span>            : inline
+<span class="lineNum">     349 </span>            : void
+<span class="lineNum">     350 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator-= (const eT val)
+<span class="lineNum">     351 </span>            :   {
+<span class="lineNum">     352 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     353 </span>            :   
+<span class="lineNum">     354 </span>            :   inplace_op&lt;op_internal_minus&gt;(val);
+<span class="lineNum">     355 </span>            :   }
+<span class="lineNum">     356 </span>            : 
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            : 
+<span class="lineNum">     359 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     360 </span>            : inline
+<span class="lineNum">     361 </span>            : void
+<span class="lineNum">     362 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator*= (const eT val)
+<span class="lineNum">     363 </span>            :   {
+<span class="lineNum">     364 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     365 </span>            :   
+<span class="lineNum">     366 </span>            :   inplace_op&lt;op_internal_schur&gt;(val);
+<span class="lineNum">     367 </span>            :   }
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span>            : 
+<span class="lineNum">     370 </span>            : 
+<span class="lineNum">     371 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     372 </span>            : inline
+<span class="lineNum">     373 </span>            : void
+<span class="lineNum">     374 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator/= (const eT val)
+<span class="lineNum">     375 </span>            :   {
+<span class="lineNum">     376 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     377 </span>            :   
+<span class="lineNum">     378 </span>            :   inplace_op&lt;op_internal_div&gt;(val);
+<span class="lineNum">     379 </span>            :   }
+<span class="lineNum">     380 </span>            : 
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span>            : //
+<span class="lineNum">     384 </span>            : //
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            : 
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     389 </span>            : template&lt;typename T3, typename T4&gt;
+<span class="lineNum">     390 </span>            : inline
+<span class="lineNum">     391 </span>            : void
+<span class="lineNum">     392 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator_equ(const subview_elem2&lt;eT,T3,T4&gt;&amp; x)
+<span class="lineNum">     393 </span>            :   {
+<span class="lineNum">     394 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     395 </span>            :   
+<span class="lineNum">     396 </span>            :   inplace_op&lt;op_internal_equ&gt;(x);
+<span class="lineNum">     397 </span>            :   }
+<span class="lineNum">     398 </span>            : 
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     403 </span>            : template&lt;typename T3, typename T4&gt;
+<span class="lineNum">     404 </span>            : inline
+<span class="lineNum">     405 </span>            : void
+<span class="lineNum">     406 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator= (const subview_elem2&lt;eT,T3,T4&gt;&amp; x)
+<span class="lineNum">     407 </span>            :   {
+<span class="lineNum">     408 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     409 </span>            :   
+<span class="lineNum">     410 </span>            :   (*this).operator_equ(x);
+<span class="lineNum">     411 </span>            :   }
+<span class="lineNum">     412 </span>            : 
+<span class="lineNum">     413 </span>            : 
+<span class="lineNum">     414 </span>            : 
+<span class="lineNum">     415 </span>            : //! work around compiler bugs
+<span class="lineNum">     416 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     417 </span>            : inline
+<span class="lineNum">     418 </span>            : void
+<span class="lineNum">     419 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator= (const subview_elem2&lt;eT,T1,T2&gt;&amp; x)
+<span class="lineNum">     420 </span>            :   {
+<span class="lineNum">     421 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     422 </span>            :   
+<span class="lineNum">     423 </span>            :   (*this).operator_equ(x);
+<span class="lineNum">     424 </span>            :   }
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            : 
+<span class="lineNum">     427 </span>            : 
+<span class="lineNum">     428 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     429 </span>            : template&lt;typename T3, typename T4&gt;
+<span class="lineNum">     430 </span>            : inline
+<span class="lineNum">     431 </span>            : void
+<span class="lineNum">     432 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator+= (const subview_elem2&lt;eT,T3,T4&gt;&amp; x)
+<span class="lineNum">     433 </span>            :   {
+<span class="lineNum">     434 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     435 </span>            :   
+<span class="lineNum">     436 </span>            :   inplace_op&lt;op_internal_plus&gt;(x);
+<span class="lineNum">     437 </span>            :   }
+<span class="lineNum">     438 </span>            : 
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            : 
+<span class="lineNum">     441 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     442 </span>            : template&lt;typename T3, typename T4&gt;
+<span class="lineNum">     443 </span>            : inline
+<span class="lineNum">     444 </span>            : void
+<span class="lineNum">     445 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator-= (const subview_elem2&lt;eT,T3,T4&gt;&amp; x)
+<span class="lineNum">     446 </span>            :   {
+<span class="lineNum">     447 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     448 </span>            :   
+<span class="lineNum">     449 </span>            :   inplace_op&lt;op_internal_minus&gt;(x);
+<span class="lineNum">     450 </span>            :   }
+<span class="lineNum">     451 </span>            : 
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     455 </span>            : template&lt;typename T3, typename T4&gt;
+<span class="lineNum">     456 </span>            : inline
+<span class="lineNum">     457 </span>            : void
+<span class="lineNum">     458 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator%= (const subview_elem2&lt;eT,T3,T4&gt;&amp; x)
+<span class="lineNum">     459 </span>            :   {
+<span class="lineNum">     460 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     461 </span>            :   
+<span class="lineNum">     462 </span>            :   inplace_op&lt;op_internal_schur&gt;(x);
+<span class="lineNum">     463 </span>            :   }
+<span class="lineNum">     464 </span>            : 
+<span class="lineNum">     465 </span>            : 
+<span class="lineNum">     466 </span>            : 
+<span class="lineNum">     467 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     468 </span>            : template&lt;typename T3, typename T4&gt;
+<span class="lineNum">     469 </span>            : inline
+<span class="lineNum">     470 </span>            : void
+<span class="lineNum">     471 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator/= (const subview_elem2&lt;eT,T3,T4&gt;&amp; x)
+<span class="lineNum">     472 </span>            :   {
+<span class="lineNum">     473 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     474 </span>            :   
+<span class="lineNum">     475 </span>            :   inplace_op&lt;op_internal_div&gt;(x);
+<span class="lineNum">     476 </span>            :   }
+<span class="lineNum">     477 </span>            : 
+<span class="lineNum">     478 </span>            : 
+<span class="lineNum">     479 </span>            : 
+<span class="lineNum">     480 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     481 </span>            : template&lt;typename expr&gt;
+<span class="lineNum">     482 </span>            : inline
+<span class="lineNum">     483 </span>            : void
+<span class="lineNum">     484 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator= (const Base&lt;eT,expr&gt;&amp; x)
+<span class="lineNum">     485 </span>            :   {
+<span class="lineNum">     486 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     487 </span>            :   
+<span class="lineNum">     488 </span>            :   inplace_op&lt;op_internal_equ&gt;(x);
+<span class="lineNum">     489 </span>            :   }
+<span class="lineNum">     490 </span>            : 
+<span class="lineNum">     491 </span>            : 
+<span class="lineNum">     492 </span>            : 
+<span class="lineNum">     493 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     494 </span>            : template&lt;typename expr&gt;
+<span class="lineNum">     495 </span>            : inline
+<span class="lineNum">     496 </span>            : void
+<span class="lineNum">     497 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator+= (const Base&lt;eT,expr&gt;&amp; x)
+<span class="lineNum">     498 </span>            :   {
+<span class="lineNum">     499 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     500 </span>            :   
+<span class="lineNum">     501 </span>            :   inplace_op&lt;op_internal_plus&gt;(x);
+<span class="lineNum">     502 </span>            :   }
+<span class="lineNum">     503 </span>            : 
+<span class="lineNum">     504 </span>            : 
+<span class="lineNum">     505 </span>            : 
+<span class="lineNum">     506 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     507 </span>            : template&lt;typename expr&gt;
+<span class="lineNum">     508 </span>            : inline
+<span class="lineNum">     509 </span>            : void
+<span class="lineNum">     510 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator-= (const Base&lt;eT,expr&gt;&amp; x)
+<span class="lineNum">     511 </span>            :   {
+<span class="lineNum">     512 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     513 </span>            :   
+<span class="lineNum">     514 </span>            :   inplace_op&lt;op_internal_minus&gt;(x);
+<span class="lineNum">     515 </span>            :   }
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span>            : 
+<span class="lineNum">     518 </span>            : 
+<span class="lineNum">     519 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     520 </span>            : template&lt;typename expr&gt;
+<span class="lineNum">     521 </span>            : inline
+<span class="lineNum">     522 </span>            : void
+<span class="lineNum">     523 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator%= (const Base&lt;eT,expr&gt;&amp; x)
+<span class="lineNum">     524 </span>            :   {
+<span class="lineNum">     525 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     526 </span>            :   
+<span class="lineNum">     527 </span>            :   inplace_op&lt;op_internal_schur&gt;(x);
+<span class="lineNum">     528 </span>            :   }
+<span class="lineNum">     529 </span>            : 
+<span class="lineNum">     530 </span>            : 
+<span class="lineNum">     531 </span>            : 
+<span class="lineNum">     532 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     533 </span>            : template&lt;typename expr&gt;
+<span class="lineNum">     534 </span>            : inline
+<span class="lineNum">     535 </span>            : void
+<span class="lineNum">     536 </span>            : subview_elem2&lt;eT,T1,T2&gt;::operator/= (const Base&lt;eT,expr&gt;&amp; x)
+<span class="lineNum">     537 </span>            :   {
+<span class="lineNum">     538 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     539 </span>            :   
+<span class="lineNum">     540 </span>            :   inplace_op&lt;op_internal_div&gt;(x);
+<span class="lineNum">     541 </span>            :   }
+<span class="lineNum">     542 </span>            : 
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            : 
+<span class="lineNum">     545 </span>            : //
+<span class="lineNum">     546 </span>            : //
+<span class="lineNum">     547 </span>            : 
+<span class="lineNum">     548 </span>            : 
+<span class="lineNum">     549 </span>            : 
+<span class="lineNum">     550 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<a name="551"><span class="lineNum">     551 </span>            : inline</a>
+<span class="lineNum">     552 </span>            : void
+<span class="lineNum">     553 </span><span class="lineNoCov">          0 : subview_elem2&lt;eT,T1,T2&gt;::extract(Mat&lt;eT&gt;&amp; actual_out, const subview_elem2&lt;eT,T1,T2&gt;&amp; in)</span>
+<span class="lineNum">     554 </span>            :   {
+<span class="lineNum">     555 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     556 </span>            :   
+<span class="lineNum">     557 </span><span class="lineNoCov">          0 :   Mat&lt;eT&gt;&amp; m_local = const_cast&lt; Mat&lt;eT&gt;&amp; &gt;(in.m);</span>
+<span class="lineNum">     558 </span>            :   
+<span class="lineNum">     559 </span><span class="lineNoCov">          0 :   const uword m_n_rows = m_local.n_rows;</span>
+<span class="lineNum">     560 </span><span class="lineNoCov">          0 :   const uword m_n_cols = m_local.n_cols;</span>
+<span class="lineNum">     561 </span>            :   
+<span class="lineNum">     562 </span><span class="lineNoCov">          0 :   const bool alias = (&amp;actual_out == &amp;m_local);</span>
+<span class="lineNum">     563 </span>            :   
+<span class="lineNum">     564 </span>            :   if(alias)  { arma_extra_debug_print(&quot;subview_elem2::extract(): aliasing detected&quot;); }
+<span class="lineNum">     565 </span>            :   
+<span class="lineNum">     566 </span><span class="lineNoCov">          0 :   Mat&lt;eT&gt;* tmp_out = alias ? new Mat&lt;eT&gt;() : 0;</span>
+<span class="lineNum">     567 </span><span class="lineNoCov">          0 :   Mat&lt;eT&gt;&amp; out     = alias ? *tmp_out      : actual_out;</span>
+<span class="lineNum">     568 </span>            :   
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 :   if( (in.all_rows == false) &amp;&amp; (in.all_cols == false) )</span>
+<span class="lineNum">     570 </span>            :     {
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :     const unwrap_check_mixed&lt;T1&gt; tmp1(in.base_ri.get_ref(), actual_out);</span>
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :     const unwrap_check_mixed&lt;T2&gt; tmp2(in.base_ci.get_ref(), actual_out);</span>
+<span class="lineNum">     573 </span>            :     
+<span class="lineNum">     574 </span><span class="lineNoCov">          0 :     const umat&amp; ri = tmp1.M;</span>
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 :     const umat&amp; ci = tmp2.M;</span>
+<span class="lineNum">     576 </span>            :     
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :     arma_debug_check</span>
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :       (</span>
+<span class="lineNum">     579 </span><span class="lineNoCov">          0 :       ( ((ri.is_vec() == false) &amp;&amp; (ri.is_empty() == false)) || ((ci.is_vec() == false) &amp;&amp; (ci.is_empty() == false)) ),</span>
+<span class="lineNum">     580 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     581 </span>            :       );
+<span class="lineNum">     582 </span>            :     
+<span class="lineNum">     583 </span><span class="lineNoCov">          0 :     const uword* ri_mem    = ri.memptr();</span>
+<span class="lineNum">     584 </span><span class="lineNoCov">          0 :     const uword  ri_n_elem = ri.n_elem;</span>
+<span class="lineNum">     585 </span>            :     
+<span class="lineNum">     586 </span><span class="lineNoCov">          0 :     const uword* ci_mem    = ci.memptr();</span>
+<span class="lineNum">     587 </span><span class="lineNoCov">          0 :     const uword  ci_n_elem = ci.n_elem;</span>
+<span class="lineNum">     588 </span>            :     
+<span class="lineNum">     589 </span><span class="lineNoCov">          0 :     out.set_size(ri_n_elem, ci_n_elem);</span>
+<span class="lineNum">     590 </span>            :     
+<span class="lineNum">     591 </span><span class="lineNoCov">          0 :     eT*   out_mem   = out.memptr();</span>
+<span class="lineNum">     592 </span><span class="lineNoCov">          0 :     uword out_count = 0;</span>
+<span class="lineNum">     593 </span>            :     
+<span class="lineNum">     594 </span><span class="lineNoCov">          0 :     for(uword ci_count=0; ci_count &lt; ci_n_elem; ++ci_count)</span>
+<span class="lineNum">     595 </span>            :       {
+<span class="lineNum">     596 </span><span class="lineNoCov">          0 :       const uword col = ci_mem[ci_count];</span>
+<span class="lineNum">     597 </span>            :       
+<span class="lineNum">     598 </span>            :       arma_debug_check( (col &gt;= m_n_cols), &quot;Mat::elem(): index out of bounds&quot; );
+<span class="lineNum">     599 </span>            :       
+<span class="lineNum">     600 </span><span class="lineNoCov">          0 :       for(uword ri_count=0; ri_count &lt; ri_n_elem; ++ri_count)</span>
+<span class="lineNum">     601 </span>            :         {
+<span class="lineNum">     602 </span><span class="lineNoCov">          0 :         const uword row = ri_mem[ri_count];</span>
+<span class="lineNum">     603 </span>            :         
+<span class="lineNum">     604 </span><span class="lineNoCov">          0 :         arma_debug_check( (row &gt;= m_n_rows), &quot;Mat::elem(): index out of bounds&quot; );</span>
+<span class="lineNum">     605 </span>            :         
+<span class="lineNum">     606 </span><span class="lineNoCov">          0 :         out_mem[out_count] = m_local.at(row,col);</span>
+<span class="lineNum">     607 </span><span class="lineNoCov">          0 :         ++out_count;</span>
+<span class="lineNum">     608 </span>            :         }
+<span class="lineNum">     609 </span><span class="lineNoCov">          0 :       }</span>
+<span class="lineNum">     610 </span>            :     }
+<span class="lineNum">     611 </span>            :   else
+<span class="lineNum">     612 </span><span class="lineNoCov">          0 :   if( (in.all_rows == true) &amp;&amp; (in.all_cols == false) )</span>
+<span class="lineNum">     613 </span>            :     {
+<span class="lineNum">     614 </span><span class="lineNoCov">          0 :     const unwrap_check_mixed&lt;T2&gt; tmp2(in.base_ci.get_ref(), m_local);</span>
+<span class="lineNum">     615 </span>            :     
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :     const umat&amp; ci = tmp2.M;</span>
+<span class="lineNum">     617 </span>            :     
+<span class="lineNum">     618 </span><span class="lineNoCov">          0 :     arma_debug_check</span>
+<span class="lineNum">     619 </span><span class="lineNoCov">          0 :       (</span>
+<span class="lineNum">     620 </span><span class="lineNoCov">          0 :       ( (ci.is_vec() == false) &amp;&amp; (ci.is_empty() == false) ),</span>
+<span class="lineNum">     621 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     622 </span>            :       );
+<span class="lineNum">     623 </span>            :     
+<span class="lineNum">     624 </span><span class="lineNoCov">          0 :     const uword* ci_mem    = ci.memptr();</span>
+<span class="lineNum">     625 </span><span class="lineNoCov">          0 :     const uword  ci_n_elem = ci.n_elem;</span>
+<span class="lineNum">     626 </span>            :     
+<span class="lineNum">     627 </span>            :     out.set_size(m_n_rows, ci_n_elem);
+<span class="lineNum">     628 </span>            :     
+<span class="lineNum">     629 </span><span class="lineNoCov">          0 :     for(uword ci_count=0; ci_count &lt; ci_n_elem; ++ci_count)</span>
+<span class="lineNum">     630 </span>            :       {
+<span class="lineNum">     631 </span><span class="lineNoCov">          0 :       const uword col = ci_mem[ci_count];</span>
+<span class="lineNum">     632 </span>            :       
+<span class="lineNum">     633 </span><span class="lineNoCov">          0 :       arma_debug_check( (col &gt;= m_n_cols), &quot;Mat::elem(): index out of bounds&quot; );</span>
+<span class="lineNum">     634 </span>            :       
+<span class="lineNum">     635 </span><span class="lineNoCov">          0 :       arrayops::copy( out.colptr(ci_count), m_local.colptr(col), m_n_rows );</span>
+<span class="lineNum">     636 </span><span class="lineNoCov">          0 :       }</span>
+<span class="lineNum">     637 </span>            :     }
+<span class="lineNum">     638 </span>            :   else
+<span class="lineNum">     639 </span><span class="lineNoCov">          0 :   if( (in.all_rows == false) &amp;&amp; (in.all_cols == true) )</span>
+<span class="lineNum">     640 </span>            :     {
+<span class="lineNum">     641 </span><span class="lineNoCov">          0 :     const unwrap_check_mixed&lt;T1&gt; tmp1(in.base_ri.get_ref(), m_local);</span>
+<span class="lineNum">     642 </span>            :     
+<span class="lineNum">     643 </span><span class="lineNoCov">          0 :     const umat&amp; ri = tmp1.M;</span>
+<span class="lineNum">     644 </span>            :     
+<span class="lineNum">     645 </span><span class="lineNoCov">          0 :     arma_debug_check</span>
+<span class="lineNum">     646 </span><span class="lineNoCov">          0 :       (</span>
+<span class="lineNum">     647 </span><span class="lineNoCov">          0 :       ( (ri.is_vec() == false) &amp;&amp; (ri.is_empty() == false) ),</span>
+<span class="lineNum">     648 </span>            :       &quot;Mat::elem(): given object is not a vector&quot;
+<span class="lineNum">     649 </span>            :       );
+<span class="lineNum">     650 </span>            :     
+<span class="lineNum">     651 </span><span class="lineNoCov">          0 :     const uword* ri_mem    = ri.memptr();</span>
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 :     const uword  ri_n_elem = ri.n_elem;</span>
+<span class="lineNum">     653 </span>            :     
+<span class="lineNum">     654 </span>            :     out.set_size(ri_n_elem, m_n_cols);
+<span class="lineNum">     655 </span>            :     
+<span class="lineNum">     656 </span><span class="lineNoCov">          0 :     for(uword col=0; col &lt; m_n_cols; ++col)</span>
+<span class="lineNum">     657 </span>            :       {
+<span class="lineNum">     658 </span><span class="lineNoCov">          0 :       for(uword ri_count=0; ri_count &lt; ri_n_elem; ++ri_count)</span>
+<span class="lineNum">     659 </span>            :         {
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 :         const uword row = ri_mem[ri_count];</span>
+<span class="lineNum">     661 </span>            :         
+<span class="lineNum">     662 </span><span class="lineNoCov">          0 :         arma_debug_check( (row &gt;= m_n_rows), &quot;Mat::elem(): index out of bounds&quot; );</span>
+<span class="lineNum">     663 </span>            :         
+<span class="lineNum">     664 </span><span class="lineNoCov">          0 :         out.at(ri_count,col) = m_local.at(row,col);</span>
+<span class="lineNum">     665 </span>            :         }
+<span class="lineNum">     666 </span>            :       }
+<span class="lineNum">     667 </span>            :     }
+<span class="lineNum">     668 </span>            :   
+<span class="lineNum">     669 </span>            :   
+<span class="lineNum">     670 </span><span class="lineNoCov">          0 :   if(alias)</span>
+<span class="lineNum">     671 </span>            :     {
+<span class="lineNum">     672 </span><span class="lineNoCov">          0 :     actual_out.steal_mem(out);</span>
+<span class="lineNum">     673 </span>            :     
+<span class="lineNum">     674 </span><span class="lineNoCov">          0 :     delete tmp_out;</span>
+<span class="lineNum">     675 </span>            :     }
+<span class="lineNum">     676 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     677 </span>            : 
+<span class="lineNum">     678 </span>            : 
+<span class="lineNum">     679 </span>            : 
+<span class="lineNum">     680 </span>            : // TODO: implement a dedicated function instead of creating a temporary (but lots of potential aliasing issues)
+<span class="lineNum">     681 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     682 </span>            : inline
+<span class="lineNum">     683 </span>            : void
+<span class="lineNum">     684 </span>            : subview_elem2&lt;eT,T1,T2&gt;::plus_inplace(Mat&lt;eT&gt;&amp; out, const subview_elem2&amp; in)
+<span class="lineNum">     685 </span>            :   {
+<span class="lineNum">     686 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     687 </span>            :   
+<span class="lineNum">     688 </span>            :   const Mat&lt;eT&gt; tmp(in);
+<span class="lineNum">     689 </span>            :   
+<span class="lineNum">     690 </span>            :   out += tmp;
+<span class="lineNum">     691 </span>            :   }
+<span class="lineNum">     692 </span>            : 
+<span class="lineNum">     693 </span>            : 
+<span class="lineNum">     694 </span>            : 
+<span class="lineNum">     695 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     696 </span>            : inline
+<span class="lineNum">     697 </span>            : void
+<span class="lineNum">     698 </span>            : subview_elem2&lt;eT,T1,T2&gt;::minus_inplace(Mat&lt;eT&gt;&amp; out, const subview_elem2&amp; in)
+<span class="lineNum">     699 </span>            :   {
+<span class="lineNum">     700 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     701 </span>            :   
+<span class="lineNum">     702 </span>            :   const Mat&lt;eT&gt; tmp(in);
+<span class="lineNum">     703 </span>            :   
+<span class="lineNum">     704 </span>            :   out -= tmp;
+<span class="lineNum">     705 </span>            :   }
+<span class="lineNum">     706 </span>            : 
+<span class="lineNum">     707 </span>            : 
+<span class="lineNum">     708 </span>            : 
+<span class="lineNum">     709 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     710 </span>            : inline
+<span class="lineNum">     711 </span>            : void
+<span class="lineNum">     712 </span>            : subview_elem2&lt;eT,T1,T2&gt;::schur_inplace(Mat&lt;eT&gt;&amp; out, const subview_elem2&amp; in)
+<span class="lineNum">     713 </span>            :   {
+<span class="lineNum">     714 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     715 </span>            :   
+<span class="lineNum">     716 </span>            :   const Mat&lt;eT&gt; tmp(in);
+<span class="lineNum">     717 </span>            :   
+<span class="lineNum">     718 </span>            :   out %= tmp;
+<span class="lineNum">     719 </span>            :   }
+<span class="lineNum">     720 </span>            : 
+<span class="lineNum">     721 </span>            : 
+<span class="lineNum">     722 </span>            : 
+<span class="lineNum">     723 </span>            : template&lt;typename eT, typename T1, typename T2&gt;
+<span class="lineNum">     724 </span>            : inline
+<span class="lineNum">     725 </span>            : void
+<span class="lineNum">     726 </span>            : subview_elem2&lt;eT,T1,T2&gt;::div_inplace(Mat&lt;eT&gt;&amp; out, const subview_elem2&amp; in)
+<span class="lineNum">     727 </span>            :   {
+<span class="lineNum">     728 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     729 </span>            :   
+<span class="lineNum">     730 </span>            :   const Mat&lt;eT&gt; tmp(in);
+<span class="lineNum">     731 </span>            :   
+<span class="lineNum">     732 </span>            :   out /= tmp;
+<span class="lineNum">     733 </span>            :   }
+<span class="lineNum">     734 </span>            : 
+<span class="lineNum">     735 </span>            : 
+<span class="lineNum">     736 </span>            : 
+<span class="lineNum">     737 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

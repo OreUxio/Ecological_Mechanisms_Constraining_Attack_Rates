@@ -1,0 +1,22 @@
+Inspect.o Inspect.d1 : Inspect.cc  \
+ hotspots.h NewSpecies.h  \
+ remember.h  \
+  error.h \
+  sequence.h \
+  simple_vector.h \
+   md5.h \
+ parsecfg.h evaluate.h CLHEP_Evaluator.h XMLStore.h \
+  cfgPermanent.h \
+ matrix_transformers.h link_strength_matrix.h NetworkAnalysis.h random.h \
+  CMatrix.h NewMatrix.h \
+  NetworkHelpers.h \
+ standardize.h nls_web.h time_average.h NewWeb.h  \
+  ODE.h \
+  snapshot.h otherwebs.h \
+  Statistics.h SortedVector.h \
+  vector_with_max.h \
+ SortedMatrix.h relax.h ptr_vector.h CompMatrix.h tlf.h perturb.h \
+ three_column_files.h mass_integrator.h Integrator.h MSY.h \
+   period_cutter.h xy_graph.h \
+ polyfit.h   \
+ packed_simulation.h packed_simulation_asm.h cfgList.h

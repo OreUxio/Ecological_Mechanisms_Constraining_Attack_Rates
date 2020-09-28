@@ -1,0 +1,444 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/sequence.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - sequence.h<span style="font-size: 80%;"> (source / <a href="sequence.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">74</td>
+            <td class="headerCovTableEntry">146</td>
+            <td class="headerCovTableEntryLo">50.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntry">53</td>
+            <td class="headerCovTableEntryLo">32.1 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- c++ -*-</a>
+<span class="lineNum">       2 </span>            : //$Id: sequence.h 2478 2016-10-23 11:40:59Z axel $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : #ifndef __SEQUENCE_H__
+<span class="lineNum">       5 </span>            : #define __SEQUENCE_H__
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">       8 </span>            : #include &lt;string&gt;
+<span class="lineNum">       9 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">      10 </span>            : #include &lt;sstream&gt;
+<span class="lineNum">      11 </span>            : #include &quot;simple_vector.h&quot;
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : template&lt;typename T&gt;
+<span class="lineNum">      14 </span>            : std::string format(const char * fmt, T x);
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : /// A slow but fool-proof extension of the STL vector.
+<span class="lineNum">      17 </span>            : /** Observe: if \a v is a simple_vector, than v[n] (with n&gt;=0) is
+<a name="18"><span class="lineNum">      18 </span>            :     always OK, but v(n) only if v.size()&gt;n . */</a>
+<span class="lineNum">      19 </span>            : template &lt;typename T&gt;
+<span class="lineNum">      20 </span><span class="lineCov">     233287 : class sequence : public std::simple_vector&lt;T&gt; {</span>
+<span class="lineNum">      21 </span>            : private:
+<span class="lineNum">      22 </span>            :   static T default_element;
+<span class="lineNum">      23 </span>            :   typedef typename std::simple_vector&lt;T&gt;::iterator iter;
+<span class="lineNum">      24 </span>            : public:
+<span class="lineNum">      25 </span><span class="lineCov">       4172 :   sequence&lt;T&gt;() : std::simple_vector&lt;T&gt;(){};</span>
+<span class="lineNum">      26 </span><span class="lineCov">     185412 :   sequence&lt;T&gt;(const sequence&lt;T&gt; &amp; s) : std::simple_vector&lt;T&gt;(s){};</span>
+<a name="27"><span class="lineNum">      27 </span><span class="lineNoCov">          0 :   sequence&lt;T&gt;(const std::simple_vector&lt;T&gt; &amp; v) : std::simple_vector&lt;T&gt;(v){};</span></a>
+<span class="lineNum">      28 </span><span class="lineCov">      44936 :   sequence&lt;T&gt;(int i,T x=T()) : std::simple_vector&lt;T&gt;(i,x){/*shorten() suppressed*/};</span>
+<span class="lineNum">      29 </span><span class="lineCov">  122971923 :   T &amp; operator[](unsigned int i) {</span>
+<span class="lineNum">      30 </span><span class="lineCov">  245947875 :     if(i &gt;= std::simple_vector&lt;T&gt;::size())</span>
+<span class="lineNum">      31 </span><span class="lineCov">      11884 :       std::simple_vector&lt;T&gt;::resize(i+1);</span>
+<a name="32"><span class="lineNum">      32 </span><span class="lineCov">  245945875 :     return std::simple_vector&lt;T&gt;::operator[](i);</span></a>
+<span class="lineNum">      33 </span>            :   }
+<span class="lineNum">      34 </span><span class="lineNoCov">          0 :   const T &amp; operator[](unsigned int i) const{</span>
+<span class="lineNum">      35 </span><span class="lineCov">   36044365 :     if(i &gt;= std::simple_vector&lt;T&gt;::size()){</span>
+<span class="lineNum">      36 </span>            :       return default_element;
+<span class="lineNum">      37 </span>            :     }else{
+<span class="lineNum">      38 </span><span class="lineCov">   36046786 :       return std::simple_vector&lt;T&gt;::operator[](i);</span>
+<span class="lineNum">      39 </span>            :     }
+<span class="lineNum">      40 </span>            :   }
+<span class="lineNum">      41 </span>            :   T &amp; operator()(unsigned int i) {
+<span class="lineNum">      42 </span>            :     ASSERT(i &lt; std::simple_vector&lt;T&gt;::size());
+<span class="lineNum">      43 </span><span class="lineCov">  209873400 :     return std::simple_vector&lt;T&gt;::operator[](i);</span>
+<span class="lineNum">      44 </span>            :   }
+<span class="lineNum">      45 </span>            :   const T &amp; operator()(unsigned int i) const{
+<span class="lineNum">      46 </span>            :     ASSERT(i &lt; std::simple_vector&lt;T&gt;::size());
+<span class="lineNum">      47 </span><span class="lineCov">     433658 :     return std::simple_vector&lt;T&gt;::operator[](i);</span>
+<span class="lineNum">      48 </span>            :   }
+<span class="lineNum">      49 </span>            :   void shorten(){
+<span class="lineNum">      50 </span>            :     while( std::simple_vector&lt;T&gt;::rbegin()!=std::simple_vector&lt;T&gt;::rend() &amp;&amp; 
+<span class="lineNum">      51 </span>            :            *std::simple_vector&lt;T&gt;::rbegin()==default_element ) 
+<span class="lineNum">      52 </span>            :       std::simple_vector&lt;T&gt;::pop_back();
+<span class="lineNum">      53 </span>            :   }
+<span class="lineNum">      54 </span>            :   sequence&lt;T&gt; &amp; operator=(const sequence&lt;T&gt; &amp; v);
+<span class="lineNum">      55 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      56 </span>            :   sequence&lt;T&gt; &amp; operator=(const sequence&lt;D&gt; &amp; v);
+<span class="lineNum">      57 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      58 </span>            :   sequence&lt;T&gt; &amp; operator+=(const sequence&lt;D&gt; &amp; v);
+<span class="lineNum">      59 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      60 </span>            :   sequence&lt;T&gt; &amp; operator*=(const sequence&lt;D&gt; &amp; v);
+<span class="lineNum">      61 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      62 </span>            :   sequence&lt;T&gt; &amp; operator-=(const sequence&lt;D&gt; &amp; v);
+<span class="lineNum">      63 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      64 </span>            :   sequence&lt;T&gt; &amp; operator/=(const sequence&lt;D&gt; &amp; v);
+<span class="lineNum">      65 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      66 </span>            :   sequence&lt;T&gt; &amp; operator+=(D v);
+<span class="lineNum">      67 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      68 </span>            :   sequence&lt;T&gt; &amp; operator-=(D v);
+<span class="lineNum">      69 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      70 </span>            :   sequence&lt;T&gt; &amp; operator*=(D v);
+<span class="lineNum">      71 </span>            :   template&lt;typename D&gt;
+<span class="lineNum">      72 </span>            :   sequence&lt;T&gt; &amp; operator/=(D v);
+<span class="lineNum">      73 </span>            :   sequence&lt;T&gt; operator+(T y) const {
+<a name="74"><span class="lineNum">      74 </span>            :     return sequence&lt;T&gt;(*this)+=y;</a>
+<span class="lineNum">      75 </span>            :   }
+<span class="lineNum">      76 </span><span class="lineNoCov">          0 :   sequence&lt;T&gt; operator-(T y) const {</span>
+<a name="77"><span class="lineNum">      77 </span><span class="lineNoCov">          0 :     return sequence&lt;T&gt;(*this)-=y;</span></a>
+<span class="lineNum">      78 </span>            :   }
+<span class="lineNum">      79 </span><span class="lineCov">        219 :   sequence&lt;T&gt; operator*(T y) const {</span>
+<a name="80"><span class="lineNum">      80 </span><span class="lineCov">        876 :     return sequence&lt;T&gt;(*this)*=y;</span></a>
+<span class="lineNum">      81 </span>            :   }
+<span class="lineNum">      82 </span><span class="lineCov">         73 :   sequence&lt;T&gt; operator/(T y) const{</span>
+<a name="83"><span class="lineNum">      83 </span><span class="lineCov">        292 :     return sequence&lt;T&gt;(*this)/=y;</span></a>
+<span class="lineNum">      84 </span>            :   }
+<span class="lineNum">      85 </span><span class="lineCov">       1542 :   sequence&lt;T&gt; operator+(sequence&lt;T&gt; y) const {</span>
+<a name="86"><span class="lineNum">      86 </span><span class="lineCov">       4626 :     return sequence&lt;T&gt;(*this)+=y;</span></a>
+<span class="lineNum">      87 </span>            :   }
+<span class="lineNum">      88 </span><span class="lineCov">         73 :   sequence&lt;T&gt; operator-(sequence&lt;T&gt; y) const {</span>
+<a name="89"><span class="lineNum">      89 </span><span class="lineCov">        219 :     return sequence&lt;T&gt;(*this)-=y;</span></a>
+<span class="lineNum">      90 </span>            :   }
+<span class="lineNum">      91 </span><span class="lineNoCov">          0 :   sequence&lt;T&gt; operator*(sequence&lt;T&gt; y) const {</span>
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :     return sequence&lt;T&gt;(*this)*=y;</span>
+<span class="lineNum">      93 </span>            :   }
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :   sequence&lt;T&gt; operator/(sequence&lt;T&gt; y) const{</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :     return sequence&lt;T&gt;(*this)/=y;</span>
+<span class="lineNum">      96 </span>            :   }
+<span class="lineNum">      97 </span>            :   sequence&lt;T&gt; reverse_cumulative_sum() const ;
+<span class="lineNum">      98 </span>            :   template&lt;typename D&gt;
+<a name="99"><span class="lineNum">      99 </span>            :   operator sequence&lt;D&gt; () const;</a>
+<span class="lineNum">     100 </span>            :   sequence&lt;std::string&gt; format(const char * fmt) const;
+<span class="lineNum">     101 </span><span class="lineNoCov">          0 :   void push_back(const T &amp; y){</span>
+<span class="lineNum">     102 </span><span class="lineNoCov">          0 :     (*this)[this-&gt;std::simple_vector&lt;T&gt;::size()]=y;</span>
+<span class="lineNum">     103 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     104 </span>            :   T last(){return std::simple_vector&lt;T&gt;::operator[](std::simple_vector&lt;T&gt;::size()-1);}
+<span class="lineNum">     105 </span>            : };
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     108 </span><span class="lineCov">        630 : T sequence&lt;T&gt;::default_element=T();</span>
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : 
+<a name="111"><span class="lineNum">     111 </span>            : template&lt;typename T&gt;</a>
+<span class="lineNum">     112 </span>            : template&lt;typename D&gt;
+<span class="lineNum">     113 </span><span class="lineNoCov">          0 : sequence&lt;T&gt;::operator sequence&lt;D&gt; () const{</span>
+<span class="lineNum">     114 </span><span class="lineNoCov">          0 :   sequence&lt;D&gt; d;</span>
+<span class="lineNum">     115 </span><span class="lineNoCov">          0 :   for(int i=std::simple_vector&lt;T&gt;::size()-1;i&gt;=0;i--) // doing backwards saves mallocs</span>
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :     d[i]=D(std::simple_vector&lt;T&gt;::operator[](i));</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :   return d;</span>
+<span class="lineNum">     118 </span>            : }
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 : sequence&lt;std::string&gt; sequence&lt;T&gt;::format(const char * fmt) const{</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :   sequence&lt;std::string&gt; s;</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :   for(int i=std::simple_vector&lt;T&gt;::size()-1;i&gt;=0;i--) // doing backwards saves mallocs</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :     s[i]=::format(fmt,std::simple_vector&lt;T&gt;::operator[](i));</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :   return s;</span>
+<span class="lineNum">     126 </span>            : }
+<a name="127"><span class="lineNum">     127 </span>            : </a>
+<span class="lineNum">     128 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 : std::string format(const char * fmt, T x){</span>
+<span class="lineNum">     130 </span><span class="lineNoCov">          0 :   const int default_limit=32;</span>
+<span class="lineNum">     131 </span>            :   static char buffer[default_limit]; 
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :   int retval=snprintf(buffer,default_limit,fmt,x);</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :   if(retval&lt;0) return std::string(&quot;ERROR: sprintf trouble&quot;);</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   if(retval&lt;default_limit)</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :     return buffer;</span>
+<span class="lineNum">     136 </span>            :   // buffer was too small:
+<span class="lineNum">     137 </span>            :   char *buffer2;
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :   buffer2 = new char[retval+1]; // one more for the trailing zero</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :   retval=sprintf(buffer2,fmt,x);</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :   std::string buffer2_string(buffer2);</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :   delete buffer2;</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :   if(retval&lt;0) return std::string(&quot;ERROR: sprintf trouble&quot;);</span>
+<span class="lineNum">     143 </span>            :   return buffer2_string;
+<span class="lineNum">     144 </span>            : }
+<a name="145"><span class="lineNum">     145 </span>            : </a>
+<span class="lineNum">     146 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     147 </span><span class="lineCov">      21171 : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator=(const sequence&lt;T&gt; &amp; v){</span>
+<span class="lineNum">     148 </span><span class="lineCov">      63513 :   if(std::simple_vector&lt;T&gt;::size()!=v.std::simple_vector&lt;T&gt;::size())</span>
+<span class="lineNum">     149 </span><span class="lineCov">        360 :     this-&gt;resize(v.std::simple_vector&lt;T&gt;::size());</span>
+<span class="lineNum">     150 </span><span class="lineCov">      42342 :   iter i=std::simple_vector&lt;T&gt;::begin();</span>
+<span class="lineNum">     151 </span><span class="lineCov">      63513 :   typename std::simple_vector&lt;T&gt;::const_iterator j=v.std::simple_vector&lt;T&gt;::begin(),e=v.std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     152 </span><span class="lineCov">     134273 :   while(j!=e) {</span>
+<span class="lineNum">     153 </span><span class="lineCov">     169653 :     (*i++)=(*j++);</span>
+<span class="lineNum">     154 </span>            :   }
+<span class="lineNum">     155 </span>            :   //shorten();
+<span class="lineNum">     156 </span><span class="lineCov">      21171 :   return *this;</span>
+<span class="lineNum">     157 </span>            : }
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     160 </span>            : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator=(const sequence&lt;D&gt; &amp; v){
+<span class="lineNum">     161 </span>            :   if(std::simple_vector&lt;T&gt;::size()!=v.std::simple_vector&lt;D&gt;::size())
+<span class="lineNum">     162 </span>            :     resize(v.std::simple_vector&lt;D&gt;::size());
+<span class="lineNum">     163 </span>            :   iter i=std::simple_vector&lt;T&gt;::begin();
+<span class="lineNum">     164 </span>            :   typename std::simple_vector&lt;D&gt;::const_iterator j=v.std::simple_vector&lt;D&gt;::begin(),e=v.std::simple_vector&lt;D&gt;::end();
+<span class="lineNum">     165 </span>            :   while(j!=e) {
+<span class="lineNum">     166 </span>            :     (*i++)=(*j++);
+<span class="lineNum">     167 </span>            :   }
+<span class="lineNum">     168 </span>            :   //shorten();
+<span class="lineNum">     169 </span>            :   return *this;
+<a name="170"><span class="lineNum">     170 </span>            : }</a>
+<span class="lineNum">     171 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     172 </span><span class="lineCov">       1542 : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator+=(const sequence&lt;D&gt; &amp; v){</span>
+<span class="lineNum">     173 </span><span class="lineCov">       4626 :   if(std::simple_vector&lt;T&gt;::size()&lt;v.std::simple_vector&lt;D&gt;::size())</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     this-&gt;resize(v.std::simple_vector&lt;D&gt;::size());</span>
+<span class="lineNum">     175 </span><span class="lineCov">       3084 :   iter i=std::simple_vector&lt;T&gt;::begin();</span>
+<span class="lineNum">     176 </span><span class="lineCov">       4626 :   typename std::simple_vector&lt;D&gt;::const_iterator j=v.std::simple_vector&lt;D&gt;::begin(),e=v.std::simple_vector&lt;D&gt;::end();</span>
+<span class="lineNum">     177 </span><span class="lineCov">       3084 :   while(j!=e) {</span>
+<span class="lineNum">     178 </span><span class="lineCov">       3084 :     (*i)=T(*i + (*j++));</span>
+<span class="lineNum">     179 </span><span class="lineCov">       1542 :     i++;</span>
+<span class="lineNum">     180 </span>            :   }
+<span class="lineNum">     181 </span>            :   //shorten();
+<span class="lineNum">     182 </span><span class="lineCov">       1542 :   return *this;</span>
+<a name="183"><span class="lineNum">     183 </span>            : }</a>
+<span class="lineNum">     184 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     185 </span><span class="lineCov">       1281 : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator*=(const sequence&lt;D&gt; &amp; v){</span>
+<span class="lineNum">     186 </span><span class="lineCov">       3843 :   if(std::simple_vector&lt;T&gt;::size()&lt;v.std::simple_vector&lt;T&gt;::size())</span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :     this-&gt;resize(v.std::simple_vector&lt;T&gt;::size());</span>
+<span class="lineNum">     188 </span><span class="lineCov">       2562 :   iter i=std::simple_vector&lt;T&gt;::begin();</span>
+<span class="lineNum">     189 </span><span class="lineCov">       3843 :   typename std::simple_vector&lt;D&gt;::const_iterator j=v.std::simple_vector&lt;T&gt;::begin(),e=v.std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     190 </span><span class="lineCov">       2922 :   while(j!=e) {</span>
+<span class="lineNum">     191 </span><span class="lineCov">       3282 :     (*i)=T(*i * (*j++));</span>
+<span class="lineNum">     192 </span><span class="lineCov">       1641 :     i++;</span>
+<span class="lineNum">     193 </span>            :   }
+<span class="lineNum">     194 </span>            :   //shorten();
+<span class="lineNum">     195 </span><span class="lineCov">       1281 :   return *this;</span>
+<a name="196"><span class="lineNum">     196 </span>            : }</a>
+<span class="lineNum">     197 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     198 </span><span class="lineCov">         73 : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator-=(const sequence&lt;D&gt; &amp; v){</span>
+<span class="lineNum">     199 </span><span class="lineCov">        219 :   if(std::simple_vector&lt;T&gt;::size()&lt;v.std::simple_vector&lt;T&gt;::size())</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :     this-&gt;resize(v.std::simple_vector&lt;T&gt;::size());</span>
+<span class="lineNum">     201 </span><span class="lineCov">        146 :   iter i=std::simple_vector&lt;T&gt;::begin();</span>
+<span class="lineNum">     202 </span><span class="lineCov">        219 :   typename std::simple_vector&lt;D&gt;::const_iterator j=v.std::simple_vector&lt;T&gt;::begin(),e=v.std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     203 </span><span class="lineCov">        146 :   while(j!=e) {</span>
+<span class="lineNum">     204 </span><span class="lineCov">        146 :     (*i)=T(*i - (*j++));</span>
+<span class="lineNum">     205 </span><span class="lineCov">         73 :     i++;</span>
+<span class="lineNum">     206 </span>            :   }
+<span class="lineNum">     207 </span>            :   //shorten();
+<span class="lineNum">     208 </span><span class="lineCov">         73 :   return *this;</span>
+<span class="lineNum">     209 </span>            : }
+<span class="lineNum">     210 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator/=(const sequence&lt;D&gt; &amp; v){</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :   if(std::simple_vector&lt;T&gt;::size()&lt;v.std::simple_vector&lt;T&gt;::size())</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :     this-&gt;resize(v.std::simple_vector&lt;T&gt;::size());</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :   iter i=std::simple_vector&lt;T&gt;::begin();</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :   typename std::simple_vector&lt;D&gt;::const_iterator j=v.std::simple_vector&lt;T&gt;::begin(),e=v.std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :   while(j!=e) {</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :     (*i)=T(*i / (*j++));</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 :     i++;</span>
+<span class="lineNum">     219 </span>            :   }
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 :   return *this;</span>
+<span class="lineNum">     221 </span>            : }
+<span class="lineNum">     222 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     223 </span>            : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator+=(D v){
+<span class="lineNum">     224 </span>            :   iter i=std::simple_vector&lt;T&gt;::begin(),e=std::simple_vector&lt;T&gt;::end();
+<span class="lineNum">     225 </span>            :   while(i!=e) {
+<span class="lineNum">     226 </span>            :     (*i)=T(*i + v);
+<span class="lineNum">     227 </span>            :     i++;
+<span class="lineNum">     228 </span>            :   }
+<span class="lineNum">     229 </span>            :   //shorten();
+<span class="lineNum">     230 </span>            :   return *this;
+<span class="lineNum">     231 </span>            : }
+<span class="lineNum">     232 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     233 </span>            : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator-=(D v){
+<span class="lineNum">     234 </span><span class="lineCov">        135 :   iter i=std::simple_vector&lt;T&gt;::begin(),e=std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     235 </span><span class="lineCov">       9810 :   while(i!=e) {</span>
+<span class="lineNum">     236 </span><span class="lineCov">       9765 :     (*i)=T(*i - v);</span>
+<span class="lineNum">     237 </span><span class="lineCov">       9765 :     i++;</span>
+<span class="lineNum">     238 </span>            :   }
+<span class="lineNum">     239 </span>            :   //shorten();
+<span class="lineNum">     240 </span>            :   return *this;
+<span class="lineNum">     241 </span>            : }
+<span class="lineNum">     242 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     243 </span>            : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator*=(D v){
+<span class="lineNum">     244 </span><span class="lineCov">        744 :   iter i=std::simple_vector&lt;T&gt;::begin(),e=std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     245 </span><span class="lineCov">        495 :   while(i!=e) {</span>
+<span class="lineNum">     246 </span><span class="lineCov">        247 :     (*i)=T(*i * v);</span>
+<span class="lineNum">     247 </span><span class="lineCov">        247 :     i++;</span>
+<span class="lineNum">     248 </span>            :   }
+<span class="lineNum">     249 </span>            :   //shorten();
+<span class="lineNum">     250 </span>            :   return *this;
+<span class="lineNum">     251 </span>            : }
+<span class="lineNum">     252 </span>            : template&lt;typename T&gt; template&lt;typename D&gt;
+<span class="lineNum">     253 </span>            : sequence&lt;T&gt; &amp; sequence&lt;T&gt;::operator/=(D v){
+<span class="lineNum">     254 </span><span class="lineCov">        219 :   iter i=std::simple_vector&lt;T&gt;::begin(),e=std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     255 </span><span class="lineCov">        146 :   while(i!=e) {</span>
+<span class="lineNum">     256 </span><span class="lineCov">         73 :     (*i)=T(*i / v);</span>
+<span class="lineNum">     257 </span><span class="lineCov">         73 :     i++;</span>
+<span class="lineNum">     258 </span>            :   }
+<span class="lineNum">     259 </span>            :   return *this;
+<span class="lineNum">     260 </span>            : }
+<span class="lineNum">     261 </span>            : 
+<span class="lineNum">     262 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 : sequence&lt;T&gt; sequence&lt;T&gt;::reverse_cumulative_sum() const{</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :   sequence&lt;T&gt; s;</span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :   T sum=0;</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :   for(int i=std::simple_vector&lt;T&gt;::size()-1;i&gt;=0;i--) </span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :     s[i]=(sum+=std::simple_vector&lt;T&gt;::operator[](i));</span>
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :   return s;</span>
+<span class="lineNum">     269 </span>            : }
+<span class="lineNum">     270 </span>            :   
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : template&lt;typename T&gt; 
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 : inline sequence&lt;T&gt; operator+(T x, const sequence&lt;T&gt; &amp; y){</span>
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :   return sequence&lt;T&gt;(y.std::simple_vector&lt;T&gt;::size(),x)+=y;</span>
+<span class="lineNum">     275 </span>            : }
+<a name="276"><span class="lineNum">     276 </span>            : </a>
+<span class="lineNum">     277 </span>            : template&lt;typename T&gt; 
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 : inline sequence&lt;T&gt; operator-(T x, const sequence&lt;T&gt; &amp; y){</span>
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :   return sequence&lt;T&gt;(y.std::simple_vector&lt;T&gt;::size(),x)-=y;</span>
+<span class="lineNum">     280 </span>            : }
+<a name="281"><span class="lineNum">     281 </span>            : </a>
+<span class="lineNum">     282 </span>            : template&lt;typename T&gt; 
+<span class="lineNum">     283 </span><span class="lineCov">       1281 : inline sequence&lt;T&gt; operator*(T x, const sequence&lt;T&gt; &amp; y){</span>
+<span class="lineNum">     284 </span><span class="lineCov">       6405 :   return sequence&lt;T&gt;(y.std::simple_vector&lt;T&gt;::size(),x)*=y;</span>
+<span class="lineNum">     285 </span>            : }
+<a name="286"><span class="lineNum">     286 </span>            : </a>
+<span class="lineNum">     287 </span>            : template&lt;typename T&gt; 
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 : inline sequence&lt;T&gt; operator/(T x, const sequence&lt;T&gt; &amp; y){</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :   return sequence&lt;T&gt;(y.std::simple_vector&lt;T&gt;::size(),x)/=y;</span>
+<span class="lineNum">     290 </span>            : }
+<a name="291"><span class="lineNum">     291 </span>            : </a>
+<span class="lineNum">     292 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 : std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, const sequence&lt;T&gt; &amp;s){</span>
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :   typename std::simple_vector&lt;T&gt;::const_iterator i=s.std::simple_vector&lt;T&gt;::begin(),e=s.std::simple_vector&lt;T&gt;::end();</span>
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :   while(i!=e) {</span>
+<span class="lineNum">     296 </span><span class="lineNoCov">          0 :     stream &lt;&lt; *i &lt;&lt; &quot; &quot; ;</span>
+<span class="lineNum">     297 </span><span class="lineNoCov">          0 :     i++;</span>
+<span class="lineNum">     298 </span>            :   }
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :   return stream;</span>
+<span class="lineNum">     300 </span>            : }
+<a name="301"><span class="lineNum">     301 </span>            : </a>
+<span class="lineNum">     302 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     303 </span><span class="lineCov">         45 : std::istream &amp; operator&gt;&gt;(std::istream &amp;stream, sequence&lt;T&gt; &amp;s){</span>
+<span class="lineNum">     304 </span><span class="lineCov">         45 :   int i=0;</span>
+<span class="lineNum">     305 </span><span class="lineCov">       8845 :   do{</span>
+<span class="lineNum">     306 </span><span class="lineCov">       8845 :     stream &gt;&gt; s[i++];</span>
+<span class="lineNum">     307 </span><span class="lineCov">      17690 :   }while(!stream.fail());</span>
+<span class="lineNum">     308 </span><span class="lineCov">         45 :   s.resize(i-1);</span>
+<span class="lineNum">     309 </span>            : //   std::string line;
+<span class="lineNum">     310 </span>            : //   stream &gt;&gt; line; //read one line
+<span class="lineNum">     311 </span>            : //   std::istringstream is(line);
+<span class="lineNum">     312 </span>            : //   int i=0;
+<span class="lineNum">     313 </span>            : //   std::cout &lt;&lt; line &lt;&lt; &quot; &quot; &lt;&lt; is.eof() &lt;&lt; std::endl;
+<span class="lineNum">     314 </span>            : //   while(!is.eof()){
+<span class="lineNum">     315 </span>            : //     s.std::simple_vector&lt;T&gt;::resize(i+1);
+<span class="lineNum">     316 </span>            : //     is &gt;&gt; s.std::simple_vector&lt;T&gt;::operator[](i);
+<span class="lineNum">     317 </span>            : //     std::cout &lt;&lt; i &lt;&lt; &quot; &quot; &lt;&lt; s[i] &lt;&lt; std::endl;
+<span class="lineNum">     318 </span>            : //     i++;
+<span class="lineNum">     319 </span>            : //   }
+<span class="lineNum">     320 </span><span class="lineCov">         45 :   return stream;</span>
+<span class="lineNum">     321 </span>            : }
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            : // strings get vertical output:
+<span class="lineNum">     324 </span>            : std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, 
+<span class="lineNum">     325 </span>            :                           const sequence&lt;std::string&gt; &amp;s);
+<span class="lineNum">     326 </span>            : 
+<span class="lineNum">     327 </span>            : template&lt;typename T, typename D&gt;
+<span class="lineNum">     328 </span><span class="lineNoCov">          0 : sequence&lt;D&gt; Map(D f(T),  const sequence&lt;T&gt; t){</span>
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :   sequence&lt;D&gt; d;</span>
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :   for(int i=t.std::simple_vector&lt;T&gt;::size()-1;i&gt;=0;i--) </span>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :     d[i]=f(t[i]);</span>
+<span class="lineNum">     332 </span><span class="lineNoCov">          0 :   return d;</span>
+<span class="lineNum">     333 </span>            : }
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            : #include&lt;numeric&gt;
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     338 </span>            : T sum(sequence&lt;T&gt; x){
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :   return std::accumulate(x.begin(), x.end(), T());</span>
+<span class="lineNum">     340 </span>            : }
+<span class="lineNum">     341 </span>            : 
+<span class="lineNum">     342 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     343 </span>            : T mean(sequence&lt;T&gt; x){
+<span class="lineNum">     344 </span>            :   return accumulate(x.begin(), x.end(), T())/x.std::simple_vector&lt;T&gt;::size();
+<span class="lineNum">     345 </span>            : }
+<span class="lineNum">     346 </span>            : 
+<span class="lineNum">     347 </span>            : inline sequence&lt;std::string&gt; operator+(const char c[], const sequence&lt;std::string&gt; &amp; y){
+<span class="lineNum">     348 </span>            :   return std::string(c)+y;
+<span class="lineNum">     349 </span>            : }
+<span class="lineNum">     350 </span>            : 
+<span class="lineNum">     351 </span>            : // Some simple abbreviations.  Should not really be here, but then
+<span class="lineNum">     352 </span>            : // again, it's ok:
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span>            : template&lt; typename T1, typename T2 &gt; double dot(const T1 &amp;x,const T2 &amp;y){
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :   return std::inner_product(x.begin(),x.end(),y.begin(),0.0);</span>
+<span class="lineNum">     356 </span>            : }
+<span class="lineNum">     357 </span>            : template&lt; typename T1 &gt; double abs2(const T1 &amp;x){
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :   return dot(x,x);</span>
+<span class="lineNum">     359 </span>            : }
+<a name="360"><span class="lineNum">     360 </span>            : </a>
+<span class="lineNum">     361 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 : template&lt; typename T1 &gt; double abs(const sequence&lt; T1 &gt; &amp;x){</span>
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 :   return sqrt(abs2(x));</span>
+<span class="lineNum">     364 </span>            : }
+<span class="lineNum">     365 </span>            : 
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            : #endif // __SEQUENCE_H__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

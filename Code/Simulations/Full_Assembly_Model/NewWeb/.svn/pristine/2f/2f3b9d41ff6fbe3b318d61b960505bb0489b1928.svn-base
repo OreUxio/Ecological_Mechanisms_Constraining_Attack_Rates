@@ -1,0 +1,168 @@
+#!/bin/sh
+# $Id$
+# use space to optimize the output of script func
+
+uname -a
+hostname
+
+export AWKPATH="$BINDIR"
+
+while true ; do
+
+nprocs=5;
+starting_lines=12; # should be at least nprocs!!
+min_data=2;
+
+if [ -r optimize.conf ]; then
+    . optimize.conf
+fi
+
+date
+
+if [ -r beta.mat -a -r corpar.mat -a -r YDesc.mat ]; then
+    cat > space.conf <<EOF
+RandomError = TRUE
+X < Xstart.mat
+Y < Ystart.mat
+X > Xstart.mat
+Y > Ystart.mat
+XDescription < XDesc.mat
+RegressionModel < beta.mat
+StochasticProcessModel < corpar.mat
+YDescription < YDesc.mat
+RandomSeed = `echo | awk '{srand();print int(1+rand()*99);}'`
+Tries = 2
+Fit
+RegressionModel > beta.mat
+StochasticProcessModel > corpar.mat
+YDescription > YDesc.mat
+MinimizeStage $nprocs > Xnew.mat
+Quit
+EOF
+else
+    cat > space.conf <<EOF
+RandomError = TRUE
+X < Xstart.mat
+Y < Ystart.mat
+X > Xstart.mat
+Y > Ystart.mat
+XDescription < XDesc.mat
+YDescription < YDesc.mat
+RandomSeed = `echo | awk '{srand();print int(1+rand()*99);}'`
+Tries = 5
+Fit
+RegressionModel > beta.mat
+StochasticProcessModel > corpar.mat
+YDescription > YDesc.mat
+MinimizeStage $nprocs > Xnew.mat
+Quit
+EOF
+fi
+
+if [ ! -e Xstart.mat ]; then
+    awk -f generate_XYstart.awk XDesc.mat
+fi
+
+Xstart_length=`cat Xstart.mat|awk -f data-part.awk|wc -l`
+Ystart_length=`cat Ystart.mat|awk -f data-part.awk|wc -l`
+
+if [ ${Xstart_length} != ${Ystart_length} ]; then
+    echo '${Xstart_length} != ${Ystart_length}' "( ${Xstart_length} != ${Ystart_length} ) !"
+    echo exiting
+    exit 1
+fi
+
+if [ ${Xstart_length} -le ${starting_lines} ]; then
+    awk -f generate_initial_Xnew.awk starting_lines=${starting_lines} XDesc.mat
+    retval=$?
+else
+#get points for new minimization stage:
+    echo starting optimization step
+    space space.conf
+    retval=$?
+fi
+
+
+if [ "$retval"X != 0X ]; then
+    echo problem with space or initialization: "retval = $retval"
+    echo sending message and exiting
+    echo $0 on `hostname` "in" `pwd` stopped due to problems with space | mail -s simulation axel@rossberg.net 
+    echo $0 on `hostname` "in" `pwd` stopped due to problems with space |cat >> ~/simlog
+    exit 1
+fi
+
+echo "counting number of running processes"
+if  ls -l */func.pid > /dev/null ; then
+    ppidlist=`cat */func.pid | sed 's/\([^0-9][0-9]\)/-p \1/g'`    
+else
+    ppidlist=""
+fi
+
+if [ "X${ppidlist}X" == XX ]; then
+    nrunning=0;
+else
+    nrunning=`ps $ppidlist | tail +2 | wc -l`
+fi
+
+nrun_now=`echo "n = $nprocs - $nrunning ; if( n < 0) n = 0; n" | bc | tail -1` 
+
+if [ $nrun_now == 0 ]; then
+    echo "$nprocs func processes running for this optimization!"
+    echo "This should not happen! Continuing"
+fi
+
+# start jobs
+echo "Will start $nrun_now new simulations now."
+start_of_new_lines=`tail -1 Xstart.mat | awk '{print $1+1}'`
+cat Xnew.mat |  awk -f data-part.awk | tail +${start_of_new_lines} > Xnew.dat
+last_job=`ls -d [0-9]* | sort -n | tail -1`
+if [ "${last_job}X" == X ]; then
+    last_job=0
+fi
+for i in `seq 1 $nrun_now`; do
+    job_id=`echo "$last_job + $i" | bc`
+    mkdir $job_id
+    cat Xnew.dat | head -${i} | tail -1 > $job_id/X.dat
+    (cd $job_id; ${BINDIR}/func `cat X.dat`)&
+done
+# wait for func jobs to write .pid files
+sleep 5
+
+echo "Waiting for $min_data processes to finish."
+
+max_running=`echo "$nprocs - $min_data" | bc `
+
+if pidlist=`cat */func.pid`; then
+    ppidlist=`echo $pidlist| sed 's/\([^0-9][0-9]\)/-p \1/g'`
+    pidlist=`ps -opid $pidlist | tail +2`; 
+    njobs=`echo $pidlist | wc -w`
+    while [ $njobs -gt $max_running ]; do
+	sleep 5;
+	ppidlist=`echo $pidlist| sed 's/\([^0-9][0-9]\)/-p \1/g'`
+	pidlist=`ps -opid $pidlist | tail +2`
+	njobs=`echo $pidlist | wc -w`
+    done
+fi
+
+  
+#find out which jobs stopped:
+stopped_ok_list=`ls -1 */stopped_ok | grep stopped_ok | sed 's+/stopped_ok++'`
+
+#prepare new matrixes
+cp Xstart.mat Xstart.mat.saved
+cp Ystart.mat Ystart.mat.saved
+
+for job_id in $stopped_ok_list; do
+    mv $job_id/stopped_ok  $job_id/stopped_ok_read
+    line_number=`awk -f data-part.awk Xstart.mat | wc -l`
+    line_number=`echo "$line_number + 1" | bc`
+    echo $line_number > $job_id/Case
+    cat $job_id/X.dat |\
+    awk '{ORS=" "; print '${line_number}'; for(i=2;i<=NF;i++) print $i;}' \
+	>> Xstart.mat
+    echo >> Xstart.mat
+    echo -n "$line_number " >> Ystart.mat
+    cat $job_id/Y.dat >> Ystart.mat
+done
+
+done # while true

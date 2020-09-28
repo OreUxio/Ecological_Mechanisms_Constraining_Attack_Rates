@@ -1,0 +1,421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/operator_div.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - operator_div.hpp<span style="font-size: 80%;"> (source / <a href="operator_div.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2009-2015 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : // Written by Ryan Curtin
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : //! \addtogroup operator_div
+<span class="lineNum">      13 </span>            : //! @{
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : //! Base / scalar
+<span class="lineNum">      18 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">      19 </span>            : arma_inline
+<span class="lineNum">      20 </span>            : typename
+<span class="lineNum">      21 </span>            : enable_if2&lt; is_arma_type&lt;T1&gt;::value, const eOp&lt;T1, eop_scalar_div_post&gt; &gt;::result
+<span class="lineNum">      22 </span>            : operator/
+<span class="lineNum">      23 </span>            :   (
+<span class="lineNum">      24 </span>            :   const T1&amp;                    X,
+<span class="lineNum">      25 </span>            :   const typename T1::elem_type k
+<span class="lineNum">      26 </span>            :   )
+<span class="lineNum">      27 </span>            :   {
+<span class="lineNum">      28 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      29 </span>            :   
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :   return eOp&lt;T1, eop_scalar_div_post&gt;(X, k);</span>
+<span class="lineNum">      31 </span>            :   }
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : //! scalar / Base
+<span class="lineNum">      36 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">      37 </span>            : arma_inline
+<span class="lineNum">      38 </span>            : typename
+<span class="lineNum">      39 </span>            : enable_if2&lt; is_arma_type&lt;T1&gt;::value, const eOp&lt;T1, eop_scalar_div_pre&gt; &gt;::result
+<span class="lineNum">      40 </span>            : operator/
+<span class="lineNum">      41 </span>            :   (
+<span class="lineNum">      42 </span>            :   const typename T1::elem_type k,
+<span class="lineNum">      43 </span>            :   const T1&amp;                    X
+<span class="lineNum">      44 </span>            :   )
+<span class="lineNum">      45 </span>            :   {
+<span class="lineNum">      46 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      47 </span>            :   
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :   return eOp&lt;T1, eop_scalar_div_pre&gt;(X, k);</span>
+<span class="lineNum">      49 </span>            :   }
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : //! complex scalar / non-complex Base
+<span class="lineNum">      54 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">      55 </span>            : arma_inline
+<span class="lineNum">      56 </span>            : typename
+<span class="lineNum">      57 </span>            : enable_if2
+<span class="lineNum">      58 </span>            :   &lt;
+<span class="lineNum">      59 </span>            :   (is_arma_type&lt;T1&gt;::value &amp;&amp; is_cx&lt;typename T1::elem_type&gt;::no),
+<span class="lineNum">      60 </span>            :   const mtOp&lt;typename std::complex&lt;typename T1::pod_type&gt;, T1, op_cx_scalar_div_pre&gt;
+<span class="lineNum">      61 </span>            :   &gt;::result
+<span class="lineNum">      62 </span>            : operator/
+<span class="lineNum">      63 </span>            :   (
+<span class="lineNum">      64 </span>            :   const std::complex&lt;typename T1::pod_type&gt;&amp; k,
+<span class="lineNum">      65 </span>            :   const T1&amp;                                  X
+<span class="lineNum">      66 </span>            :   )
+<span class="lineNum">      67 </span>            :   {
+<span class="lineNum">      68 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      69 </span>            :   
+<span class="lineNum">      70 </span>            :   return mtOp&lt;typename std::complex&lt;typename T1::pod_type&gt;, T1, op_cx_scalar_div_pre&gt;('j', X, k);
+<span class="lineNum">      71 </span>            :   }
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : //! non-complex Base / complex scalar
+<span class="lineNum">      76 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">      77 </span>            : arma_inline
+<span class="lineNum">      78 </span>            : typename
+<span class="lineNum">      79 </span>            : enable_if2
+<span class="lineNum">      80 </span>            :   &lt;
+<span class="lineNum">      81 </span>            :   (is_arma_type&lt;T1&gt;::value &amp;&amp; is_cx&lt;typename T1::elem_type&gt;::no),
+<span class="lineNum">      82 </span>            :   const mtOp&lt;typename std::complex&lt;typename T1::pod_type&gt;, T1, op_cx_scalar_div_post&gt;
+<span class="lineNum">      83 </span>            :   &gt;::result
+<span class="lineNum">      84 </span>            : operator/
+<span class="lineNum">      85 </span>            :   (
+<span class="lineNum">      86 </span>            :   const T1&amp;                                  X,
+<span class="lineNum">      87 </span>            :   const std::complex&lt;typename T1::pod_type&gt;&amp; k
+<span class="lineNum">      88 </span>            :   )
+<span class="lineNum">      89 </span>            :   {
+<span class="lineNum">      90 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">      91 </span>            :   
+<span class="lineNum">      92 </span>            :   return mtOp&lt;typename std::complex&lt;typename T1::pod_type&gt;, T1, op_cx_scalar_div_post&gt;('j', X, k);
+<span class="lineNum">      93 </span>            :   }
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : //! element-wise division of Base objects with same element type
+<span class="lineNum">      98 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">      99 </span>            : arma_inline
+<span class="lineNum">     100 </span>            : typename
+<span class="lineNum">     101 </span>            : enable_if2
+<span class="lineNum">     102 </span>            :   &lt;
+<span class="lineNum">     103 </span>            :   (is_arma_type&lt;T1&gt;::value &amp;&amp; is_arma_type&lt;T2&gt;::value &amp;&amp; is_same_type&lt;typename T1::elem_type, typename T2::elem_type&gt;::value),
+<span class="lineNum">     104 </span>            :   const eGlue&lt;T1, T2, eglue_div&gt;
+<span class="lineNum">     105 </span>            :   &gt;::result
+<span class="lineNum">     106 </span>            : operator/
+<span class="lineNum">     107 </span>            :   (
+<span class="lineNum">     108 </span>            :   const T1&amp; X,
+<span class="lineNum">     109 </span>            :   const T2&amp; Y
+<span class="lineNum">     110 </span>            :   )
+<span class="lineNum">     111 </span>            :   {
+<span class="lineNum">     112 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     113 </span>            :   
+<span class="lineNum">     114 </span>            :   return eGlue&lt;T1, T2, eglue_div&gt;(X, Y);
+<span class="lineNum">     115 </span>            :   }
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            : //! element-wise division of Base objects with different element types
+<span class="lineNum">     120 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     121 </span>            : inline
+<span class="lineNum">     122 </span>            : typename
+<span class="lineNum">     123 </span>            : enable_if2
+<span class="lineNum">     124 </span>            :   &lt;
+<span class="lineNum">     125 </span>            :   (is_arma_type&lt;T1&gt;::value &amp;&amp; is_arma_type&lt;T2&gt;::value &amp;&amp; (is_same_type&lt;typename T1::elem_type, typename T2::elem_type&gt;::no)),
+<span class="lineNum">     126 </span>            :   const mtGlue&lt;typename promote_type&lt;typename T1::elem_type, typename T2::elem_type&gt;::result, T1, T2, glue_mixed_div&gt;
+<span class="lineNum">     127 </span>            :   &gt;::result
+<span class="lineNum">     128 </span>            : operator/
+<span class="lineNum">     129 </span>            :   (
+<span class="lineNum">     130 </span>            :   const T1&amp; X,
+<span class="lineNum">     131 </span>            :   const T2&amp; Y
+<span class="lineNum">     132 </span>            :   )
+<span class="lineNum">     133 </span>            :   {
+<span class="lineNum">     134 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     135 </span>            :   
+<span class="lineNum">     136 </span>            :   typedef typename T1::elem_type eT1;
+<span class="lineNum">     137 </span>            :   typedef typename T2::elem_type eT2;
+<span class="lineNum">     138 </span>            :   
+<span class="lineNum">     139 </span>            :   typedef typename promote_type&lt;eT1,eT2&gt;::result out_eT;
+<span class="lineNum">     140 </span>            :   
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :   promote_type&lt;eT1,eT2&gt;::check();</span>
+<span class="lineNum">     142 </span>            :   
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :   return mtGlue&lt;out_eT, T1, T2, glue_mixed_div&gt;( X, Y );</span>
+<span class="lineNum">     144 </span>            :   }
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            : //! element-wise division of sparse matrix by scalar
+<span class="lineNum">     149 </span>            : template&lt;typename T1&gt;
+<span class="lineNum">     150 </span>            : inline
+<span class="lineNum">     151 </span>            : typename
+<span class="lineNum">     152 </span>            : enable_if2&lt;is_arma_sparse_type&lt;T1&gt;::value, SpMat&lt;typename T1::elem_type&gt; &gt;::result
+<span class="lineNum">     153 </span>            : operator/
+<span class="lineNum">     154 </span>            :   (
+<span class="lineNum">     155 </span>            :   const T1&amp;                    X,
+<span class="lineNum">     156 </span>            :   const typename T1::elem_type y
+<span class="lineNum">     157 </span>            :   )
+<span class="lineNum">     158 </span>            :   {
+<span class="lineNum">     159 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     160 </span>            :   
+<span class="lineNum">     161 </span>            :   SpMat&lt;typename T1::elem_type&gt; result(X);
+<span class="lineNum">     162 </span>            :   
+<span class="lineNum">     163 </span>            :   result /= y;
+<span class="lineNum">     164 </span>            :   
+<span class="lineNum">     165 </span>            :   return result;
+<span class="lineNum">     166 </span>            :   }
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            : //! element-wise division of one sparse and one dense object
+<span class="lineNum">     171 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     172 </span>            : inline
+<span class="lineNum">     173 </span>            : typename
+<span class="lineNum">     174 </span>            : enable_if2
+<span class="lineNum">     175 </span>            :   &lt;
+<span class="lineNum">     176 </span>            :   (is_arma_sparse_type&lt;T1&gt;::value &amp;&amp; is_arma_type&lt;T2&gt;::value &amp;&amp; is_same_type&lt;typename T1::elem_type, typename T2::elem_type&gt;::value),
+<span class="lineNum">     177 </span>            :   SpMat&lt;typename T1::elem_type&gt;
+<span class="lineNum">     178 </span>            :   &gt;::result
+<span class="lineNum">     179 </span>            : operator/
+<span class="lineNum">     180 </span>            :   (
+<span class="lineNum">     181 </span>            :   const T1&amp; x,
+<span class="lineNum">     182 </span>            :   const T2&amp; y
+<span class="lineNum">     183 </span>            :   )
+<span class="lineNum">     184 </span>            :   {
+<span class="lineNum">     185 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     186 </span>            :   
+<span class="lineNum">     187 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     188 </span>            :   
+<span class="lineNum">     189 </span>            :   const SpProxy&lt;T1&gt; pa(x);
+<span class="lineNum">     190 </span>            :   const   Proxy&lt;T2&gt; pb(y);
+<span class="lineNum">     191 </span>            :   
+<span class="lineNum">     192 </span>            :   const uword n_rows = pa.get_n_rows();
+<span class="lineNum">     193 </span>            :   const uword n_cols = pa.get_n_cols();
+<span class="lineNum">     194 </span>            :   
+<span class="lineNum">     195 </span>            :   arma_debug_assert_same_size(n_rows, n_cols, pb.get_n_rows(), pb.get_n_cols(), &quot;element-wise division&quot;);
+<span class="lineNum">     196 </span>            :   
+<span class="lineNum">     197 </span>            :   SpMat&lt;eT&gt; result(n_rows, n_cols);
+<span class="lineNum">     198 </span>            :   
+<span class="lineNum">     199 </span>            :   uword new_n_nonzero = 0;
+<span class="lineNum">     200 </span>            :   
+<span class="lineNum">     201 </span>            :   for(uword col=0; col &lt; n_cols; ++col)
+<span class="lineNum">     202 </span>            :   for(uword row=0; row &lt; n_rows; ++row)
+<span class="lineNum">     203 </span>            :     {
+<span class="lineNum">     204 </span>            :     const eT val = pa.at(row,col) / pb.at(row, col);
+<span class="lineNum">     205 </span>            :     
+<span class="lineNum">     206 </span>            :     if(val != eT(0))
+<span class="lineNum">     207 </span>            :       {
+<span class="lineNum">     208 </span>            :       ++new_n_nonzero;
+<span class="lineNum">     209 </span>            :       }
+<span class="lineNum">     210 </span>            :     }
+<span class="lineNum">     211 </span>            :   
+<span class="lineNum">     212 </span>            :   result.mem_resize(new_n_nonzero);
+<span class="lineNum">     213 </span>            :   
+<span class="lineNum">     214 </span>            :   uword cur_pos = 0;
+<span class="lineNum">     215 </span>            :   
+<span class="lineNum">     216 </span>            :   for(uword col=0; col &lt; n_cols; ++col)
+<span class="lineNum">     217 </span>            :   for(uword row=0; row &lt; n_rows; ++row)
+<span class="lineNum">     218 </span>            :     {
+<span class="lineNum">     219 </span>            :     const eT val = pa.at(row,col) / pb.at(row, col);
+<span class="lineNum">     220 </span>            :     
+<span class="lineNum">     221 </span>            :     if(val != eT(0))
+<span class="lineNum">     222 </span>            :       {
+<span class="lineNum">     223 </span>            :       access::rw(result.values[cur_pos]) = val;
+<span class="lineNum">     224 </span>            :       access::rw(result.row_indices[cur_pos]) = row;
+<span class="lineNum">     225 </span>            :       ++access::rw(result.col_ptrs[col + 1]);
+<span class="lineNum">     226 </span>            :       ++cur_pos;
+<span class="lineNum">     227 </span>            :       }
+<span class="lineNum">     228 </span>            :     }
+<span class="lineNum">     229 </span>            :   
+<span class="lineNum">     230 </span>            :   // Fix column pointers
+<span class="lineNum">     231 </span>            :   for(uword col = 1; col &lt;= result.n_cols; ++col)
+<span class="lineNum">     232 </span>            :     {
+<span class="lineNum">     233 </span>            :     access::rw(result.col_ptrs[col]) += result.col_ptrs[col - 1];
+<span class="lineNum">     234 </span>            :     }
+<span class="lineNum">     235 </span>            :   
+<span class="lineNum">     236 </span>            :   return result;
+<span class="lineNum">     237 </span>            :   }
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : //! element-wise division of one dense and one sparse object
+<span class="lineNum">     242 </span>            : template&lt;typename T1, typename T2&gt;
+<span class="lineNum">     243 </span>            : inline
+<span class="lineNum">     244 </span>            : typename
+<span class="lineNum">     245 </span>            : enable_if2
+<span class="lineNum">     246 </span>            :   &lt;
+<span class="lineNum">     247 </span>            :   (is_arma_type&lt;T1&gt;::value &amp;&amp; is_arma_sparse_type&lt;T2&gt;::value &amp;&amp; is_same_type&lt;typename T1::elem_type, typename T2::elem_type&gt;::value),
+<span class="lineNum">     248 </span>            :   Mat&lt;typename T1::elem_type&gt;
+<span class="lineNum">     249 </span>            :   &gt;::result
+<span class="lineNum">     250 </span>            : operator/
+<span class="lineNum">     251 </span>            :   (
+<span class="lineNum">     252 </span>            :   const T1&amp; x,
+<span class="lineNum">     253 </span>            :   const T2&amp; y
+<span class="lineNum">     254 </span>            :   )
+<span class="lineNum">     255 </span>            :   {
+<span class="lineNum">     256 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     257 </span>            :   
+<span class="lineNum">     258 </span>            :   typedef typename T1::elem_type eT;
+<span class="lineNum">     259 </span>            :   
+<span class="lineNum">     260 </span>            :   const   Proxy&lt;T1&gt; pa(x);
+<span class="lineNum">     261 </span>            :   const SpProxy&lt;T2&gt; pb(y);
+<span class="lineNum">     262 </span>            :   
+<span class="lineNum">     263 </span>            :   const uword n_rows = pa.get_n_rows();
+<span class="lineNum">     264 </span>            :   const uword n_cols = pa.get_n_cols();
+<span class="lineNum">     265 </span>            :   
+<span class="lineNum">     266 </span>            :   arma_debug_assert_same_size(n_rows, n_cols, pb.get_n_rows(), pb.get_n_cols(), &quot;element-wise division&quot;);
+<span class="lineNum">     267 </span>            :   
+<span class="lineNum">     268 </span>            :   Mat&lt;eT&gt; result(n_rows, n_cols);
+<span class="lineNum">     269 </span>            :   
+<span class="lineNum">     270 </span>            :   for(uword col=0; col &lt; n_cols; ++col)
+<span class="lineNum">     271 </span>            :   for(uword row=0; row &lt; n_rows; ++row)
+<span class="lineNum">     272 </span>            :     {
+<span class="lineNum">     273 </span>            :     result.at(row, col) = pa.at(row, col) / pb.at(row, col);
+<span class="lineNum">     274 </span>            :     }
+<span class="lineNum">     275 </span>            :   
+<span class="lineNum">     276 </span>            :   return result;
+<span class="lineNum">     277 </span>            :   }
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            : 
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            : template&lt;typename parent, unsigned int mode, typename T2&gt;
+<span class="lineNum">     282 </span>            : arma_inline
+<span class="lineNum">     283 </span>            : Mat&lt;typename parent::elem_type&gt;
+<span class="lineNum">     284 </span>            : operator/
+<span class="lineNum">     285 </span>            :   (
+<span class="lineNum">     286 </span>            :   const subview_each1&lt;parent,mode&gt;&amp;          X,
+<span class="lineNum">     287 </span>            :   const Base&lt;typename parent::elem_type,T2&gt;&amp; Y
+<span class="lineNum">     288 </span>            :   )
+<span class="lineNum">     289 </span>            :   {
+<span class="lineNum">     290 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     291 </span>            :   
+<span class="lineNum">     292 </span>            :   return subview_each1_aux::operator_div(X, Y.get_ref());
+<span class="lineNum">     293 </span>            :   }
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            : 
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            : template&lt;typename T1, typename parent, unsigned int mode&gt;
+<span class="lineNum">     298 </span>            : arma_inline
+<span class="lineNum">     299 </span>            : Mat&lt;typename parent::elem_type&gt;
+<span class="lineNum">     300 </span>            : operator/
+<span class="lineNum">     301 </span>            :   (
+<span class="lineNum">     302 </span>            :   const Base&lt;typename parent::elem_type,T1&gt;&amp; X,
+<span class="lineNum">     303 </span>            :   const subview_each1&lt;parent,mode&gt;&amp;          Y
+<span class="lineNum">     304 </span>            :   )
+<span class="lineNum">     305 </span>            :   {
+<span class="lineNum">     306 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     307 </span>            :   
+<span class="lineNum">     308 </span>            :   return subview_each1_aux::operator_div(X.get_ref(), Y);
+<span class="lineNum">     309 </span>            :   }
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            : 
+<span class="lineNum">     313 </span>            : template&lt;typename parent, unsigned int mode, typename TB, typename T2&gt;
+<span class="lineNum">     314 </span>            : arma_inline
+<span class="lineNum">     315 </span>            : Mat&lt;typename parent::elem_type&gt;
+<span class="lineNum">     316 </span>            : operator/
+<span class="lineNum">     317 </span>            :   (
+<span class="lineNum">     318 </span>            :   const subview_each2&lt;parent,mode,TB&gt;&amp;       X,
+<span class="lineNum">     319 </span>            :   const Base&lt;typename parent::elem_type,T2&gt;&amp; Y
+<span class="lineNum">     320 </span>            :   )
+<span class="lineNum">     321 </span>            :   {
+<span class="lineNum">     322 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     323 </span>            :   
+<span class="lineNum">     324 </span>            :   return subview_each2_aux::operator_div(X, Y.get_ref());
+<span class="lineNum">     325 </span>            :   }
+<span class="lineNum">     326 </span>            : 
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span>            : template&lt;typename T1, typename parent, unsigned int mode, typename TB&gt;
+<span class="lineNum">     330 </span>            : arma_inline
+<span class="lineNum">     331 </span>            : Mat&lt;typename parent::elem_type&gt;
+<span class="lineNum">     332 </span>            : operator/
+<span class="lineNum">     333 </span>            :   (
+<span class="lineNum">     334 </span>            :   const Base&lt;typename parent::elem_type,T1&gt;&amp; X,
+<span class="lineNum">     335 </span>            :   const subview_each2&lt;parent,mode,TB&gt;&amp;       Y
+<span class="lineNum">     336 </span>            :   )
+<span class="lineNum">     337 </span>            :   {
+<span class="lineNum">     338 </span>            :   arma_extra_debug_sigprint();
+<span class="lineNum">     339 </span>            :   
+<span class="lineNum">     340 </span>            :   return subview_each2_aux::operator_div(X.get_ref(), Y);
+<span class="lineNum">     341 </span>            :   }
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

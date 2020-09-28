@@ -1,0 +1,72 @@
+// -*- c++ -*-
+//$Id$
+
+#ifndef __PROPS_T_H__
+#define __PROPS_T_H__
+
+namespace props_t_{
+static const int n_property_bits=256;
+static const int wbits=(sizeof(unsigned int)*8);
+static const int nwords=n_property_bits/wbits+(n_property_bits%wbits?1:0);
+}
+
+using namespace props_t_;
+
+class props_t {
+public:
+  enum swapping_mode {logarithmic, multiplying, 
+		      parallel1, parallel2, parallel3,
+		      /*final:*/n_swapping_modes};
+  static const int accuracy_in_bits[n_swapping_modes];
+  static const int precision_goal_in_bits;
+private:
+  static swapping_mode fastest_mode(double p);
+public:
+  class swapping_probability {
+    // this class is supposed to behave basically like a double, but
+    // knowns also its fastest swapping_mode:
+    double _p;
+    swapping_mode _mode;
+  public:
+    swapping_probability(double pr=0.5):
+      _p(pr),_mode(props_t::fastest_mode(pr)){};
+    operator const double &() const{
+      return _p;
+    }
+    swapping_mode fastest_mode() const {
+      return _mode;
+    }
+  };
+private:
+  static const int nwords;
+  typedef unsigned int bitfield[props_t_::nwords];
+  bitfield word;
+  void swap_a_fraction(const double p_swap, swapping_mode m);
+public:
+  void swap_a_fraction(const swapping_probability & p_swap){
+    swap_a_fraction(p_swap,p_swap.fastest_mode());
+  };
+  props_t(){};
+  double matches_with(props_t & other){
+    int m=0;
+    for(int i=0;i<nwords;i++){
+      unsigned int equals=(word[i]^(other.word[i]))^(-1);
+      for(unsigned int b=
+	    (1<<(i==nwords-1?
+		 (n_property_bits%(8*nwords)+(props_t_::wbits-1))%props_t_::wbits:
+		 (props_t_::wbits-1) ));
+	  b;
+	  b>>=1){
+	if(b&equals) m++;
+      }
+    }
+    return m;
+  }
+  void set_random();
+  static void measure_swapping_methods();
+  static void test_modes();
+};
+
+
+
+#endif // __PROPS_T_H__

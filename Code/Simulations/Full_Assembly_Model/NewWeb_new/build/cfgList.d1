@@ -1,0 +1,5 @@
+cfgList.o cfgList.d1 : cfgList.cc  \
+  cfgList.h parsecfg.h evaluate.h \
+ CLHEP_Evaluator.h  \
+ error.h  \
+ 

@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/ODE.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - ODE.h<span style="font-size: 80%;"> (source / <a href="ODE.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">29</td>
+            <td class="headerCovTableEntryLo">13.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // -*- mode: c++ -*-</a>
+<span class="lineNum">       2 </span>            : // $Id: ODE.h 2464 2016-05-01 13:11:20Z axel $
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            : /// \file: Interface to a stiff ODE solver (here sundials):
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef __ODE_H__
+<span class="lineNum">       7 </span>            : #define __ODE_H__
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">      10 </span>            : #include &lt;nvector/nvector_serial.h&gt;
+<span class="lineNum">      11 </span>            : #include &lt;sundials/sundials_dense.h&gt;
+<span class="lineNum">      12 </span>            : #include &lt;utility&gt;
+<span class="lineNum">      13 </span>            : #include &lt;math.h&gt;
+<span class="lineNum">      14 </span>            : #include &lt;setjmp.h&gt;
+<span class="lineNum">      15 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : /* for default preconditioner: */
+<span class="lineNum">      18 </span>            : #include &lt;cvodes/cvodes_band.h&gt;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : extern int newton_failure; // would ideally be local to each ODE_state
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : // Tests for sundials &lt; 2.4.0
+<span class="lineNum">      23 </span>            : #define SUNDIALS_PRE_2_4_0 (!defined(SUNDIALS_EXPORT))
+<span class="lineNum">      24 </span>            : //#define SUNDIALS_VERSION_2_4
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : /// Encapsulates the vector type of the ODE solver
+<span class="lineNum">      27 </span>            : class  ODE_vector {
+<span class="lineNum">      28 </span>            :   int the_length;
+<span class="lineNum">      29 </span>            :   // this is usually double:
+<span class="lineNum">      30 </span>            :   realtype * the_elements;
+<span class="lineNum">      31 </span>            :   bool the_elements_are_mine;
+<span class="lineNum">      32 </span>            :  public:
+<span class="lineNum">      33 </span>            :   ODE_vector(int length=0);
+<span class="lineNum">      34 </span>            :   ODE_vector(N_Vector vec); // N_Vector is a pointer!
+<span class="lineNum">      35 </span>            :   ODE_vector(realtype * elements,int length); 
+<span class="lineNum">      36 </span>            :   ODE_vector(const ODE_vector &amp; other);
+<span class="lineNum">      37 </span>            :   ~ODE_vector();
+<span class="lineNum">      38 </span>            :   inline double&amp; operator[](int i){
+<span class="lineNum">      39 </span>            :     ASSERT(0 &lt;= i &amp;&amp; i &lt; the_length);
+<span class="lineNum">      40 </span><span class="lineCov">   57750058 :     return the_elements[i];</span>
+<span class="lineNum">      41 </span>            :   }
+<span class="lineNum">      42 </span>            :   inline double&amp; operator[](int i) const{
+<span class="lineNum">      43 </span>            :     ASSERT(0 &lt;= i &amp;&amp; i &lt; the_length);
+<span class="lineNum">      44 </span><span class="lineCov">   31323154 :     return the_elements[i];</span>
+<span class="lineNum">      45 </span>            :   }
+<span class="lineNum">      46 </span>            :   int size() const{
+<span class="lineNum">      47 </span>            :     return the_length;
+<span class="lineNum">      48 </span>            :   }
+<span class="lineNum">      49 </span>            :   void clear();
+<span class="lineNum">      50 </span>            :   // this is only for exeptional use:
+<span class="lineNum">      51 </span>            :   const ODE_vector&amp; operator=(ODE_vector const &amp;other);
+<span class="lineNum">      52 </span>            :   ODE_vector&amp; operator+=(ODE_vector const &amp;other);
+<span class="lineNum">      53 </span>            :   ODE_vector&amp; operator-=(ODE_vector const &amp;other);
+<span class="lineNum">      54 </span>            :   ODE_vector&amp; operator*=(double x); 
+<span class="lineNum">      55 </span>            : };
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : ODE_vector exp(ODE_vector &amp; v);
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : /// Encapsulates the matrix type of the ODE solver
+<span class="lineNum">      60 </span>            : class  ODE_matrix {
+<span class="lineNum">      61 </span>            :   // this is usually double:
+<span class="lineNum">      62 </span>            :   realtype ** the_elements;
+<span class="lineNum">      63 </span>            :   bool the_elements_are_mine;
+<span class="lineNum">      64 </span>            :   int the_length;
+<span class="lineNum">      65 </span>            :  private:
+<span class="lineNum">      66 </span>            :   //this is only for exeptional use:
+<span class="lineNum">      67 </span>            :   const ODE_matrix&amp; operator=(ODE_matrix const &amp;other){
+<span class="lineNum">      68 </span>            :     FATAL_ERROR(&quot;cannot assign ODE_matrixes&quot;);
+<span class="lineNum">      69 </span>            :     return *this;
+<span class="lineNum">      70 </span>            :   }
+<span class="lineNum">      71 </span>            :  public:
+<span class="lineNum">      72 </span>            :   ODE_matrix(int length=0);
+<span class="lineNum">      73 </span>            : #if SUNDIALS_PRE_2_4_0
+<span class="lineNum">      74 </span>            :   ODE_matrix(DenseMat vec);
+<span class="lineNum">      75 </span>            : #else
+<span class="lineNum">      76 </span>            :   ODE_matrix(DlsMat vec);
+<span class="lineNum">      77 </span>            : #endif
+<span class="lineNum">      78 </span>            :   ODE_matrix(const ODE_matrix &amp; other);
+<span class="lineNum">      79 </span>            :   ~ODE_matrix();
+<span class="lineNum">      80 </span>            : /*   double* &amp; operator[](int i) const{ */
+<span class="lineNum">      81 </span>            : /*     return the_elements[i]; */
+<span class="lineNum">      82 </span>            : /*   } */
+<span class="lineNum">      83 </span>            :   double* operator[](int i) const{
+<span class="lineNum">      84 </span>            :     return the_elements[i];
+<span class="lineNum">      85 </span>            :   }
+<span class="lineNum">      86 </span>            :   int size(){
+<span class="lineNum">      87 </span>            :     return the_length;
+<span class="lineNum">      88 </span>            :   }
+<span class="lineNum">      89 </span>            :   void clear();
+<span class="lineNum">      90 </span>            : };
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : /// Abstract base class for describing the system to be simulated.
+<span class="lineNum">      93 </span>            : class ODE_dynamical_object 
+<span class="lineNum">      94 </span>            : {
+<span class="lineNum">      95 </span>            :  public:
+<span class="lineNum">      96 </span>            :   virtual int dynamics(ODE_vector const &amp; state, 
+<span class="lineNum">      97 </span>            :                        ODE_vector &amp; time_derivative)=0;
+<span class="lineNum">      98 </span>            :   virtual int Jacobian(ODE_vector const &amp; state,
+<span class="lineNum">      99 </span>            :                        ODE_vector const &amp; dynamics,
+<span class="lineNum">     100 </span>            :                        ODE_matrix &amp; jac);
+<span class="lineNum">     101 </span>            :   virtual void JTimes(ODE_vector const &amp; state,
+<span class="lineNum">     102 </span>            :                       ODE_vector const &amp; in,
+<span class="lineNum">     103 </span>            :                       ODE_vector &amp; out);
+<span class="lineNum">     104 </span>            :   virtual void precondition(ODE_vector const &amp; state,
+<span class="lineNum">     105 </span>            :                             ODE_vector const &amp; in,
+<span class="lineNum">     106 </span>            :                             ODE_vector &amp; out,
+<a name="107"><span class="lineNum">     107 </span>            :                             realtype gamma,</a>
+<a name="108"><span class="lineNum">     108 </span>            :                             bool left_rather_than_right);</a>
+<a name="109"><span class="lineNum">     109 </span><span class="lineNoCov">          0 :   virtual bool can_calculate_Jacobian(){return false;};</span></a>
+<a name="110"><span class="lineNum">     110 </span><span class="lineNoCov">          0 :   virtual bool has_preconditioner(){return false;};</span></a>
+<span class="lineNum">     111 </span><span class="lineNoCov">          0 :   virtual bool has_inherent_rates(){return false;};</span>
+<span class="lineNum">     112 </span><span class="lineNoCov">          0 :   virtual void get_inherent_rates(ODE_vector &amp; rates){};//hook</span>
+<span class="lineNum">     113 </span>            :   virtual void write_state_to(ODE_vector &amp; state) const=0;
+<span class="lineNum">     114 </span>            :   virtual void read_state_from(const ODE_vector &amp; state)=0;
+<a name="115"><span class="lineNum">     115 </span>            :   virtual int number_of_variables() const =0;</a>
+<a name="116"><span class="lineNum">     116 </span>            :   virtual void line_print(ODE_vector const &amp; state,std::ostream &amp;co);</a>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :   virtual void prepare_for_integration(){};  //hook</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :   virtual void cleanup_after_integration(){}; //hook</span>
+<span class="lineNum">     119 </span>            :   template&lt;typename MATRIX&gt; int  
+<span class="lineNum">     120 </span>            :   numerical_Jacobian(MATRIX &amp; Jac,double dx=sqrt(DBL_EPSILON));
+<span class="lineNum">     121 </span>            :   void test_Jacobian();
+<span class="lineNum">     122 </span>            :   double current_time; //set dynamically
+<span class="lineNum">     123 </span>            :   double the_start_time; //set indirectly via ODE_state
+<span class="lineNum">     124 </span><span class="lineCov">         90 :   ODE_dynamical_object():current_time(0){};</span>
+<span class="lineNum">     125 </span>            :   sigjmp_buf the_sigjmp_buf; // This is for &quot;setjmp / longjump&quot; trickery.
+<span class="lineNum">     126 </span>            : };
+<a name="127"><span class="lineNum">     127 </span>            : </a>
+<span class="lineNum">     128 </span>            : template&lt;typename MATRIX&gt;
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 : int ODE_dynamical_object::</span>
+<span class="lineNum">     130 </span>            : numerical_Jacobian(MATRIX &amp; Jac,double dx){
+<span class="lineNum">     131 </span>            :   // use a central differences scheme
+<span class="lineNum">     132 </span><span class="lineNoCov">          0 :   const double norm=1/(2*dx);</span>
+<span class="lineNum">     133 </span><span class="lineNoCov">          0 :   const int n=number_of_variables();</span>
+<span class="lineNum">     134 </span><span class="lineNoCov">          0 :   ODE_vector state(n);</span>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :   write_state_to(state);</span>
+<span class="lineNum">     136 </span>            :   
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :   prepare_for_integration();</span>
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :   ODE_vector state1(n),time_derivative1(n);</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :   ODE_vector time_derivative2(n);</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :   state1=state;</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :   for(int i=n;i--&gt;0;){</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :     state1[i]=state[i]+dx;</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :     dynamics(state1,time_derivative1);</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :     state1[i]=state[i]-dx;</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :     dynamics(state1,time_derivative2);</span>
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :     state1[i]=state[i];</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     for(int k=n;k--&gt;0;){</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :       Jac[k][i]=(time_derivative1[k]-time_derivative2[k])*norm;</span>
+<span class="lineNum">     149 </span>            :     }
+<span class="lineNum">     150 </span>            :   }
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :   cleanup_after_integration();</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :   return 1;</span>
+<span class="lineNum">     154 </span>            : }
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : /// Encapsulates the ODE solver state and operations on it.
+<span class="lineNum">     157 </span>            : /** The constructor takes an ODE_dynamical_object as argument.  While
+<span class="lineNum">     158 </span>            :     the ODE_state exists, it &quot;owns&quot; this ODE_dynamical_object, keeping
+<span class="lineNum">     159 </span>            :     the values of the dependent variables in an ODE_vector.  At the
+<span class="lineNum">     160 </span>            :     moment where the ODE_state is destroyed, these dependent variables
+<span class="lineNum">     161 </span>            :     are written back to the ODE_dynamical_object, which can then be
+<span class="lineNum">     162 </span>            :     analyzed for the structure of the final state.*/
+<span class="lineNum">     163 </span>            : class ODE_state : public ODE_vector{
+<span class="lineNum">     164 </span>            :   static realtype dummy_real;
+<span class="lineNum">     165 </span>            :   realtype the_time_since_start;
+<span class="lineNum">     166 </span>            :   realtype &amp; the_start_time;
+<span class="lineNum">     167 </span>            :   realtype reltol;
+<span class="lineNum">     168 </span>            :   void *cvode_mem;
+<span class="lineNum">     169 </span>            :   N_Vector y;
+<span class="lineNum">     170 </span>            : #if SUNDIALS_PRE_2_4_0
+<span class="lineNum">     171 </span>            :   N_Vector abstol;
+<span class="lineNum">     172 </span>            : #else
+<span class="lineNum">     173 </span>            :   realtype abstol;
+<span class="lineNum">     174 </span>            : #endif
+<span class="lineNum">     175 </span>            :   //  M_Env machEnv;
+<span class="lineNum">     176 </span>            :   typedef enum {DENSE,DIAG,CVSPGMR} linear_solver_t;
+<span class="lineNum">     177 </span>            :   linear_solver_t linear_solver;
+<span class="lineNum">     178 </span>            :   void * bp_data;
+<span class="lineNum">     179 </span>            :  public:
+<span class="lineNum">     180 </span>            :   ODE_matrix Jacobian_memory;
+<span class="lineNum">     181 </span>            :   ODE_dynamical_object * the_dynamics;
+<span class="lineNum">     182 </span>            :  private:
+<span class="lineNum">     183 </span>            :   ODE_state():the_start_time(dummy_real){FATAL_ERROR(&quot;cannot use default constructor&quot;);};
+<span class="lineNum">     184 </span>            :   ODE_state(const ODE_state &amp; other):the_start_time(dummy_real){FATAL_ERROR(&quot;cannot use copy constructor&quot;);};
+<span class="lineNum">     185 </span>            :  public:
+<span class="lineNum">     186 </span>            :   ODE_state(ODE_dynamical_object * object);
+<span class="lineNum">     187 </span>            :   ~ODE_state();
+<span class="lineNum">     188 </span>            :   int integrate_until(realtype target_time);
+<span class="lineNum">     189 </span>            :   int integrate_one_step(realtype target_time);
+<span class="lineNum">     190 </span>            :   int current_time_derivative(ODE_vector &amp; ddt);
+<span class="lineNum">     191 </span>            :   int Yoshida_step(double dt);
+<span class="lineNum">     192 </span>            :   void diagnosis(std::ostream &amp;co=std::cout);
+<span class="lineNum">     193 </span>            :   void short_diagnosis(std::ostream &amp;co=std::cout);
+<span class="lineNum">     194 </span>            :   realtype redo_with_shorter_step_size(); // returns t from where we restart;
+<span class="lineNum">     195 </span>            :   void restart(double t_start); // re-initialize integrator
+<span class="lineNum">     196 </span>            :   realtype time_since_start(){return the_time_since_start;}
+<span class="lineNum">     197 </span><span class="lineCov">        161 :   realtype start_time(){return the_start_time;}</span>
+<span class="lineNum">     198 </span>            : private:
+<span class="lineNum">     199 </span>            :   void prepare_integrator();
+<span class="lineNum">     200 </span>            :   void release_integrator();
+<span class="lineNum">     201 </span>            : };
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            : /// Encapsulates a nonlinear equation solver for finding fixed points of ODEs.
+<span class="lineNum">     204 </span>            : /** The constructor takes an ODE_dynamical_object as argument.  While
+<span class="lineNum">     205 </span>            :     the fixed_point_analyzer exists, it &quot;owns&quot; this
+<span class="lineNum">     206 </span>            :     ODE_dynamical_object, keeping the values of the dependent
+<span class="lineNum">     207 </span>            :     variables in an ODE_vector.  At the moment where the
+<span class="lineNum">     208 </span>            :     fixed_point_analyzer is destroyed, these dependent variables are
+<span class="lineNum">     209 </span>            :     written back to the ODE_dynamical_object, which can then be
+<span class="lineNum">     210 </span>            :     analyzed for the structure of the final state.  The class can be
+<span class="lineNum">     211 </span>            :     extended to do more analyses of the fixed point. */
+<span class="lineNum">     212 </span>            : class fixed_point_analyzer : public ODE_vector{
+<span class="lineNum">     213 </span>            :   static realtype dummy_real;
+<span class="lineNum">     214 </span>            : //   realtype ftol;
+<span class="lineNum">     215 </span>            : //   realtype steptol;
+<span class="lineNum">     216 </span>            :   void *kin_mem;
+<span class="lineNum">     217 </span>            :   N_Vector scaling_vector_D_u;
+<span class="lineNum">     218 </span>            :   N_Vector scaling_vector_D_F;
+<span class="lineNum">     219 </span>            :   N_Vector tmpl; // template vector, needed by KINMalloc
+<span class="lineNum">     220 </span>            :   N_Vector u; 
+<span class="lineNum">     221 </span>            :   N_Vector constraints;
+<span class="lineNum">     222 </span>            :   typedef enum {DENSE,SPGMR,SPBCG,SPTFQMR} linear_solver_t;
+<span class="lineNum">     223 </span>            :   linear_solver_t linear_solver;
+<span class="lineNum">     224 </span>            :   ODE_vector lower_bound;
+<span class="lineNum">     225 </span>            :   double lower_bound_shift;
+<span class="lineNum">     226 </span>            : public:
+<span class="lineNum">     227 </span>            :   ODE_matrix Jacobian_memory;
+<span class="lineNum">     228 </span>            :   ODE_dynamical_object * the_dynamics;
+<span class="lineNum">     229 </span>            :   typedef std::pair&lt;ODE_dynamical_object *,ODE_vector *&gt; user_data_t;
+<span class="lineNum">     230 </span>            : private:
+<span class="lineNum">     231 </span>            :   user_data_t user_data;
+<span class="lineNum">     232 </span>            :   fixed_point_analyzer(){FATAL_ERROR(&quot;cannot use default constructor&quot;);};
+<span class="lineNum">     233 </span>            :   fixed_point_analyzer(const fixed_point_analyzer &amp; other){FATAL_ERROR(&quot;cannot use copy constructor&quot;);};
+<span class="lineNum">     234 </span>            :  public:
+<span class="lineNum">     235 </span>            :   fixed_point_analyzer(ODE_dynamical_object * object, 
+<span class="lineNum">     236 </span>            :                        double lower_bound_shift_request=-5.0*log(10.0));
+<span class="lineNum">     237 </span>            :   ~fixed_point_analyzer();
+<span class="lineNum">     238 </span>            :   void set_time_scale_to(double dt);
+<span class="lineNum">     239 </span>            :   int snap_to_fixed_point();
+<span class="lineNum">     240 </span>            : //   void diagnosis(std::ostream &amp;co=std::cout);
+<span class="lineNum">     241 </span>            : //   void short_diagnosis(std::ostream &amp;co=std::cout);
+<span class="lineNum">     242 </span>            : private:
+<span class="lineNum">     243 </span>            :   void prepare_solver();
+<span class="lineNum">     244 </span>            :   void release_solver();
+<span class="lineNum">     245 </span>            : public:
+<span class="lineNum">     246 </span>            :   class failure {};
+<span class="lineNum">     247 </span>            :   static const int F_IS_NAN;
+<span class="lineNum">     248 </span>            : };
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            : #include &lt;iosfwd&gt;
+<span class="lineNum">     251 </span>            : std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, const ODE_state &amp; av);
+<span class="lineNum">     252 </span>            : std::ostream &amp; operator&lt;&lt;(std::ostream &amp;stream, const ODE_vector &amp; vector);
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            : #endif // __ODE_H__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

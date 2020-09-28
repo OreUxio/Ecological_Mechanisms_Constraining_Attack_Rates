@@ -1,0 +1,1668 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/pqtree.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - pqtree.h<span style="font-size: 80%;"> (source / <a href="pqtree.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">628</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // $Id: pqtree.h 1013 2007-10-08 17:56:50Z cvsrep $</a>
+<span class="lineNum">       2 </span>            : /***************************************************************************
+<span class="lineNum">       3 </span>            :  *   Copyright (C) 2004 by Virginia Tech                                   *
+<span class="lineNum">       4 </span>            :  *   ggrothau@vt.edu                                                       *
+<span class="lineNum">       5 </span>            :  *                                                                         *
+<span class="lineNum">       6 </span>            :  *   This program is free software; you can redistribute it and/or modify  *
+<span class="lineNum">       7 </span>            :  *   it under the terms of the GNU General Public License as published by  *
+<span class="lineNum">       8 </span>            :  *   the Free Software Foundation; either version 2 of the License, or     *
+<span class="lineNum">       9 </span>            :  *   (at your option) any later version.                                   *
+<span class="lineNum">      10 </span>            :  *                                                                         *
+<span class="lineNum">      11 </span>            :  *   This program is distributed in the hope that it will be useful,       *
+<span class="lineNum">      12 </span>            :  *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+<span class="lineNum">      13 </span>            :  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+<span class="lineNum">      14 </span>            :  *   GNU General Public License for more details.                          *
+<span class="lineNum">      15 </span>            :  *                                                                         *
+<span class="lineNum">      16 </span>            :  *   You should have received a copy of the GNU General Public License     *
+<span class="lineNum">      17 </span>            :  *   along with this program; if not, write to the                         *
+<span class="lineNum">      18 </span>            :  *   Free Software Foundation, Inc.,                                       *
+<span class="lineNum">      19 </span>            :  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+<span class="lineNum">      20 </span>            :  ***************************************************************************/
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : /**
+<span class="lineNum">      23 </span>            : PQ-Tree class based on the paper entitled &quot;Testing for the Consecutive Onces Property, Interval Graphs, and Graph Planarity Using PQ-Tree Algorithms&quot; by Kellog S. Booth and George S. Lueker in the Journal of Computer and System Sciences 13, 335-379 (1976)
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : @author Virginia Tech
+<span class="lineNum">      26 </span>            : */
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include&lt;list&gt;
+<span class="lineNum">      29 </span>            : #include&lt;set&gt;
+<span class="lineNum">      30 </span>            : #include&lt;vector&gt;
+<span class="lineNum">      31 </span>            : #include&lt;queue&gt;
+<span class="lineNum">      32 </span>            : #include&lt;map&gt;
+<span class="lineNum">      33 </span>            : #include &quot;pqnode.h&quot;
+<span class="lineNum">      34 </span>            : #include &quot;setTemplates.h&quot;
+<span class="lineNum">      35 </span>            : using namespace std;
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : #ifndef PQTREE_H
+<span class="lineNum">      38 </span>            : #define PQTREE_H
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : //variable to initiate debugging output
+<span class="lineNum">      41 </span>            : //simply leave this false
+<span class="lineNum">      42 </span>            : bool debugOut=false;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : template &lt;class T&gt; class pqtree
+<span class="lineNum">      45 </span>            : {
+<span class="lineNum">      46 </span>            :         private:
+<span class="lineNum">      47 </span>            :         
+<span class="lineNum">      48 </span>            :         
+<span class="lineNum">      49 </span>            :         
+<span class="lineNum">      50 </span>            :         //the root node of the pqtree
+<span class="lineNum">      51 </span>            :         pqnode&lt;T&gt; *root;
+<span class="lineNum">      52 </span>            :         
+<span class="lineNum">      53 </span>            :         //The number of blocks of blocked nodes during the 1st pass
+<span class="lineNum">      54 </span>            :         int block_count;
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            :         //The number of blocked nodes during the 1st pass
+<span class="lineNum">      57 </span>            :         int blocked_nodes;
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :         //A variable (0 or 1) which is a count of the number of virtual nodes which are
+<span class="lineNum">      60 </span>            :         //imagined to be in the queue during the bubbling up
+<span class="lineNum">      61 </span>            :         int off_the_top;
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            :         //keeps track of all reductions performed on this tree in order
+<span class="lineNum">      64 </span>            :         list&lt;set&lt;T&gt; &gt; reductions;
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            :         //keeps a pointer to the leaf containing T
+<span class="lineNum">      67 </span>            :         //this map actually increases the time complexity of the algorithm
+<span class="lineNum">      68 </span>            :         //to fix, you can create an array of items so that each item hashes
+<span class="lineNum">      69 </span>            :         //to its leaf address in constant time, but this is a tradeoff to
+<span class="lineNum">      70 </span>            :         //conserve space
+<span class="lineNum">      71 </span>            :         map&lt;T,pqnode&lt;T&gt;*&gt; leafAddress;
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :         //a reference to a pseudonode that cannot be reached through the root
+<span class="lineNum">      74 </span>            :         //of the tree.  The pseudonode is a temporary node designed to handle
+<span class="lineNum">      75 </span>            :         //a special case in the first bubbling up pass
+<span class="lineNum">      76 </span>            :         //it only exists during the scope of the reduce operation
+<span class="lineNum">      77 </span>            :         pqnode&lt;T&gt;* pseudonode;
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :         //true if a non-safe reduce has failed, tree is useless
+<span class="lineNum">      80 </span>            :         bool invalid;
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :         //loops through the consecutive blocked siblings of an unblocked 
+<span class="lineNum">      83 </span>            :         //node recursively unblocking the siblings
+<span class="lineNum">      84 </span>            :         int unblockSiblings(pqnode&lt;T&gt;* X,pqnode&lt;T&gt;* parent,pqnode&lt;T&gt;* last);
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            :         /* 
+<span class="lineNum">      87 </span>            :          * all the different templates for matching a reduce
+<span class="lineNum">      88 </span>            :          * are below.  The template has a letter describing
+<span class="lineNum">      89 </span>            :          * which type of node it refers to and a number
+<span class="lineNum">      90 </span>            :          * /indicating the index of the template for that letter
+<span class="lineNum">      91 </span>            :          * These are the same indeces in the Booth &amp; Lueker paper
+<span class="lineNum">      92 </span>            :          * The return value indicates whether or not the pattern
+<span class="lineNum">      93 </span>            :          * accurately matches the template
+<span class="lineNum">      94 </span>            :          */
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            :         bool template_L1(pqnode&lt;T&gt;*);
+<span class="lineNum">      97 </span>            :         bool template_Q1(pqnode&lt;T&gt;*,bool);
+<span class="lineNum">      98 </span>            :         bool template_Q2(pqnode&lt;T&gt;*,bool);
+<span class="lineNum">      99 </span>            :         bool template_Q3(pqnode&lt;T&gt;*);
+<span class="lineNum">     100 </span>            :         bool template_P1(pqnode&lt;T&gt;*,bool);
+<span class="lineNum">     101 </span>            :         bool template_P2(pqnode&lt;T&gt;*);
+<span class="lineNum">     102 </span>            :         bool template_P3(pqnode&lt;T&gt;*);
+<span class="lineNum">     103 </span>            :         bool template_P4(pqnode&lt;T&gt;*);
+<span class="lineNum">     104 </span>            :         bool template_P5(pqnode&lt;T&gt;*);
+<span class="lineNum">     105 </span>            :         bool template_P6(pqnode&lt;T&gt;*);
+<span class="lineNum">     106 </span>            :         
+<span class="lineNum">     107 </span>            :         //This procedure is the first pass of the Booth&amp;Leuker PQTree algorithm
+<span class="lineNum">     108 </span>            :         //It processes the pertinent subtree of the PQ-Tree to determine the mark
+<span class="lineNum">     109 </span>            :         //of every node in that subtree
+<span class="lineNum">     110 </span>            :         //the pseudonode, if created, is returned so that it can be deleted at
+<span class="lineNum">     111 </span>            :         //the end of the reduce step
+<span class="lineNum">     112 </span>            :         bool bubble(set&lt;T&gt; S);
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            :         bool reduceStep(set&lt;T&gt; S);
+<span class="lineNum">     115 </span>            :                                 
+<span class="lineNum">     116 </span>            :         public: 
+<span class="lineNum">     117 </span>            :         
+<span class="lineNum">     118 </span>            :         //copy constructor
+<span class="lineNum">     119 </span>            :         pqtree&lt;T&gt;(const pqtree&lt;T&gt;&amp; toCopy);
+<span class="lineNum">     120 </span>            :         //default constructor - constructs a tree using a set
+<span class="lineNum">     121 </span>            :         //only reductions using elements of that set will succeed
+<span class="lineNum">     122 </span>            :         pqtree(set&lt;T&gt; S);
+<span class="lineNum">     123 </span>            :         
+<span class="lineNum">     124 </span>            :         //default destructor
+<span class="lineNum">     125 </span>            :         ~pqtree();
+<span class="lineNum">     126 </span>            :  
+<span class="lineNum">     127 </span>            :         //assignment operator
+<span class="lineNum">     128 </span>            :         const pqtree&lt;T&gt;&amp; operator=(const pqtree&amp; toCopy); 
+<span class="lineNum">     129 </span>            :         
+<span class="lineNum">     130 </span>            :         //mostly for debugging purposes, prints the tree to standard out
+<span class="lineNum">     131 </span>            :         void print();
+<span class="lineNum">     132 </span>            :         
+<span class="lineNum">     133 </span>            :         //cleans up pointer mess caused by having a pseudonode
+<span class="lineNum">     134 </span>            :         void cleanPseudo();
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            :         //reduces the tree but protects if from becoming invalid
+<span class="lineNum">     137 </span>            :         //if the reduction fails, takes more time
+<span class="lineNum">     138 </span>            :         bool safeReduce(set&lt;T&gt;);
+<span class="lineNum">     139 </span>            :         bool safeReduceAll(list&lt;set&lt;T&gt; &gt;);
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :         //reduces the tree - tree can become invalid, making all further
+<span class="lineNum">     142 </span>            :         //reductions fail
+<span class="lineNum">     143 </span>            :         bool reduce(set&lt;T&gt; S);
+<span class="lineNum">     144 </span>            :         bool reduceAll(list&lt;set&lt;T&gt; &gt; L);
+<span class="lineNum">     145 </span>            :         
+<span class="lineNum">     146 </span>            :         //returns 1 possible frontier, or ordering preserving the reductions
+<span class="lineNum">     147 </span>            :         list&lt;T&gt; frontier();
+<span class="lineNum">     148 </span>            :         
+<span class="lineNum">     149 </span>            :         //returns a frontier not including leaves that were not a part of any
+<span class="lineNum">     150 </span>            :         //reduction
+<span class="lineNum">     151 </span>            :         list&lt;T&gt; reducedFrontier();
+<span class="lineNum">     152 </span>            :         
+<span class="lineNum">     153 </span>            :         //returns the reductions that have been performed on this tree
+<span class="lineNum">     154 </span>            :         list&lt;set&lt;T&gt; &gt; getReductions();
+<span class="lineNum">     155 </span>            :         
+<span class="lineNum">     156 </span>            :         //returns the set of all elements on which a reduction was performed with
+<span class="lineNum">     157 </span>            :         set&lt;T&gt; getContained();
+<span class="lineNum">     158 </span>            : };
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span>            : #endif
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : //copy constructor
+<span class="lineNum">     163 </span>            : template &lt;class T&gt;
+<span class="lineNum">     164 </span>            : pqtree&lt;T&gt;::pqtree(const pqtree&lt;T&gt;&amp; toCopy)
+<span class="lineNum">     165 </span>            : {
+<span class="lineNum">     166 </span>            :         root=new pqnode&lt;T&gt;(*(toCopy.root));
+<span class="lineNum">     167 </span>            :         block_count=toCopy.block_count;
+<span class="lineNum">     168 </span>            :         blocked_nodes=toCopy.blocked_nodes;
+<span class="lineNum">     169 </span>            :         off_the_top=toCopy.off_the_top;
+<span class="lineNum">     170 </span>            :         invalid=toCopy.invalid;
+<span class="lineNum">     171 </span>            :         reductions=toCopy.reductions;
+<span class="lineNum">     172 </span>            :         pseudonode=NULL;
+<span class="lineNum">     173 </span>            :         leafAddress.clear();
+<span class="lineNum">     174 </span>            :         root-&gt;findLeaves(leafAddress);       
+<span class="lineNum">     175 </span>            : }
+<span class="lineNum">     176 </span>            :         
+<span class="lineNum">     177 </span>            : //assignment operator
+<span class="lineNum">     178 </span>            : template &lt;class T&gt;
+<span class="lineNum">     179 </span>            : const pqtree&lt;T&gt;&amp; pqtree&lt;T&gt;::operator=(const pqtree&amp; toCopy)
+<span class="lineNum">     180 </span>            : {
+<span class="lineNum">     181 </span>            :         //make sure we aren't copying ourself
+<span class="lineNum">     182 </span>            :         if(*toCopy==this)
+<span class="lineNum">     183 </span>            :                 return *this;
+<span class="lineNum">     184 </span>            :         
+<span class="lineNum">     185 </span>            :         root=new pqnode&lt;T&gt;(*(toCopy.root));
+<span class="lineNum">     186 </span>            :         block_count=toCopy.block_count;
+<span class="lineNum">     187 </span>            :         blocked_nodes=toCopy.blocked_nodes;
+<span class="lineNum">     188 </span>            :         off_the_top=toCopy.off_the_top;
+<span class="lineNum">     189 </span>            :         reductions=toCopy.reductions;
+<span class="lineNum">     190 </span>            :         leafAddress.clear();
+<span class="lineNum">     191 </span>            :         root-&gt;findLeaves(leafAddress);       
+<span class="lineNum">     192 </span>            :         
+<span class="lineNum">     193 </span>            :         return this;
+<span class="lineNum">     194 </span>            : }
+<span class="lineNum">     195 </span>            :         
+<span class="lineNum">     196 </span>            : //loops through the consecutive blocked siblings of an unblocked 
+<a name="197"><span class="lineNum">     197 </span>            : //node recursively unblocking the siblings</a>
+<span class="lineNum">     198 </span>            : template &lt;class T&gt;
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 : int pqtree&lt;T&gt;::unblockSiblings(pqnode&lt;T&gt;* X,pqnode&lt;T&gt;* parent,pqnode&lt;T&gt;* last)</span>
+<span class="lineNum">     200 </span>            : {
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :         int unblockedcnt=0;</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :         if(X-&gt;mark==blocked)</span>
+<span class="lineNum">     203 </span>            :         {
+<span class="lineNum">     204 </span>            :                 //unblock the current sibling
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :                 unblockedcnt++;</span>
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 :                 X-&gt;mark=unblocked;</span>
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span><span class="lineNoCov">          0 :                 X-&gt;parent=parent;</span>
+<span class="lineNum">     209 </span><span class="lineNoCov">          0 :                 X-&gt;check_parent();</span>
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            :                 //unblock adjacent siblings recursively
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;immediate_siblings.begin();i!=X-&gt;immediate_siblings.end();i++)</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :                         if(*i!=last)</span>
+<span class="lineNum">     214 </span><span class="lineNoCov">          0 :                                 unblockedcnt+=unblockSiblings(*i,parent,X);</span>
+<span class="lineNum">     215 </span>            :         }
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :         return unblockedcnt;</span>
+<span class="lineNum">     217 </span>            : }
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            : //all the different templates for matching a reduce
+<span class="lineNum">     220 </span>            : //are below.  The template has a letter describing
+<span class="lineNum">     221 </span>            : //which type of node it refers to and a number
+<span class="lineNum">     222 </span>            : //indicating the index of the template for that letter
+<span class="lineNum">     223 </span>            : //These are the same indeces in the Booth &amp; Lueker paper
+<a name="224"><span class="lineNum">     224 </span>            : </a>
+<span class="lineNum">     225 </span>            : template &lt;class T&gt;
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_L1(pqnode&lt;T&gt;* X)</span>
+<span class="lineNum">     227 </span>            : {
+<span class="lineNum">     228 </span>            :         //check against the pattern
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=leaf)</span>
+<span class="lineNum">     230 </span>            :                 return false;
+<span class="lineNum">     231 </span>            :         
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;L1 is running&quot;&lt;&lt;endl;      </span>
+<span class="lineNum">     234 </span>            :         
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :         X-&gt;label=full;</span>
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :         if(X-&gt;parent!=NULL)</span>
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :                 X-&gt;parent-&gt;full_children.insert(X);</span>
+<span class="lineNum">     238 </span>            :         
+<span class="lineNum">     239 </span>            :         return true;
+<a name="240"><span class="lineNum">     240 </span>            : }</a>
+<span class="lineNum">     241 </span>            : template &lt;class T&gt;
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_Q1(pqnode&lt;T&gt;* X,bool isRoot)</span>
+<span class="lineNum">     243 </span>            : {       
+<span class="lineNum">     244 </span>            :         //check against pattern
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=qnode)</span>
+<span class="lineNum">     246 </span>            :                 return false;
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span>            :         //find an endmost child
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* cur=X-&gt;endmost_children[0];</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* last=NULL;     </span>
+<span class="lineNum">     251 </span>            :         //walk the pattern to find any empty/partial children
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :         while(cur!=NULL)</span>
+<span class="lineNum">     253 </span>            :         {
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :                 if(cur-&gt;label!=full)</span>
+<span class="lineNum">     255 </span>            :                         return false;
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* next=cur-&gt;qNextChild(last);</span>
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :                 last=cur;</span>
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :                 cur=next;</span>
+<span class="lineNum">     259 </span>            :         }
+<span class="lineNum">     260 </span>            :         
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;Q1 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     263 </span>            :         
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :         X-&gt;label=full;               </span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :         X-&gt;check_parent();</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :         if(X-&gt;parent!=NULL &amp;&amp; !isRoot)</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 :                 X-&gt;parent-&gt;full_children.insert(X);</span>
+<span class="lineNum">     268 </span>            :         return true;
+<span class="lineNum">     269 </span>            : }
+<a name="270"><span class="lineNum">     270 </span>            :         </a>
+<span class="lineNum">     271 </span>            : template &lt;class T&gt;
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_Q2(pqnode&lt;T&gt;* X,bool isRoot)</span>
+<span class="lineNum">     273 </span>            : {
+<span class="lineNum">     274 </span>            :         //check against the pattern
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=qnode)</span>
+<span class="lineNum">     276 </span>            :                 return false;
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :         if(X-&gt;pseudonode)</span>
+<span class="lineNum">     278 </span>            :                 return false;
+<span class="lineNum">     279 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()&gt;1)</span>
+<span class="lineNum">     280 </span>            :                 return false;
+<span class="lineNum">     281 </span>            :                 
+<span class="lineNum">     282 </span><span class="lineNoCov">          0 :         if(X-&gt;full_children.size()&gt;0)</span>
+<span class="lineNum">     283 </span>            :         {
+<span class="lineNum">     284 </span>            :                 int numfullside=0;
+<span class="lineNum">     285 </span>            :                 pqnode&lt;T&gt;* Y;
+<span class="lineNum">     286 </span>            :                 pqnode&lt;T&gt;* last=NULL;
+<span class="lineNum">     287 </span>            :                 //let Y be the unique element in X's endmost_children that is full
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :                 for(int i=0;i&lt;2;i++)</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :                         if(X-&gt;endmost_children[i]-&gt;label==full)</span>
+<span class="lineNum">     290 </span>            :                         {
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :                                 Y=X-&gt;endmost_children[i];</span>
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 :                                 numfullside++;</span>
+<span class="lineNum">     293 </span>            :                         }
+<span class="lineNum">     294 </span>            :                 //if there are two full endmost_children, our pattern does not match
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :                 if(numfullside!=1)</span>
+<span class="lineNum">     296 </span>            :                         return false;
+<span class="lineNum">     297 </span>            :         
+<span class="lineNum">     298 </span>            :                 //check that all the full children are consecutive and next to
+<span class="lineNum">     299 </span>            :                 //the partial child
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :                 for(int i=0;i&lt;X-&gt;full_children.size();i++)</span>
+<span class="lineNum">     301 </span>            :                 {
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :                         if(Y-&gt;label!=full)</span>
+<span class="lineNum">     303 </span>            :                                 return false;
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :                         pqnode&lt;T&gt;* next=Y-&gt;qNextChild(last);</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :                         last=Y;</span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :                         Y=next;</span>
+<span class="lineNum">     307 </span>            :                 }
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :                 if(Y-&gt;label!=partial &amp;&amp; X-&gt;partial_children.size()==1)</span>
+<span class="lineNum">     309 </span>            :                         return false;
+<span class="lineNum">     310 </span>            :         }
+<span class="lineNum">     311 </span>            :         else
+<span class="lineNum">     312 </span>            :         {
+<span class="lineNum">     313 </span>            :                 //or that the partial child is on the side
+<span class="lineNum">     314 </span>            :                 int numpartialside=0;
+<span class="lineNum">     315 </span><span class="lineNoCov">          0 :                 for(int i=0;i&lt;2;i++)</span>
+<span class="lineNum">     316 </span><span class="lineNoCov">          0 :                         if(X-&gt;endmost_children[i]-&gt;label==partial)</span>
+<span class="lineNum">     317 </span><span class="lineNoCov">          0 :                                         numpartialside++;</span>
+<span class="lineNum">     318 </span><span class="lineNoCov">          0 :                 if(numpartialside==0)</span>
+<span class="lineNum">     319 </span>            :                         return false;
+<span class="lineNum">     320 </span>            :         }
+<span class="lineNum">     321 </span>            :         
+<span class="lineNum">     322 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;Q2 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     324 </span>            : 
+<span class="lineNum">     325 </span>            :         //if there are no partial children, we are already done
+<span class="lineNum">     326 </span>            :         //otherwise, we need to merge the partial child into X
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()&gt;0)</span>
+<span class="lineNum">     328 </span>            :         {
+<span class="lineNum">     329 </span>            :                 //let Y be the unique partial child of X
+<span class="lineNum">     330 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* Y = *(X-&gt;partial_children.begin());</span>
+<span class="lineNum">     331 </span>            :                 //let FC be the unique endmost full child of Y
+<span class="lineNum">     332 </span>            :                 pqnode&lt;T&gt;* FC;
+<span class="lineNum">     333 </span>            :                 //let EC be the unique endmost empty child of Y
+<span class="lineNum">     334 </span>            :                 pqnode&lt;T&gt;* EC;
+<span class="lineNum">     335 </span>            :                 //find EC and FC
+<span class="lineNum">     336 </span><span class="lineNoCov">          0 :                 for(int i=0;i&lt;2;i++)</span>
+<span class="lineNum">     337 </span>            :                 {
+<span class="lineNum">     338 </span><span class="lineNoCov">          0 :                         if(Y-&gt;endmost_children[i]-&gt;label==full)   </span>
+<span class="lineNum">     339 </span><span class="lineNoCov">          0 :                                 FC=Y-&gt;endmost_children[i];</span>
+<span class="lineNum">     340 </span><span class="lineNoCov">          0 :                         if(Y-&gt;endmost_children[i]-&gt;label==empty)  </span>
+<span class="lineNum">     341 </span><span class="lineNoCov">          0 :                                 EC=Y-&gt;endmost_children[i];</span>
+<span class="lineNum">     342 </span>            :                 }
+<span class="lineNum">     343 </span>            :                 
+<span class="lineNum">     344 </span>            :                 //let FS be Y's full immediate sibling if Y has one
+<span class="lineNum">     345 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* FS = NULL;</span>
+<span class="lineNum">     346 </span>            :                 //let ES be Y's empty immediate sibling if Y has one
+<span class="lineNum">     347 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* ES = NULL;</span>
+<span class="lineNum">     348 </span>            :                 //find ES and FS
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=Y-&gt;immediate_siblings.begin();i!=Y-&gt;immediate_siblings.end();i++)</span>
+<span class="lineNum">     350 </span>            :                 {
+<span class="lineNum">     351 </span><span class="lineNoCov">          0 :                         if((*i)-&gt;label==full)</span>
+<span class="lineNum">     352 </span><span class="lineNoCov">          0 :                                 FS=*i;</span>
+<span class="lineNum">     353 </span><span class="lineNoCov">          0 :                         if((*i)-&gt;label==empty)</span>
+<span class="lineNum">     354 </span><span class="lineNoCov">          0 :                                 ES=*i;</span>
+<span class="lineNum">     355 </span>            :                 }
+<span class="lineNum">     356 </span>            :                 
+<span class="lineNum">     357 </span>            :                 //if Y has a full immediate sibling
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :                 if(FS!=NULL)</span>
+<span class="lineNum">     359 </span>            :                 {
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :                         FS-&gt;immediate_siblings.erase(Y);</span>
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :                         FS-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 :                         FC-&gt;immediate_siblings.insert(FS);</span>
+<span class="lineNum">     363 </span>            :                 }
+<span class="lineNum">     364 </span>            :                 else
+<span class="lineNum">     365 </span>            :                 {
+<span class="lineNum">     366 </span><span class="lineNoCov">          0 :                         if(X-&gt;endmost_children[0]==Y)</span>
+<span class="lineNum">     367 </span><span class="lineNoCov">          0 :                                 X-&gt;endmost_children[0]=FC;</span>
+<span class="lineNum">     368 </span>            :                         // Since Y has at least two children, X must
+<span class="lineNum">     369 </span>            :                         // have at least two children, too, so we
+<span class="lineNum">     370 </span>            :                         // should not attach FC on both ends.  Hence
+<span class="lineNum">     371 </span>            :                         // the &quot;else&quot; here:
+<span class="lineNum">     372 </span><span class="lineNoCov">          0 :                         else if(X-&gt;endmost_children[1]==Y)</span>
+<span class="lineNum">     373 </span><span class="lineNoCov">          0 :                                 X-&gt;endmost_children[1]=FC;</span>
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :                         FC-&gt;parent=X;</span>
+<span class="lineNum">     375 </span><span class="lineNoCov">          0 :                         FC-&gt;check_parent();</span>
+<span class="lineNum">     376 </span>            :                 }
+<span class="lineNum">     377 </span>            :                 // now the FC end of Y's children is spliced into X
+<span class="lineNum">     378 </span>            :                 // child list.  The other end is hanging in the air,
+<span class="lineNum">     379 </span>            :                 // so is the point in X's child list where Y was taken out.
+<span class="lineNum">     380 </span>            : 
+<span class="lineNum">     381 </span>            :                 //if Y has an empty immediate sibling
+<span class="lineNum">     382 </span><span class="lineNoCov">          0 :                 if(ES!=NULL)</span>
+<span class="lineNum">     383 </span>            :                 {
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :                         ES-&gt;immediate_siblings.erase(Y);</span>
+<span class="lineNum">     385 </span><span class="lineNoCov">          0 :                         ES-&gt;immediate_siblings.insert(EC);</span>
+<span class="lineNum">     386 </span><span class="lineNoCov">          0 :                         EC-&gt;immediate_siblings.insert(ES);</span>
+<span class="lineNum">     387 </span>            :                 }
+<span class="lineNum">     388 </span>            :                 else
+<span class="lineNum">     389 </span>            :                 {
+<span class="lineNum">     390 </span><span class="lineNoCov">          0 :                         if(X-&gt;endmost_children[0]==Y)</span>
+<span class="lineNum">     391 </span><span class="lineNoCov">          0 :                                 X-&gt;endmost_children[0]=EC;</span>
+<span class="lineNum">     392 </span>            :                         // Since Y has at least two children, X must
+<span class="lineNum">     393 </span>            :                         // have at least two children, too, so we
+<span class="lineNum">     394 </span>            :                         // should not attach FS on both ends.  Hence
+<span class="lineNum">     395 </span>            :                         // the &quot;else&quot; here:
+<span class="lineNum">     396 </span><span class="lineNoCov">          0 :                         else if(X-&gt;endmost_children[1]==Y)</span>
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :                                 X-&gt;endmost_children[1]=EC;</span>
+<span class="lineNum">     398 </span><span class="lineNoCov">          0 :                         EC-&gt;parent=X;</span>
+<span class="lineNum">     399 </span><span class="lineNoCov">          0 :                         EC-&gt;check_parent();</span>
+<span class="lineNum">     400 </span>            :                 }
+<span class="lineNum">     401 </span>            :         
+<span class="lineNum">     402 </span>            :                 //we dont need Y anymore, but we dont want the recursive
+<span class="lineNum">     403 </span>            :                 //destructor to kill the children either        
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :                 Y-&gt;endmost_children[0]=NULL; </span>
+<span class="lineNum">     405 </span>            :                 Y-&gt;endmost_children[0]=NULL; 
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :                 delete Y;</span>
+<span class="lineNum">     407 </span>            :         }
+<span class="lineNum">     408 </span><span class="lineNoCov">          0 :         X-&gt;label=partial;    </span>
+<span class="lineNum">     409 </span><span class="lineNoCov">          0 :         if(X-&gt;parent!=NULL &amp;&amp; !isRoot)</span>
+<span class="lineNum">     410 </span><span class="lineNoCov">          0 :                 X-&gt;parent-&gt;partial_children.insert(X);</span>
+<span class="lineNum">     411 </span>            :         return true;
+<a name="412"><span class="lineNum">     412 </span>            : }</a>
+<span class="lineNum">     413 </span>            : template &lt;class T&gt;
+<span class="lineNum">     414 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_Q3(pqnode&lt;T&gt;* X)</span>
+<span class="lineNum">     415 </span>            : {       
+<span class="lineNum">     416 </span>            :         //check against the pattern
+<span class="lineNum">     417 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=qnode)</span>
+<span class="lineNum">     418 </span>            :                 return false;
+<span class="lineNum">     419 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()&gt;2)</span>
+<span class="lineNum">     420 </span>            :                 return false;
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            :         //handle a special case
+<span class="lineNum">     423 </span><span class="lineNoCov">          0 :         if(X-&gt;pseudonode &amp;&amp; X-&gt;endmost_children[1]==NULL)</span>
+<span class="lineNum">     424 </span>            :                 return true;
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span><span class="lineNoCov">          0 :         bool start=false;</span>
+<span class="lineNum">     427 </span><span class="lineNoCov">          0 :         bool end=false;</span>
+<span class="lineNum">     428 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* cur=X-&gt;endmost_children[0];</span>
+<span class="lineNum">     429 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* last=NULL;</span>
+<span class="lineNum">     430 </span>            :         //after this consecutive walk, we know that we have
+<span class="lineNum">     431 </span>            :         //a valid layout
+<span class="lineNum">     432 </span>            : 
+<span class="lineNum">     433 </span><span class="lineNoCov">          0 :         bool lastIter=false;</span>
+<span class="lineNum">     434 </span><span class="lineNoCov">          0 :         while(!lastIter)</span>
+<span class="lineNum">     435 </span>            :         {
+<span class="lineNum">     436 </span><span class="lineNoCov">          0 :                 if(debugOut)</span>
+<span class="lineNum">     437 </span><span class="lineNoCov">          0 :                         cerr&lt;&lt;cur&lt;&lt;endl;</span>
+<span class="lineNum">     438 </span><span class="lineNoCov">          0 :                 if(cur==X-&gt;endmost_children[1])</span>
+<span class="lineNum">     439 </span><span class="lineNoCov">          0 :                         lastIter=true;</span>
+<span class="lineNum">     440 </span><span class="lineNoCov">          0 :                 if(cur-&gt;label==full)</span>
+<span class="lineNum">     441 </span>            :                 {
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 :                         if(end)</span>
+<span class="lineNum">     443 </span>            :                                 return false;
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :                         if(!start)</span>
+<span class="lineNum">     445 </span><span class="lineNoCov">          0 :                                 start=true;</span>
+<span class="lineNum">     446 </span>            :                 }
+<span class="lineNum">     447 </span><span class="lineNoCov">          0 :                 else if(cur-&gt;label==empty)</span>
+<span class="lineNum">     448 </span>            :                 {
+<span class="lineNum">     449 </span><span class="lineNoCov">          0 :                         if(start)</span>
+<span class="lineNum">     450 </span><span class="lineNoCov">          0 :                                 end=true;</span>
+<span class="lineNum">     451 </span>            :                 }
+<span class="lineNum">     452 </span><span class="lineNoCov">          0 :                 else if(cur-&gt;label==partial)</span>
+<span class="lineNum">     453 </span>            :                 {
+<span class="lineNum">     454 </span><span class="lineNoCov">          0 :                         if(!start)</span>
+<span class="lineNum">     455 </span>            :                                 start=true;
+<span class="lineNum">     456 </span><span class="lineNoCov">          0 :                         else if(!end)</span>
+<span class="lineNum">     457 </span>            :                                 end=true;
+<span class="lineNum">     458 </span><span class="lineNoCov">          0 :                         else if(end)</span>
+<span class="lineNum">     459 </span>            :                                 return false;
+<span class="lineNum">     460 </span>            :                 }
+<span class="lineNum">     461 </span><span class="lineNoCov">          0 :                 if(!lastIter)</span>
+<span class="lineNum">     462 </span>            :                 {
+<span class="lineNum">     463 </span><span class="lineNoCov">          0 :                         pqnode&lt;T&gt;* next=cur-&gt;qNextChild(last);</span>
+<span class="lineNum">     464 </span><span class="lineNoCov">          0 :                         last=cur;</span>
+<span class="lineNum">     465 </span><span class="lineNoCov">          0 :                         cur=next;</span>
+<span class="lineNum">     466 </span>            :                 }
+<span class="lineNum">     467 </span>            :         }
+<span class="lineNum">     468 </span>            :         
+<span class="lineNum">     469 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     470 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;Q3 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     471 </span>            :         
+<span class="lineNum">     472 </span>            :         //start with the first partial child
+<span class="lineNum">     473 </span><span class="lineNoCov">          0 :         for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator j=X-&gt;partial_children.begin();j!=X-&gt;partial_children.end();j++)</span>
+<span class="lineNum">     474 </span>            :         {
+<span class="lineNum">     475 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* PC = *(j);</span>
+<span class="lineNum">     476 </span>            :                 pqnode&lt;T&gt;* EC,*FC;        //empty and full child of this partial child
+<span class="lineNum">     477 </span>            :                 //find those children
+<span class="lineNum">     478 </span><span class="lineNoCov">          0 :                 if(PC-&gt;endmost_children[0]-&gt;label==full)</span>
+<span class="lineNum">     479 </span>            :                 {
+<span class="lineNum">     480 </span><span class="lineNoCov">          0 :                         FC=PC-&gt;endmost_children[0];</span>
+<span class="lineNum">     481 </span><span class="lineNoCov">          0 :                         EC=PC-&gt;endmost_children[1];</span>
+<span class="lineNum">     482 </span>            :                 }
+<span class="lineNum">     483 </span>            :                 else
+<span class="lineNum">     484 </span>            :                 {
+<span class="lineNum">     485 </span><span class="lineNoCov">          0 :                         EC=PC-&gt;endmost_children[0];</span>
+<span class="lineNum">     486 </span><span class="lineNoCov">          0 :                         FC=PC-&gt;endmost_children[1];</span>
+<span class="lineNum">     487 </span>            :                 }
+<span class="lineNum">     488 </span>            :                 
+<span class="lineNum">     489 </span>            :                 pqnode&lt;T&gt;* CS;
+<span class="lineNum">     490 </span>            :                 //handle the sides where the child has immediate siblings
+<span class="lineNum">     491 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=PC-&gt;immediate_siblings.begin();i!=PC-&gt;immediate_siblings.end();i++)</span>
+<span class="lineNum">     492 </span>            :                 {
+<span class="lineNum">     493 </span><span class="lineNoCov">          0 :                         if((*i)-&gt;label==empty)</span>
+<span class="lineNum">     494 </span>            :                         {
+<span class="lineNum">     495 </span><span class="lineNoCov">          0 :                                 (*i)-&gt;immediate_siblings.erase(PC);</span>
+<span class="lineNum">     496 </span><span class="lineNoCov">          0 :                                 (*i)-&gt;immediate_siblings.insert(EC);</span>
+<span class="lineNum">     497 </span><span class="lineNoCov">          0 :                                 EC-&gt;immediate_siblings.insert(*i);</span>
+<span class="lineNum">     498 </span><span class="lineNoCov">          0 :                                 CS=FC;</span>
+<span class="lineNum">     499 </span>            :                         }
+<span class="lineNum">     500 </span>            :                         else    //either full or partial, we dont care which
+<span class="lineNum">     501 </span>            :                         {
+<span class="lineNum">     502 </span><span class="lineNoCov">          0 :                                 (*i)-&gt;immediate_siblings.erase(PC);</span>
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :                                 (*i)-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :                                 FC-&gt;immediate_siblings.insert(*i);</span>
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :                                 CS=EC;</span>
+<span class="lineNum">     506 </span>            :                         }
+<span class="lineNum">     507 </span>            :                 }
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :                 if(X-&gt;pseudonode)</span>
+<span class="lineNum">     509 </span><span class="lineNoCov">          0 :                         CS=EC;</span>
+<span class="lineNum">     510 </span>            :                 //handle the case where the child has only one immediate sibling
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :                 if(PC-&gt;immediate_siblings.size()==1 || X-&gt;pseudonode)</span>
+<span class="lineNum">     512 </span>            :                 {
+<span class="lineNum">     513 </span><span class="lineNoCov">          0 :                         CS-&gt;parent=X;</span>
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :                         CS-&gt;check_parent();</span>
+<span class="lineNum">     515 </span><span class="lineNoCov">          0 :                         if(X-&gt;endmost_children[0]==PC)</span>
+<span class="lineNum">     516 </span><span class="lineNoCov">          0 :                                 X-&gt;endmost_children[0]=CS;</span>
+<span class="lineNum">     517 </span><span class="lineNoCov">          0 :                         if(X-&gt;endmost_children[1]==PC)</span>
+<span class="lineNum">     518 </span><span class="lineNoCov">          0 :                                 X-&gt;endmost_children[1]=CS;</span>
+<span class="lineNum">     519 </span>            :                 }
+<span class="lineNum">     520 </span>            :                 
+<span class="lineNum">     521 </span>            :                 //we want to delete PC, but not it's children
+<span class="lineNum">     522 </span><span class="lineNoCov">          0 :                 PC-&gt;endmost_children[0]=NULL;</span>
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :                 PC-&gt;endmost_children[1]=NULL;</span>
+<span class="lineNum">     524 </span><span class="lineNoCov">          0 :                 delete PC;</span>
+<span class="lineNum">     525 </span><span class="lineNoCov">          0 :                 PC=NULL;</span>
+<span class="lineNum">     526 </span>            : 
+<span class="lineNum">     527 </span>            :         }
+<span class="lineNum">     528 </span>            :         return true;
+<span class="lineNum">     529 </span>            : }
+<span class="lineNum">     530 </span>            : /*A note here.  An error in the Booth and Leuker
+<span class="lineNum">     531 </span>            : Algorithm fails to consider the case where a P-node
+<span class="lineNum">     532 </span>            : is full, is the pertinent root, and is not an endmost
+<span class="lineNum">     533 </span>            : child of a q-node.  In this case, we need to know that
+<span class="lineNum">     534 </span>            : the P-node is a pertinent root and not try to update its
+<a name="535"><span class="lineNum">     535 </span>            : parent whose pointer is possibly invalid*/</a>
+<span class="lineNum">     536 </span>            : template &lt;class T&gt;
+<span class="lineNum">     537 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_P1(pqnode&lt;T&gt;* X,bool isRoot)</span>
+<span class="lineNum">     538 </span>            : {
+<span class="lineNum">     539 </span>            :                 //check against the pattern
+<span class="lineNum">     540 </span><span class="lineNoCov">          0 :                 if(X-&gt;type!=pnode)</span>
+<span class="lineNum">     541 </span>            :                         return false;
+<span class="lineNum">     542 </span><span class="lineNoCov">          0 :                 if(X-&gt;full_children.size()!=X-&gt;child_count())</span>
+<span class="lineNum">     543 </span>            :                         return false;
+<span class="lineNum">     544 </span><span class="lineNoCov">          0 :                 if(debugOut)</span>
+<span class="lineNum">     545 </span><span class="lineNoCov">          0 :                         cerr&lt;&lt;&quot;P1 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     546 </span>            : 
+<span class="lineNum">     547 </span><span class="lineNoCov">          0 :                 X-&gt;label=full;</span>
+<span class="lineNum">     548 </span><span class="lineNoCov">          0 :                 if(!isRoot)     //make sure we aren't root first</span>
+<span class="lineNum">     549 </span><span class="lineNoCov">          0 :                         X-&gt;parent-&gt;full_children.insert(X);</span>
+<span class="lineNum">     550 </span>            :                 
+<span class="lineNum">     551 </span>            :                 return true;
+<a name="552"><span class="lineNum">     552 </span>            :         }</a>
+<span class="lineNum">     553 </span>            : template &lt;class T&gt;
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_P2(pqnode&lt;T&gt;* X)</span>
+<span class="lineNum">     555 </span>            : {
+<span class="lineNum">     556 </span>            :         //check against the pattern
+<span class="lineNum">     557 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=pnode)</span>
+<span class="lineNum">     558 </span>            :                 return false;
+<span class="lineNum">     559 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()!=0)</span>
+<span class="lineNum">     560 </span>            :                 return false;
+<span class="lineNum">     561 </span>            :                 
+<span class="lineNum">     562 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     563 </span><span class="lineNoCov">          0 :                         cerr&lt;&lt;&quot;P2 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     564 </span>            : 
+<span class="lineNum">     565 </span>            :         //move X's full children into their own P-node
+<span class="lineNum">     566 </span><span class="lineNoCov">          0 :         if(X-&gt;full_children.size()&gt;=2)</span>
+<span class="lineNum">     567 </span>            :         {
+<span class="lineNum">     568 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* Y=new pqnode&lt;T&gt;;</span>
+<span class="lineNum">     569 </span><span class="lineNoCov">          0 :                 Y-&gt;parent=X;</span>
+<span class="lineNum">     570 </span><span class="lineNoCov">          0 :                 Y-&gt;check_parent();</span>
+<span class="lineNum">     571 </span><span class="lineNoCov">          0 :                 Y-&gt;type=pnode;</span>
+<span class="lineNum">     572 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;full_children.begin();i!=X-&gt;full_children.end();i++)</span>
+<span class="lineNum">     573 </span>            :                 {
+<span class="lineNum">     574 </span><span class="lineNoCov">          0 :                         X-&gt;circular_link.remove(*i);</span>
+<span class="lineNum">     575 </span><span class="lineNoCov">          0 :                         Y-&gt;circular_link.push_back(*i);</span>
+<span class="lineNum">     576 </span><span class="lineNoCov">          0 :                         (*i)-&gt;parent=Y;</span>
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :                         (*i)-&gt;check_parent();</span>
+<span class="lineNum">     578 </span>            :                 }
+<span class="lineNum">     579 </span><span class="lineNoCov">          0 :                 X-&gt;circular_link.push_back(Y);</span>
+<span class="lineNum">     580 </span>            :         }
+<span class="lineNum">     581 </span>            :         //mark the root partial
+<span class="lineNum">     582 </span><span class="lineNoCov">          0 :         X-&gt;label=partial;</span>
+<span class="lineNum">     583 </span>            :                 
+<span class="lineNum">     584 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     585 </span>            : }
+<span class="lineNum">     586 </span>            : template &lt;class T&gt;
+<span class="lineNum">     587 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_P3(pqnode&lt;T&gt;* X)</span>
+<span class="lineNum">     588 </span>            : {
+<span class="lineNum">     589 </span>            :         //check against the pattern
+<span class="lineNum">     590 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=pnode)</span>
+<span class="lineNum">     591 </span>            :                 return false;
+<span class="lineNum">     592 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()!=0)</span>
+<span class="lineNum">     593 </span>            :                 return false;
+<span class="lineNum">     594 </span>            :                 
+<span class="lineNum">     595 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     596 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;P3 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     597 </span>            : 
+<span class="lineNum">     598 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* theParent=X-&gt;parent;</span>
+<span class="lineNum">     599 </span>            : 
+<span class="lineNum">     600 </span>            :         //create new Q-node Y
+<span class="lineNum">     601 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* Y = new pqnode&lt;T&gt;;</span>
+<span class="lineNum">     602 </span><span class="lineNoCov">          0 :         Y-&gt;parent=theParent;</span>
+<span class="lineNum">     603 </span><span class="lineNoCov">          0 :         Y-&gt;check_parent();</span>
+<span class="lineNum">     604 </span><span class="lineNoCov">          0 :         Y-&gt;type=qnode;</span>
+<span class="lineNum">     605 </span>            : 
+<span class="lineNum">     606 </span>            :         //switch Y for X as parent's children
+<span class="lineNum">     607 </span><span class="lineNoCov">          0 :         theParent-&gt;partial_children.insert(Y);</span>
+<span class="lineNum">     608 </span><span class="lineNoCov">          0 :         theParent-&gt;partial_children.erase(X);</span>
+<span class="lineNum">     609 </span><span class="lineNoCov">          0 :         if(theParent-&gt;type==pnode)</span>
+<span class="lineNum">     610 </span>            :         {
+<span class="lineNum">     611 </span><span class="lineNoCov">          0 :                 theParent-&gt;circular_link.remove(X);</span>
+<span class="lineNum">     612 </span><span class="lineNoCov">          0 :                 theParent-&gt;circular_link.push_back(Y);</span>
+<span class="lineNum">     613 </span>            :         }
+<span class="lineNum">     614 </span>            :         else
+<span class="lineNum">     615 </span><span class="lineNoCov">          0 :                 X-&gt;swapQ(Y);</span>
+<span class="lineNum">     616 </span>            : 
+<span class="lineNum">     617 </span>            :         //set up the p_node on the full child side
+<span class="lineNum">     618 </span>            :         pqnode&lt;T&gt;* FC,*EC;
+<span class="lineNum">     619 </span><span class="lineNoCov">          0 :         if(X-&gt;full_children.size()==1)</span>
+<span class="lineNum">     620 </span>            :         {
+<span class="lineNum">     621 </span><span class="lineNoCov">          0 :                 FC=*(X-&gt;full_children.begin());</span>
+<span class="lineNum">     622 </span><span class="lineNoCov">          0 :                 X-&gt;circular_link.remove(FC);</span>
+<span class="lineNum">     623 </span>            :         }
+<span class="lineNum">     624 </span>            :         else
+<span class="lineNum">     625 </span>            :         {
+<span class="lineNum">     626 </span><span class="lineNoCov">          0 :                 FC = new pqnode&lt;T&gt;;       //FC = full child</span>
+<span class="lineNum">     627 </span><span class="lineNoCov">          0 :                 FC-&gt;label=full;</span>
+<span class="lineNum">     628 </span><span class="lineNoCov">          0 :                 FC-&gt;type=pnode;</span>
+<span class="lineNum">     629 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;full_children.begin();i!=X-&gt;full_children.end();i++)</span>
+<span class="lineNum">     630 </span>            :                 {
+<span class="lineNum">     631 </span><span class="lineNoCov">          0 :                         X-&gt;circular_link.remove(*i);</span>
+<span class="lineNum">     632 </span><span class="lineNoCov">          0 :                         FC-&gt;circular_link.push_back(*i);</span>
+<span class="lineNum">     633 </span><span class="lineNoCov">          0 :                         (*i)-&gt;parent=FC;</span>
+<span class="lineNum">     634 </span><span class="lineNoCov">          0 :                         (*i)-&gt;check_parent();</span>
+<span class="lineNum">     635 </span>            :                 }
+<span class="lineNum">     636 </span>            :         }
+<span class="lineNum">     637 </span><span class="lineNoCov">          0 :         FC-&gt;parent=Y;</span>
+<span class="lineNum">     638 </span><span class="lineNoCov">          0 :         FC-&gt;check_parent();</span>
+<span class="lineNum">     639 </span><span class="lineNoCov">          0 :         Y-&gt;endmost_children[0]=FC;</span>
+<span class="lineNum">     640 </span><span class="lineNoCov">          0 :         Y-&gt;full_children.insert(FC);</span>
+<span class="lineNum">     641 </span>            : 
+<span class="lineNum">     642 </span>            :         //now set up the p-node on the empty child side
+<span class="lineNum">     643 </span><span class="lineNoCov">          0 :         if(X-&gt;circular_link.size()==1)</span>
+<span class="lineNum">     644 </span>            :         {
+<span class="lineNum">     645 </span><span class="lineNoCov">          0 :                 EC=*(X-&gt;circular_link.begin());</span>
+<span class="lineNum">     646 </span>            : 
+<span class="lineNum">     647 </span>            :                 //we want to delete X, but not it's children
+<span class="lineNum">     648 </span><span class="lineNoCov">          0 :                 X-&gt;circular_link.clear();</span>
+<span class="lineNum">     649 </span><span class="lineNoCov">          0 :                 delete X;</span>
+<span class="lineNum">     650 </span>            :         }
+<span class="lineNum">     651 </span>            :         else
+<span class="lineNum">     652 </span><span class="lineNoCov">          0 :                 EC=X;</span>
+<span class="lineNum">     653 </span><span class="lineNoCov">          0 :         EC-&gt;parent=Y;</span>
+<span class="lineNum">     654 </span><span class="lineNoCov">          0 :         EC-&gt;check_parent();</span>
+<span class="lineNum">     655 </span><span class="lineNoCov">          0 :         EC-&gt;label=empty;</span>
+<span class="lineNum">     656 </span><span class="lineNoCov">          0 :         Y-&gt;endmost_children[1]=EC;</span>
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span>            :         //update the immediate siblings links
+<span class="lineNum">     659 </span><span class="lineNoCov">          0 :         EC-&gt;immediate_siblings.clear();</span>
+<span class="lineNum">     660 </span><span class="lineNoCov">          0 :         EC-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">     661 </span><span class="lineNoCov">          0 :         FC-&gt;immediate_siblings.clear();</span>
+<span class="lineNum">     662 </span><span class="lineNoCov">          0 :         FC-&gt;immediate_siblings.insert(EC);</span>
+<span class="lineNum">     663 </span>            :         
+<span class="lineNum">     664 </span><span class="lineNoCov">          0 :         Y-&gt;label=partial;</span>
+<span class="lineNum">     665 </span>            :         
+<span class="lineNum">     666 </span><span class="lineNoCov">          0 :         return true;</span>
+<a name="667"><span class="lineNum">     667 </span>            : }</a>
+<span class="lineNum">     668 </span>            : template &lt;class T&gt;
+<span class="lineNum">     669 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_P4(pqnode&lt;T&gt;* X)</span>
+<span class="lineNum">     670 </span>            : {
+<span class="lineNum">     671 </span>            :         //check against the pattern
+<span class="lineNum">     672 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=pnode)</span>
+<span class="lineNum">     673 </span>            :                 return false;
+<span class="lineNum">     674 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()!=1)</span>
+<span class="lineNum">     675 </span>            :                 return false;
+<span class="lineNum">     676 </span>            : 
+<span class="lineNum">     677 </span>            : 
+<span class="lineNum">     678 </span>            :         
+<span class="lineNum">     679 </span>            :         //Y is the partial Q-node
+<span class="lineNum">     680 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* Y=*X-&gt;partial_children.begin();</span>
+<span class="lineNum">     681 </span>            :         pqnode&lt;T&gt;* EC;
+<span class="lineNum">     682 </span>            :         pqnode&lt;T&gt;* FC;
+<span class="lineNum">     683 </span>            :         pqnode&lt;T&gt;* ES;  //empty/full child/sibling of Y
+<span class="lineNum">     684 </span>            : 
+<span class="lineNum">     685 </span>            :         //find the empty and full endmost child of Y
+<span class="lineNum">     686 </span><span class="lineNoCov">          0 :         if(Y-&gt;endmost_children[0]-&gt;label==empty)</span>
+<span class="lineNum">     687 </span>            :         {
+<span class="lineNum">     688 </span><span class="lineNoCov">          0 :                 EC=Y-&gt;endmost_children[0];</span>
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :                 FC=Y-&gt;endmost_children[1];</span>
+<span class="lineNum">     690 </span>            :         }
+<span class="lineNum">     691 </span>            :         else
+<span class="lineNum">     692 </span>            :         {
+<span class="lineNum">     693 </span><span class="lineNoCov">          0 :                 EC=Y-&gt;endmost_children[1];</span>
+<span class="lineNum">     694 </span><span class="lineNoCov">          0 :                 FC=Y-&gt;endmost_children[0];</span>
+<span class="lineNum">     695 </span>            :         }
+<span class="lineNum">     696 </span>            :         //check that we are indeed matching the pattern
+<span class="lineNum">     697 </span><span class="lineNoCov">          0 :         if(EC-&gt;label!=empty || FC-&gt;label==empty)</span>
+<span class="lineNum">     698 </span>            :                 return false;
+<span class="lineNum">     699 </span>            :         
+<span class="lineNum">     700 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     701 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;P4 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     702 </span>            :         
+<span class="lineNum">     703 </span>            :         //if Y has an empty sibling, set ES to be an empty sibling of Y
+<span class="lineNum">     704 </span><span class="lineNoCov">          0 :         for(typename list&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;circular_link.begin();i!=X-&gt;circular_link.end();i++)</span>
+<span class="lineNum">     705 </span><span class="lineNoCov">          0 :                 if((*i)-&gt;label==empty)</span>
+<span class="lineNum">     706 </span>            :                 {
+<span class="lineNum">     707 </span><span class="lineNoCov">          0 :                         if(debugOut)</span>
+<span class="lineNum">     708 </span><span class="lineNoCov">          0 :                                 cerr&lt;&lt;&quot;Y has an empty sibling&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     709 </span><span class="lineNoCov">          0 :                         ES=*i;</span>
+<span class="lineNum">     710 </span><span class="lineNoCov">          0 :                         break;</span>
+<span class="lineNum">     711 </span>            :                 }
+<span class="lineNum">     712 </span>            :         
+<span class="lineNum">     713 </span>            :         //move the full children of X to be children of Y
+<span class="lineNum">     714 </span><span class="lineNoCov">          0 :         if(X-&gt;full_children.size()&gt;0)</span>
+<span class="lineNum">     715 </span>            :         {
+<span class="lineNum">     716 </span>            :                 pqnode&lt;T&gt; *ZF;
+<span class="lineNum">     717 </span>            :                 //only 1 full child
+<span class="lineNum">     718 </span><span class="lineNoCov">          0 :                 if(X-&gt;full_children.size()==1)</span>
+<span class="lineNum">     719 </span>            :                 {
+<span class="lineNum">     720 </span><span class="lineNoCov">          0 :                         if(debugOut)</span>
+<span class="lineNum">     721 </span><span class="lineNoCov">          0 :                                 cerr&lt;&lt;&quot;Only 1 full child&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     722 </span>            :                         
+<span class="lineNum">     723 </span><span class="lineNoCov">          0 :                         ZF=*(X-&gt;full_children.begin());</span>
+<span class="lineNum">     724 </span><span class="lineNoCov">          0 :                         X-&gt;circular_link.remove(ZF);</span>
+<span class="lineNum">     725 </span>            :                 }
+<span class="lineNum">     726 </span>            :                 //multiple full children - must be placed in a P-node
+<span class="lineNum">     727 </span>            :                 else
+<span class="lineNum">     728 </span>            :                 {
+<span class="lineNum">     729 </span>            :                         //create ZF to be a new p-node
+<span class="lineNum">     730 </span><span class="lineNoCov">          0 :                         ZF=new pqnode&lt;T&gt;;</span>
+<span class="lineNum">     731 </span><span class="lineNoCov">          0 :                         ZF-&gt;label=full;</span>
+<span class="lineNum">     732 </span><span class="lineNoCov">          0 :                         ZF-&gt;type=pnode;</span>
+<span class="lineNum">     733 </span>            : 
+<span class="lineNum">     734 </span>            :                         //for all the full nodes in X, set their parent to be ZF
+<span class="lineNum">     735 </span><span class="lineNoCov">          0 :                         for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator W=X-&gt;full_children.begin();W!=X-&gt;full_children.end();W++)</span>
+<span class="lineNum">     736 </span>            :                         {
+<span class="lineNum">     737 </span><span class="lineNoCov">          0 :                                 (*W)-&gt;parent=ZF;</span>
+<span class="lineNum">     738 </span><span class="lineNoCov">          0 :                                 (*W)-&gt;check_parent();</span>
+<span class="lineNum">     739 </span><span class="lineNoCov">          0 :                                 X-&gt;circular_link.remove(*W);</span>
+<span class="lineNum">     740 </span><span class="lineNoCov">          0 :                                 ZF-&gt;circular_link.push_back(*W);</span>
+<span class="lineNum">     741 </span>            :                         }
+<span class="lineNum">     742 </span>            :                 }
+<span class="lineNum">     743 </span>            :                 //more updates
+<span class="lineNum">     744 </span><span class="lineNoCov">          0 :                 ZF-&gt;parent=Y;</span>
+<span class="lineNum">     745 </span><span class="lineNoCov">          0 :                 ZF-&gt;check_parent();</span>
+<span class="lineNum">     746 </span><span class="lineNoCov">          0 :                 FC-&gt;immediate_siblings.insert(ZF);                   </span>
+<span class="lineNum">     747 </span><span class="lineNoCov">          0 :                 ZF-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">     748 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[0]==FC)</span>
+<span class="lineNum">     749 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[0]=ZF;</span>
+<span class="lineNum">     750 </span><span class="lineNoCov">          0 :                 else if(Y-&gt;endmost_children[1]==FC)</span>
+<span class="lineNum">     751 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[1]=ZF;</span>
+<span class="lineNum">     752 </span><span class="lineNoCov">          0 :                 Y-&gt;full_children.insert(ZF);</span>
+<span class="lineNum">     753 </span>            :         }
+<span class="lineNum">     754 </span>            : 
+<span class="lineNum">     755 </span>            :         //if X now only has one child, get rid of X
+<span class="lineNum">     756 </span><span class="lineNoCov">          0 :         if(X-&gt;circular_link.size()==1)</span>
+<span class="lineNum">     757 </span>            :         {
+<span class="lineNum">     758 </span><span class="lineNoCov">          0 :                 if(debugOut)</span>
+<span class="lineNum">     759 </span><span class="lineNoCov">          0 :                         cerr&lt;&lt;&quot;X only has one child&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     760 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* theParent = X-&gt;parent;</span>
+<span class="lineNum">     761 </span><span class="lineNoCov">          0 :                 Y-&gt;parent = X-&gt;parent;</span>
+<span class="lineNum">     762 </span>            :                 
+<span class="lineNum">     763 </span><span class="lineNoCov">          0 :                 if(theParent!=NULL)     //parent is root of tree</span>
+<span class="lineNum">     764 </span>            :                 {
+<span class="lineNum">     765 </span>            : 
+<span class="lineNum">     766 </span>            :                         //update parent to handle the switch
+<span class="lineNum">     767 </span><span class="lineNoCov">          0 :                         if(X-&gt;immediate_siblings.empty())    //parent is a p-node</span>
+<span class="lineNum">     768 </span>            :                         {
+<span class="lineNum">     769 </span><span class="lineNoCov">          0 :                                 theParent-&gt;circular_link.remove(X);  </span>
+<span class="lineNum">     770 </span><span class="lineNoCov">          0 :                                 theParent-&gt;circular_link.push_back(Y);</span>
+<span class="lineNum">     771 </span>            :                         }
+<span class="lineNum">     772 </span>            :                         else    //parent is a Q-node
+<span class="lineNum">     773 </span>            :                         {
+<span class="lineNum">     774 </span>            :                                 //update the immediate siblings list by removing X and adding Y
+<span class="lineNum">     775 </span><span class="lineNoCov">          0 :                                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;immediate_siblings.begin();i!=X-&gt;immediate_siblings.end();i++)</span>
+<span class="lineNum">     776 </span>            :                                 {
+<span class="lineNum">     777 </span><span class="lineNoCov">          0 :                                         (*i)-&gt;immediate_siblings.erase(X);</span>
+<span class="lineNum">     778 </span><span class="lineNoCov">          0 :                                         (*i)-&gt;immediate_siblings.insert(Y);</span>
+<span class="lineNum">     779 </span><span class="lineNoCov">          0 :                                         Y-&gt;immediate_siblings.insert(*i);</span>
+<span class="lineNum">     780 </span>            :                                 }
+<span class="lineNum">     781 </span><span class="lineNoCov">          0 :                                 if(X-&gt;immediate_siblings.size()==1)</span>
+<span class="lineNum">     782 </span>            :                                 {
+<span class="lineNum">     783 </span><span class="lineNoCov">          0 :                                         if(theParent-&gt;endmost_children[0]==X)</span>
+<span class="lineNum">     784 </span><span class="lineNoCov">          0 :                                                 theParent-&gt;endmost_children[0]=Y;</span>
+<span class="lineNum">     785 </span><span class="lineNoCov">          0 :                                         if(theParent-&gt;endmost_children[1]==X)</span>
+<span class="lineNum">     786 </span><span class="lineNoCov">          0 :                                                 theParent-&gt;endmost_children[1]=Y;</span>
+<span class="lineNum">     787 </span>            :                                 }
+<span class="lineNum">     788 </span>            :                         }
+<span class="lineNum">     789 </span>            :                 }
+<span class="lineNum">     790 </span>            :                 else
+<span class="lineNum">     791 </span><span class="lineNoCov">          0 :                         root=Y;</span>
+<span class="lineNum">     792 </span>            :         }
+<span class="lineNum">     793 </span>            :         
+<span class="lineNum">     794 </span>            :         return true;
+<span class="lineNum">     795 </span>            : }
+<span class="lineNum">     796 </span>            : int runs=0;
+<span class="lineNum">     797 </span>            : template &lt;class T&gt;
+<span class="lineNum">     798 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_P5(pqnode&lt;T&gt;* X)</span>
+<span class="lineNum">     799 </span>            : {       
+<span class="lineNum">     800 </span>            :         //check against the pattern
+<span class="lineNum">     801 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=pnode)</span>
+<span class="lineNum">     802 </span>            :                 return false;
+<span class="lineNum">     803 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()!=1)</span>
+<span class="lineNum">     804 </span>            :                 return false;
+<span class="lineNum">     805 </span>            :                 
+<span class="lineNum">     806 </span>            :         
+<span class="lineNum">     807 </span>            :         //Y is the partial Q-node
+<span class="lineNum">     808 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* Y=*X-&gt;partial_children.begin();</span>
+<span class="lineNum">     809 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* EC=NULL;</span>
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* FC=NULL;</span>
+<span class="lineNum">     811 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* ES=NULL;  //empty/full child/sibling of Y</span>
+<span class="lineNum">     812 </span>            : 
+<span class="lineNum">     813 </span>            :         //find the empty and full endmost child of Y
+<span class="lineNum">     814 </span><span class="lineNoCov">          0 :         if(Y-&gt;endmost_children[0]-&gt;label==empty)</span>
+<span class="lineNum">     815 </span>            :         {
+<span class="lineNum">     816 </span><span class="lineNoCov">          0 :                 EC=Y-&gt;endmost_children[0];</span>
+<span class="lineNum">     817 </span><span class="lineNoCov">          0 :                 FC=Y-&gt;endmost_children[1];</span>
+<span class="lineNum">     818 </span>            :         }
+<span class="lineNum">     819 </span>            :         else
+<span class="lineNum">     820 </span>            :         {
+<span class="lineNum">     821 </span><span class="lineNoCov">          0 :                 EC=Y-&gt;endmost_children[1];</span>
+<span class="lineNum">     822 </span><span class="lineNoCov">          0 :                 FC=Y-&gt;endmost_children[0];</span>
+<span class="lineNum">     823 </span>            :         }
+<span class="lineNum">     824 </span>            :         //check that we are indeed matching the pattern
+<span class="lineNum">     825 </span><span class="lineNoCov">          0 :         if(EC-&gt;label!=empty || FC-&gt;label==empty)</span>
+<span class="lineNum">     826 </span>            :                 return false;
+<span class="lineNum">     827 </span>            :                 
+<span class="lineNum">     828 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     829 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;P5 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     830 </span>            :                 
+<span class="lineNum">     831 </span>            :         //if Y has an empty sibling, set ES to be an empty sibling of Y
+<span class="lineNum">     832 </span><span class="lineNoCov">          0 :         for(typename list&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;circular_link.begin();i!=X-&gt;circular_link.end();i++)</span>
+<span class="lineNum">     833 </span><span class="lineNoCov">          0 :                 if((*i)-&gt;label==empty)</span>
+<span class="lineNum">     834 </span>            :                 {
+<span class="lineNum">     835 </span>            :                         ES=*i;
+<span class="lineNum">     836 </span>            :                         break;
+<span class="lineNum">     837 </span>            :                 }
+<span class="lineNum">     838 </span>            : 
+<span class="lineNum">     839 </span>            :         //Y will be the root of the pertinent subtree after the replacement
+<span class="lineNum">     840 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* theParent = X-&gt;parent;</span>
+<span class="lineNum">     841 </span><span class="lineNoCov">          0 :         Y-&gt;parent = X-&gt;parent;</span>
+<span class="lineNum">     842 </span><span class="lineNoCov">          0 :         Y-&gt;pertinent_leaf_count = X-&gt;pertinent_leaf_count;</span>
+<span class="lineNum">     843 </span><span class="lineNoCov">          0 :         Y-&gt;label=partial;</span>
+<span class="lineNum">     844 </span>            :         //add Y to it's parent's list of partial children
+<span class="lineNum">     845 </span><span class="lineNoCov">          0 :         theParent-&gt;partial_children.insert(Y);</span>
+<span class="lineNum">     846 </span>            :         //remove Y from X's list of children
+<span class="lineNum">     847 </span><span class="lineNoCov">          0 :         X-&gt;circular_link.remove(Y);</span>
+<span class="lineNum">     848 </span><span class="lineNoCov">          0 :         X-&gt;partial_children.erase(Y);</span>
+<span class="lineNum">     849 </span>            :         
+<span class="lineNum">     850 </span>            :         //update parent to handle the switch
+<span class="lineNum">     851 </span><span class="lineNoCov">          0 :         if(X-&gt;immediate_siblings.size()==0)  //parent is a P-node</span>
+<span class="lineNum">     852 </span>            :         {
+<span class="lineNum">     853 </span><span class="lineNoCov">          0 :                 theParent-&gt;circular_link.remove(X);</span>
+<span class="lineNum">     854 </span><span class="lineNoCov">          0 :                 theParent-&gt;circular_link.push_back(Y);</span>
+<span class="lineNum">     855 </span>            :         }
+<span class="lineNum">     856 </span>            :         else    //parent is a Q-node
+<span class="lineNum">     857 </span>            :         {
+<span class="lineNum">     858 </span>            :                 //update the immediate siblings list by removing X and adding Y
+<span class="lineNum">     859 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;immediate_siblings.begin(); i!=X-&gt;immediate_siblings.end();i++)</span>
+<span class="lineNum">     860 </span>            :                 {
+<span class="lineNum">     861 </span><span class="lineNoCov">          0 :                         (*i)-&gt;immediate_siblings.erase(X);</span>
+<span class="lineNum">     862 </span><span class="lineNoCov">          0 :                         (*i)-&gt;immediate_siblings.insert(Y);</span>
+<span class="lineNum">     863 </span><span class="lineNoCov">          0 :                         Y-&gt;immediate_siblings.insert(*i);</span>
+<span class="lineNum">     864 </span>            :                 }
+<span class="lineNum">     865 </span><span class="lineNoCov">          0 :                 if(theParent-&gt;endmost_children[0]==X)</span>
+<span class="lineNum">     866 </span><span class="lineNoCov">          0 :                         theParent-&gt;endmost_children[0]=Y;</span>
+<span class="lineNum">     867 </span><span class="lineNoCov">          0 :                 if(theParent-&gt;endmost_children[1]==X)</span>
+<span class="lineNum">     868 </span><span class="lineNoCov">          0 :                         theParent-&gt;endmost_children[1]=Y;</span>
+<span class="lineNum">     869 </span>            :         }
+<span class="lineNum">     870 </span>            :         
+<span class="lineNum">     871 </span>            :         //move the full children of X to be children of Y
+<span class="lineNum">     872 </span><span class="lineNoCov">          0 :         if(X-&gt;full_children.size()&gt;0)</span>
+<span class="lineNum">     873 </span>            :         {
+<span class="lineNum">     874 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt; *ZF=NULL;</span>
+<span class="lineNum">     875 </span>            :                 //only 1 full child
+<span class="lineNum">     876 </span><span class="lineNoCov">          0 :                 if(X-&gt;full_children.size()==1)</span>
+<span class="lineNum">     877 </span>            :                 {
+<span class="lineNum">     878 </span><span class="lineNoCov">          0 :                         ZF=*(X-&gt;full_children.begin());</span>
+<span class="lineNum">     879 </span><span class="lineNoCov">          0 :                         X-&gt;circular_link.remove(ZF);</span>
+<span class="lineNum">     880 </span>            :                 }
+<span class="lineNum">     881 </span>            :                 //multiple full children - must be placed in a P-node
+<span class="lineNum">     882 </span>            :                 else
+<span class="lineNum">     883 </span>            :                 {
+<span class="lineNum">     884 </span>            :                         //create ZF to be a new p-node
+<span class="lineNum">     885 </span><span class="lineNoCov">          0 :                         ZF=new pqnode&lt;T&gt;;</span>
+<span class="lineNum">     886 </span><span class="lineNoCov">          0 :                         ZF-&gt;label=full;</span>
+<span class="lineNum">     887 </span><span class="lineNoCov">          0 :                         ZF-&gt;type=pnode;</span>
+<span class="lineNum">     888 </span>            : 
+<span class="lineNum">     889 </span>            :                         //for all the full nodes in X, set their parent to be ZF
+<span class="lineNum">     890 </span><span class="lineNoCov">          0 :                         for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator W=X-&gt;full_children.begin();W!=X-&gt;full_children.end();W++)</span>
+<span class="lineNum">     891 </span>            :                         {
+<span class="lineNum">     892 </span><span class="lineNoCov">          0 :                                 (*W)-&gt;parent=ZF;</span>
+<span class="lineNum">     893 </span><span class="lineNoCov">          0 :                                 (*W)-&gt;check_parent();</span>
+<span class="lineNum">     894 </span><span class="lineNoCov">          0 :                                 X-&gt;circular_link.remove(*W);</span>
+<span class="lineNum">     895 </span><span class="lineNoCov">          0 :                                 ZF-&gt;circular_link.push_back(*W);</span>
+<span class="lineNum">     896 </span>            :                         }
+<span class="lineNum">     897 </span>            :                 }
+<span class="lineNum">     898 </span><span class="lineNoCov">          0 :                 X-&gt;full_children.clear();</span>
+<span class="lineNum">     899 </span>            :                 
+<span class="lineNum">     900 </span>            :                 //more updates
+<span class="lineNum">     901 </span><span class="lineNoCov">          0 :                 ZF-&gt;parent=Y;</span>
+<span class="lineNum">     902 </span><span class="lineNoCov">          0 :                 ZF-&gt;check_parent();</span>
+<span class="lineNum">     903 </span><span class="lineNoCov">          0 :                 FC-&gt;immediate_siblings.insert(ZF);                   </span>
+<span class="lineNum">     904 </span><span class="lineNoCov">          0 :                 ZF-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">     905 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[0]==FC)</span>
+<span class="lineNum">     906 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[0]=ZF;</span>
+<span class="lineNum">     907 </span><span class="lineNoCov">          0 :                 else if(Y-&gt;endmost_children[1]==FC)</span>
+<span class="lineNum">     908 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[1]=ZF;                   </span>
+<span class="lineNum">     909 </span>            :         }
+<span class="lineNum">     910 </span>            : 
+<span class="lineNum">     911 </span>            :         //if X still has some empty children, insert them       
+<span class="lineNum">     912 </span><span class="lineNoCov">          0 :         if(X-&gt;child_count()&gt;0)</span>
+<span class="lineNum">     913 </span>            :         {
+<span class="lineNum">     914 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt; *ZE=NULL;</span>
+<span class="lineNum">     915 </span><span class="lineNoCov">          0 :                 if(X-&gt;child_count()==1)</span>
+<span class="lineNum">     916 </span><span class="lineNoCov">          0 :                         ZE=ES;</span>
+<span class="lineNum">     917 </span>            :                 else
+<span class="lineNum">     918 </span>            :                 {
+<span class="lineNum">     919 </span><span class="lineNoCov">          0 :                         ZE=X;</span>
+<span class="lineNum">     920 </span><span class="lineNoCov">          0 :                         ZE-&gt;label=empty;</span>
+<span class="lineNum">     921 </span><span class="lineNoCov">          0 :                         ZE-&gt;immediate_siblings.clear();</span>
+<span class="lineNum">     922 </span>            :                 }
+<span class="lineNum">     923 </span><span class="lineNoCov">          0 :                 ZE-&gt;parent=Y;</span>
+<span class="lineNum">     924 </span><span class="lineNoCov">          0 :                 ZE-&gt;check_parent();</span>
+<span class="lineNum">     925 </span><span class="lineNoCov">          0 :                 EC-&gt;immediate_siblings.insert(ZE);</span>
+<span class="lineNum">     926 </span><span class="lineNoCov">          0 :                 ZE-&gt;immediate_siblings.insert(EC);</span>
+<span class="lineNum">     927 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[0]==EC)</span>
+<span class="lineNum">     928 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[0]=ZE;</span>
+<span class="lineNum">     929 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[1]==EC)</span>
+<span class="lineNum">     930 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[1]=ZE;</span>
+<span class="lineNum">     931 </span>            :         }
+<span class="lineNum">     932 </span><span class="lineNoCov">          0 :         if(X-&gt;child_count()&lt;2)</span>
+<span class="lineNum">     933 </span>            :         {
+<span class="lineNum">     934 </span>            :                 //we want to delete X, but not it's children
+<span class="lineNum">     935 </span><span class="lineNoCov">          0 :                 X-&gt;circular_link.clear();</span>
+<span class="lineNum">     936 </span><span class="lineNoCov">          0 :                 delete X;               </span>
+<span class="lineNum">     937 </span>            :         }
+<span class="lineNum">     938 </span>            :         
+<span class="lineNum">     939 </span>            : 
+<span class="lineNum">     940 </span>            :         return true;
+<span class="lineNum">     941 </span>            : }
+<span class="lineNum">     942 </span>            : 
+<span class="lineNum">     943 </span>            : template &lt;class T&gt;
+<span class="lineNum">     944 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::template_P6(pqnode&lt;T&gt;* X)</span>
+<span class="lineNum">     945 </span>            : {
+<span class="lineNum">     946 </span>            :         //check against the pattern
+<span class="lineNum">     947 </span><span class="lineNoCov">          0 :         if(X-&gt;type!=pnode)</span>
+<span class="lineNum">     948 </span>            :                 return false;
+<span class="lineNum">     949 </span><span class="lineNoCov">          0 :         if(X-&gt;partial_children.size()!=2)</span>
+<span class="lineNum">     950 </span>            :                 return false;
+<span class="lineNum">     951 </span>            : 
+<span class="lineNum">     952 </span>            :         
+<span class="lineNum">     953 </span>            :         //Y is the first partial Q-node from which we shall build
+<span class="lineNum">     954 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* Y=*X-&gt;partial_children.begin();</span>
+<span class="lineNum">     955 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* Z=*(++(X-&gt;partial_children.begin()));</span>
+<span class="lineNum">     956 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* EC=NULL;</span>
+<span class="lineNum">     957 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt;* FC=NULL;  //empty/full child/sibling of Y</span>
+<span class="lineNum">     958 </span>            : 
+<span class="lineNum">     959 </span><span class="lineNoCov">          0 :         pqnode&lt;T&gt; *ZF=NULL;       //the child of Y created to hold full X's children</span>
+<span class="lineNum">     960 </span>            : 
+<span class="lineNum">     961 </span>            :         //find the empty and full endmost child of Y
+<span class="lineNum">     962 </span><span class="lineNoCov">          0 :         if(Y-&gt;endmost_children[0]-&gt;label==empty)</span>
+<span class="lineNum">     963 </span>            :         {
+<span class="lineNum">     964 </span><span class="lineNoCov">          0 :                 EC=Y-&gt;endmost_children[0];</span>
+<span class="lineNum">     965 </span><span class="lineNoCov">          0 :                 FC=Y-&gt;endmost_children[1];</span>
+<span class="lineNum">     966 </span>            :         }
+<span class="lineNum">     967 </span>            :         else
+<span class="lineNum">     968 </span>            :         {
+<span class="lineNum">     969 </span><span class="lineNoCov">          0 :                 EC=Y-&gt;endmost_children[1];</span>
+<span class="lineNum">     970 </span><span class="lineNoCov">          0 :                 FC=Y-&gt;endmost_children[0];</span>
+<span class="lineNum">     971 </span>            :         }
+<span class="lineNum">     972 </span>            :         //check that we are indeed matching the pattern
+<span class="lineNum">     973 </span><span class="lineNoCov">          0 :         if(EC-&gt;label!=empty || FC-&gt;label==empty)</span>
+<span class="lineNum">     974 </span>            :                 return false;
+<span class="lineNum">     975 </span>            :                 
+<span class="lineNum">     976 </span><span class="lineNoCov">          0 :         if(debugOut)</span>
+<span class="lineNum">     977 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;&quot;P6 is running&quot;&lt;&lt;endl;</span>
+<span class="lineNum">     978 </span>            : 
+<span class="lineNum">     979 </span>            :         //move the full children of X to be children of Y
+<span class="lineNum">     980 </span><span class="lineNoCov">          0 :         if(X-&gt;full_children.size()&gt;0)</span>
+<span class="lineNum">     981 </span>            :         {
+<span class="lineNum">     982 </span>            :                 //only 1 full child
+<span class="lineNum">     983 </span><span class="lineNoCov">          0 :                 if(X-&gt;full_children.size()==1)</span>
+<span class="lineNum">     984 </span>            :                 {
+<span class="lineNum">     985 </span><span class="lineNoCov">          0 :                         ZF=*(X-&gt;full_children.begin());</span>
+<span class="lineNum">     986 </span><span class="lineNoCov">          0 :                         X-&gt;circular_link.remove(ZF);</span>
+<span class="lineNum">     987 </span>            :                 }
+<span class="lineNum">     988 </span>            :                 //multiple full children - must be placed in a P-node
+<span class="lineNum">     989 </span>            :                 else
+<span class="lineNum">     990 </span>            :                 {
+<span class="lineNum">     991 </span>            :                         //create ZF to be a new p-node
+<span class="lineNum">     992 </span><span class="lineNoCov">          0 :                         ZF=new pqnode&lt;T&gt;;</span>
+<span class="lineNum">     993 </span><span class="lineNoCov">          0 :                         ZF-&gt;label=full;</span>
+<span class="lineNum">     994 </span><span class="lineNoCov">          0 :                         ZF-&gt;type=pnode;</span>
+<span class="lineNum">     995 </span>            : 
+<span class="lineNum">     996 </span>            :                         //for all the full nodes in X, set their parent to be ZF
+<span class="lineNum">     997 </span><span class="lineNoCov">          0 :                         for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator W=X-&gt;full_children.begin();W!=X-&gt;full_children.end();W++)</span>
+<span class="lineNum">     998 </span>            :                         {
+<span class="lineNum">     999 </span><span class="lineNoCov">          0 :                                 (*W)-&gt;parent=ZF;</span>
+<span class="lineNum">    1000 </span><span class="lineNoCov">          0 :                                 (*W)-&gt;check_parent();</span>
+<span class="lineNum">    1001 </span><span class="lineNoCov">          0 :                                 X-&gt;circular_link.remove(*W);</span>
+<span class="lineNum">    1002 </span><span class="lineNoCov">          0 :                                 ZF-&gt;circular_link.push_back(*W);</span>
+<span class="lineNum">    1003 </span>            :                         }
+<span class="lineNum">    1004 </span>            :                 }
+<span class="lineNum">    1005 </span>            :                 //more updates
+<span class="lineNum">    1006 </span><span class="lineNoCov">          0 :                 ZF-&gt;parent=Y;</span>
+<span class="lineNum">    1007 </span><span class="lineNoCov">          0 :                 ZF-&gt;check_parent();</span>
+<span class="lineNum">    1008 </span><span class="lineNoCov">          0 :                 FC-&gt;immediate_siblings.insert(ZF);                   </span>
+<span class="lineNum">    1009 </span><span class="lineNoCov">          0 :                 ZF-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">    1010 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[0]==FC)</span>
+<span class="lineNum">    1011 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[0]=ZF;</span>
+<span class="lineNum">    1012 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[1]==FC)</span>
+<span class="lineNum">    1013 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[1]=ZF;                   </span>
+<span class="lineNum">    1014 </span>            :                 
+<span class="lineNum">    1015 </span>            :                 //now, incorporate the other partial child
+<span class="lineNum">    1016 </span>            : 
+<span class="lineNum">    1017 </span>            :                 //find the empty and full endmost child of Z
+<span class="lineNum">    1018 </span><span class="lineNoCov">          0 :                 if(Z-&gt;endmost_children[0]-&gt;label==empty)</span>
+<span class="lineNum">    1019 </span>            :                 {
+<span class="lineNum">    1020 </span><span class="lineNoCov">          0 :                         EC=Z-&gt;endmost_children[0];</span>
+<span class="lineNum">    1021 </span><span class="lineNoCov">          0 :                         FC=Z-&gt;endmost_children[1];</span>
+<span class="lineNum">    1022 </span>            :                 }
+<span class="lineNum">    1023 </span>            :                 else
+<span class="lineNum">    1024 </span>            :                 {
+<span class="lineNum">    1025 </span><span class="lineNoCov">          0 :                         EC=Z-&gt;endmost_children[1];</span>
+<span class="lineNum">    1026 </span><span class="lineNoCov">          0 :                         FC=Z-&gt;endmost_children[0];</span>
+<span class="lineNum">    1027 </span>            :                 }
+<span class="lineNum">    1028 </span>            :                 //check that we are indeed matching the pattern
+<span class="lineNum">    1029 </span><span class="lineNoCov">          0 :                 if(EC-&gt;label!=empty || FC-&gt;label==empty)</span>
+<span class="lineNum">    1030 </span>            :                         return false;
+<span class="lineNum">    1031 </span>            : 
+<span class="lineNum">    1032 </span>            :                 //connect the children of the two partials together
+<span class="lineNum">    1033 </span><span class="lineNoCov">          0 :                 ZF-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">    1034 </span><span class="lineNoCov">          0 :                 FC-&gt;immediate_siblings.insert(ZF);</span>
+<span class="lineNum">    1035 </span>            : 
+<span class="lineNum">    1036 </span>            :                 //adjust the parent Y
+<span class="lineNum">    1037 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[0]==ZF)</span>
+<span class="lineNum">    1038 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[0]=EC;</span>
+<span class="lineNum">    1039 </span><span class="lineNoCov">          0 :                 if(Y-&gt;endmost_children[1]==ZF)</span>
+<span class="lineNum">    1040 </span><span class="lineNoCov">          0 :                         Y-&gt;endmost_children[1]=EC;</span>
+<span class="lineNum">    1041 </span><span class="lineNoCov">          0 :                 FC-&gt;parent=Y;</span>
+<span class="lineNum">    1042 </span><span class="lineNoCov">          0 :                 FC-&gt;check_parent();</span>
+<span class="lineNum">    1043 </span><span class="lineNoCov">          0 :                 EC-&gt;parent=Y;</span>
+<span class="lineNum">    1044 </span><span class="lineNoCov">          0 :                 EC-&gt;check_parent();</span>
+<span class="lineNum">    1045 </span>            :         }
+<span class="lineNum">    1046 </span>            :         else    //no full children
+<span class="lineNum">    1047 </span>            :         {
+<span class="lineNum">    1048 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt; *ZFC=NULL;      //Z's full child</span>
+<span class="lineNum">    1049 </span>            : 
+<span class="lineNum">    1050 </span>            :                 //figure out which sides of Y and Z to connect together
+<span class="lineNum">    1051 </span><span class="lineNoCov">          0 :                 if(Z-&gt;endmost_children[0]-&gt;label==full)</span>
+<span class="lineNum">    1052 </span>            :                 {
+<span class="lineNum">    1053 </span><span class="lineNoCov">          0 :                         ZFC=Z-&gt;endmost_children[0];</span>
+<span class="lineNum">    1054 </span><span class="lineNoCov">          0 :                         if(Y-&gt;endmost_children[0]==FC)</span>
+<span class="lineNum">    1055 </span><span class="lineNoCov">          0 :                                 Y-&gt;endmost_children[0]=Z-&gt;endmost_children[1];</span>
+<span class="lineNum">    1056 </span><span class="lineNoCov">          0 :                         if(Y-&gt;endmost_children[1]==FC)</span>
+<span class="lineNum">    1057 </span><span class="lineNoCov">          0 :                                 Y-&gt;endmost_children[1]=Z-&gt;endmost_children[1];</span>
+<span class="lineNum">    1058 </span>            :                 }
+<span class="lineNum">    1059 </span>            :                 else
+<span class="lineNum">    1060 </span>            :                 {
+<span class="lineNum">    1061 </span><span class="lineNoCov">          0 :                         ZFC=Z-&gt;endmost_children[1];</span>
+<span class="lineNum">    1062 </span><span class="lineNoCov">          0 :                         if(Y-&gt;endmost_children[0]==FC)</span>
+<span class="lineNum">    1063 </span><span class="lineNoCov">          0 :                                 Y-&gt;endmost_children[0]=Z-&gt;endmost_children[0];</span>
+<span class="lineNum">    1064 </span><span class="lineNoCov">          0 :                         if(Y-&gt;endmost_children[1]==FC)</span>
+<span class="lineNum">    1065 </span><span class="lineNoCov">          0 :                                 Y-&gt;endmost_children[1]=Z-&gt;endmost_children[0];</span>
+<span class="lineNum">    1066 </span>            :                 }
+<span class="lineNum">    1067 </span><span class="lineNoCov">          0 :                 Y-&gt;endmost_children[0]-&gt;parent=Y;</span>
+<span class="lineNum">    1068 </span><span class="lineNoCov">          0 :                 Y-&gt;endmost_children[0]-&gt;check_parent();</span>
+<span class="lineNum">    1069 </span><span class="lineNoCov">          0 :                 Y-&gt;endmost_children[1]-&gt;parent=Y;</span>
+<span class="lineNum">    1070 </span><span class="lineNoCov">          0 :                 Y-&gt;endmost_children[1]-&gt;check_parent();</span>
+<span class="lineNum">    1071 </span>            : 
+<span class="lineNum">    1072 </span><span class="lineNoCov">          0 :                 FC-&gt;immediate_siblings.insert(ZFC);</span>
+<span class="lineNum">    1073 </span><span class="lineNoCov">          0 :                 ZFC-&gt;immediate_siblings.insert(FC);</span>
+<span class="lineNum">    1074 </span>            :         }
+<span class="lineNum">    1075 </span>            :                 
+<span class="lineNum">    1076 </span>            :         
+<span class="lineNum">    1077 </span>            :         //adjust the root X
+<span class="lineNum">    1078 </span>            :         //we dont need Z any more
+<span class="lineNum">    1079 </span><span class="lineNoCov">          0 :         X-&gt;circular_link.remove(Z);</span>
+<span class="lineNum">    1080 </span><span class="lineNoCov">          0 :         Z-&gt;endmost_children[0]=NULL;</span>
+<span class="lineNum">    1081 </span><span class="lineNoCov">          0 :         Z-&gt;endmost_children[1]=NULL;</span>
+<span class="lineNum">    1082 </span><span class="lineNoCov">          0 :         delete Z;</span>
+<span class="lineNum">    1083 </span>            : 
+<span class="lineNum">    1084 </span>            :         //if X now only has one child, get rid of X
+<span class="lineNum">    1085 </span><span class="lineNoCov">          0 :         if(X-&gt;circular_link.size()==1)</span>
+<span class="lineNum">    1086 </span>            :         {
+<span class="lineNum">    1087 </span>            :         
+<span class="lineNum">    1088 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* theParent = X-&gt;parent;</span>
+<span class="lineNum">    1089 </span><span class="lineNoCov">          0 :                 Y-&gt;parent = X-&gt;parent;</span>
+<span class="lineNum">    1090 </span><span class="lineNoCov">          0 :                 Y-&gt;pertinent_leaf_count = X-&gt;pertinent_leaf_count;</span>
+<span class="lineNum">    1091 </span><span class="lineNoCov">          0 :                 Y-&gt;label=partial;</span>
+<span class="lineNum">    1092 </span>            :         
+<span class="lineNum">    1093 </span><span class="lineNoCov">          0 :                 if(theParent!=NULL)     //parent is not root of tree</span>
+<span class="lineNum">    1094 </span>            :                 {       
+<span class="lineNum">    1095 </span>            :                         //add Y to it's parent's list of partial children
+<span class="lineNum">    1096 </span><span class="lineNoCov">          0 :                         theParent-&gt;partial_children.insert(Y);</span>
+<span class="lineNum">    1097 </span>            :         
+<span class="lineNum">    1098 </span>            :                         //update parent to handle the switch
+<span class="lineNum">    1099 </span><span class="lineNoCov">          0 :                         if(theParent-&gt;type==pnode)</span>
+<span class="lineNum">    1100 </span>            :                         {
+<span class="lineNum">    1101 </span><span class="lineNoCov">          0 :                                 theParent-&gt;circular_link.remove(X);  </span>
+<span class="lineNum">    1102 </span><span class="lineNoCov">          0 :                                 theParent-&gt;circular_link.push_back(Y);</span>
+<span class="lineNum">    1103 </span>            :                         }
+<span class="lineNum">    1104 </span>            :                         else    //parent is a Q-node
+<span class="lineNum">    1105 </span>            :                         {
+<span class="lineNum">    1106 </span>            :                                 //update the immediate siblings list by removing X and adding Y
+<span class="lineNum">    1107 </span><span class="lineNoCov">          0 :                                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;immediate_siblings.begin();i!=X-&gt;immediate_siblings.end();i++)</span>
+<span class="lineNum">    1108 </span>            :                                 {
+<span class="lineNum">    1109 </span><span class="lineNoCov">          0 :                                         (*i)-&gt;immediate_siblings.erase(X);</span>
+<span class="lineNum">    1110 </span><span class="lineNoCov">          0 :                                         (*i)-&gt;immediate_siblings.insert(Y);</span>
+<span class="lineNum">    1111 </span>            :                                 }
+<span class="lineNum">    1112 </span><span class="lineNoCov">          0 :                                 if(theParent-&gt;endmost_children[0]==X)</span>
+<span class="lineNum">    1113 </span><span class="lineNoCov">          0 :                                         theParent-&gt;endmost_children[0]=Y;</span>
+<span class="lineNum">    1114 </span><span class="lineNoCov">          0 :                                 if(theParent-&gt;endmost_children[1]==X)</span>
+<span class="lineNum">    1115 </span><span class="lineNoCov">          0 :                                         theParent-&gt;endmost_children[1]=Y;</span>
+<span class="lineNum">    1116 </span>            :                         }
+<span class="lineNum">    1117 </span>            :                 }
+<span class="lineNum">    1118 </span>            :                 else    //this is the root of our tree, act accordingly
+<span class="lineNum">    1119 </span>            :                 {
+<span class="lineNum">    1120 </span><span class="lineNoCov">          0 :                         root=Y;</span>
+<span class="lineNum">    1121 </span><span class="lineNoCov">          0 :                         Y-&gt;parent=NULL;</span>
+<span class="lineNum">    1122 </span>            :                         
+<span class="lineNum">    1123 </span>            :                         //delete X, but not it's children
+<span class="lineNum">    1124 </span><span class="lineNoCov">          0 :                         X-&gt;circular_link.clear();</span>
+<span class="lineNum">    1125 </span><span class="lineNoCov">          0 :                         delete X;</span>
+<span class="lineNum">    1126 </span>            :                 }       
+<span class="lineNum">    1127 </span>            :         }
+<span class="lineNum">    1128 </span>            :         return true;
+<span class="lineNum">    1129 </span>            : }
+<span class="lineNum">    1130 </span>            : 
+<span class="lineNum">    1131 </span>            : //This procedure is the first pass of the Booth&amp;Leuker PQTree algorithm
+<span class="lineNum">    1132 </span>            : //It processes the pertinent subtree of the PQ-Tree to determine the mark
+<span class="lineNum">    1133 </span>            : //of every node in that subtree
+<span class="lineNum">    1134 </span>            : //the pseudonode, if created, is returned so that it can be deleted at
+<span class="lineNum">    1135 </span>            : //the end of the reduce step
+<span class="lineNum">    1136 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1137 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::bubble(set&lt;T&gt; S)</span>
+<span class="lineNum">    1138 </span>            : {
+<span class="lineNum">    1139 </span><span class="lineNoCov">          0 :         if(debugOut) {</span>
+<span class="lineNum">    1140 </span><span class="lineNoCov">          0 :         cerr&lt;&lt;&quot;Running bubble on set &quot;;</span>
+<span class="lineNum">    1141 </span><span class="lineNoCov">          0 :         for(typename set&lt;T&gt;::iterator i=S.begin();i!=S.end();i++)</span>
+<span class="lineNum">    1142 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;*i&lt;&lt;&quot;,&quot;;</span>
+<span class="lineNum">    1143 </span>            :         cerr&lt;&lt;endl;}
+<span class="lineNum">    1144 </span>            :         //initialize variables
+<span class="lineNum">    1145 </span><span class="lineNoCov">          0 :         queue&lt;pqnode&lt;T&gt;*&gt; q;</span>
+<span class="lineNum">    1146 </span><span class="lineNoCov">          0 :         block_count=0;</span>
+<span class="lineNum">    1147 </span><span class="lineNoCov">          0 :         blocked_nodes=0;</span>
+<span class="lineNum">    1148 </span><span class="lineNoCov">          0 :         off_the_top=0;</span>
+<span class="lineNum">    1149 </span>            :         
+<span class="lineNum">    1150 </span><span class="lineNoCov">          0 :         set&lt;pqnode&lt;T&gt;* &gt; blocked_list;      //stores blocked guys that arent unblocked</span>
+<span class="lineNum">    1151 </span>            : 
+<span class="lineNum">    1152 </span>            :         //insert the set's leaves into the queue
+<span class="lineNum">    1153 </span><span class="lineNoCov">          0 :         for(typename set&lt;T&gt;::iterator i=S.begin();i!=S.end();i++)</span>
+<span class="lineNum">    1154 </span>            :         {
+<span class="lineNum">    1155 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt; *temp=leafAddress[*i];</span>
+<span class="lineNum">    1156 </span><span class="lineNoCov">          0 :                 if(temp==NULL)  //make sure we have this in our leaves already</span>
+<span class="lineNum">    1157 </span><span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">    1158 </span><span class="lineNoCov">          0 :                 q.push(temp);</span>
+<span class="lineNum">    1159 </span>            :         }
+<span class="lineNum">    1160 </span>            : 
+<span class="lineNum">    1161 </span><span class="lineNoCov">          0 :         while(q.size()+block_count+off_the_top&gt;1)</span>
+<span class="lineNum">    1162 </span>            :         {
+<span class="lineNum">    1163 </span>            :                 //check to see if there are still guys in the queue
+<span class="lineNum">    1164 </span><span class="lineNoCov">          0 :                 if(q.empty())</span>
+<span class="lineNum">    1165 </span><span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">    1166 </span>            :                 
+<span class="lineNum">    1167 </span>            :                 //remove X from the front of the queue
+<span class="lineNum">    1168 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* X = q.front();</span>
+<span class="lineNum">    1169 </span><span class="lineNoCov">          0 :                 q.pop();</span>
+<span class="lineNum">    1170 </span>            :                 
+<span class="lineNum">    1171 </span>            : 
+<span class="lineNum">    1172 </span>            :                 //mark X as blocked
+<span class="lineNum">    1173 </span><span class="lineNoCov">          0 :                 X-&gt;mark=blocked;</span>
+<span class="lineNum">    1174 </span>            :                 
+<span class="lineNum">    1175 </span>            :                 //get the set of blocked and unblocked siblings
+<span class="lineNum">    1176 </span><span class="lineNoCov">          0 :                 set&lt;pqnode&lt;T&gt; *&gt; US, BS;</span>
+<span class="lineNum">    1177 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt; *&gt;::iterator i=X-&gt;immediate_siblings.begin();i!=X-&gt;immediate_siblings.end();i++)</span>
+<span class="lineNum">    1178 </span>            :                 {
+<span class="lineNum">    1179 </span><span class="lineNoCov">          0 :                         if((*i)-&gt;mark==blocked)</span>
+<span class="lineNum">    1180 </span><span class="lineNoCov">          0 :                                 BS.insert(*i);</span>
+<span class="lineNum">    1181 </span><span class="lineNoCov">          0 :                         if((*i)-&gt;mark==unblocked)</span>
+<span class="lineNum">    1182 </span><span class="lineNoCov">          0 :                                 US.insert(*i);</span>
+<span class="lineNum">    1183 </span>            :                 }
+<span class="lineNum">    1184 </span>            :                 //we can assign a parent to X if one of its immediate siblings is unblocked
+<span class="lineNum">    1185 </span>            :                 //or it has 0/1 immediate siblings meaning it is a corner child of a q node
+<span class="lineNum">    1186 </span>            :                 //or a child of a p node
+<span class="lineNum">    1187 </span><span class="lineNoCov">          0 :                 if(!US.empty())</span>
+<span class="lineNum">    1188 </span>            :                 {
+<span class="lineNum">    1189 </span><span class="lineNoCov">          0 :                         X-&gt;parent=(*US.begin())-&gt;parent;</span>
+<span class="lineNum">    1190 </span><span class="lineNoCov">          0 :                         X-&gt;check_parent();</span>
+<span class="lineNum">    1191 </span><span class="lineNoCov">          0 :                         X-&gt;mark=unblocked;</span>
+<span class="lineNum">    1192 </span>            :                 }
+<span class="lineNum">    1193 </span><span class="lineNoCov">          0 :                 else if(X-&gt;immediate_siblings.size()&lt;2)</span>
+<span class="lineNum">    1194 </span><span class="lineNoCov">          0 :                                 X-&gt;mark=unblocked;</span>
+<span class="lineNum">    1195 </span>            :                 
+<span class="lineNum">    1196 </span>            :                 //if it is unblocked, we can process it
+<span class="lineNum">    1197 </span><span class="lineNoCov">          0 :                 if(X-&gt;mark==unblocked)</span>
+<span class="lineNum">    1198 </span>            :                 {
+<span class="lineNum">    1199 </span><span class="lineNoCov">          0 :                         int listSize=0;</span>
+<span class="lineNum">    1200 </span><span class="lineNoCov">          0 :                         pqnode&lt;T&gt;* Y=X-&gt;parent;</span>
+<span class="lineNum">    1201 </span><span class="lineNoCov">          0 :                         if(!BS.empty())</span>
+<span class="lineNum">    1202 </span>            :                         {
+<span class="lineNum">    1203 </span><span class="lineNoCov">          0 :                                 X-&gt;mark=blocked;     //will be unblocked by recursive unblocksiblings</span>
+<span class="lineNum">    1204 </span><span class="lineNoCov">          0 :                                 listSize=unblockSiblings(X,Y,NULL);</span>
+<span class="lineNum">    1205 </span><span class="lineNoCov">          0 :                                 Y-&gt;pertinent_child_count+=listSize-1;</span>
+<span class="lineNum">    1206 </span>            :                         }
+<span class="lineNum">    1207 </span>            :                         
+<span class="lineNum">    1208 </span><span class="lineNoCov">          0 :                         if(Y==NULL)     //currently at root node</span>
+<span class="lineNum">    1209 </span><span class="lineNoCov">          0 :                                 off_the_top=1;</span>
+<span class="lineNum">    1210 </span>            :                         else
+<span class="lineNum">    1211 </span>            :                         {
+<span class="lineNum">    1212 </span><span class="lineNoCov">          0 :                                 Y-&gt;pertinent_child_count++;</span>
+<span class="lineNum">    1213 </span><span class="lineNoCov">          0 :                                 if(Y-&gt;mark==unmarked)</span>
+<span class="lineNum">    1214 </span>            :                                 {
+<span class="lineNum">    1215 </span><span class="lineNoCov">          0 :                                         q.push(Y);</span>
+<span class="lineNum">    1216 </span><span class="lineNoCov">          0 :                                         Y-&gt;mark=queued;</span>
+<span class="lineNum">    1217 </span>            :                                 }
+<span class="lineNum">    1218 </span>            :                         }
+<span class="lineNum">    1219 </span><span class="lineNoCov">          0 :                         block_count-=BS.size();</span>
+<span class="lineNum">    1220 </span><span class="lineNoCov">          0 :                         blocked_nodes-=listSize;                                        </span>
+<span class="lineNum">    1221 </span>            :                 }
+<span class="lineNum">    1222 </span>            :                 else
+<span class="lineNum">    1223 </span>            :                 {
+<span class="lineNum">    1224 </span><span class="lineNoCov">          0 :                         block_count+=1-BS.size();</span>
+<span class="lineNum">    1225 </span><span class="lineNoCov">          0 :                         blocked_nodes+=1;</span>
+<span class="lineNum">    1226 </span>            :                         blocked_list.insert(X);
+<span class="lineNum">    1227 </span>            :                 }
+<span class="lineNum">    1228 </span>            :         }
+<span class="lineNum">    1229 </span>            : 
+<span class="lineNum">    1230 </span><span class="lineNoCov">          0 :         if(block_count&gt;1 || (off_the_top==1 &amp;&amp; block_count!=0))</span>
+<span class="lineNum">    1231 </span>            :                 return false;
+<span class="lineNum">    1232 </span>            : 
+<span class="lineNum">    1233 </span>            :         
+<span class="lineNum">    1234 </span><span class="lineNoCov">          0 :         int correctblockedcount=0;</span>
+<span class="lineNum">    1235 </span><span class="lineNoCov">          0 :         for(typename set&lt;pqnode&lt;T&gt;*&gt;::iterator i=blocked_list.begin();i!=blocked_list.end();i++)</span>
+<span class="lineNum">    1236 </span><span class="lineNoCov">          0 :                         if((*i)-&gt;mark==blocked)</span>
+<span class="lineNum">    1237 </span><span class="lineNoCov">          0 :                                 correctblockedcount++;</span>
+<span class="lineNum">    1238 </span>            : 
+<span class="lineNum">    1239 </span>            :         //in this case, we have a block that is contained within a Q-node
+<span class="lineNum">    1240 </span>            :         //we must assign a psuedonode Z of type Q-node to handle it
+<span class="lineNum">    1241 </span><span class="lineNoCov">          0 :         if(block_count==1 &amp;&amp; correctblockedcount&gt;1)</span>
+<span class="lineNum">    1242 </span>            :         {
+<span class="lineNum">    1243 </span><span class="lineNoCov">          0 :                 pseudonode=new pqnode&lt;T&gt;;</span>
+<span class="lineNum">    1244 </span><span class="lineNoCov">          0 :                 if(debugOut)</span>
+<span class="lineNum">    1245 </span><span class="lineNoCov">          0 :                         cerr&lt;&lt;&quot;pseudonode&quot;&lt;&lt;pseudonode&lt;&lt;endl;</span>
+<span class="lineNum">    1246 </span><span class="lineNoCov">          0 :                 pseudonode-&gt;type=qnode;</span>
+<span class="lineNum">    1247 </span><span class="lineNoCov">          0 :                 pseudonode-&gt;pseudonode=true;</span>
+<span class="lineNum">    1248 </span><span class="lineNoCov">          0 :                 int side=0;</span>
+<span class="lineNum">    1249 </span><span class="lineNoCov">          0 :                 pseudonode-&gt;pertinent_child_count=0;</span>
+<span class="lineNum">    1250 </span>            :                 
+<span class="lineNum">    1251 </span>            :                 //figure out which nodes are still blocked
+<span class="lineNum">    1252 </span>            :                 //and which of those are the endmost children
+<span class="lineNum">    1253 </span><span class="lineNoCov">          0 :                 for(typename set&lt;pqnode&lt;T&gt;*&gt;::iterator i=blocked_list.begin();i!=blocked_list.end();i++)</span>
+<span class="lineNum">    1254 </span><span class="lineNoCov">          0 :                         if((*i)-&gt;mark==blocked)</span>
+<span class="lineNum">    1255 </span>            :                         {
+<span class="lineNum">    1256 </span><span class="lineNoCov">          0 :                                 if(debugOut)</span>
+<span class="lineNum">    1257 </span><span class="lineNoCov">          0 :                                         cerr&lt;&lt;&quot;blocked: &quot;&lt;&lt;*i&lt;&lt;endl;</span>
+<span class="lineNum">    1258 </span><span class="lineNoCov">          0 :                                 pseudonode-&gt;pertinent_child_count++;</span>
+<span class="lineNum">    1259 </span><span class="lineNoCov">          0 :                                 pseudonode-&gt;pertinent_leaf_count+=(*i)-&gt;pertinent_leaf_count;</span>
+<span class="lineNum">    1260 </span><span class="lineNoCov">          0 :                                 int count=0;    //count number of immediate siblings</span>
+<span class="lineNum">    1261 </span><span class="lineNoCov">          0 :                                 int loop=0;</span>
+<span class="lineNum">    1262 </span><span class="lineNoCov">          0 :                                 for(typename set&lt;pqnode&lt;T&gt;*&gt;::iterator j=(*i)-&gt;immediate_siblings.begin();j!=(*i)-&gt;immediate_siblings.end() &amp;&amp; loop&lt;2;j++)</span>
+<span class="lineNum">    1263 </span>            :                                 {
+<span class="lineNum">    1264 </span><span class="lineNoCov">          0 :                                         loop++;</span>
+<span class="lineNum">    1265 </span>            : 
+<span class="lineNum">    1266 </span><span class="lineNoCov">          0 :                                         if((*j)-&gt;mark==blocked)</span>
+<span class="lineNum">    1267 </span><span class="lineNoCov">          0 :                                                 count++;</span>
+<span class="lineNum">    1268 </span>            :                                         else
+<span class="lineNum">    1269 </span>            :                                         {
+<span class="lineNum">    1270 </span><span class="lineNoCov">          0 :                                                 (*i)-&gt;immediate_siblings.erase(*j);</span>
+<span class="lineNum">    1271 </span><span class="lineNoCov">          0 :                                                 (*j)-&gt;immediate_siblings.erase(*i);</span>
+<span class="lineNum">    1272 </span><span class="lineNoCov">          0 :                                                 pseudonode-&gt;pseudo_neighbors[side]=*j;</span>
+<span class="lineNum">    1273 </span>            :                                         }
+<span class="lineNum">    1274 </span>            :                                 }
+<span class="lineNum">    1275 </span><span class="lineNoCov">          0 :                                 (*i)-&gt;parent=pseudonode;</span>
+<span class="lineNum">    1276 </span><span class="lineNoCov">          0 :                                 (*i)-&gt;check_parent();</span>
+<span class="lineNum">    1277 </span><span class="lineNoCov">          0 :                                 (*i)-&gt;pseudochild=true;</span>
+<span class="lineNum">    1278 </span><span class="lineNoCov">          0 :                                 if(count&lt;2)</span>
+<span class="lineNum">    1279 </span><span class="lineNoCov">          0 :                                         pseudonode-&gt;endmost_children[side++]=*i;</span>
+<span class="lineNum">    1280 </span>            :                         }
+<span class="lineNum">    1281 </span>            :         }
+<span class="lineNum">    1282 </span>            :         return true;
+<span class="lineNum">    1283 </span>            : }//bool bubble(set&lt;T&gt; S)
+<span class="lineNum">    1284 </span>            : 
+<span class="lineNum">    1285 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1286 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::reduceStep(set&lt;T&gt; S)</span>
+<span class="lineNum">    1287 </span>            : {
+<span class="lineNum">    1288 </span><span class="lineNoCov">          0 :         if(debugOut) {</span>
+<span class="lineNum">    1289 </span><span class="lineNoCov">          0 :         cerr&lt;&lt;&quot;Running reduceStep on set &quot;;</span>
+<span class="lineNum">    1290 </span><span class="lineNoCov">          0 :         for(typename set&lt;T&gt;::iterator i=S.begin();i!=S.end();i++)</span>
+<span class="lineNum">    1291 </span><span class="lineNoCov">          0 :                 cerr&lt;&lt;*i&lt;&lt;&quot;,&quot;;</span>
+<span class="lineNum">    1292 </span>            :         cerr&lt;&lt;endl;}
+<span class="lineNum">    1293 </span>            :         
+<span class="lineNum">    1294 </span>            :         //build a queue with all the pertinent leaves in it
+<span class="lineNum">    1295 </span><span class="lineNoCov">          0 :         queue&lt;pqnode&lt;T&gt;*&gt; q;</span>
+<span class="lineNum">    1296 </span><span class="lineNoCov">          0 :         for(typename set&lt;T&gt;::iterator i=S.begin();i!=S.end();i++)</span>
+<span class="lineNum">    1297 </span>            :         {
+<span class="lineNum">    1298 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* X = leafAddress[*i];</span>
+<span class="lineNum">    1299 </span><span class="lineNoCov">          0 :                 if(X==NULL)</span>
+<span class="lineNum">    1300 </span><span class="lineNoCov">          0 :                         return false;</span>
+<span class="lineNum">    1301 </span><span class="lineNoCov">          0 :                 X-&gt;pertinent_leaf_count=1;</span>
+<span class="lineNum">    1302 </span><span class="lineNoCov">          0 :                 q.push(X);</span>
+<span class="lineNum">    1303 </span>            :         }
+<span class="lineNum">    1304 </span>            :         
+<span class="lineNum">    1305 </span><span class="lineNoCov">          0 :         while(!q.empty())</span>
+<span class="lineNum">    1306 </span>            :         {
+<span class="lineNum">    1307 </span>            :                 //remove X from the front of the queue
+<span class="lineNum">    1308 </span><span class="lineNoCov">          0 :                 pqnode&lt;T&gt;* X = q.front();</span>
+<span class="lineNum">    1309 </span><span class="lineNoCov">          0 :                 q.pop();</span>
+<span class="lineNum">    1310 </span><span class="lineNoCov">          0 :                 if(debugOut) cerr&lt;&lt;&quot;front of queue &quot;&lt;&lt;X&lt;&lt;endl;</span>
+<span class="lineNum">    1311 </span>            : 
+<span class="lineNum">    1312 </span><span class="lineNoCov">          0 :                 if(X-&gt;pertinent_leaf_count&lt;S.size())      //X is not root</span>
+<span class="lineNum">    1313 </span>            :                 {
+<span class="lineNum">    1314 </span><span class="lineNoCov">          0 :                         if(debugOut)    cerr&lt;&lt;&quot;Not Root - &quot;&lt;&lt;X&lt;&lt;endl;</span>
+<span class="lineNum">    1315 </span>            :                         //update X's parent Y
+<span class="lineNum">    1316 </span><span class="lineNoCov">          0 :                         pqnode&lt;T&gt;* Y = X-&gt;parent;</span>
+<span class="lineNum">    1317 </span><span class="lineNoCov">          0 :                         Y-&gt;pertinent_leaf_count+=X-&gt;pertinent_leaf_count;</span>
+<span class="lineNum">    1318 </span><span class="lineNoCov">          0 :                         Y-&gt;pertinent_child_count--;</span>
+<span class="lineNum">    1319 </span>            :                         //push Y onto the queue if it has no more pertinent children
+<span class="lineNum">    1320 </span><span class="lineNoCov">          0 :                         if(Y-&gt;pertinent_child_count==0)</span>
+<span class="lineNum">    1321 </span>            :                                 q.push(Y);
+<span class="lineNum">    1322 </span>            :                         
+<span class="lineNum">    1323 </span>            :                         //testagainst various templates
+<span class="lineNum">    1324 </span><span class="lineNoCov">          0 :                         if(template_L1(X)) {if(debugOut) cerr&lt;&lt;&quot;Running L1&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1325 </span>            :                         
+<span class="lineNum">    1326 </span><span class="lineNoCov">          0 :                         else if(template_P1(X,false)) {if(debugOut) cerr&lt;&lt;&quot;Running P1&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1327 </span><span class="lineNoCov">          0 :                         else if(template_P3(X)) {if(debugOut) cerr&lt;&lt;&quot;Running P3&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1328 </span><span class="lineNoCov">          0 :                         else if(template_P5(X)) {if(debugOut) cerr&lt;&lt;&quot;Running P5&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1329 </span>            :                 
+<span class="lineNum">    1330 </span><span class="lineNoCov">          0 :                         else if(template_Q1(X,false)) {if(debugOut) cerr&lt;&lt;&quot;Running Q1&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1331 </span><span class="lineNoCov">          0 :                         else if(template_Q2(X,false)) {if(debugOut) cerr&lt;&lt;&quot;Running Q2&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1332 </span>            :                         
+<span class="lineNum">    1333 </span>            :                         else
+<span class="lineNum">    1334 </span>            :                         {
+<span class="lineNum">    1335 </span><span class="lineNoCov">          0 :                                 cleanPseudo();</span>
+<span class="lineNum">    1336 </span><span class="lineNoCov">          0 :                                 return false;</span>
+<span class="lineNum">    1337 </span>            :                         }
+<span class="lineNum">    1338 </span>            :                 }
+<span class="lineNum">    1339 </span>            :                 else                                    //X is root
+<span class="lineNum">    1340 </span>            :                 {       
+<span class="lineNum">    1341 </span><span class="lineNoCov">          0 :                         if(debugOut)    cerr&lt;&lt;&quot;Root - &quot;&lt;&lt;X&lt;&lt;endl;</span>
+<span class="lineNum">    1342 </span><span class="lineNoCov">          0 :                         if(template_L1(X)) {if(debugOut) cerr&lt;&lt;&quot;Running L1&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1343 </span>            :                 
+<span class="lineNum">    1344 </span><span class="lineNoCov">          0 :                         else if(template_P1(X,true)) {if(debugOut) cerr&lt;&lt;&quot;Running P1&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1345 </span><span class="lineNoCov">          0 :                         else if(template_P2(X)) {if(debugOut) cerr&lt;&lt;&quot;Running P2&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1346 </span><span class="lineNoCov">          0 :                         else if(template_P4(X)) {if(debugOut) cerr&lt;&lt;&quot;Running P4&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1347 </span><span class="lineNoCov">          0 :                         else if(template_P6(X)) {if(debugOut) cerr&lt;&lt;&quot;Running P6&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1348 </span>            :                 
+<span class="lineNum">    1349 </span><span class="lineNoCov">          0 :                         else if(template_Q1(X,true)) {if(debugOut) cerr&lt;&lt;&quot;Running Q1&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1350 </span><span class="lineNoCov">          0 :                         else if(template_Q2(X,true)) {if(debugOut) cerr&lt;&lt;&quot;Running Q2&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1351 </span><span class="lineNoCov">          0 :                         else if(template_Q3(X)) {if(debugOut) cerr&lt;&lt;&quot;Running Q3&quot;&lt;&lt;endl;}</span>
+<span class="lineNum">    1352 </span>            :                 
+<span class="lineNum">    1353 </span>            :                         else
+<span class="lineNum">    1354 </span>            :                         {
+<span class="lineNum">    1355 </span><span class="lineNoCov">          0 :                                 cleanPseudo();</span>
+<span class="lineNum">    1356 </span>            :                                 return false;
+<span class="lineNum">    1357 </span>            :                         }
+<span class="lineNum">    1358 </span>            :                 }
+<span class="lineNum">    1359 </span>            :         }
+<span class="lineNum">    1360 </span><span class="lineNoCov">          0 :         cleanPseudo();</span>
+<span class="lineNum">    1361 </span>            :         return true;
+<span class="lineNum">    1362 </span>            : }
+<a name="1363"><span class="lineNum">    1363 </span>            : </a>
+<span class="lineNum">    1364 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1365 </span><span class="lineNoCov">          0 : void pqtree&lt;T&gt;::cleanPseudo()</span>
+<span class="lineNum">    1366 </span>            : {
+<span class="lineNum">    1367 </span><span class="lineNoCov">          0 :         if(pseudonode!=NULL)</span>
+<span class="lineNum">    1368 </span>            :         {
+<span class="lineNum">    1369 </span><span class="lineNoCov">          0 :                         for(int i=0;i&lt;2;i++)</span>
+<span class="lineNum">    1370 </span>            :                         {
+<span class="lineNum">    1371 </span><span class="lineNoCov">          0 :                                         pseudonode-&gt;endmost_children[i]-&gt;immediate_siblings.insert(pseudonode-&gt;pseudo_neighbors[i]);</span>
+<span class="lineNum">    1372 </span><span class="lineNoCov">          0 :                                 pseudonode-&gt;pseudo_neighbors[i]-&gt;immediate_siblings.insert(pseudonode-&gt;endmost_children[i]);</span>
+<span class="lineNum">    1373 </span>            :                         }
+<span class="lineNum">    1374 </span>            : 
+<span class="lineNum">    1375 </span><span class="lineNoCov">          0 :                         pseudonode-&gt;endmost_children[0]=NULL;</span>
+<span class="lineNum">    1376 </span><span class="lineNoCov">          0 :                         pseudonode-&gt;endmost_children[1]=NULL;</span>
+<span class="lineNum">    1377 </span><span class="lineNoCov">          0 :                         delete pseudonode;</span>
+<span class="lineNum">    1378 </span><span class="lineNoCov">          0 :                         pseudonode=NULL;</span>
+<span class="lineNum">    1379 </span>            :         }
+<span class="lineNum">    1380 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1381 </span>            : 
+<span class="lineNum">    1382 </span>            : //basic constructor from an initial set
+<span class="lineNum">    1383 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1384 </span><span class="lineNoCov">          0 : pqtree&lt;T&gt;::pqtree(set&lt;T&gt; S)</span>
+<span class="lineNum">    1385 </span>            : {
+<span class="lineNum">    1386 </span>            :         //set up the root node as a P-Node initially
+<span class="lineNum">    1387 </span><span class="lineNoCov">          0 :         root=new pqnode&lt;T&gt;;</span>
+<span class="lineNum">    1388 </span><span class="lineNoCov">          0 :         root-&gt;type=pnode;    </span>
+<span class="lineNum">    1389 </span><span class="lineNoCov">          0 :         invalid=false;</span>
+<span class="lineNum">    1390 </span><span class="lineNoCov">          0 :         pseudonode=NULL;</span>
+<span class="lineNum">    1391 </span><span class="lineNoCov">          0 :         block_count=0;</span>
+<span class="lineNum">    1392 </span><span class="lineNoCov">          0 :         blocked_nodes=0;</span>
+<span class="lineNum">    1393 </span><span class="lineNoCov">          0 :         off_the_top=0;</span>
+<span class="lineNum">    1394 </span><span class="lineNoCov">          0 :         for(typename set&lt;T&gt;::iterator i=S.begin();i!=S.end();i++)</span>
+<span class="lineNum">    1395 </span>            :         {
+<span class="lineNum">    1396 </span>            :                 pqnode&lt;T&gt; *newNode;
+<span class="lineNum">    1397 </span><span class="lineNoCov">          0 :                 newNode = new pqnode&lt;T&gt;(*i);</span>
+<span class="lineNum">    1398 </span><span class="lineNoCov">          0 :                 leafAddress[*i]=newNode;</span>
+<span class="lineNum">    1399 </span><span class="lineNoCov">          0 :                 newNode-&gt;parent = root;</span>
+<span class="lineNum">    1400 </span><span class="lineNoCov">          0 :                 newNode-&gt;type=leaf;</span>
+<span class="lineNum">    1401 </span><span class="lineNoCov">          0 :                 root-&gt;circular_link.push_back(newNode);</span>
+<span class="lineNum">    1402 </span>            :         }
+<span class="lineNum">    1403 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">    1404 </span>            : 
+<span class="lineNum">    1405 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1406 </span>            : void pqtree&lt;T&gt;::print()
+<span class="lineNum">    1407 </span>            : {
+<span class="lineNum">    1408 </span>            :         root-&gt;print();
+<span class="lineNum">    1409 </span>            : }
+<span class="lineNum">    1410 </span>            : 
+<span class="lineNum">    1411 </span>            : //reduces the tree but protects if from becoming invalid
+<span class="lineNum">    1412 </span>            : //if the reduction fails, takes more time
+<span class="lineNum">    1413 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1414 </span>            : bool pqtree&lt;T&gt;::safeReduce(set&lt;T&gt; S)
+<span class="lineNum">    1415 </span>            : {
+<span class="lineNum">    1416 </span>            :         //using a backup copy to enforce safety
+<span class="lineNum">    1417 </span>            :         pqtree&lt;T&gt; toCopy(*this);
+<span class="lineNum">    1418 </span>            :         
+<span class="lineNum">    1419 </span>            :         if(!reduce(S))
+<span class="lineNum">    1420 </span>            :         {
+<span class="lineNum">    1421 </span>            :                 //reduce failed, so perform a copy
+<span class="lineNum">    1422 </span>            :                 root=new pqnode&lt;T&gt;(*toCopy.root);
+<span class="lineNum">    1423 </span>            :                 block_count=toCopy.block_count;
+<span class="lineNum">    1424 </span>            :                 blocked_nodes=toCopy.blocked_nodes;
+<span class="lineNum">    1425 </span>            :                 off_the_top=toCopy.off_the_top;
+<span class="lineNum">    1426 </span>            :                 invalid=toCopy.invalid;
+<span class="lineNum">    1427 </span>            :                 leafAddress.clear();
+<span class="lineNum">    1428 </span>            :                 root-&gt;findLeaves(leafAddress);       
+<span class="lineNum">    1429 </span>            :                 return false;
+<span class="lineNum">    1430 </span>            :         }
+<span class="lineNum">    1431 </span>            :         return true;
+<span class="lineNum">    1432 </span>            : }
+<span class="lineNum">    1433 </span>            : 
+<span class="lineNum">    1434 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1435 </span>            : bool pqtree&lt;T&gt;::safeReduceAll(list&lt;set&lt;T&gt; &gt; L)
+<span class="lineNum">    1436 </span>            : {
+<span class="lineNum">    1437 </span>            :         //using a backup copy to enforce safety
+<span class="lineNum">    1438 </span>            :         pqtree&lt;T&gt; toCopy(*this);
+<span class="lineNum">    1439 </span>            :         if(!reduceAll(L))
+<span class="lineNum">    1440 </span>            :         {
+<span class="lineNum">    1441 </span>            :                 //reduce failed, so perform a copy
+<span class="lineNum">    1442 </span>            :                 root=new pqnode&lt;T&gt;(*toCopy.root);
+<span class="lineNum">    1443 </span>            :                 block_count=toCopy.block_count;
+<span class="lineNum">    1444 </span>            :                 blocked_nodes=toCopy.blocked_nodes;             off_the_top=toCopy.off_the_top;
+<span class="lineNum">    1445 </span>            :                 invalid=toCopy.invalid;
+<span class="lineNum">    1446 </span>            :                 leafAddress.clear();
+<span class="lineNum">    1447 </span>            :                 root-&gt;findLeaves(leafAddress);       
+<span class="lineNum">    1448 </span>            :                 return false;
+<span class="lineNum">    1449 </span>            :         }
+<span class="lineNum">    1450 </span>            :         return true;
+<span class="lineNum">    1451 </span>            : }       
+<span class="lineNum">    1452 </span>            : 
+<span class="lineNum">    1453 </span>            :         
+<span class="lineNum">    1454 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1455 </span><span class="lineNoCov">          0 : bool pqtree&lt;T&gt;::reduce(set&lt;T&gt; S)</span>
+<span class="lineNum">    1456 </span>            : {
+<span class="lineNum">    1457 </span><span class="lineNoCov">          0 :         if(S.size()&lt;2)</span>
+<span class="lineNum">    1458 </span>            :         {
+<span class="lineNum">    1459 </span><span class="lineNoCov">          0 :                 reductions.push_back(S);</span>
+<span class="lineNum">    1460 </span><span class="lineNoCov">          0 :                 return true;</span>
+<span class="lineNum">    1461 </span>            :         }
+<span class="lineNum">    1462 </span><span class="lineNoCov">          0 :         if(invalid)</span>
+<span class="lineNum">    1463 </span>            :                 return false;
+<span class="lineNum">    1464 </span><span class="lineNoCov">          0 :         if(!bubble(S))</span>
+<span class="lineNum">    1465 </span>            :         {
+<span class="lineNum">    1466 </span><span class="lineNoCov">          0 :                 invalid=true;</span>
+<span class="lineNum">    1467 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">    1468 </span>            :         }
+<span class="lineNum">    1469 </span><span class="lineNoCov">          0 :         if(!reduceStep(S))</span>
+<span class="lineNum">    1470 </span>            :         {
+<span class="lineNum">    1471 </span><span class="lineNoCov">          0 :                 invalid=true;</span>
+<span class="lineNum">    1472 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">    1473 </span>            :         }
+<span class="lineNum">    1474 </span>            :         
+<span class="lineNum">    1475 </span>            :         //we dont need any more pseudonodes
+<span class="lineNum">    1476 </span>            :         //at least until the next reduce
+<span class="lineNum">    1477 </span><span class="lineNoCov">          0 :         if(pseudonode!=NULL)</span>
+<span class="lineNum">    1478 </span>            :         {
+<span class="lineNum">    1479 </span><span class="lineNoCov">          0 :                 pseudonode-&gt;endmost_children[0]=NULL;</span>
+<span class="lineNum">    1480 </span><span class="lineNoCov">          0 :                 pseudonode-&gt;endmost_children[1]=NULL;</span>
+<span class="lineNum">    1481 </span><span class="lineNoCov">          0 :                 delete pseudonode;</span>
+<span class="lineNum">    1482 </span><span class="lineNoCov">          0 :                 pseudonode=NULL;</span>
+<span class="lineNum">    1483 </span>            :         }
+<span class="lineNum">    1484 </span>            : 
+<span class="lineNum">    1485 </span>            :         //reset all the temporary variables for the next round
+<span class="lineNum">    1486 </span><span class="lineNoCov">          0 :         root-&gt;reset();</span>
+<span class="lineNum">    1487 </span>            :         
+<span class="lineNum">    1488 </span>            :         //store the reduction set for later lookup
+<span class="lineNum">    1489 </span><span class="lineNoCov">          0 :         reductions.push_back(S);</span>
+<span class="lineNum">    1490 </span>            : 
+<span class="lineNum">    1491 </span>            :         
+<span class="lineNum">    1492 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">    1493 </span>            : }
+<span class="lineNum">    1494 </span>            : 
+<span class="lineNum">    1495 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1496 </span>            : bool pqtree&lt;T&gt;::reduceAll(list&lt;set&lt;T&gt; &gt; L)
+<span class="lineNum">    1497 </span>            : {
+<span class="lineNum">    1498 </span>            :         if(debugOut)
+<span class="lineNum">    1499 </span>            :                 cerr&lt;&lt;&quot;Running ReduceAll&quot;&lt;&lt;endl;
+<span class="lineNum">    1500 </span>            :         if(invalid)
+<span class="lineNum">    1501 </span>            :                 return false;
+<span class="lineNum">    1502 </span>            : 
+<span class="lineNum">    1503 </span>            :         for(typename list&lt;set&lt;T&gt; &gt;::iterator S=L.begin();S!=L.end();S++)
+<span class="lineNum">    1504 </span>            :         {
+<span class="lineNum">    1505 </span>            :                 if(S-&gt;size()&lt;2)
+<span class="lineNum">    1506 </span>            :                 {
+<span class="lineNum">    1507 </span>            :                         reductions.push_back(*S);
+<span class="lineNum">    1508 </span>            :                         continue;
+<span class="lineNum">    1509 </span>            :                 }
+<span class="lineNum">    1510 </span>            :                 if(debugOut)
+<span class="lineNum">    1511 </span>            :                 {
+<span class="lineNum">    1512 </span>            :                         cerr&lt;&lt;&quot;*&quot;&lt;&lt;endl;
+<span class="lineNum">    1513 </span>            :                         print();
+<span class="lineNum">    1514 </span>            :                         cerr&lt;&lt;&quot;%&quot;&lt;&lt;endl;
+<span class="lineNum">    1515 </span>            :                 }
+<span class="lineNum">    1516 </span>            :                 if(!bubble(*S))
+<span class="lineNum">    1517 </span>            :                 {
+<span class="lineNum">    1518 </span>            :                         invalid=true;
+<span class="lineNum">    1519 </span>            :                         return false;
+<span class="lineNum">    1520 </span>            :                 }
+<span class="lineNum">    1521 </span>            :                 if(!reduceStep(*S))
+<span class="lineNum">    1522 </span>            :                 {
+<span class="lineNum">    1523 </span>            :                         invalid=true;
+<span class="lineNum">    1524 </span>            :                         return false;
+<span class="lineNum">    1525 </span>            :                 }
+<span class="lineNum">    1526 </span>            : 
+<span class="lineNum">    1527 </span>            :                 //we dont need any more pseudonodes
+<span class="lineNum">    1528 </span>            :                 //at least until the next reduce
+<span class="lineNum">    1529 </span>            :                 if(pseudonode!=NULL)
+<span class="lineNum">    1530 </span>            :                 {
+<span class="lineNum">    1531 </span>            :                         pseudonode-&gt;endmost_children[0]=NULL;
+<span class="lineNum">    1532 </span>            :                         pseudonode-&gt;endmost_children[1]=NULL;
+<span class="lineNum">    1533 </span>            :                         delete pseudonode;
+<span class="lineNum">    1534 </span>            :                         pseudonode=NULL;
+<span class="lineNum">    1535 </span>            :                 }
+<span class="lineNum">    1536 </span>            :                 //reset all the temporary variables for the next round
+<span class="lineNum">    1537 </span>            :                 root-&gt;reset();
+<span class="lineNum">    1538 </span>            :         
+<span class="lineNum">    1539 </span>            :                 //store the reduction set for later lookup
+<span class="lineNum">    1540 </span>            :                 reductions.push_back(*S);
+<span class="lineNum">    1541 </span>            :         }       
+<span class="lineNum">    1542 </span>            :         return true;
+<span class="lineNum">    1543 </span>            : 
+<span class="lineNum">    1544 </span>            : }
+<span class="lineNum">    1545 </span>            : 
+<span class="lineNum">    1546 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1547 </span>            : list&lt;T&gt; pqtree&lt;T&gt;::frontier()
+<span class="lineNum">    1548 </span>            : {
+<span class="lineNum">    1549 </span>            :         list&lt;T&gt; out;
+<span class="lineNum">    1550 </span>            :         root-&gt;findFrontier(out);
+<span class="lineNum">    1551 </span>            :         return out;
+<span class="lineNum">    1552 </span>            : }
+<span class="lineNum">    1553 </span>            : 
+<span class="lineNum">    1554 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1555 </span>            : list&lt;T&gt; pqtree&lt;T&gt;::reducedFrontier()
+<span class="lineNum">    1556 </span>            : {
+<span class="lineNum">    1557 </span>            :         list&lt;T&gt; out,inter;
+<span class="lineNum">    1558 </span>            :         root-&gt;findFrontier(inter);
+<span class="lineNum">    1559 </span>            :         set&lt;T&gt; allContained;
+<span class="lineNum">    1560 </span>            :         for(list&lt;set&lt;int&gt; &gt;::iterator j=reductions.begin();j!=reductions.end();j++)
+<span class="lineNum">    1561 </span>            :                         allContained=setunion(allContained,*j);
+<span class="lineNum">    1562 </span>            :         for(list&lt;int&gt;::iterator j=inter.begin();j!=inter.end();j++)
+<span class="lineNum">    1563 </span>            :                         if(setfind(allContained,*j))
+<span class="lineNum">    1564 </span>            :                                 out.push_back(*j);
+<span class="lineNum">    1565 </span>            : 
+<span class="lineNum">    1566 </span>            :         return out;
+<span class="lineNum">    1567 </span>            : }
+<span class="lineNum">    1568 </span>            : 
+<span class="lineNum">    1569 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1570 </span>            : list&lt;set&lt;T&gt; &gt; pqtree&lt;T&gt;::getReductions()
+<span class="lineNum">    1571 </span>            : {
+<span class="lineNum">    1572 </span>            :         return reductions;
+<span class="lineNum">    1573 </span>            : }
+<span class="lineNum">    1574 </span>            : 
+<span class="lineNum">    1575 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1576 </span>            : set&lt;T&gt; pqtree&lt;T&gt;::getContained()
+<span class="lineNum">    1577 </span>            : {
+<span class="lineNum">    1578 </span>            :         set&lt;T&gt; out;
+<span class="lineNum">    1579 </span>            :         for(typename list&lt;set&lt;T&gt; &gt;::iterator i=reductions.begin();i!=reductions.end();i++)
+<span class="lineNum">    1580 </span>            :                 out=setunion(out,*i);
+<span class="lineNum">    1581 </span>            :         
+<span class="lineNum">    1582 </span>            :         return out;
+<span class="lineNum">    1583 </span>            : }
+<span class="lineNum">    1584 </span>            : 
+<span class="lineNum">    1585 </span>            : //default destructor, just needs to delete the root
+<span class="lineNum">    1586 </span>            : //for safety's sake, we delete the pseudonode too
+<span class="lineNum">    1587 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1588 </span><span class="lineNoCov">          0 : pqtree&lt;T&gt;::~pqtree()</span>
+<span class="lineNum">    1589 </span>            : {
+<span class="lineNum">    1590 </span><span class="lineNoCov">          0 :         delete root;</span>
+<span class="lineNum">    1591 </span>            :         //delete pseudonode;
+<span class="lineNum">    1592 </span><span class="lineNoCov">          0 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

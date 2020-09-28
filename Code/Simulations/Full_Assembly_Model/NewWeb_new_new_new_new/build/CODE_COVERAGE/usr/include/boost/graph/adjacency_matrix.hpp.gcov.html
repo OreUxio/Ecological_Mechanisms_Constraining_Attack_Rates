@@ -1,0 +1,1311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/boost/graph/adjacency_matrix.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/graph</a> - adjacency_matrix.hpp<span style="font-size: 80%;"> (source / <a href="adjacency_matrix.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //=======================================================================</a>
+<span class="lineNum">       2 </span>            : // Copyright 2001 University of Notre Dame.
+<span class="lineNum">       3 </span>            : // Copyright 2006 Trustees of Indiana University
+<span class="lineNum">       4 </span>            : // Authors: Jeremy G. Siek and Douglas Gregor &lt;dgregor@cs.indiana.edu&gt;
+<span class="lineNum">       5 </span>            : //
+<span class="lineNum">       6 </span>            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       7 </span>            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       8 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>            : //=======================================================================
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #ifndef BOOST_ADJACENCY_MATRIX_HPP
+<span class="lineNum">      12 </span>            : #define BOOST_ADJACENCY_MATRIX_HPP
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      16 </span>            : #include &lt;memory&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/assert.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/limits.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/iterator.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/graph/graph_traits.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/graph/graph_mutability_traits.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/graph/graph_selectors.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/mpl/if.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/mpl/bool.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/graph/adjacency_iterator.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/graph/detail/edge.hpp&gt;
+<span class="lineNum">      27 </span>            : #include &lt;boost/iterator/iterator_adaptor.hpp&gt;
+<span class="lineNum">      28 </span>            : #include &lt;boost/iterator/filter_iterator.hpp&gt;
+<span class="lineNum">      29 </span>            : #include &lt;boost/range/irange.hpp&gt;
+<span class="lineNum">      30 </span>            : #include &lt;boost/graph/properties.hpp&gt;
+<span class="lineNum">      31 </span>            : #include &lt;boost/tuple/tuple.hpp&gt;
+<span class="lineNum">      32 </span>            : #include &lt;boost/static_assert.hpp&gt;
+<span class="lineNum">      33 </span>            : #include &lt;boost/type_traits.hpp&gt;
+<span class="lineNum">      34 </span>            : #include &lt;boost/property_map/property_map.hpp&gt;
+<span class="lineNum">      35 </span>            : #include &lt;boost/property_map/transform_value_property_map.hpp&gt;
+<span class="lineNum">      36 </span>            : #include &lt;boost/property_map/function_property_map.hpp&gt;
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : namespace boost {
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            :   namespace detail {
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            :     template &lt;class Directed, class Vertex&gt;
+<span class="lineNum">      43 </span>            :     class matrix_edge_desc_impl : public edge_desc_impl&lt;Directed,Vertex&gt;
+<span class="lineNum">      44 </span>            :     {
+<span class="lineNum">      45 </span>            :       typedef edge_desc_impl&lt;Directed,Vertex&gt; Base;
+<span class="lineNum">      46 </span>            :     public:
+<span class="lineNum">      47 </span>            :       matrix_edge_desc_impl() { }
+<span class="lineNum">      48 </span>            :       matrix_edge_desc_impl(bool exists, Vertex s, Vertex d,
+<span class="lineNum">      49 </span>            :                             const void* ep = 0)
+<span class="lineNum">      50 </span><span class="lineNoCov">          0 :         : Base(s, d, ep), m_exists(exists) { }</span>
+<span class="lineNum">      51 </span>            :       bool exists() const { return m_exists; }
+<span class="lineNum">      52 </span>            :     private:
+<span class="lineNum">      53 </span>            :       bool m_exists;
+<span class="lineNum">      54 </span>            :     };
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            :     struct does_edge_exist {
+<span class="lineNum">      57 </span>            :       template &lt;class Edge&gt;
+<span class="lineNum">      58 </span>            :       bool operator()(const Edge&amp; e) const { return e.exists(); }
+<span class="lineNum">      59 </span>            :     };
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            :     // Note to self... The int for get_edge_exists and set_edge exist helps
+<span class="lineNum">      62 </span>            :     // make these calls unambiguous.
+<span class="lineNum">      63 </span>            :     template &lt;typename EdgeProperty&gt;
+<span class="lineNum">      64 </span>            :     bool get_edge_exists(const std::pair&lt;bool, EdgeProperty&gt;&amp; stored_edge, int) {
+<span class="lineNum">      65 </span>            :       return stored_edge.first;
+<span class="lineNum">      66 </span>            :     }
+<span class="lineNum">      67 </span>            :     template &lt;typename EdgeProperty&gt;
+<span class="lineNum">      68 </span>            :     void set_edge_exists(
+<span class="lineNum">      69 </span>            :         std::pair&lt;bool, EdgeProperty&gt;&amp; stored_edge,
+<span class="lineNum">      70 </span>            :         bool flag,
+<span class="lineNum">      71 </span>            :         int
+<span class="lineNum">      72 </span>            :         ) {
+<span class="lineNum">      73 </span>            :       stored_edge.first = flag;
+<span class="lineNum">      74 </span>            :     }
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            :     template &lt;typename EdgeProxy&gt;
+<span class="lineNum">      77 </span>            :     bool get_edge_exists(const EdgeProxy&amp; edge_proxy, ...) {
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :       return edge_proxy;</span>
+<span class="lineNum">      79 </span>            :     }
+<span class="lineNum">      80 </span>            :     template &lt;typename EdgeProxy&gt;
+<span class="lineNum">      81 </span>            :     EdgeProxy&amp; set_edge_exists(EdgeProxy&amp; edge_proxy, bool flag, ...) {
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :       edge_proxy = flag;</span>
+<span class="lineNum">      83 </span>            :       return edge_proxy; // just to avoid never used warning
+<span class="lineNum">      84 </span>            :     }
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            :     // NOTE: These functions collide with the get_property function for
+<span class="lineNum">      88 </span>            :     // accessing bundled graph properties. Be excplicit when using them.
+<span class="lineNum">      89 </span>            :     template &lt;typename EdgeProperty&gt;
+<span class="lineNum">      90 </span>            :     const EdgeProperty&amp;
+<span class="lineNum">      91 </span>            :     get_edge_property(const std::pair&lt;bool, EdgeProperty&gt;&amp; stored_edge) {
+<span class="lineNum">      92 </span>            :       return stored_edge.second;
+<span class="lineNum">      93 </span>            :     }
+<span class="lineNum">      94 </span>            :     template &lt;typename EdgeProperty&gt;
+<span class="lineNum">      95 </span>            :     EdgeProperty&amp;
+<span class="lineNum">      96 </span>            :     get_edge_property(std::pair&lt;bool, EdgeProperty&gt;&amp; stored_edge) {
+<span class="lineNum">      97 </span>            :       return stored_edge.second;
+<span class="lineNum">      98 </span>            :     }
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            :     template &lt;typename StoredEdgeProperty, typename EdgeProperty&gt;
+<span class="lineNum">     101 </span>            :     inline void
+<span class="lineNum">     102 </span>            :     set_edge_property(std::pair&lt;bool, StoredEdgeProperty&gt;&amp; stored_edge,
+<span class="lineNum">     103 </span>            :                       const EdgeProperty&amp; ep, int) {
+<span class="lineNum">     104 </span>            :       stored_edge.second = ep;
+<span class="lineNum">     105 </span>            :     }
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            :     inline const no_property&amp; get_edge_property(const char&amp;) {
+<span class="lineNum">     108 </span>            :       static no_property s_prop;
+<span class="lineNum">     109 </span>            :       return s_prop;
+<span class="lineNum">     110 </span>            :     }
+<span class="lineNum">     111 </span>            :     inline no_property&amp; get_edge_property(char&amp;) {
+<span class="lineNum">     112 </span>            :       static no_property s_prop;
+<span class="lineNum">     113 </span>            :       return s_prop;
+<span class="lineNum">     114 </span>            :     }
+<span class="lineNum">     115 </span>            :     template &lt;typename EdgeProxy, typename EdgeProperty&gt;
+<span class="lineNum">     116 </span>            :     inline void set_edge_property(EdgeProxy, const EdgeProperty&amp;, ...) {}
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            :     //=======================================================================
+<span class="lineNum">     119 </span>            :     // Directed Out Edge Iterator
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span>            :     template &lt;
+<span class="lineNum">     122 </span>            :         typename VertexDescriptor, typename MatrixIter
+<span class="lineNum">     123 </span>            :       , typename VerticesSizeType, typename EdgeDescriptor
+<span class="lineNum">     124 </span>            :     &gt;
+<span class="lineNum">     125 </span>            :     struct dir_adj_matrix_out_edge_iter
+<span class="lineNum">     126 </span>            :       : iterator_adaptor&lt;
+<span class="lineNum">     127 </span>            :             dir_adj_matrix_out_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     128 </span>            :           , MatrixIter
+<span class="lineNum">     129 </span>            :           , EdgeDescriptor
+<span class="lineNum">     130 </span>            :           , use_default
+<span class="lineNum">     131 </span>            :           , EdgeDescriptor
+<span class="lineNum">     132 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     133 </span>            :         &gt;
+<span class="lineNum">     134 </span>            :     {
+<span class="lineNum">     135 </span>            :         typedef iterator_adaptor&lt;
+<span class="lineNum">     136 </span>            :             dir_adj_matrix_out_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     137 </span>            :           , MatrixIter
+<span class="lineNum">     138 </span>            :           , EdgeDescriptor
+<span class="lineNum">     139 </span>            :           , use_default
+<span class="lineNum">     140 </span>            :           , EdgeDescriptor
+<span class="lineNum">     141 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     142 </span>            :         &gt; super_t;
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :         dir_adj_matrix_out_edge_iter() { }
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            :         dir_adj_matrix_out_edge_iter(
+<span class="lineNum">     147 </span>            :             const MatrixIter&amp; i
+<span class="lineNum">     148 </span>            :           , const VertexDescriptor&amp; src
+<span class="lineNum">     149 </span>            :           , const VerticesSizeType&amp; n
+<span class="lineNum">     150 </span>            :            )
+<span class="lineNum">     151 </span>            :             : super_t(i), m_src(src), m_targ(0), m_n(n)
+<span class="lineNum">     152 </span>            :         { }
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            :         void increment() {
+<span class="lineNum">     155 </span>            :             ++this-&gt;base_reference();
+<span class="lineNum">     156 </span>            :             ++m_targ;
+<span class="lineNum">     157 </span>            :         }
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            :         inline EdgeDescriptor
+<span class="lineNum">     160 </span>            :         dereference() const
+<span class="lineNum">     161 </span>            :         {
+<span class="lineNum">     162 </span>            :             return EdgeDescriptor(get_edge_exists(*this-&gt;base(), 0),
+<span class="lineNum">     163 </span>            :                                   m_src, m_targ,
+<span class="lineNum">     164 </span>            :                                   &amp;get_edge_property(*this-&gt;base()));
+<span class="lineNum">     165 </span>            :         }
+<span class="lineNum">     166 </span>            :         VertexDescriptor m_src, m_targ;
+<span class="lineNum">     167 </span>            :         VerticesSizeType m_n;
+<span class="lineNum">     168 </span>            :     };
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span>            :     //=======================================================================
+<span class="lineNum">     171 </span>            :     // Directed In Edge Iterator
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            :     template &lt;
+<span class="lineNum">     174 </span>            :         typename VertexDescriptor, typename MatrixIter
+<span class="lineNum">     175 </span>            :       , typename VerticesSizeType, typename EdgeDescriptor
+<span class="lineNum">     176 </span>            :     &gt;
+<span class="lineNum">     177 </span>            :     struct dir_adj_matrix_in_edge_iter
+<span class="lineNum">     178 </span>            :       : iterator_adaptor&lt;
+<span class="lineNum">     179 </span>            :             dir_adj_matrix_in_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     180 </span>            :           , MatrixIter
+<span class="lineNum">     181 </span>            :           , EdgeDescriptor
+<span class="lineNum">     182 </span>            :           , use_default
+<span class="lineNum">     183 </span>            :           , EdgeDescriptor
+<span class="lineNum">     184 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     185 </span>            :         &gt;
+<span class="lineNum">     186 </span>            :     {
+<span class="lineNum">     187 </span>            :         typedef iterator_adaptor&lt;
+<span class="lineNum">     188 </span>            :             dir_adj_matrix_in_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     189 </span>            :           , MatrixIter
+<span class="lineNum">     190 </span>            :           , EdgeDescriptor
+<span class="lineNum">     191 </span>            :           , use_default
+<span class="lineNum">     192 </span>            :           , EdgeDescriptor
+<span class="lineNum">     193 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     194 </span>            :         &gt; super_t;
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            :         dir_adj_matrix_in_edge_iter() { }
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            :         dir_adj_matrix_in_edge_iter(
+<span class="lineNum">     199 </span>            :             const MatrixIter&amp; i
+<span class="lineNum">     200 </span>            :           , const MatrixIter&amp; last
+<span class="lineNum">     201 </span>            :           , const VertexDescriptor&amp; tgt
+<span class="lineNum">     202 </span>            :           , const VerticesSizeType&amp; n
+<span class="lineNum">     203 </span>            :            )
+<span class="lineNum">     204 </span>            :           : super_t(i), m_last(last), m_src(0), m_targ(tgt), m_n(n)
+<span class="lineNum">     205 </span>            :         { }
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            :         void increment() {
+<span class="lineNum">     208 </span>            :           if (VerticesSizeType(m_last - this-&gt;base_reference()) &gt;= m_n) {
+<span class="lineNum">     209 </span>            :             this-&gt;base_reference() += m_n;
+<span class="lineNum">     210 </span>            :             ++m_src;
+<span class="lineNum">     211 </span>            :           } else {
+<span class="lineNum">     212 </span>            :             this-&gt;base_reference() = m_last;
+<span class="lineNum">     213 </span>            :           }
+<span class="lineNum">     214 </span>            :         }
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :         inline EdgeDescriptor
+<span class="lineNum">     217 </span>            :         dereference() const
+<span class="lineNum">     218 </span>            :         {
+<span class="lineNum">     219 </span>            :             return EdgeDescriptor(get_edge_exists(*this-&gt;base(), 0),
+<span class="lineNum">     220 </span>            :                                   m_src, m_targ,
+<span class="lineNum">     221 </span>            :                                   &amp;get_edge_property(*this-&gt;base()));
+<span class="lineNum">     222 </span>            :         }
+<span class="lineNum">     223 </span>            :         MatrixIter m_last;
+<span class="lineNum">     224 </span>            :         VertexDescriptor m_src, m_targ;
+<span class="lineNum">     225 </span>            :         VerticesSizeType m_n;
+<span class="lineNum">     226 </span>            :     };
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :     //=======================================================================
+<span class="lineNum">     229 </span>            :     // Undirected Out Edge Iterator
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span>            :     template &lt;
+<span class="lineNum">     232 </span>            :         typename VertexDescriptor, typename MatrixIter
+<span class="lineNum">     233 </span>            :       , typename VerticesSizeType, typename EdgeDescriptor
+<span class="lineNum">     234 </span>            :     &gt;
+<span class="lineNum">     235 </span>            :     struct undir_adj_matrix_out_edge_iter
+<span class="lineNum">     236 </span>            :       : iterator_adaptor&lt;
+<span class="lineNum">     237 </span>            :             undir_adj_matrix_out_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     238 </span>            :           , MatrixIter
+<span class="lineNum">     239 </span>            :           , EdgeDescriptor
+<span class="lineNum">     240 </span>            :           , use_default
+<span class="lineNum">     241 </span>            :           , EdgeDescriptor
+<span class="lineNum">     242 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     243 </span>            :         &gt;
+<span class="lineNum">     244 </span>            :     {
+<span class="lineNum">     245 </span>            :         typedef iterator_adaptor&lt;
+<span class="lineNum">     246 </span>            :             undir_adj_matrix_out_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     247 </span>            :           , MatrixIter
+<span class="lineNum">     248 </span>            :           , EdgeDescriptor
+<span class="lineNum">     249 </span>            :           , use_default
+<span class="lineNum">     250 </span>            :           , EdgeDescriptor
+<span class="lineNum">     251 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     252 </span>            :         &gt; super_t;
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :         undir_adj_matrix_out_edge_iter() { }
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            :         undir_adj_matrix_out_edge_iter(
+<span class="lineNum">     257 </span>            :             const MatrixIter&amp; i
+<span class="lineNum">     258 </span>            :           , const VertexDescriptor&amp; src
+<span class="lineNum">     259 </span>            :           , const VerticesSizeType&amp; n
+<span class="lineNum">     260 </span>            :         )
+<span class="lineNum">     261 </span>            :           : super_t(i), m_src(src), m_inc(src), m_targ(0), m_n(n)
+<span class="lineNum">     262 </span>            :         {}
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            :         void increment()
+<span class="lineNum">     265 </span>            :         {
+<span class="lineNum">     266 </span>            :             if (m_targ &lt; m_src)     // first half
+<span class="lineNum">     267 </span>            :             {
+<span class="lineNum">     268 </span>            :                 ++this-&gt;base_reference();
+<span class="lineNum">     269 </span>            :             }
+<span class="lineNum">     270 </span>            :             else if (m_targ &lt; m_n - 1)
+<span class="lineNum">     271 </span>            :             {                  // second half
+<span class="lineNum">     272 </span>            :                 ++m_inc;
+<span class="lineNum">     273 </span>            :                 this-&gt;base_reference() += m_inc;
+<span class="lineNum">     274 </span>            :             }
+<span class="lineNum">     275 </span>            :             else
+<span class="lineNum">     276 </span>            :             {                  // past-the-end
+<span class="lineNum">     277 </span>            :                 this-&gt;base_reference() += m_n - m_src;
+<span class="lineNum">     278 </span>            :             }
+<span class="lineNum">     279 </span>            :             ++m_targ;
+<span class="lineNum">     280 </span>            :         }
+<span class="lineNum">     281 </span>            : 
+<span class="lineNum">     282 </span>            :         inline EdgeDescriptor
+<span class="lineNum">     283 </span>            :         dereference() const
+<span class="lineNum">     284 </span>            :         {
+<span class="lineNum">     285 </span>            :             return EdgeDescriptor(get_edge_exists(*this-&gt;base(), 0),
+<span class="lineNum">     286 </span>            :                                   m_src, m_targ,
+<span class="lineNum">     287 </span>            :                                   &amp;get_edge_property(*this-&gt;base()));
+<span class="lineNum">     288 </span>            :         }
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            :         VertexDescriptor m_src, m_inc, m_targ;
+<span class="lineNum">     291 </span>            :         VerticesSizeType m_n;
+<span class="lineNum">     292 </span>            :     };
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            :     //=======================================================================
+<span class="lineNum">     295 </span>            :     // Undirected In Edge Iterator
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            :     template &lt;
+<span class="lineNum">     298 </span>            :         typename VertexDescriptor, typename MatrixIter
+<span class="lineNum">     299 </span>            :       , typename VerticesSizeType, typename EdgeDescriptor
+<span class="lineNum">     300 </span>            :     &gt;
+<span class="lineNum">     301 </span>            :     struct undir_adj_matrix_in_edge_iter
+<span class="lineNum">     302 </span>            :       : iterator_adaptor&lt;
+<span class="lineNum">     303 </span>            :             undir_adj_matrix_in_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     304 </span>            :           , MatrixIter
+<span class="lineNum">     305 </span>            :           , EdgeDescriptor
+<span class="lineNum">     306 </span>            :           , use_default
+<span class="lineNum">     307 </span>            :           , EdgeDescriptor
+<span class="lineNum">     308 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     309 </span>            :         &gt;
+<span class="lineNum">     310 </span>            :     {
+<span class="lineNum">     311 </span>            :         typedef iterator_adaptor&lt;
+<span class="lineNum">     312 </span>            :             undir_adj_matrix_in_edge_iter&lt;VertexDescriptor, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     313 </span>            :           , MatrixIter
+<span class="lineNum">     314 </span>            :           , EdgeDescriptor
+<span class="lineNum">     315 </span>            :           , use_default
+<span class="lineNum">     316 </span>            :           , EdgeDescriptor
+<span class="lineNum">     317 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     318 </span>            :         &gt; super_t;
+<span class="lineNum">     319 </span>            : 
+<span class="lineNum">     320 </span>            :         undir_adj_matrix_in_edge_iter() { }
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :         undir_adj_matrix_in_edge_iter(
+<span class="lineNum">     323 </span>            :             const MatrixIter&amp; i
+<span class="lineNum">     324 </span>            :           , const VertexDescriptor&amp; src
+<span class="lineNum">     325 </span>            :           , const VerticesSizeType&amp; n
+<span class="lineNum">     326 </span>            :         )
+<span class="lineNum">     327 </span>            :           : super_t(i), m_src(src), m_inc(src), m_targ(0), m_n(n)
+<span class="lineNum">     328 </span>            :         {}
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            :         void increment()
+<span class="lineNum">     331 </span>            :         {
+<span class="lineNum">     332 </span>            :             if (m_targ &lt; m_src)     // first half
+<span class="lineNum">     333 </span>            :             {
+<span class="lineNum">     334 </span>            :                 ++this-&gt;base_reference();
+<span class="lineNum">     335 </span>            :             }
+<span class="lineNum">     336 </span>            :             else if (m_targ &lt; m_n - 1)
+<span class="lineNum">     337 </span>            :             {                  // second half
+<span class="lineNum">     338 </span>            :                 ++m_inc;
+<span class="lineNum">     339 </span>            :                 this-&gt;base_reference() += m_inc;
+<span class="lineNum">     340 </span>            :             }
+<span class="lineNum">     341 </span>            :             else
+<span class="lineNum">     342 </span>            :             {                  // past-the-end
+<span class="lineNum">     343 </span>            :                 this-&gt;base_reference() += m_n - m_src;
+<span class="lineNum">     344 </span>            :             }
+<span class="lineNum">     345 </span>            :             ++m_targ;
+<span class="lineNum">     346 </span>            :         }
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span>            :         inline EdgeDescriptor
+<span class="lineNum">     349 </span>            :         dereference() const
+<span class="lineNum">     350 </span>            :         {
+<span class="lineNum">     351 </span>            :             return EdgeDescriptor(get_edge_exists(*this-&gt;base(), 0),
+<span class="lineNum">     352 </span>            :                                   m_targ, m_src,
+<span class="lineNum">     353 </span>            :                                   &amp;get_edge_property(*this-&gt;base()));
+<span class="lineNum">     354 </span>            :         }
+<span class="lineNum">     355 </span>            : 
+<span class="lineNum">     356 </span>            :         VertexDescriptor m_src, m_inc, m_targ;
+<span class="lineNum">     357 </span>            :         VerticesSizeType m_n;
+<span class="lineNum">     358 </span>            :     };
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span>            :     //=======================================================================
+<span class="lineNum">     361 </span>            :     // Edge Iterator
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            :     template &lt;typename Directed, typename MatrixIter,
+<span class="lineNum">     364 </span>            :               typename VerticesSizeType, typename EdgeDescriptor&gt;
+<span class="lineNum">     365 </span>            :     struct adj_matrix_edge_iter
+<span class="lineNum">     366 </span>            :       : iterator_adaptor&lt;
+<span class="lineNum">     367 </span>            :             adj_matrix_edge_iter&lt;Directed, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     368 </span>            :           , MatrixIter
+<span class="lineNum">     369 </span>            :           , EdgeDescriptor
+<span class="lineNum">     370 </span>            :           , use_default
+<span class="lineNum">     371 </span>            :           , EdgeDescriptor
+<span class="lineNum">     372 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     373 </span>            :         &gt;
+<span class="lineNum">     374 </span>            :     {
+<span class="lineNum">     375 </span>            :         typedef iterator_adaptor&lt;
+<span class="lineNum">     376 </span>            :             adj_matrix_edge_iter&lt;Directed, MatrixIter,  VerticesSizeType, EdgeDescriptor&gt;
+<span class="lineNum">     377 </span>            :           , MatrixIter
+<span class="lineNum">     378 </span>            :           , EdgeDescriptor
+<span class="lineNum">     379 </span>            :           , use_default
+<span class="lineNum">     380 </span>            :           , EdgeDescriptor
+<span class="lineNum">     381 </span>            :           , std::ptrdiff_t
+<span class="lineNum">     382 </span>            :         &gt; super_t;
+<span class="lineNum">     383 </span>            : 
+<span class="lineNum">     384 </span>            :         adj_matrix_edge_iter() { }
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            :         adj_matrix_edge_iter(const MatrixIter&amp; i, const MatrixIter&amp; start, const VerticesSizeType&amp; n)
+<span class="lineNum">     387 </span>            :             : super_t(i), m_start(start), m_src(0), m_targ(0), m_n(n) { }
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span>            :         void increment()
+<span class="lineNum">     390 </span>            :         {
+<span class="lineNum">     391 </span>            :             increment_dispatch(this-&gt;base_reference(), Directed());
+<span class="lineNum">     392 </span>            :         }
+<span class="lineNum">     393 </span>            : 
+<span class="lineNum">     394 </span>            :         void increment_dispatch(MatrixIter&amp; i, directedS)
+<span class="lineNum">     395 </span>            :         {
+<span class="lineNum">     396 </span>            :             ++i;
+<span class="lineNum">     397 </span>            :             if (m_targ == m_n - 1)
+<span class="lineNum">     398 </span>            :             {
+<span class="lineNum">     399 </span>            :                 m_targ = 0;
+<span class="lineNum">     400 </span>            :                 ++m_src;
+<span class="lineNum">     401 </span>            :             }
+<span class="lineNum">     402 </span>            :             else
+<span class="lineNum">     403 </span>            :             {
+<span class="lineNum">     404 </span>            :                 ++m_targ;
+<span class="lineNum">     405 </span>            :             }
+<span class="lineNum">     406 </span>            :         }
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span>            :         void increment_dispatch(MatrixIter&amp; i, undirectedS)
+<span class="lineNum">     409 </span>            :         {
+<span class="lineNum">     410 </span>            :             ++i;
+<span class="lineNum">     411 </span>            :             if (m_targ == m_src)
+<span class="lineNum">     412 </span>            :             {
+<span class="lineNum">     413 </span>            :                 m_targ = 0;
+<span class="lineNum">     414 </span>            :                 ++m_src;
+<span class="lineNum">     415 </span>            :             }
+<span class="lineNum">     416 </span>            :             else
+<span class="lineNum">     417 </span>            :             {
+<span class="lineNum">     418 </span>            :                 ++m_targ;
+<span class="lineNum">     419 </span>            :             }
+<span class="lineNum">     420 </span>            :         }
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            :         inline EdgeDescriptor
+<span class="lineNum">     423 </span>            :         dereference() const
+<span class="lineNum">     424 </span>            :         {
+<span class="lineNum">     425 </span>            :             return EdgeDescriptor(get_edge_exists(*this-&gt;base(), 0),
+<span class="lineNum">     426 </span>            :                                   m_src, m_targ,
+<span class="lineNum">     427 </span>            :                                   &amp;get_edge_property(*this-&gt;base()));
+<span class="lineNum">     428 </span>            :         }
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            :         MatrixIter m_start;
+<span class="lineNum">     431 </span>            :         VerticesSizeType m_src, m_targ, m_n;
+<span class="lineNum">     432 </span>            :     };
+<span class="lineNum">     433 </span>            : 
+<span class="lineNum">     434 </span>            :   } // namespace detail
+<span class="lineNum">     435 </span>            : 
+<span class="lineNum">     436 </span>            :   //=========================================================================
+<span class="lineNum">     437 </span>            :   // Adjacency Matrix Traits
+<span class="lineNum">     438 </span>            :   template &lt;typename Directed = directedS&gt;
+<span class="lineNum">     439 </span>            :   class adjacency_matrix_traits {
+<span class="lineNum">     440 </span>            :     typedef typename Directed::is_directed_t is_directed;
+<span class="lineNum">     441 </span>            :   public:
+<span class="lineNum">     442 </span>            :     // The bidirectionalS tag is not allowed with the adjacency_matrix
+<span class="lineNum">     443 </span>            :     // graph type. Instead, use directedS, which also provides the
+<span class="lineNum">     444 </span>            :     // functionality required for a Bidirectional Graph (in_edges,
+<span class="lineNum">     445 </span>            :     // in_degree, etc.).
+<span class="lineNum">     446 </span>            :     BOOST_STATIC_ASSERT(type_traits::ice_not&lt;(is_same&lt;Directed, bidirectionalS&gt;::value)&gt;::value);
+<span class="lineNum">     447 </span>            : 
+<span class="lineNum">     448 </span>            :     typedef typename mpl::if_&lt;is_directed,
+<span class="lineNum">     449 </span>            :                                     bidirectional_tag, undirected_tag&gt;::type
+<span class="lineNum">     450 </span>            :       directed_category;
+<span class="lineNum">     451 </span>            : 
+<span class="lineNum">     452 </span>            :     typedef disallow_parallel_edge_tag edge_parallel_category;
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            :     typedef std::size_t vertex_descriptor;
+<span class="lineNum">     455 </span>            : 
+<span class="lineNum">     456 </span>            :     typedef detail::matrix_edge_desc_impl&lt;directed_category,
+<span class="lineNum">     457 </span>            :       vertex_descriptor&gt; edge_descriptor;
+<span class="lineNum">     458 </span>            :   };
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span>            :   struct adjacency_matrix_class_tag { };
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span>            :   struct adj_matrix_traversal_tag :
+<span class="lineNum">     463 </span>            :     public virtual adjacency_matrix_tag,
+<span class="lineNum">     464 </span>            :     public virtual vertex_list_graph_tag,
+<span class="lineNum">     465 </span>            :     public virtual incidence_graph_tag,
+<span class="lineNum">     466 </span>            :     public virtual adjacency_graph_tag,
+<span class="lineNum">     467 </span>            :     public virtual edge_list_graph_tag { };
+<span class="lineNum">     468 </span>            : 
+<span class="lineNum">     469 </span>            :   //=========================================================================
+<span class="lineNum">     470 </span>            :   // Adjacency Matrix Class
+<span class="lineNum">     471 </span>            :   template &lt;typename Directed = directedS,
+<span class="lineNum">     472 </span>            :             typename VertexProperty = no_property,
+<span class="lineNum">     473 </span>            :             typename EdgeProperty = no_property,
+<span class="lineNum">     474 </span>            :             typename GraphProperty = no_property,
+<span class="lineNum">     475 </span>            :             typename Allocator = std::allocator&lt;bool&gt; &gt;
+<span class="lineNum">     476 </span><span class="lineNoCov">          0 :   class adjacency_matrix {</span>
+<span class="lineNum">     477 </span>            :     typedef adjacency_matrix self;
+<span class="lineNum">     478 </span>            :     typedef adjacency_matrix_traits&lt;Directed&gt; Traits;
+<span class="lineNum">     479 </span>            : 
+<span class="lineNum">     480 </span>            :   public:
+<span class="lineNum">     481 </span>            :     // The bidirectionalS tag is not allowed with the adjacency_matrix
+<span class="lineNum">     482 </span>            :     // graph type. Instead, use directedS, which also provides the
+<span class="lineNum">     483 </span>            :     // functionality required for a Bidirectional Graph (in_edges,
+<span class="lineNum">     484 </span>            :     // in_degree, etc.).
+<span class="lineNum">     485 </span>            :     BOOST_STATIC_ASSERT(!(is_same&lt;Directed, bidirectionalS&gt;::value));
+<span class="lineNum">     486 </span>            : 
+<span class="lineNum">     487 </span>            :     typedef GraphProperty graph_property_type;
+<span class="lineNum">     488 </span>            :     typedef typename lookup_one_property&lt;GraphProperty, graph_bundle_t&gt;::type graph_bundled;
+<span class="lineNum">     489 </span>            : 
+<span class="lineNum">     490 </span>            :     typedef VertexProperty vertex_property_type;
+<span class="lineNum">     491 </span>            :     typedef typename lookup_one_property&lt;VertexProperty, vertex_bundle_t&gt;::type vertex_bundled;
+<span class="lineNum">     492 </span>            : 
+<span class="lineNum">     493 </span>            :     typedef EdgeProperty edge_property_type;
+<span class="lineNum">     494 </span>            :     typedef typename lookup_one_property&lt;EdgeProperty, edge_bundle_t&gt;::type edge_bundled;
+<span class="lineNum">     495 </span>            : 
+<span class="lineNum">     496 </span>            :   public: // should be private
+<span class="lineNum">     497 </span>            :     typedef typename mpl::if_&lt;typename has_property&lt;edge_property_type&gt;::type,
+<span class="lineNum">     498 </span>            :       std::pair&lt;bool, edge_property_type&gt;, char&gt;::type StoredEdge;
+<span class="lineNum">     499 </span>            : #if defined(BOOST_NO_STD_ALLOCATOR)
+<span class="lineNum">     500 </span>            :     typedef std::vector&lt;StoredEdge&gt; Matrix;
+<span class="lineNum">     501 </span>            : #else
+<span class="lineNum">     502 </span>            :     typedef typename Allocator::template rebind&lt;StoredEdge&gt;::other Alloc;
+<span class="lineNum">     503 </span>            :     typedef std::vector&lt;StoredEdge, Alloc&gt; Matrix;
+<span class="lineNum">     504 </span>            : #endif
+<span class="lineNum">     505 </span>            :     typedef typename Matrix::iterator MatrixIter;
+<span class="lineNum">     506 </span>            :     typedef typename Matrix::size_type size_type;
+<span class="lineNum">     507 </span>            :   public:
+<span class="lineNum">     508 </span>            :     // Graph concept required types
+<span class="lineNum">     509 </span>            :     typedef typename Traits::vertex_descriptor vertex_descriptor;
+<span class="lineNum">     510 </span>            :     typedef typename Traits::edge_descriptor edge_descriptor;
+<span class="lineNum">     511 </span>            :     typedef typename Traits::directed_category directed_category;
+<span class="lineNum">     512 </span>            :     typedef typename Traits::edge_parallel_category edge_parallel_category;
+<span class="lineNum">     513 </span>            :     typedef adj_matrix_traversal_tag traversal_category;
+<span class="lineNum">     514 </span>            : 
+<span class="lineNum">     515 </span>            :     static vertex_descriptor null_vertex()
+<span class="lineNum">     516 </span>            :     {
+<span class="lineNum">     517 </span>            :       return (std::numeric_limits&lt;vertex_descriptor&gt;::max)();
+<span class="lineNum">     518 </span>            :     }
+<span class="lineNum">     519 </span>            : 
+<span class="lineNum">     520 </span>            :     //private: if friends worked, these would be private
+<span class="lineNum">     521 </span>            : 
+<span class="lineNum">     522 </span>            :     typedef detail::dir_adj_matrix_out_edge_iter&lt;
+<span class="lineNum">     523 </span>            :         vertex_descriptor, MatrixIter, size_type, edge_descriptor
+<span class="lineNum">     524 </span>            :     &gt; DirOutEdgeIter;
+<span class="lineNum">     525 </span>            : 
+<span class="lineNum">     526 </span>            :     typedef detail::undir_adj_matrix_out_edge_iter&lt;
+<span class="lineNum">     527 </span>            :         vertex_descriptor, MatrixIter, size_type, edge_descriptor
+<span class="lineNum">     528 </span>            :     &gt; UnDirOutEdgeIter;
+<span class="lineNum">     529 </span>            : 
+<span class="lineNum">     530 </span>            :     typedef typename mpl::if_&lt;
+<span class="lineNum">     531 </span>            :         typename Directed::is_directed_t, DirOutEdgeIter, UnDirOutEdgeIter
+<span class="lineNum">     532 </span>            :     &gt;::type unfiltered_out_edge_iter;
+<span class="lineNum">     533 </span>            : 
+<span class="lineNum">     534 </span>            :     typedef detail::dir_adj_matrix_in_edge_iter&lt;
+<span class="lineNum">     535 </span>            :         vertex_descriptor, MatrixIter, size_type, edge_descriptor
+<span class="lineNum">     536 </span>            :     &gt; DirInEdgeIter;
+<span class="lineNum">     537 </span>            : 
+<span class="lineNum">     538 </span>            :     typedef detail::undir_adj_matrix_in_edge_iter&lt;
+<span class="lineNum">     539 </span>            :         vertex_descriptor, MatrixIter, size_type, edge_descriptor
+<span class="lineNum">     540 </span>            :     &gt; UnDirInEdgeIter;
+<span class="lineNum">     541 </span>            : 
+<span class="lineNum">     542 </span>            :     typedef typename mpl::if_&lt;
+<span class="lineNum">     543 </span>            :         typename Directed::is_directed_t, DirInEdgeIter, UnDirInEdgeIter
+<span class="lineNum">     544 </span>            :     &gt;::type unfiltered_in_edge_iter;
+<span class="lineNum">     545 </span>            : 
+<span class="lineNum">     546 </span>            :     typedef detail::adj_matrix_edge_iter&lt;
+<span class="lineNum">     547 </span>            :         Directed, MatrixIter, size_type, edge_descriptor
+<span class="lineNum">     548 </span>            :     &gt; unfiltered_edge_iter;
+<span class="lineNum">     549 </span>            : 
+<span class="lineNum">     550 </span>            :   public:
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span>            :     // IncidenceGraph concept required types
+<span class="lineNum">     553 </span>            :     typedef filter_iterator&lt;detail::does_edge_exist, unfiltered_out_edge_iter&gt;
+<span class="lineNum">     554 </span>            :       out_edge_iterator;
+<span class="lineNum">     555 </span>            : 
+<span class="lineNum">     556 </span>            :     typedef size_type degree_size_type;
+<span class="lineNum">     557 </span>            : 
+<span class="lineNum">     558 </span>            :     // BidirectionalGraph required types
+<span class="lineNum">     559 </span>            :     typedef filter_iterator&lt;detail::does_edge_exist, unfiltered_in_edge_iter&gt;
+<span class="lineNum">     560 </span>            :       in_edge_iterator;
+<span class="lineNum">     561 </span>            : 
+<span class="lineNum">     562 </span>            :     // AdjacencyGraph required types
+<span class="lineNum">     563 </span>            :      typedef typename adjacency_iterator_generator&lt;self,
+<span class="lineNum">     564 </span>            :        vertex_descriptor, out_edge_iterator&gt;::type adjacency_iterator;
+<span class="lineNum">     565 </span>            : 
+<span class="lineNum">     566 </span>            :     // VertexListGraph required types
+<span class="lineNum">     567 </span>            :     typedef size_type vertices_size_type;
+<span class="lineNum">     568 </span>            :     typedef integer_range&lt;vertex_descriptor&gt; VertexList;
+<span class="lineNum">     569 </span>            :     typedef typename VertexList::iterator vertex_iterator;
+<span class="lineNum">     570 </span>            : 
+<span class="lineNum">     571 </span>            :     // EdgeListGraph required types
+<span class="lineNum">     572 </span>            :     typedef size_type edges_size_type;
+<span class="lineNum">     573 </span>            :     typedef filter_iterator&lt;
+<span class="lineNum">     574 </span>            :         detail::does_edge_exist, unfiltered_edge_iter
+<span class="lineNum">     575 </span>            :     &gt; edge_iterator;
+<span class="lineNum">     576 </span>            : 
+<span class="lineNum">     577 </span>            :     // PropertyGraph required types
+<span class="lineNum">     578 </span>            :     typedef adjacency_matrix_class_tag graph_tag;
+<span class="lineNum">     579 </span>            : 
+<span class="lineNum">     580 </span>            :     // Constructor required by MutableGraph
+<span class="lineNum">     581 </span><span class="lineNoCov">          0 :     adjacency_matrix(vertices_size_type n_vertices,</span>
+<span class="lineNum">     582 </span>            :                      const GraphProperty&amp; p = GraphProperty())
+<span class="lineNum">     583 </span>            :       : m_matrix(Directed::is_directed ?
+<span class="lineNum">     584 </span>            :                  (n_vertices * n_vertices)
+<span class="lineNum">     585 </span>            :                  : (n_vertices * (n_vertices + 1) / 2)),
+<span class="lineNum">     586 </span>            :       m_vertex_set(0, n_vertices),
+<span class="lineNum">     587 </span>            :       m_vertex_properties(n_vertices),
+<span class="lineNum">     588 </span>            :       m_num_edges(0),
+<span class="lineNum">     589 </span><span class="lineNoCov">          0 :       m_property(p) { }</span>
+<span class="lineNum">     590 </span>            : 
+<span class="lineNum">     591 </span>            :     template &lt;typename EdgeIterator&gt;
+<span class="lineNum">     592 </span>            :     adjacency_matrix(EdgeIterator first,
+<span class="lineNum">     593 </span>            :                      EdgeIterator last,
+<span class="lineNum">     594 </span>            :                      vertices_size_type n_vertices,
+<span class="lineNum">     595 </span>            :                      const GraphProperty&amp; p = GraphProperty())
+<span class="lineNum">     596 </span>            :       : m_matrix(Directed::is_directed ?
+<span class="lineNum">     597 </span>            :                  (n_vertices * n_vertices)
+<span class="lineNum">     598 </span>            :                  : (n_vertices * (n_vertices + 1) / 2)),
+<span class="lineNum">     599 </span>            :       m_vertex_set(0, n_vertices),
+<span class="lineNum">     600 </span>            :       m_vertex_properties(n_vertices),
+<span class="lineNum">     601 </span>            :       m_num_edges(0),
+<span class="lineNum">     602 </span>            :       m_property(p)
+<span class="lineNum">     603 </span>            :     {
+<span class="lineNum">     604 </span>            :       for (; first != last; ++first) {
+<span class="lineNum">     605 </span>            :         add_edge(first-&gt;first, first-&gt;second, *this);
+<span class="lineNum">     606 </span>            :       }
+<span class="lineNum">     607 </span>            :     }
+<span class="lineNum">     608 </span>            : 
+<span class="lineNum">     609 </span>            :     template &lt;typename EdgeIterator, typename EdgePropertyIterator&gt;
+<span class="lineNum">     610 </span>            :     adjacency_matrix(EdgeIterator first,
+<span class="lineNum">     611 </span>            :                      EdgeIterator last,
+<span class="lineNum">     612 </span>            :                      EdgePropertyIterator ep_iter,
+<span class="lineNum">     613 </span>            :                      vertices_size_type n_vertices,
+<span class="lineNum">     614 </span>            :                      const GraphProperty&amp; p = GraphProperty())
+<span class="lineNum">     615 </span>            :       : m_matrix(Directed::is_directed ?
+<span class="lineNum">     616 </span>            :                  (n_vertices * n_vertices)
+<span class="lineNum">     617 </span>            :                  : (n_vertices * (n_vertices + 1) / 2)),
+<span class="lineNum">     618 </span>            :       m_vertex_set(0, n_vertices),
+<span class="lineNum">     619 </span>            :       m_vertex_properties(n_vertices),
+<span class="lineNum">     620 </span>            :       m_num_edges(0),
+<span class="lineNum">     621 </span>            :       m_property(p)
+<span class="lineNum">     622 </span>            :     {
+<span class="lineNum">     623 </span>            :       for (; first != last; ++first, ++ep_iter) {
+<span class="lineNum">     624 </span>            :         add_edge(first-&gt;first, first-&gt;second, *ep_iter, *this);
+<span class="lineNum">     625 </span>            :       }
+<span class="lineNum">     626 </span>            :     }
+<span class="lineNum">     627 </span>            : 
+<span class="lineNum">     628 </span>            : #ifndef BOOST_GRAPH_NO_BUNDLED_PROPERTIES
+<span class="lineNum">     629 </span>            :     // Directly access a vertex or edge bundle
+<span class="lineNum">     630 </span>            :     vertex_bundled&amp; operator[](vertex_descriptor v)
+<span class="lineNum">     631 </span>            :     { return get(vertex_bundle, *this, v); }
+<span class="lineNum">     632 </span>            : 
+<span class="lineNum">     633 </span>            :     const vertex_bundled&amp; operator[](vertex_descriptor v) const
+<span class="lineNum">     634 </span>            :     { return get(vertex_bundle, *this, v); }
+<span class="lineNum">     635 </span>            : 
+<span class="lineNum">     636 </span>            :     edge_bundled&amp; operator[](edge_descriptor e)
+<span class="lineNum">     637 </span>            :     { return get(edge_bundle, *this, e); }
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span>            :     const edge_bundled&amp; operator[](edge_descriptor e) const
+<span class="lineNum">     640 </span>            :     { return get(edge_bundle, *this, e); }
+<span class="lineNum">     641 </span>            : 
+<span class="lineNum">     642 </span>            :     graph_bundled&amp; operator[](graph_bundle_t)
+<span class="lineNum">     643 </span>            :     { return get_property(*this); }
+<span class="lineNum">     644 </span>            : 
+<span class="lineNum">     645 </span>            :     const graph_bundled&amp; operator[](graph_bundle_t) const
+<span class="lineNum">     646 </span>            :     { return get_property(*this); }
+<span class="lineNum">     647 </span>            : #endif
+<span class="lineNum">     648 </span>            : 
+<span class="lineNum">     649 </span>            :     //private: if friends worked, these would be private
+<span class="lineNum">     650 </span>            : 
+<span class="lineNum">     651 </span>            :     typename Matrix::const_reference
+<span class="lineNum">     652 </span>            :     get_edge(vertex_descriptor u, vertex_descriptor v) const {
+<span class="lineNum">     653 </span>            :       if (Directed::is_directed)
+<span class="lineNum">     654 </span><span class="lineNoCov">          0 :         return m_matrix[u * m_vertex_set.size() + v];</span>
+<span class="lineNum">     655 </span>            :       else {
+<span class="lineNum">     656 </span>            :         if (v &gt; u)
+<span class="lineNum">     657 </span>            :           std::swap(u, v);
+<span class="lineNum">     658 </span>            :         return m_matrix[u * (u + 1)/2 + v];
+<span class="lineNum">     659 </span>            :       }
+<span class="lineNum">     660 </span>            :     }
+<span class="lineNum">     661 </span>            :     typename Matrix::reference
+<span class="lineNum">     662 </span>            :     get_edge(vertex_descriptor u, vertex_descriptor v) {
+<span class="lineNum">     663 </span>            :       if (Directed::is_directed)
+<span class="lineNum">     664 </span><span class="lineNoCov">          0 :         return m_matrix[u * m_vertex_set.size() + v];</span>
+<span class="lineNum">     665 </span>            :       else {
+<span class="lineNum">     666 </span>            :         if (v &gt; u)
+<span class="lineNum">     667 </span>            :           std::swap(u, v);
+<span class="lineNum">     668 </span>            :         return m_matrix[u * (u + 1)/2 + v];
+<span class="lineNum">     669 </span>            :       }
+<span class="lineNum">     670 </span>            :     }
+<span class="lineNum">     671 </span>            : 
+<span class="lineNum">     672 </span>            :     Matrix m_matrix;
+<span class="lineNum">     673 </span>            :     VertexList m_vertex_set;
+<span class="lineNum">     674 </span>            :     std::vector&lt;vertex_property_type&gt; m_vertex_properties;
+<span class="lineNum">     675 </span>            :     size_type m_num_edges;
+<span class="lineNum">     676 </span>            :     graph_property_type m_property;
+<span class="lineNum">     677 </span>            :   };
+<span class="lineNum">     678 </span>            : 
+<span class="lineNum">     679 </span>            :   //=========================================================================
+<span class="lineNum">     680 </span>            :   // Functions required by the AdjacencyMatrix concept
+<span class="lineNum">     681 </span>            : 
+<span class="lineNum">     682 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     683 </span>            :   std::pair&lt;typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_descriptor,
+<span class="lineNum">     684 </span>            :             bool&gt;
+<span class="lineNum">     685 </span>            :   edge(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     686 </span>            :        typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor v,
+<span class="lineNum">     687 </span>            :        const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     688 </span>            :   {
+<span class="lineNum">     689 </span><span class="lineNoCov">          0 :     bool exists = detail::get_edge_exists(g.get_edge(u,v), 0);</span>
+<span class="lineNum">     690 </span>            :     typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_descriptor
+<span class="lineNum">     691 </span><span class="lineNoCov">          0 :       e(exists, u, v, &amp;detail::get_edge_property(g.get_edge(u,v)));</span>
+<span class="lineNum">     692 </span><span class="lineNoCov">          0 :     return std::make_pair(e, exists);</span>
+<span class="lineNum">     693 </span>            :   }
+<span class="lineNum">     694 </span>            : 
+<span class="lineNum">     695 </span>            :   //=========================================================================
+<span class="lineNum">     696 </span>            :   // Functions required by the IncidenceGraph concept
+<span class="lineNum">     697 </span>            : 
+<span class="lineNum">     698 </span>            :   // O(1)
+<span class="lineNum">     699 </span>            :   template &lt;typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     700 </span>            :   std::pair&lt;typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::out_edge_iterator,
+<span class="lineNum">     701 </span>            :             typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::out_edge_iterator&gt;
+<span class="lineNum">     702 </span>            :   out_edges
+<span class="lineNum">     703 </span>            :     (typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     704 </span>            :      const adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;&amp; g_)
+<span class="lineNum">     705 </span>            :   {
+<span class="lineNum">     706 </span>            :     typedef adjacency_matrix&lt;directedS,VP,EP,GP,A&gt; Graph;
+<span class="lineNum">     707 </span>            :     Graph&amp; g = const_cast&lt;Graph&amp;&gt;(g_);
+<span class="lineNum">     708 </span>            :     typename Graph::vertices_size_type offset = u * g.m_vertex_set.size();
+<span class="lineNum">     709 </span>            :     typename Graph::MatrixIter f = g.m_matrix.begin() + offset;
+<span class="lineNum">     710 </span>            :     typename Graph::MatrixIter l = f + g.m_vertex_set.size();
+<span class="lineNum">     711 </span>            :     typename Graph::unfiltered_out_edge_iter
+<span class="lineNum">     712 </span>            :           first(f, u, g.m_vertex_set.size())
+<span class="lineNum">     713 </span>            :         , last(l, u, g.m_vertex_set.size());
+<span class="lineNum">     714 </span>            :     detail::does_edge_exist pred;
+<span class="lineNum">     715 </span>            :     typedef typename Graph::out_edge_iterator out_edge_iterator;
+<span class="lineNum">     716 </span>            :     return std::make_pair(out_edge_iterator(pred, first, last),
+<span class="lineNum">     717 </span>            :                           out_edge_iterator(pred, last, last));
+<span class="lineNum">     718 </span>            :   }
+<span class="lineNum">     719 </span>            : 
+<span class="lineNum">     720 </span>            :   // O(1)
+<span class="lineNum">     721 </span>            :   template &lt;typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     722 </span>            :   std::pair&lt;
+<span class="lineNum">     723 </span>            :     typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::out_edge_iterator,
+<span class="lineNum">     724 </span>            :     typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::out_edge_iterator&gt;
+<span class="lineNum">     725 </span>            :   out_edges
+<span class="lineNum">     726 </span>            :     (typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     727 </span>            :      const adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;&amp; g_)
+<span class="lineNum">     728 </span>            :   {
+<span class="lineNum">     729 </span>            :     typedef adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt; Graph;
+<span class="lineNum">     730 </span>            :     Graph&amp; g = const_cast&lt;Graph&amp;&gt;(g_);
+<span class="lineNum">     731 </span>            :     typename Graph::vertices_size_type offset = u * (u + 1) / 2;
+<span class="lineNum">     732 </span>            :     typename Graph::MatrixIter f = g.m_matrix.begin() + offset;
+<span class="lineNum">     733 </span>            :     typename Graph::MatrixIter l = g.m_matrix.end();
+<span class="lineNum">     734 </span>            : 
+<span class="lineNum">     735 </span>            :     typename Graph::unfiltered_out_edge_iter
+<span class="lineNum">     736 </span>            :         first(f, u, g.m_vertex_set.size())
+<span class="lineNum">     737 </span>            :       , last(l, u, g.m_vertex_set.size());
+<span class="lineNum">     738 </span>            : 
+<span class="lineNum">     739 </span>            :     detail::does_edge_exist pred;
+<span class="lineNum">     740 </span>            :     typedef typename Graph::out_edge_iterator out_edge_iterator;
+<span class="lineNum">     741 </span>            :     return std::make_pair(out_edge_iterator(pred, first, last),
+<span class="lineNum">     742 </span>            :                           out_edge_iterator(pred, last, last));
+<span class="lineNum">     743 </span>            :   }
+<span class="lineNum">     744 </span>            : 
+<span class="lineNum">     745 </span>            :   // O(N)
+<span class="lineNum">     746 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     747 </span>            :   typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::degree_size_type
+<span class="lineNum">     748 </span>            :   out_degree(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     749 </span>            :              const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     750 </span>            :   {
+<span class="lineNum">     751 </span>            :     typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::degree_size_type n = 0;
+<span class="lineNum">     752 </span>            :     typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::out_edge_iterator f, l;
+<span class="lineNum">     753 </span>            :     for (boost::tie(f, l) = out_edges(u, g); f != l; ++f)
+<span class="lineNum">     754 </span>            :       ++n;
+<span class="lineNum">     755 </span>            :     return n;
+<span class="lineNum">     756 </span>            :   }
+<span class="lineNum">     757 </span>            : 
+<span class="lineNum">     758 </span>            :   // O(1)
+<span class="lineNum">     759 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">     760 </span>            :     typename Dir, typename Vertex&gt;
+<span class="lineNum">     761 </span>            :   typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor
+<span class="lineNum">     762 </span>            :   source(const detail::matrix_edge_desc_impl&lt;Dir,Vertex&gt;&amp; e,
+<span class="lineNum">     763 </span>            :          const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp;)
+<span class="lineNum">     764 </span>            :   {
+<span class="lineNum">     765 </span>            :     return e.m_source;
+<span class="lineNum">     766 </span>            :   }
+<span class="lineNum">     767 </span>            : 
+<span class="lineNum">     768 </span>            :   // O(1)
+<span class="lineNum">     769 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">     770 </span>            :     typename Dir, typename Vertex&gt;
+<span class="lineNum">     771 </span>            :   typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor
+<span class="lineNum">     772 </span>            :   target(const detail::matrix_edge_desc_impl&lt;Dir,Vertex&gt;&amp; e,
+<span class="lineNum">     773 </span>            :          const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp;)
+<span class="lineNum">     774 </span>            :   {
+<span class="lineNum">     775 </span>            :     return e.m_target;
+<span class="lineNum">     776 </span>            :   }
+<span class="lineNum">     777 </span>            : 
+<span class="lineNum">     778 </span>            :   //=========================================================================
+<span class="lineNum">     779 </span>            :   // Functions required by the BidirectionalGraph concept
+<span class="lineNum">     780 </span>            : 
+<span class="lineNum">     781 </span>            :   // O(1)
+<span class="lineNum">     782 </span>            :   template &lt;typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     783 </span>            :   std::pair&lt;typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::in_edge_iterator,
+<span class="lineNum">     784 </span>            :             typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::in_edge_iterator&gt;
+<span class="lineNum">     785 </span>            :   in_edges
+<span class="lineNum">     786 </span>            :     (typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     787 </span>            :      const adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;&amp; g_)
+<span class="lineNum">     788 </span>            :   {
+<span class="lineNum">     789 </span>            :     typedef adjacency_matrix&lt;directedS,VP,EP,GP,A&gt; Graph;
+<span class="lineNum">     790 </span>            :     Graph&amp; g = const_cast&lt;Graph&amp;&gt;(g_);
+<span class="lineNum">     791 </span>            :     typename Graph::MatrixIter f = g.m_matrix.begin() + u;
+<span class="lineNum">     792 </span>            :     typename Graph::MatrixIter l = g.m_matrix.end();
+<span class="lineNum">     793 </span>            :     typename Graph::unfiltered_in_edge_iter
+<span class="lineNum">     794 </span>            :         first(f, l, u, g.m_vertex_set.size())
+<span class="lineNum">     795 </span>            :       , last(l, l, u, g.m_vertex_set.size());
+<span class="lineNum">     796 </span>            :     detail::does_edge_exist pred;
+<span class="lineNum">     797 </span>            :     typedef typename Graph::in_edge_iterator in_edge_iterator;
+<span class="lineNum">     798 </span>            :     return std::make_pair(in_edge_iterator(pred, first, last),
+<span class="lineNum">     799 </span>            :                           in_edge_iterator(pred, last, last));
+<span class="lineNum">     800 </span>            :   }
+<span class="lineNum">     801 </span>            : 
+<span class="lineNum">     802 </span>            :   // O(1)
+<span class="lineNum">     803 </span>            :   template &lt;typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     804 </span>            :   std::pair&lt;
+<span class="lineNum">     805 </span>            :     typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::in_edge_iterator,
+<span class="lineNum">     806 </span>            :     typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::in_edge_iterator&gt;
+<span class="lineNum">     807 </span>            :   in_edges
+<span class="lineNum">     808 </span>            :     (typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     809 </span>            :      const adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;&amp; g_)
+<span class="lineNum">     810 </span>            :   {
+<span class="lineNum">     811 </span>            :     typedef adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt; Graph;
+<span class="lineNum">     812 </span>            :     Graph&amp; g = const_cast&lt;Graph&amp;&gt;(g_);
+<span class="lineNum">     813 </span>            :     typename Graph::vertices_size_type offset = u * (u + 1) / 2;
+<span class="lineNum">     814 </span>            :     typename Graph::MatrixIter f = g.m_matrix.begin() + offset;
+<span class="lineNum">     815 </span>            :     typename Graph::MatrixIter l = g.m_matrix.end();
+<span class="lineNum">     816 </span>            : 
+<span class="lineNum">     817 </span>            :     typename Graph::unfiltered_in_edge_iter
+<span class="lineNum">     818 </span>            :         first(f, u, g.m_vertex_set.size())
+<span class="lineNum">     819 </span>            :       , last(l, u, g.m_vertex_set.size());
+<span class="lineNum">     820 </span>            : 
+<span class="lineNum">     821 </span>            :     detail::does_edge_exist pred;
+<span class="lineNum">     822 </span>            :     typedef typename Graph::in_edge_iterator in_edge_iterator;
+<span class="lineNum">     823 </span>            :     return std::make_pair(in_edge_iterator(pred, first, last),
+<span class="lineNum">     824 </span>            :                           in_edge_iterator(pred, last, last));
+<span class="lineNum">     825 </span>            :   }
+<span class="lineNum">     826 </span>            : 
+<span class="lineNum">     827 </span>            :   // O(N)
+<span class="lineNum">     828 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     829 </span>            :   typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::degree_size_type
+<span class="lineNum">     830 </span>            :   in_degree(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     831 </span>            :              const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     832 </span>            :   {
+<span class="lineNum">     833 </span>            :     typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::degree_size_type n = 0;
+<span class="lineNum">     834 </span>            :     typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::in_edge_iterator f, l;
+<span class="lineNum">     835 </span>            :     for (boost::tie(f, l) = in_edges(u, g); f != l; ++f)
+<span class="lineNum">     836 </span>            :       ++n;
+<span class="lineNum">     837 </span>            :     return n;
+<span class="lineNum">     838 </span>            :   }
+<span class="lineNum">     839 </span>            : 
+<span class="lineNum">     840 </span>            :   //=========================================================================
+<span class="lineNum">     841 </span>            :   // Functions required by the AdjacencyGraph concept
+<span class="lineNum">     842 </span>            : 
+<span class="lineNum">     843 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     844 </span>            :   std::pair&lt;typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::adjacency_iterator,
+<span class="lineNum">     845 </span>            :             typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::adjacency_iterator&gt;
+<span class="lineNum">     846 </span>            :   adjacent_vertices
+<span class="lineNum">     847 </span>            :     (typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     848 </span>            :      const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g_)
+<span class="lineNum">     849 </span>            :   {
+<span class="lineNum">     850 </span>            :       typedef adjacency_matrix&lt;D,VP,EP,GP,A&gt; Graph;
+<span class="lineNum">     851 </span>            :       const Graph&amp; cg = static_cast&lt;const Graph&amp;&gt;(g_);
+<span class="lineNum">     852 </span>            :       Graph&amp; g = const_cast&lt;Graph&amp;&gt;(cg);
+<span class="lineNum">     853 </span>            :       typedef typename Graph::adjacency_iterator adjacency_iterator;
+<span class="lineNum">     854 </span>            :       typename Graph::out_edge_iterator first, last;
+<span class="lineNum">     855 </span>            :       boost::tie(first, last) = out_edges(u, g);
+<span class="lineNum">     856 </span>            :       return std::make_pair(adjacency_iterator(first, &amp;g),
+<span class="lineNum">     857 </span>            :                             adjacency_iterator(last, &amp;g));
+<span class="lineNum">     858 </span>            :   }
+<span class="lineNum">     859 </span>            : 
+<span class="lineNum">     860 </span>            :   //=========================================================================
+<span class="lineNum">     861 </span>            :   // Functions required by the VertexListGraph concept
+<span class="lineNum">     862 </span>            : 
+<span class="lineNum">     863 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     864 </span>            :   std::pair&lt;typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_iterator,
+<span class="lineNum">     865 </span>            :             typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_iterator&gt;
+<span class="lineNum">     866 </span>            :   vertices(const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g_) {
+<span class="lineNum">     867 </span>            :     typedef adjacency_matrix&lt;D,VP,EP,GP,A&gt; Graph;
+<span class="lineNum">     868 </span>            :     Graph&amp; g = const_cast&lt;Graph&amp;&gt;(g_);
+<span class="lineNum">     869 </span>            :     return std::make_pair(g.m_vertex_set.begin(), g.m_vertex_set.end());
+<span class="lineNum">     870 </span>            :   }
+<span class="lineNum">     871 </span>            : 
+<span class="lineNum">     872 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     873 </span>            :   typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertices_size_type
+<span class="lineNum">     874 </span>            :   num_vertices(const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g) {
+<span class="lineNum">     875 </span>            :     return g.m_vertex_set.size();
+<span class="lineNum">     876 </span>            :   }
+<span class="lineNum">     877 </span>            : 
+<span class="lineNum">     878 </span>            :   //=========================================================================
+<span class="lineNum">     879 </span>            :   // Functions required by the EdgeListGraph concept
+<span class="lineNum">     880 </span>            : 
+<span class="lineNum">     881 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     882 </span>            :   std::pair&lt;typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_iterator,
+<span class="lineNum">     883 </span>            :             typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_iterator&gt;
+<span class="lineNum">     884 </span>            :   edges(const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g_)
+<span class="lineNum">     885 </span>            :   {
+<span class="lineNum">     886 </span>            :     typedef adjacency_matrix&lt;D,VP,EP,GP,A&gt; Graph;
+<span class="lineNum">     887 </span>            :     Graph&amp; g = const_cast&lt;Graph&amp;&gt;(g_);
+<span class="lineNum">     888 </span>            : 
+<span class="lineNum">     889 </span>            :     typename Graph::unfiltered_edge_iter
+<span class="lineNum">     890 </span>            :       first(g.m_matrix.begin(), g.m_matrix.begin(),
+<span class="lineNum">     891 </span>            :                                     g.m_vertex_set.size()),
+<span class="lineNum">     892 </span>            :       last(g.m_matrix.end(), g.m_matrix.begin(),
+<span class="lineNum">     893 </span>            :                                     g.m_vertex_set.size());
+<span class="lineNum">     894 </span>            :     detail::does_edge_exist pred;
+<span class="lineNum">     895 </span>            :     typedef typename Graph::edge_iterator edge_iterator;
+<span class="lineNum">     896 </span>            :     return std::make_pair(edge_iterator(pred, first, last),
+<span class="lineNum">     897 </span>            :                           edge_iterator(pred, last, last));
+<span class="lineNum">     898 </span>            :   }
+<span class="lineNum">     899 </span>            : 
+<span class="lineNum">     900 </span>            :   // O(1)
+<span class="lineNum">     901 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     902 </span>            :   typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edges_size_type
+<span class="lineNum">     903 </span>            :   num_edges(const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     904 </span>            :   {
+<span class="lineNum">     905 </span>            :     return g.m_num_edges;
+<span class="lineNum">     906 </span>            :   }
+<span class="lineNum">     907 </span>            : 
+<span class="lineNum">     908 </span>            :   //=========================================================================
+<span class="lineNum">     909 </span>            :   // Functions required by the MutableGraph concept
+<span class="lineNum">     910 </span>            : 
+<span class="lineNum">     911 </span>            :   // O(1)
+<span class="lineNum">     912 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">     913 </span>            :             typename EP2&gt;
+<span class="lineNum">     914 </span>            :   std::pair&lt;typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_descriptor, bool&gt;
+<span class="lineNum">     915 </span><span class="lineNoCov">          0 :   add_edge(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor u,</span>
+<span class="lineNum">     916 </span>            :            typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor v,
+<span class="lineNum">     917 </span>            :            const EP2&amp; ep,
+<span class="lineNum">     918 </span>            :            adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     919 </span>            :   {
+<span class="lineNum">     920 </span>            :     typedef typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_descriptor
+<span class="lineNum">     921 </span>            :       edge_descriptor;
+<span class="lineNum">     922 </span><span class="lineNoCov">          0 :     if (detail::get_edge_exists(g.get_edge(u,v), 0) == false) {</span>
+<span class="lineNum">     923 </span><span class="lineNoCov">          0 :       ++(g.m_num_edges);</span>
+<span class="lineNum">     924 </span><span class="lineNoCov">          0 :       detail::set_edge_property(g.get_edge(u,v), EP(ep), 0);</span>
+<span class="lineNum">     925 </span><span class="lineNoCov">          0 :       detail::set_edge_exists(g.get_edge(u,v), true, 0);</span>
+<span class="lineNum">     926 </span>            :       return std::make_pair
+<span class="lineNum">     927 </span><span class="lineNoCov">          0 :         (edge_descriptor(true, u, v, &amp;detail::get_edge_property(g.get_edge(u,v))),</span>
+<span class="lineNum">     928 </span><span class="lineNoCov">          0 :          true);</span>
+<span class="lineNum">     929 </span>            :     } else
+<span class="lineNum">     930 </span>            :       return std::make_pair
+<span class="lineNum">     931 </span><span class="lineNoCov">          0 :         (edge_descriptor(true, u, v, &amp;detail::get_edge_property(g.get_edge(u,v))),</span>
+<span class="lineNum">     932 </span><span class="lineNoCov">          0 :          false);</span>
+<span class="lineNum">     933 </span>            :   }
+<span class="lineNum">     934 </span>            :   // O(1)
+<span class="lineNum">     935 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     936 </span>            :   std::pair&lt;typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_descriptor, bool&gt;
+<span class="lineNum">     937 </span>            :   add_edge(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     938 </span>            :            typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor v,
+<span class="lineNum">     939 </span>            :            adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     940 </span>            :   {
+<span class="lineNum">     941 </span>            :     EP ep;
+<span class="lineNum">     942 </span><span class="lineNoCov">          0 :     return add_edge(u, v, ep, g);</span>
+<span class="lineNum">     943 </span>            :   }
+<span class="lineNum">     944 </span>            : 
+<span class="lineNum">     945 </span>            :   // O(1)
+<span class="lineNum">     946 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     947 </span>            :   void
+<span class="lineNum">     948 </span>            :   remove_edge(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">     949 </span>            :               typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor v,
+<span class="lineNum">     950 </span>            :               adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     951 </span>            :   {
+<span class="lineNum">     952 </span>            :     // Don'remove the edge unless it already exists.
+<span class="lineNum">     953 </span>            :     if(detail::get_edge_exists(g.get_edge(u,v), 0)) {
+<span class="lineNum">     954 </span>            :       --(g.m_num_edges);
+<span class="lineNum">     955 </span>            :       detail::set_edge_exists(g.get_edge(u,v), false, 0);
+<span class="lineNum">     956 </span>            :     }
+<span class="lineNum">     957 </span>            :   }
+<span class="lineNum">     958 </span>            : 
+<span class="lineNum">     959 </span>            :   // O(1)
+<span class="lineNum">     960 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     961 </span>            :   void
+<span class="lineNum">     962 </span>            :   remove_edge(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::edge_descriptor e,
+<span class="lineNum">     963 </span>            :               adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">     964 </span>            :   {
+<span class="lineNum">     965 </span>            :     remove_edge(source(e, g), target(e, g), g);
+<span class="lineNum">     966 </span>            :   }
+<span class="lineNum">     967 </span>            : 
+<span class="lineNum">     968 </span>            : 
+<a name="969"><span class="lineNum">     969 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;</a>
+<span class="lineNum">     970 </span>            :   inline typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor
+<span class="lineNum">     971 </span><span class="lineNoCov">          0 :   add_vertex(adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g) {</span>
+<span class="lineNum">     972 </span>            :     // UNDER CONSTRUCTION
+<span class="lineNum">     973 </span><span class="lineNoCov">          0 :     BOOST_ASSERT(false);</span>
+<span class="lineNum">     974 </span>            :     return *vertices(g).first;
+<span class="lineNum">     975 </span>            :   }
+<span class="lineNum">     976 </span>            : 
+<span class="lineNum">     977 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">     978 </span>            :             typename VP2&gt;
+<span class="lineNum">     979 </span>            :   inline typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor
+<span class="lineNum">     980 </span>            :   add_vertex(const VP2&amp; /*vp*/, adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g) {
+<span class="lineNum">     981 </span>            :     // UNDER CONSTRUCTION
+<span class="lineNum">     982 </span>            :     BOOST_ASSERT(false);
+<span class="lineNum">     983 </span>            :     return *vertices(g).first;
+<span class="lineNum">     984 </span>            :   }
+<span class="lineNum">     985 </span>            : 
+<span class="lineNum">     986 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     987 </span>            :   inline void
+<span class="lineNum">     988 </span>            :   remove_vertex(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor /*u*/,
+<span class="lineNum">     989 </span>            :                 adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; /*g*/)
+<span class="lineNum">     990 </span>            :   {
+<span class="lineNum">     991 </span>            :     // UNDER CONSTRUCTION
+<span class="lineNum">     992 </span>            :     BOOST_ASSERT(false);
+<span class="lineNum">     993 </span>            :   }
+<span class="lineNum">     994 </span>            : 
+<span class="lineNum">     995 </span>            :   // O(V)
+<span class="lineNum">     996 </span>            :   template &lt;typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">     997 </span>            :   void
+<span class="lineNum">     998 </span>            :   clear_vertex
+<span class="lineNum">     999 </span>            :     (typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">    1000 </span>            :      adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">    1001 </span>            :   {
+<span class="lineNum">    1002 </span>            :     typename adjacency_matrix&lt;directedS,VP,EP,GP,A&gt;::vertex_iterator
+<span class="lineNum">    1003 </span>            :       vi, vi_end;
+<span class="lineNum">    1004 </span>            :     for (boost::tie(vi, vi_end) = vertices(g); vi != vi_end; ++vi)
+<span class="lineNum">    1005 </span>            :       remove_edge(u, *vi, g);
+<span class="lineNum">    1006 </span>            :     for (boost::tie(vi, vi_end) = vertices(g); vi != vi_end; ++vi)
+<span class="lineNum">    1007 </span>            :       remove_edge(*vi, u, g);
+<span class="lineNum">    1008 </span>            :   }
+<span class="lineNum">    1009 </span>            : 
+<span class="lineNum">    1010 </span>            :   // O(V)
+<span class="lineNum">    1011 </span>            :   template &lt;typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1012 </span>            :   void
+<span class="lineNum">    1013 </span>            :   clear_vertex
+<span class="lineNum">    1014 </span>            :     (typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::vertex_descriptor u,
+<span class="lineNum">    1015 </span>            :      adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;&amp; g)
+<span class="lineNum">    1016 </span>            :   {
+<span class="lineNum">    1017 </span>            :     typename adjacency_matrix&lt;undirectedS,VP,EP,GP,A&gt;::vertex_iterator
+<span class="lineNum">    1018 </span>            :       vi, vi_end;
+<span class="lineNum">    1019 </span>            :     for (boost::tie(vi, vi_end) = vertices(g); vi != vi_end; ++vi)
+<span class="lineNum">    1020 </span>            :       remove_edge(u, *vi, g);
+<span class="lineNum">    1021 </span>            :   }
+<span class="lineNum">    1022 </span>            : 
+<span class="lineNum">    1023 </span>            :   //=========================================================================
+<span class="lineNum">    1024 </span>            :   // Functions required by the PropertyGraph concept
+<span class="lineNum">    1025 </span>            : 
+<span class="lineNum">    1026 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1027 </span>            :             typename Prop, typename Kind&gt;
+<span class="lineNum">    1028 </span>            :   struct adj_mat_pm_helper;
+<span class="lineNum">    1029 </span>            : 
+<span class="lineNum">    1030 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1031 </span>            :             typename Prop&gt;
+<span class="lineNum">    1032 </span>            :   struct adj_mat_pm_helper&lt;D, VP, EP, GP, A, Prop, vertex_property_tag&gt; {
+<span class="lineNum">    1033 </span>            :     typedef typename graph_traits&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt; &gt;::vertex_descriptor arg_type;
+<span class="lineNum">    1034 </span>            :     typedef typed_identity_property_map&lt;arg_type&gt; vi_map_type;
+<span class="lineNum">    1035 </span>            :     typedef iterator_property_map&lt;typename std::vector&lt;VP&gt;::iterator, vi_map_type&gt; all_map_type;
+<span class="lineNum">    1036 </span>            :     typedef iterator_property_map&lt;typename std::vector&lt;VP&gt;::const_iterator, vi_map_type&gt; all_map_const_type;
+<span class="lineNum">    1037 </span>            :     typedef transform_value_property_map&lt;
+<span class="lineNum">    1038 </span>            :               detail::lookup_one_property_f&lt;VP, Prop&gt;,
+<span class="lineNum">    1039 </span>            :               all_map_type&gt;
+<span class="lineNum">    1040 </span>            :       type;
+<span class="lineNum">    1041 </span>            :     typedef transform_value_property_map&lt;
+<span class="lineNum">    1042 </span>            :               detail::lookup_one_property_f&lt;const VP, Prop&gt;,
+<span class="lineNum">    1043 </span>            :               all_map_const_type&gt;
+<span class="lineNum">    1044 </span>            :       const_type;
+<span class="lineNum">    1045 </span>            :     typedef typename property_traits&lt;type&gt;::reference single_nonconst_type;
+<span class="lineNum">    1046 </span>            :     typedef typename property_traits&lt;const_type&gt;::reference single_const_type;
+<span class="lineNum">    1047 </span>            : 
+<span class="lineNum">    1048 </span>            :     static type get_nonconst(adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Prop prop) {
+<span class="lineNum">    1049 </span>            :       return type(prop, all_map_type(g.m_vertex_properties.begin(), vi_map_type()));
+<span class="lineNum">    1050 </span>            :     }
+<span class="lineNum">    1051 </span>            : 
+<span class="lineNum">    1052 </span>            :     static const_type get_const(const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Prop prop) {
+<span class="lineNum">    1053 </span>            :       return const_type(prop, all_map_const_type(g.m_vertex_properties.begin(), vi_map_type()));
+<span class="lineNum">    1054 </span>            :     }
+<span class="lineNum">    1055 </span>            : 
+<span class="lineNum">    1056 </span>            :     static single_nonconst_type get_nonconst_one(adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Prop prop, arg_type v) {
+<span class="lineNum">    1057 </span>            :       return lookup_one_property&lt;VP, Prop&gt;::lookup(g.m_vertex_properties[v], prop);
+<span class="lineNum">    1058 </span>            :     }
+<span class="lineNum">    1059 </span>            : 
+<span class="lineNum">    1060 </span>            :     static single_const_type get_const_one(const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Prop prop, arg_type v) {
+<span class="lineNum">    1061 </span>            :       return lookup_one_property&lt;const VP, Prop&gt;::lookup(g.m_vertex_properties[v], prop);
+<span class="lineNum">    1062 </span>            :     }
+<span class="lineNum">    1063 </span>            :   };
+<span class="lineNum">    1064 </span>            : 
+<span class="lineNum">    1065 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1066 </span>            :             typename Tag&gt;
+<span class="lineNum">    1067 </span>            :   struct adj_mat_pm_helper&lt;D, VP, EP, GP, A, Tag, edge_property_tag&gt; {
+<span class="lineNum">    1068 </span>            :     typedef typename graph_traits&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt; &gt;::edge_descriptor edge_descriptor;
+<span class="lineNum">    1069 </span>            : 
+<span class="lineNum">    1070 </span>            :     template &lt;typename IsConst&gt;
+<span class="lineNum">    1071 </span>            :     struct lookup_property_from_edge {
+<span class="lineNum">    1072 </span>            :       Tag tag;
+<span class="lineNum">    1073 </span>            :       lookup_property_from_edge(Tag tag): tag(tag) {}
+<span class="lineNum">    1074 </span>            :       typedef typename boost::mpl::if_&lt;IsConst, const EP, EP&gt;::type ep_type_nonref;
+<span class="lineNum">    1075 </span>            :       typedef ep_type_nonref&amp; ep_type;
+<span class="lineNum">    1076 </span>            :       typedef typename lookup_one_property&lt;ep_type_nonref, Tag&gt;::type&amp; result_type;
+<span class="lineNum">    1077 </span>            :       result_type operator()(edge_descriptor e) const {
+<span class="lineNum">    1078 </span>            :         return lookup_one_property&lt;ep_type_nonref, Tag&gt;::lookup(*static_cast&lt;ep_type_nonref*&gt;(e.get_property()), tag);
+<span class="lineNum">    1079 </span>            :       }
+<span class="lineNum">    1080 </span>            :     };
+<span class="lineNum">    1081 </span>            : 
+<span class="lineNum">    1082 </span>            :     typedef function_property_map&lt;
+<span class="lineNum">    1083 </span>            :               lookup_property_from_edge&lt;boost::mpl::false_&gt;,
+<span class="lineNum">    1084 </span>            :               typename graph_traits&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt; &gt;::edge_descriptor&gt; type;
+<span class="lineNum">    1085 </span>            :     typedef function_property_map&lt;
+<span class="lineNum">    1086 </span>            :               lookup_property_from_edge&lt;boost::mpl::true_&gt;,
+<span class="lineNum">    1087 </span>            :               typename graph_traits&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt; &gt;::edge_descriptor&gt; const_type;
+<span class="lineNum">    1088 </span>            :     typedef edge_descriptor arg_type;
+<span class="lineNum">    1089 </span>            :     typedef typename lookup_property_from_edge&lt;boost::mpl::false_&gt;::result_type single_nonconst_type;
+<span class="lineNum">    1090 </span>            :     typedef typename lookup_property_from_edge&lt;boost::mpl::true_&gt;::result_type single_const_type;
+<span class="lineNum">    1091 </span>            : 
+<span class="lineNum">    1092 </span>            :     static type get_nonconst(adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Tag tag) {
+<span class="lineNum">    1093 </span>            :       return type(tag);
+<span class="lineNum">    1094 </span>            :     }
+<span class="lineNum">    1095 </span>            : 
+<span class="lineNum">    1096 </span>            :     static const_type get_const(const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Tag tag) {
+<span class="lineNum">    1097 </span>            :       return const_type(tag);
+<span class="lineNum">    1098 </span>            :     }
+<span class="lineNum">    1099 </span>            : 
+<span class="lineNum">    1100 </span>            :     static single_nonconst_type get_nonconst_one(adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Tag tag, edge_descriptor e) {
+<span class="lineNum">    1101 </span>            :       return lookup_one_property&lt;EP, Tag&gt;::lookup(*static_cast&lt;EP*&gt;(e.get_property()), tag);
+<span class="lineNum">    1102 </span>            :     }
+<span class="lineNum">    1103 </span>            : 
+<span class="lineNum">    1104 </span>            :     static single_const_type get_const_one(const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, Tag tag, edge_descriptor e) {
+<span class="lineNum">    1105 </span>            :       return lookup_one_property&lt;const EP, Tag&gt;::lookup(*static_cast&lt;const EP*&gt;(e.get_property()), tag);
+<span class="lineNum">    1106 </span>            :     }
+<span class="lineNum">    1107 </span>            :   };
+<span class="lineNum">    1108 </span>            : 
+<span class="lineNum">    1109 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1110 </span>            :             typename Tag&gt;
+<span class="lineNum">    1111 </span>            :   struct property_map&lt;adjacency_matrix&lt;D,VP,EP,GP,A&gt;, Tag&gt;
+<span class="lineNum">    1112 </span>            :     : adj_mat_pm_helper&lt;D, VP, EP, GP, A, Tag,
+<span class="lineNum">    1113 </span>            :                         typename detail::property_kind_from_graph&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::type&gt; {};
+<span class="lineNum">    1114 </span>            : 
+<span class="lineNum">    1115 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1116 </span>            :             typename Tag&gt;
+<span class="lineNum">    1117 </span>            :   typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::type
+<span class="lineNum">    1118 </span>            :   get(Tag tag, adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g) {
+<span class="lineNum">    1119 </span>            :     return property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::get_nonconst(g, tag);
+<span class="lineNum">    1120 </span>            :   }
+<span class="lineNum">    1121 </span>            : 
+<span class="lineNum">    1122 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1123 </span>            :             typename Tag&gt;
+<span class="lineNum">    1124 </span>            :   typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::const_type
+<span class="lineNum">    1125 </span>            :   get(Tag tag, const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g) {
+<span class="lineNum">    1126 </span>            :     return property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::get_const(g, tag);
+<span class="lineNum">    1127 </span>            :   }
+<span class="lineNum">    1128 </span>            : 
+<span class="lineNum">    1129 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1130 </span>            :             typename Tag&gt;
+<span class="lineNum">    1131 </span>            :   typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::single_nonconst_type
+<span class="lineNum">    1132 </span>            :   get(Tag tag, adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::arg_type a) {
+<span class="lineNum">    1133 </span>            :     return property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::get_nonconst_one(g, tag, a);
+<span class="lineNum">    1134 </span>            :   }
+<span class="lineNum">    1135 </span>            : 
+<span class="lineNum">    1136 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1137 </span>            :             typename Tag&gt;
+<span class="lineNum">    1138 </span>            :   typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::single_const_type
+<span class="lineNum">    1139 </span>            :   get(Tag tag, const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g, typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::arg_type a) {
+<span class="lineNum">    1140 </span>            :     return property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::get_const_one(g, tag, a);
+<span class="lineNum">    1141 </span>            :   }
+<span class="lineNum">    1142 </span>            : 
+<span class="lineNum">    1143 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1144 </span>            :             typename Tag&gt;
+<span class="lineNum">    1145 </span>            :   void
+<span class="lineNum">    1146 </span>            :   put(Tag tag,
+<span class="lineNum">    1147 </span>            :       adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp; g,
+<span class="lineNum">    1148 </span>            :       typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::arg_type a,
+<span class="lineNum">    1149 </span>            :       typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::single_const_type val) {
+<span class="lineNum">    1150 </span>            :     property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, Tag&gt;::get_nonconst_one(g, tag, a) = val;
+<span class="lineNum">    1151 </span>            :   }
+<span class="lineNum">    1152 </span>            : 
+<span class="lineNum">    1153 </span>            :   // O(1)
+<span class="lineNum">    1154 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1155 </span>            :             typename Tag, typename Value&gt;
+<span class="lineNum">    1156 </span>            :   inline void
+<span class="lineNum">    1157 </span>            :   set_property(adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g, Tag tag, const Value&amp; value)
+<span class="lineNum">    1158 </span>            :   {
+<span class="lineNum">    1159 </span>            :       get_property_value(g.m_property, tag) = value;
+<span class="lineNum">    1160 </span>            :   }
+<span class="lineNum">    1161 </span>            : 
+<span class="lineNum">    1162 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1163 </span>            :             typename Tag&gt;
+<span class="lineNum">    1164 </span>            :   inline typename graph_property&lt;adjacency_matrix&lt;D,VP,EP,GP,A&gt;, Tag&gt;::type&amp;
+<span class="lineNum">    1165 </span>            :   get_property(adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g, Tag tag)
+<span class="lineNum">    1166 </span>            :   {
+<span class="lineNum">    1167 </span>            :       return get_property_value(g.m_property, tag);
+<span class="lineNum">    1168 </span>            :   }
+<span class="lineNum">    1169 </span>            : 
+<span class="lineNum">    1170 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A,
+<span class="lineNum">    1171 </span>            :             typename Tag&gt;
+<span class="lineNum">    1172 </span>            :   inline const typename graph_property&lt;adjacency_matrix&lt;D,VP,EP,GP,A&gt;, Tag&gt;::type&amp;
+<span class="lineNum">    1173 </span>            :   get_property(const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp; g, Tag tag)
+<span class="lineNum">    1174 </span>            :   {
+<span class="lineNum">    1175 </span>            :       return get_property_value(g.m_property, tag);
+<span class="lineNum">    1176 </span>            :   }
+<span class="lineNum">    1177 </span>            : 
+<span class="lineNum">    1178 </span>            :   //=========================================================================
+<span class="lineNum">    1179 </span>            :   // Vertex Property Map
+<span class="lineNum">    1180 </span>            : 
+<span class="lineNum">    1181 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1182 </span>            :   struct property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, vertex_index_t&gt; {
+<span class="lineNum">    1183 </span>            :     typedef typename adjacency_matrix&lt;D, VP, EP, GP, A&gt;::vertex_descriptor Vertex;
+<span class="lineNum">    1184 </span>            :     typedef typed_identity_property_map&lt;Vertex&gt; type;
+<span class="lineNum">    1185 </span>            :     typedef type const_type;
+<span class="lineNum">    1186 </span>            :   };
+<span class="lineNum">    1187 </span>            : 
+<span class="lineNum">    1188 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1189 </span>            :   typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, vertex_index_t&gt;::const_type
+<span class="lineNum">    1190 </span>            :   get(vertex_index_t, adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp;) {
+<span class="lineNum">    1191 </span>            :     return typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, vertex_index_t&gt;::const_type();
+<span class="lineNum">    1192 </span>            :   }
+<span class="lineNum">    1193 </span>            : 
+<span class="lineNum">    1194 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1195 </span>            :   typename adjacency_matrix&lt;D, VP, EP, GP, A&gt;::vertex_descriptor
+<span class="lineNum">    1196 </span>            :   get(vertex_index_t,
+<span class="lineNum">    1197 </span>            :       adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp;,
+<span class="lineNum">    1198 </span>            :       typename adjacency_matrix&lt;D, VP, EP, GP, A&gt;::vertex_descriptor v) {
+<span class="lineNum">    1199 </span>            :     return v;
+<span class="lineNum">    1200 </span>            :   }
+<span class="lineNum">    1201 </span>            : 
+<span class="lineNum">    1202 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1203 </span>            :   typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, vertex_index_t&gt;::const_type
+<span class="lineNum">    1204 </span>            :   get(vertex_index_t, const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp;) {
+<span class="lineNum">    1205 </span>            :     return typename property_map&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt;, vertex_index_t&gt;::const_type();
+<span class="lineNum">    1206 </span>            :   }
+<span class="lineNum">    1207 </span>            : 
+<span class="lineNum">    1208 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1209 </span>            :   typename adjacency_matrix&lt;D, VP, EP, GP, A&gt;::vertex_descriptor
+<span class="lineNum">    1210 </span>            :   get(vertex_index_t,
+<span class="lineNum">    1211 </span>            :       const adjacency_matrix&lt;D, VP, EP, GP, A&gt;&amp;,
+<span class="lineNum">    1212 </span>            :       typename adjacency_matrix&lt;D, VP, EP, GP, A&gt;::vertex_descriptor v) {
+<span class="lineNum">    1213 </span>            :     return v;
+<span class="lineNum">    1214 </span>            :   }
+<span class="lineNum">    1215 </span>            : 
+<span class="lineNum">    1216 </span>            :   //=========================================================================
+<span class="lineNum">    1217 </span>            :   // Other Functions
+<span class="lineNum">    1218 </span>            : 
+<span class="lineNum">    1219 </span>            :   template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1220 </span>            :   typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertex_descriptor
+<span class="lineNum">    1221 </span>            :   vertex(typename adjacency_matrix&lt;D,VP,EP,GP,A&gt;::vertices_size_type n,
+<span class="lineNum">    1222 </span>            :          const adjacency_matrix&lt;D,VP,EP,GP,A&gt;&amp;)
+<span class="lineNum">    1223 </span>            :   {
+<span class="lineNum">    1224 </span>            :     return n;
+<span class="lineNum">    1225 </span>            :   }
+<span class="lineNum">    1226 </span>            : 
+<span class="lineNum">    1227 </span>            : template &lt;typename D, typename VP, typename EP, typename GP, typename A&gt;
+<span class="lineNum">    1228 </span>            : struct graph_mutability_traits&lt;adjacency_matrix&lt;D, VP, EP, GP, A&gt; &gt; {
+<span class="lineNum">    1229 </span>            :   typedef mutable_edge_property_graph_tag category;
+<span class="lineNum">    1230 </span>            : };
+<span class="lineNum">    1231 </span>            : 
+<span class="lineNum">    1232 </span>            : 
+<span class="lineNum">    1233 </span>            : } // namespace boost
+<span class="lineNum">    1234 </span>            : 
+<span class="lineNum">    1235 </span>            : #endif // BOOST_ADJACENCY_MATRIX_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

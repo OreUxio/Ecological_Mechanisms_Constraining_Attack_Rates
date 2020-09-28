@@ -1,0 +1,672 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/nlopt.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">usr/include</a> - nlopt.hpp<span style="font-size: 80%;"> (source / <a href="nlopt.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">114</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">27</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /* Copyright (c) 2007-2011 Massachusetts Institute of Technology</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Permission is hereby granted, free of charge, to any person obtaining
+<span class="lineNum">       4 </span>            :  * a copy of this software and associated documentation files (the
+<span class="lineNum">       5 </span>            :  * &quot;Software&quot;), to deal in the Software without restriction, including
+<span class="lineNum">       6 </span>            :  * without limitation the rights to use, copy, modify, merge, publish,
+<span class="lineNum">       7 </span>            :  * distribute, sublicense, and/or sell copies of the Software, and to
+<span class="lineNum">       8 </span>            :  * permit persons to whom the Software is furnished to do so, subject to
+<span class="lineNum">       9 </span>            :  * the following conditions:
+<span class="lineNum">      10 </span>            :  * 
+<span class="lineNum">      11 </span>            :  * The above copyright notice and this permission notice shall be
+<span class="lineNum">      12 </span>            :  * included in all copies or substantial portions of the Software.
+<span class="lineNum">      13 </span>            :  * 
+<span class="lineNum">      14 </span>            :  * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+<span class="lineNum">      15 </span>            :  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+<span class="lineNum">      16 </span>            :  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+<span class="lineNum">      17 </span>            :  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+<span class="lineNum">      18 </span>            :  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+<span class="lineNum">      19 </span>            :  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+<span class="lineNum">      20 </span>            :  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+<span class="lineNum">      21 </span>            :  */
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : // C++ style wrapper around NLopt API
+<span class="lineNum">      24 </span>            : // nlopt.hpp is AUTOMATICALLY GENERATED from nlopt-in.hpp - edit the latter!
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #ifndef NLOPT_HPP
+<span class="lineNum">      27 </span>            : #define NLOPT_HPP
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : #include &lt;nlopt.h&gt;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      32 </span>            : #include &lt;stdexcept&gt;
+<span class="lineNum">      33 </span>            : #include &lt;new&gt;
+<span class="lineNum">      34 </span>            : #include &lt;cstdlib&gt;
+<span class="lineNum">      35 </span>            : #include &lt;cstring&gt;
+<span class="lineNum">      36 </span>            : #include &lt;cmath&gt;
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : // convenience overloading for below (not in nlopt:: since has nlopt_ prefix)
+<span class="lineNum">      39 </span>            : inline nlopt_result nlopt_get_initial_step(const nlopt_opt opt, double *dx) {
+<span class="lineNum">      40 </span>            :       return nlopt_get_initial_step(opt, (const double *) NULL, dx);
+<span class="lineNum">      41 </span>            : }
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : namespace nlopt {
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            :   //////////////////////////////////////////////////////////////////////
+<span class="lineNum">      46 </span>            :   // nlopt::* namespace versions of the C enumerated types
+<span class="lineNum">      47 </span>            :   //          AUTOMATICALLY GENERATED, DO NOT EDIT
+<span class="lineNum">      48 </span>            :   // GEN_ENUMS_HERE
+<span class="lineNum">      49 </span>            :   enum algorithm {
+<span class="lineNum">      50 </span>            :      GN_DIRECT = 0,
+<span class="lineNum">      51 </span>            :      GN_DIRECT_L,
+<span class="lineNum">      52 </span>            :      GN_DIRECT_L_RAND,
+<span class="lineNum">      53 </span>            :      GN_DIRECT_NOSCAL,
+<span class="lineNum">      54 </span>            :      GN_DIRECT_L_NOSCAL,
+<span class="lineNum">      55 </span>            :      GN_DIRECT_L_RAND_NOSCAL,
+<span class="lineNum">      56 </span>            :      GN_ORIG_DIRECT,
+<span class="lineNum">      57 </span>            :      GN_ORIG_DIRECT_L,
+<span class="lineNum">      58 </span>            :      GD_STOGO,
+<span class="lineNum">      59 </span>            :      GD_STOGO_RAND,
+<span class="lineNum">      60 </span>            :      LD_LBFGS_NOCEDAL,
+<span class="lineNum">      61 </span>            :      LD_LBFGS,
+<span class="lineNum">      62 </span>            :      LN_PRAXIS,
+<span class="lineNum">      63 </span>            :      LD_VAR1,
+<span class="lineNum">      64 </span>            :      LD_VAR2,
+<span class="lineNum">      65 </span>            :      LD_TNEWTON,
+<span class="lineNum">      66 </span>            :      LD_TNEWTON_RESTART,
+<span class="lineNum">      67 </span>            :      LD_TNEWTON_PRECOND,
+<span class="lineNum">      68 </span>            :      LD_TNEWTON_PRECOND_RESTART,
+<span class="lineNum">      69 </span>            :      GN_CRS2_LM,
+<span class="lineNum">      70 </span>            :      GN_MLSL,
+<span class="lineNum">      71 </span>            :      GD_MLSL,
+<span class="lineNum">      72 </span>            :      GN_MLSL_LDS,
+<span class="lineNum">      73 </span>            :      GD_MLSL_LDS,
+<span class="lineNum">      74 </span>            :      LD_MMA,
+<span class="lineNum">      75 </span>            :      LN_COBYLA,
+<span class="lineNum">      76 </span>            :      LN_NEWUOA,
+<span class="lineNum">      77 </span>            :      LN_NEWUOA_BOUND,
+<span class="lineNum">      78 </span>            :      LN_NELDERMEAD,
+<span class="lineNum">      79 </span>            :      LN_SBPLX,
+<span class="lineNum">      80 </span>            :      LN_AUGLAG,
+<span class="lineNum">      81 </span>            :      LD_AUGLAG,
+<span class="lineNum">      82 </span>            :      LN_AUGLAG_EQ,
+<span class="lineNum">      83 </span>            :      LD_AUGLAG_EQ,
+<span class="lineNum">      84 </span>            :      LN_BOBYQA,
+<span class="lineNum">      85 </span>            :      GN_ISRES,
+<span class="lineNum">      86 </span>            :      AUGLAG,
+<span class="lineNum">      87 </span>            :      AUGLAG_EQ,
+<span class="lineNum">      88 </span>            :      G_MLSL,
+<span class="lineNum">      89 </span>            :      G_MLSL_LDS,
+<span class="lineNum">      90 </span>            :      LD_SLSQP,
+<span class="lineNum">      91 </span>            :      LD_CCSAQ,
+<span class="lineNum">      92 </span>            :      GN_ESCH,
+<span class="lineNum">      93 </span>            :      NUM_ALGORITHMS /* not an algorithm, just the number of them */
+<span class="lineNum">      94 </span>            :   };
+<span class="lineNum">      95 </span>            :   enum result {
+<span class="lineNum">      96 </span>            :      FAILURE = -1, /* generic failure code */
+<span class="lineNum">      97 </span>            :      INVALID_ARGS = -2,
+<span class="lineNum">      98 </span>            :      OUT_OF_MEMORY = -3,
+<span class="lineNum">      99 </span>            :      ROUNDOFF_LIMITED = -4,
+<span class="lineNum">     100 </span>            :      FORCED_STOP = -5,
+<span class="lineNum">     101 </span>            :      SUCCESS = 1, /* generic success code */
+<span class="lineNum">     102 </span>            :      STOPVAL_REACHED = 2,
+<span class="lineNum">     103 </span>            :      FTOL_REACHED = 3,
+<span class="lineNum">     104 </span>            :      XTOL_REACHED = 4,
+<span class="lineNum">     105 </span>            :      MAXEVAL_REACHED = 5,
+<span class="lineNum">     106 </span>            :      MAXTIME_REACHED = 6
+<span class="lineNum">     107 </span>            :   };
+<span class="lineNum">     108 </span>            :   // GEN_ENUMS_HERE
+<span class="lineNum">     109 </span>            :   //////////////////////////////////////////////////////////////////////
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            :   typedef nlopt_func func; // nlopt::func synoynm
+<span class="lineNum">     112 </span>            :   typedef nlopt_mfunc mfunc; // nlopt::mfunc synoynm
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            :   // alternative to nlopt_func that takes std::vector&lt;double&gt;
+<span class="lineNum">     115 </span>            :   // ... unfortunately requires a data copy
+<span class="lineNum">     116 </span>            :   typedef double (*vfunc)(const std::vector&lt;double&gt; &amp;x,
+<span class="lineNum">     117 </span>            :                           std::vector&lt;double&gt; &amp;grad, void *data);
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            :   //////////////////////////////////////////////////////////////////////
+<a name="120"><span class="lineNum">     120 </span>            :   </a>
+<span class="lineNum">     121 </span>            :   // NLopt-specific exceptions (corresponding to error codes):
+<a name="122"><span class="lineNum">     122 </span><span class="lineNoCov">          0 :   class roundoff_limited : public std::runtime_error {</span></a>
+<span class="lineNum">     123 </span>            :   public:
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :     roundoff_limited() : std::runtime_error(&quot;nlopt roundoff-limited&quot;) {}</span>
+<a name="125"><span class="lineNum">     125 </span>            :   };</a>
+<span class="lineNum">     126 </span>            : 
+<a name="127"><span class="lineNum">     127 </span><span class="lineNoCov">          0 :   class forced_stop : public std::runtime_error {</span></a>
+<span class="lineNum">     128 </span>            :   public:
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :     forced_stop() : std::runtime_error(&quot;nlopt forced stop&quot;) {}</span>
+<span class="lineNum">     130 </span>            :   };
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            :   //////////////////////////////////////////////////////////////////////
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :   class opt {
+<span class="lineNum">     135 </span>            :   private:
+<a name="136"><span class="lineNum">     136 </span>            :     nlopt_opt o;</a>
+<span class="lineNum">     137 </span>            :     
+<span class="lineNum">     138 </span><span class="lineNoCov">          0 :     void mythrow(nlopt_result ret) const {</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :       switch (ret) {</span>
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :       case NLOPT_FAILURE: throw std::runtime_error(&quot;nlopt failure&quot;);</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :       case NLOPT_OUT_OF_MEMORY: throw std::bad_alloc();</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :       case NLOPT_INVALID_ARGS: throw std::invalid_argument(&quot;nlopt invalid argument&quot;);</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :       case NLOPT_ROUNDOFF_LIMITED: throw roundoff_limited();</span>
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :       case NLOPT_FORCED_STOP: throw forced_stop();</span>
+<span class="lineNum">     145 </span>            :       default: break;
+<span class="lineNum">     146 </span>            :       }
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            :     typedef struct {
+<span class="lineNum">     150 </span>            :       opt *o;
+<span class="lineNum">     151 </span>            :       mfunc mf; func f; void *f_data;
+<span class="lineNum">     152 </span>            :       vfunc vf;
+<span class="lineNum">     153 </span>            :       nlopt_munge munge_destroy, munge_copy; // non-NULL for SWIG wrappers
+<span class="lineNum">     154 </span>            :     } myfunc_data;
+<a name="155"><span class="lineNum">     155 </span>            : </a>
+<span class="lineNum">     156 </span>            :     // free/destroy f_data in nlopt_destroy and nlopt_copy, respectively
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :     static void *free_myfunc_data(void *p) { </span>
+<span class="lineNum">     158 </span><span class="lineNoCov">          0 :       myfunc_data *d = (myfunc_data *) p;</span>
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :       if (d) {</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :         if (d-&gt;f_data &amp;&amp; d-&gt;munge_destroy) d-&gt;munge_destroy(d-&gt;f_data);</span>
+<span class="lineNum">     161 </span><span class="lineNoCov">          0 :         delete d;</span>
+<span class="lineNum">     162 </span>            :       }
+<a name="163"><span class="lineNum">     163 </span><span class="lineNoCov">          0 :       return NULL;</span></a>
+<span class="lineNum">     164 </span>            :     }
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :     static void *dup_myfunc_data(void *p) {</span>
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 :       myfunc_data *d = (myfunc_data *) p;</span>
+<span class="lineNum">     167 </span><span class="lineNoCov">          0 :       if (d) {</span>
+<span class="lineNum">     168 </span>            :         void *f_data;
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :         if (d-&gt;f_data &amp;&amp; d-&gt;munge_copy) {</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :           f_data = d-&gt;munge_copy(d-&gt;f_data);</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :           if (!f_data) return NULL;</span>
+<span class="lineNum">     172 </span>            :         }
+<span class="lineNum">     173 </span>            :         else
+<span class="lineNum">     174 </span>            :           f_data = d-&gt;f_data;
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :         myfunc_data *dnew = new myfunc_data;</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :         if (dnew) {</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :           *dnew = *d;</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :           dnew-&gt;f_data = f_data;</span>
+<span class="lineNum">     179 </span>            :         }
+<span class="lineNum">     180 </span>            :         return (void*) dnew;
+<span class="lineNum">     181 </span>            :       }
+<span class="lineNum">     182 </span>            :       else return NULL;
+<span class="lineNum">     183 </span>            :     }
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            :     // nlopt_func wrapper that catches exceptions
+<span class="lineNum">     186 </span>            :     static double myfunc(unsigned n, const double *x, double *grad, void *d_) {
+<span class="lineNum">     187 </span>            :       myfunc_data *d = reinterpret_cast&lt;myfunc_data*&gt;(d_);
+<span class="lineNum">     188 </span>            :       try {
+<span class="lineNum">     189 </span>            :         return d-&gt;f(n, x, grad, d-&gt;f_data);
+<span class="lineNum">     190 </span>            :       }
+<span class="lineNum">     191 </span>            :       catch (std::bad_alloc&amp;)
+<span class="lineNum">     192 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_OUT_OF_MEMORY; }
+<span class="lineNum">     193 </span>            :       catch (std::invalid_argument&amp;)
+<span class="lineNum">     194 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_INVALID_ARGS; }
+<span class="lineNum">     195 </span>            :       catch (roundoff_limited&amp;)
+<span class="lineNum">     196 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_ROUNDOFF_LIMITED; }
+<span class="lineNum">     197 </span>            :       catch (forced_stop&amp;)
+<span class="lineNum">     198 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_FORCED_STOP; }
+<span class="lineNum">     199 </span>            :       catch (...)
+<span class="lineNum">     200 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_FAILURE; }
+<span class="lineNum">     201 </span>            :       d-&gt;o-&gt;force_stop(); // stop gracefully, opt::optimize will re-throw
+<span class="lineNum">     202 </span>            :       return HUGE_VAL;
+<span class="lineNum">     203 </span>            :     }
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            :     // nlopt_mfunc wrapper that catches exceptions
+<span class="lineNum">     206 </span>            :     static void mymfunc(unsigned m, double *result,
+<span class="lineNum">     207 </span>            :                         unsigned n, const double *x, double *grad, void *d_) {
+<span class="lineNum">     208 </span>            :       myfunc_data *d = reinterpret_cast&lt;myfunc_data*&gt;(d_);
+<span class="lineNum">     209 </span>            :       try {
+<span class="lineNum">     210 </span>            :         d-&gt;mf(m, result, n, x, grad, d-&gt;f_data);
+<span class="lineNum">     211 </span>            :         return;
+<span class="lineNum">     212 </span>            :       }
+<span class="lineNum">     213 </span>            :       catch (std::bad_alloc&amp;)
+<span class="lineNum">     214 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_OUT_OF_MEMORY; }
+<span class="lineNum">     215 </span>            :       catch (std::invalid_argument&amp;)
+<span class="lineNum">     216 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_INVALID_ARGS; }
+<span class="lineNum">     217 </span>            :       catch (roundoff_limited&amp;)
+<span class="lineNum">     218 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_ROUNDOFF_LIMITED; }
+<span class="lineNum">     219 </span>            :       catch (forced_stop&amp;)
+<span class="lineNum">     220 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_FORCED_STOP; }
+<span class="lineNum">     221 </span>            :       catch (...)
+<span class="lineNum">     222 </span>            :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_FAILURE; }
+<span class="lineNum">     223 </span>            :       d-&gt;o-&gt;force_stop(); // stop gracefully, opt::optimize will re-throw
+<span class="lineNum">     224 </span>            :       for (unsigned i = 0; i &lt; m; ++i) result[i] = HUGE_VAL;
+<span class="lineNum">     225 </span>            :     }
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span>            :     std::vector&lt;double&gt; xtmp, gradtmp, gradtmp0; // scratch for myvfunc
+<a name="228"><span class="lineNum">     228 </span>            : </a>
+<span class="lineNum">     229 </span>            :     // nlopt_func wrapper, using std::vector&lt;double&gt;
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :     static double myvfunc(unsigned n, const double *x, double *grad, void *d_){</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :       myfunc_data *d = reinterpret_cast&lt;myfunc_data*&gt;(d_);</span>
+<span class="lineNum">     232 </span>            :       try {
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :         std::vector&lt;double&gt; &amp;xv = d-&gt;o-&gt;xtmp;</span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :         if (n) std::memcpy(&amp;xv[0], x, n * sizeof(double));</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :         double val=d-&gt;vf(xv, grad ? d-&gt;o-&gt;gradtmp : d-&gt;o-&gt;gradtmp0, d-&gt;f_data);</span>
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :         if (grad &amp;&amp; n) {</span>
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :           std::vector&lt;double&gt; &amp;gradv = d-&gt;o-&gt;gradtmp;</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :           std::memcpy(grad, &amp;gradv[0], n * sizeof(double));</span>
+<span class="lineNum">     239 </span>            :         }
+<span class="lineNum">     240 </span>            :         return val;
+<span class="lineNum">     241 </span>            :       }
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :       catch (std::bad_alloc&amp;)</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_OUT_OF_MEMORY; }</span>
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :       catch (std::invalid_argument&amp;)</span>
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_INVALID_ARGS; }</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 :       catch (roundoff_limited&amp;)</span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_ROUNDOFF_LIMITED; }</span>
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :       catch (forced_stop&amp;)</span>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_FORCED_STOP; }</span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :       catch (...)</span>
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :         { d-&gt;o-&gt;forced_stop_reason = NLOPT_FAILURE; }</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :       d-&gt;o-&gt;force_stop(); // stop gracefully, opt::optimize will re-throw</span>
+<span class="lineNum">     253 </span><span class="lineNoCov">          0 :       return HUGE_VAL;</span>
+<a name="254"><span class="lineNum">     254 </span>            :     }</a>
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 :     void alloc_tmp() {</span>
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :       if (xtmp.size() != nlopt_get_dimension(o)) {</span>
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :         xtmp = std::vector&lt;double&gt;(nlopt_get_dimension(o));</span>
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :         gradtmp = std::vector&lt;double&gt;(nlopt_get_dimension(o));</span>
+<span class="lineNum">     260 </span>            :       }
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            :     result last_result;
+<span class="lineNum">     264 </span>            :     double last_optf;
+<span class="lineNum">     265 </span>            :     nlopt_result forced_stop_reason;
+<span class="lineNum">     266 </span>            : 
+<a name="267"><span class="lineNum">     267 </span>            :   public:</a>
+<span class="lineNum">     268 </span>            :     // Constructors etc.
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :     opt() : o(NULL), xtmp(0), gradtmp(0), gradtmp0(0), </span>
+<a name="270"><span class="lineNum">     270 </span>            :             last_result(nlopt::FAILURE), last_optf(HUGE_VAL),</a>
+<a name="271"><span class="lineNum">     271 </span><span class="lineNoCov">          0 :             forced_stop_reason(NLOPT_FORCED_STOP) {}</span></a>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :     ~opt() { nlopt_destroy(o); }</span>
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 :     opt(algorithm a, unsigned n) : </span>
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :       o(nlopt_create(nlopt_algorithm(a), n)), </span>
+<span class="lineNum">     275 </span>            :       xtmp(0), gradtmp(0), gradtmp0(0),
+<span class="lineNum">     276 </span>            :       last_result(nlopt::FAILURE), last_optf(HUGE_VAL),
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :       forced_stop_reason(NLOPT_FORCED_STOP) {</span>
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :       if (!o) throw std::bad_alloc();</span>
+<a name="279"><span class="lineNum">     279 </span><span class="lineNoCov">          0 :       nlopt_set_munge(o, free_myfunc_data, dup_myfunc_data);</span></a>
+<span class="lineNum">     280 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     281 </span><span class="lineNoCov">          0 :     opt(const opt&amp; f) : o(nlopt_copy(f.o)), </span>
+<span class="lineNum">     282 </span>            :                         xtmp(f.xtmp), gradtmp(f.gradtmp), gradtmp0(0),
+<span class="lineNum">     283 </span><span class="lineNoCov">          0 :                         last_result(f.last_result), last_optf(f.last_optf),</span>
+<span class="lineNum">     284 </span><span class="lineNoCov">          0 :                         forced_stop_reason(f.forced_stop_reason) {</span>
+<a name="285"><span class="lineNum">     285 </span><span class="lineNoCov">          0 :       if (f.o &amp;&amp; !o) throw std::bad_alloc();</span></a>
+<span class="lineNum">     286 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     287 </span><span class="lineNoCov">          0 :     opt&amp; operator=(opt const&amp; f) {</span>
+<span class="lineNum">     288 </span><span class="lineNoCov">          0 :       if (this == &amp;f) return *this; // self-assignment</span>
+<span class="lineNum">     289 </span><span class="lineNoCov">          0 :       nlopt_destroy(o);</span>
+<span class="lineNum">     290 </span><span class="lineNoCov">          0 :       o = nlopt_copy(f.o);</span>
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :       if (f.o &amp;&amp; !o) throw std::bad_alloc();</span>
+<span class="lineNum">     292 </span><span class="lineNoCov">          0 :       xtmp = f.xtmp; gradtmp = f.gradtmp;</span>
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :       last_result = f.last_result; last_optf = f.last_optf;</span>
+<span class="lineNum">     294 </span><span class="lineNoCov">          0 :       forced_stop_reason = f.forced_stop_reason;</span>
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :       return *this;</span>
+<span class="lineNum">     296 </span>            :     }
+<a name="297"><span class="lineNum">     297 </span>            : </a>
+<span class="lineNum">     298 </span>            :     // Do the optimization:
+<span class="lineNum">     299 </span><span class="lineNoCov">          0 :     result optimize(std::vector&lt;double&gt; &amp;x, double &amp;opt_f) {</span>
+<span class="lineNum">     300 </span><span class="lineNoCov">          0 :       if (o &amp;&amp; nlopt_get_dimension(o) != x.size())</span>
+<span class="lineNum">     301 </span><span class="lineNoCov">          0 :         throw std::invalid_argument(&quot;dimension mismatch&quot;);</span>
+<span class="lineNum">     302 </span><span class="lineNoCov">          0 :       forced_stop_reason = NLOPT_FORCED_STOP;</span>
+<span class="lineNum">     303 </span><span class="lineNoCov">          0 :       nlopt_result ret = nlopt_optimize(o, x.empty() ? NULL : &amp;x[0], &amp;opt_f);</span>
+<span class="lineNum">     304 </span><span class="lineNoCov">          0 :       last_result = result(ret);</span>
+<span class="lineNum">     305 </span><span class="lineNoCov">          0 :       last_optf = opt_f;</span>
+<span class="lineNum">     306 </span><span class="lineNoCov">          0 :       if (ret == NLOPT_FORCED_STOP)</span>
+<span class="lineNum">     307 </span><span class="lineNoCov">          0 :         mythrow(forced_stop_reason);</span>
+<span class="lineNum">     308 </span><span class="lineNoCov">          0 :       mythrow(ret);</span>
+<span class="lineNum">     309 </span><span class="lineNoCov">          0 :       return last_result;</span>
+<span class="lineNum">     310 </span>            :     }
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :     // variant mainly useful for SWIG wrappers:
+<span class="lineNum">     313 </span>            :     std::vector&lt;double&gt; optimize(const std::vector&lt;double&gt; &amp;x0) {
+<span class="lineNum">     314 </span>            :       std::vector&lt;double&gt; x(x0);
+<span class="lineNum">     315 </span>            :       last_result = optimize(x, last_optf);
+<span class="lineNum">     316 </span>            :       return x;
+<span class="lineNum">     317 </span>            :     }
+<span class="lineNum">     318 </span>            :     result last_optimize_result() const { return last_result; }
+<span class="lineNum">     319 </span>            :     double last_optimum_value() const { return last_optf; }
+<span class="lineNum">     320 </span>            : 
+<span class="lineNum">     321 </span>            :     // accessors:
+<span class="lineNum">     322 </span>            :     algorithm get_algorithm() const {
+<span class="lineNum">     323 </span>            :       if (!o) throw std::runtime_error(&quot;uninitialized nlopt::opt&quot;);
+<a name="324"><span class="lineNum">     324 </span>            :       return algorithm(nlopt_get_algorithm(o));</a>
+<span class="lineNum">     325 </span>            :     }
+<span class="lineNum">     326 </span><span class="lineNoCov">          0 :     const char *get_algorithm_name() const {</span>
+<span class="lineNum">     327 </span><span class="lineNoCov">          0 :       if (!o) throw std::runtime_error(&quot;uninitialized nlopt::opt&quot;);</span>
+<span class="lineNum">     328 </span><span class="lineNoCov">          0 :       return nlopt_algorithm_name(nlopt_get_algorithm(o));</span>
+<span class="lineNum">     329 </span>            :     }
+<span class="lineNum">     330 </span>            :     unsigned get_dimension() const {
+<span class="lineNum">     331 </span>            :       if (!o) throw std::runtime_error(&quot;uninitialized nlopt::opt&quot;);
+<span class="lineNum">     332 </span>            :       return nlopt_get_dimension(o);
+<span class="lineNum">     333 </span>            :     }
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            :     // Set the objective function
+<span class="lineNum">     336 </span>            :     void set_min_objective(func f, void *f_data) {
+<span class="lineNum">     337 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     338 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     339 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     340 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<span class="lineNum">     341 </span>            :       mythrow(nlopt_set_min_objective(o, myfunc, d)); // d freed via o
+<span class="lineNum">     342 </span>            :     }
+<span class="lineNum">     343 </span>            :     void set_min_objective(vfunc vf, void *f_data) {
+<span class="lineNum">     344 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     345 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     346 </span>            :       d-&gt;o = this; d-&gt;f = NULL; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = vf;
+<span class="lineNum">     347 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<span class="lineNum">     348 </span>            :       mythrow(nlopt_set_min_objective(o, myvfunc, d)); // d freed via o
+<span class="lineNum">     349 </span>            :       alloc_tmp();
+<span class="lineNum">     350 </span>            :     }
+<span class="lineNum">     351 </span>            :     void set_max_objective(func f, void *f_data) {
+<span class="lineNum">     352 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     353 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     354 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     355 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<a name="356"><span class="lineNum">     356 </span>            :       mythrow(nlopt_set_max_objective(o, myfunc, d)); // d freed via o</a>
+<span class="lineNum">     357 </span>            :     }
+<span class="lineNum">     358 </span><span class="lineNoCov">          0 :     void set_max_objective(vfunc vf, void *f_data) {</span>
+<span class="lineNum">     359 </span><span class="lineNoCov">          0 :       myfunc_data *d = new myfunc_data;</span>
+<span class="lineNum">     360 </span><span class="lineNoCov">          0 :       if (!d) throw std::bad_alloc();</span>
+<span class="lineNum">     361 </span><span class="lineNoCov">          0 :       d-&gt;o = this; d-&gt;f = NULL; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = vf;</span>
+<span class="lineNum">     362 </span><span class="lineNoCov">          0 :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;</span>
+<span class="lineNum">     363 </span><span class="lineNoCov">          0 :       mythrow(nlopt_set_max_objective(o, myvfunc, d)); // d freed via o</span>
+<span class="lineNum">     364 </span><span class="lineNoCov">          0 :       alloc_tmp();</span>
+<span class="lineNum">     365 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span>            :     // for internal use in SWIG wrappers -- variant that
+<span class="lineNum">     368 </span>            :     // takes ownership of f_data, with munging for destroy/copy
+<span class="lineNum">     369 </span>            :     void set_min_objective(func f, void *f_data,
+<span class="lineNum">     370 </span>            :                            nlopt_munge md, nlopt_munge mc) {
+<span class="lineNum">     371 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     372 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     373 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     374 </span>            :       d-&gt;munge_destroy = md; d-&gt;munge_copy = mc;
+<span class="lineNum">     375 </span>            :       mythrow(nlopt_set_min_objective(o, myfunc, d)); // d freed via o
+<span class="lineNum">     376 </span>            :     }
+<span class="lineNum">     377 </span>            :     void set_max_objective(func f, void *f_data,
+<span class="lineNum">     378 </span>            :                            nlopt_munge md, nlopt_munge mc) {
+<span class="lineNum">     379 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     380 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     381 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     382 </span>            :       d-&gt;munge_destroy = md; d-&gt;munge_copy = mc;
+<span class="lineNum">     383 </span>            :       mythrow(nlopt_set_max_objective(o, myfunc, d)); // d freed via o
+<span class="lineNum">     384 </span>            :     }
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            :     // Nonlinear constraints:
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span>            :     void remove_inequality_constraints() {
+<span class="lineNum">     389 </span>            :       nlopt_result ret = nlopt_remove_inequality_constraints(o);
+<span class="lineNum">     390 </span>            :       mythrow(ret);
+<span class="lineNum">     391 </span>            :     }
+<span class="lineNum">     392 </span>            :     void add_inequality_constraint(func f, void *f_data, double tol=0) {
+<span class="lineNum">     393 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     394 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     395 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     396 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<a name="397"><span class="lineNum">     397 </span>            :       mythrow(nlopt_add_inequality_constraint(o, myfunc, d, tol));</a>
+<span class="lineNum">     398 </span>            :     }
+<span class="lineNum">     399 </span><span class="lineNoCov">          0 :     void add_inequality_constraint(vfunc vf, void *f_data, double tol=0) {</span>
+<span class="lineNum">     400 </span><span class="lineNoCov">          0 :       myfunc_data *d = new myfunc_data;</span>
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 :       if (!d) throw std::bad_alloc();</span>
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :       d-&gt;o = this; d-&gt;f = NULL; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = vf;</span>
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :       mythrow(nlopt_add_inequality_constraint(o, myvfunc, d, tol));</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :       alloc_tmp();</span>
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     407 </span>            :     void add_inequality_mconstraint(mfunc mf, void *f_data, 
+<span class="lineNum">     408 </span>            :                                     const std::vector&lt;double&gt; &amp;tol) {
+<span class="lineNum">     409 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     410 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     411 </span>            :       d-&gt;o = this; d-&gt;mf = mf; d-&gt;f_data = f_data; d-&gt;f = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     412 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<span class="lineNum">     413 </span>            :       mythrow(nlopt_add_inequality_mconstraint(o, tol.size(), mymfunc, d, 
+<span class="lineNum">     414 </span>            :                                                tol.empty() ? NULL : &amp;tol[0]));
+<span class="lineNum">     415 </span>            :     }
+<span class="lineNum">     416 </span>            : 
+<span class="lineNum">     417 </span>            :     void remove_equality_constraints() {
+<span class="lineNum">     418 </span>            :       nlopt_result ret = nlopt_remove_equality_constraints(o);
+<span class="lineNum">     419 </span>            :       mythrow(ret);
+<span class="lineNum">     420 </span>            :     }
+<span class="lineNum">     421 </span>            :     void add_equality_constraint(func f, void *f_data, double tol=0) {
+<span class="lineNum">     422 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     423 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     424 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     425 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<span class="lineNum">     426 </span>            :       mythrow(nlopt_add_equality_constraint(o, myfunc, d, tol));
+<span class="lineNum">     427 </span>            :     }
+<span class="lineNum">     428 </span>            :     void add_equality_constraint(vfunc vf, void *f_data, double tol=0) {
+<span class="lineNum">     429 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     430 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     431 </span>            :       d-&gt;o = this; d-&gt;f = NULL; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = vf;
+<span class="lineNum">     432 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<span class="lineNum">     433 </span>            :       mythrow(nlopt_add_equality_constraint(o, myvfunc, d, tol));
+<span class="lineNum">     434 </span>            :       alloc_tmp();
+<span class="lineNum">     435 </span>            :     }
+<span class="lineNum">     436 </span>            :     void add_equality_mconstraint(mfunc mf, void *f_data, 
+<span class="lineNum">     437 </span>            :                                   const std::vector&lt;double&gt; &amp;tol) {
+<span class="lineNum">     438 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     439 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     440 </span>            :       d-&gt;o = this; d-&gt;mf = mf; d-&gt;f_data = f_data; d-&gt;f = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     441 </span>            :       d-&gt;munge_destroy = d-&gt;munge_copy = NULL;
+<span class="lineNum">     442 </span>            :       mythrow(nlopt_add_equality_mconstraint(o, tol.size(), mymfunc, d, 
+<span class="lineNum">     443 </span>            :                                              tol.empty() ? NULL : &amp;tol[0]));
+<span class="lineNum">     444 </span>            :     }
+<span class="lineNum">     445 </span>            : 
+<span class="lineNum">     446 </span>            :     // For internal use in SWIG wrappers (see also above)
+<span class="lineNum">     447 </span>            :     void add_inequality_constraint(func f, void *f_data, 
+<span class="lineNum">     448 </span>            :                                    nlopt_munge md, nlopt_munge mc,
+<span class="lineNum">     449 </span>            :                                    double tol=0) {
+<span class="lineNum">     450 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     451 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     452 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     453 </span>            :       d-&gt;munge_destroy = md; d-&gt;munge_copy = mc;
+<span class="lineNum">     454 </span>            :       mythrow(nlopt_add_inequality_constraint(o, myfunc, d, tol));
+<span class="lineNum">     455 </span>            :     }
+<span class="lineNum">     456 </span>            :     void add_equality_constraint(func f, void *f_data, 
+<span class="lineNum">     457 </span>            :                                  nlopt_munge md, nlopt_munge mc,
+<span class="lineNum">     458 </span>            :                                  double tol=0) {
+<span class="lineNum">     459 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     460 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     461 </span>            :       d-&gt;o = this; d-&gt;f = f; d-&gt;f_data = f_data; d-&gt;mf = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     462 </span>            :       d-&gt;munge_destroy = md; d-&gt;munge_copy = mc;
+<span class="lineNum">     463 </span>            :       mythrow(nlopt_add_equality_constraint(o, myfunc, d, tol));
+<span class="lineNum">     464 </span>            :     }
+<span class="lineNum">     465 </span>            :     void add_inequality_mconstraint(mfunc mf, void *f_data, 
+<span class="lineNum">     466 </span>            :                                     nlopt_munge md, nlopt_munge mc,
+<span class="lineNum">     467 </span>            :                                     const std::vector&lt;double&gt; &amp;tol) {
+<span class="lineNum">     468 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     469 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     470 </span>            :       d-&gt;o = this; d-&gt;mf = mf; d-&gt;f_data = f_data; d-&gt;f = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     471 </span>            :       d-&gt;munge_destroy = md; d-&gt;munge_copy = mc;
+<span class="lineNum">     472 </span>            :       mythrow(nlopt_add_inequality_mconstraint(o, tol.size(), mymfunc, d, 
+<span class="lineNum">     473 </span>            :                                                tol.empty() ? NULL : &amp;tol[0]));
+<span class="lineNum">     474 </span>            :     }
+<span class="lineNum">     475 </span>            :     void add_equality_mconstraint(mfunc mf, void *f_data, 
+<span class="lineNum">     476 </span>            :                                   nlopt_munge md, nlopt_munge mc,
+<span class="lineNum">     477 </span>            :                                   const std::vector&lt;double&gt; &amp;tol) {
+<span class="lineNum">     478 </span>            :       myfunc_data *d = new myfunc_data;
+<span class="lineNum">     479 </span>            :       if (!d) throw std::bad_alloc();
+<span class="lineNum">     480 </span>            :       d-&gt;o = this; d-&gt;mf = mf; d-&gt;f_data = f_data; d-&gt;f = NULL; d-&gt;vf = NULL;
+<span class="lineNum">     481 </span>            :       d-&gt;munge_destroy = md; d-&gt;munge_copy = mc;
+<span class="lineNum">     482 </span>            :       mythrow(nlopt_add_equality_mconstraint(o, tol.size(), mymfunc, d, 
+<span class="lineNum">     483 </span>            :                                              tol.empty() ? NULL : &amp;tol[0]));
+<span class="lineNum">     484 </span>            :     }
+<span class="lineNum">     485 </span>            : 
+<span class="lineNum">     486 </span>            : #define NLOPT_GETSET_VEC(name)                                          \
+<span class="lineNum">     487 </span>            :     void set_##name(double val) {                                       \
+<span class="lineNum">     488 </span>            :       mythrow(nlopt_set_##name##1(o, val));                             \
+<span class="lineNum">     489 </span>            :     }                                                                   \
+<span class="lineNum">     490 </span>            :     void get_##name(std::vector&lt;double&gt; &amp;v) const {                   \
+<span class="lineNum">     491 </span>            :       if (o &amp;&amp; nlopt_get_dimension(o) != v.size())                      \
+<span class="lineNum">     492 </span>            :         throw std::invalid_argument(&quot;dimension mismatch&quot;);            \
+<span class="lineNum">     493 </span>            :       mythrow(nlopt_get_##name(o, v.empty() ? NULL : &amp;v[0]));               \
+<span class="lineNum">     494 </span>            :     }                                                                   \
+<span class="lineNum">     495 </span>            :     std::vector&lt;double&gt; get_##name() const {                      \
+<span class="lineNum">     496 </span>            :       if (!o) throw std::runtime_error(&quot;uninitialized nlopt::opt&quot;);   \
+<span class="lineNum">     497 </span>            :       std::vector&lt;double&gt; v(nlopt_get_dimension(o));                      \
+<span class="lineNum">     498 </span>            :       get_##name(v);                                                    \
+<span class="lineNum">     499 </span>            :       return v;                                                         \
+<span class="lineNum">     500 </span>            :     }                                                                   \
+<span class="lineNum">     501 </span>            :     void set_##name(const std::vector&lt;double&gt; &amp;v) {                   \
+<span class="lineNum">     502 </span>            :       if (o &amp;&amp; nlopt_get_dimension(o) != v.size())                      \
+<span class="lineNum">     503 </span>            :         throw std::invalid_argument(&quot;dimension mismatch&quot;);            \
+<span class="lineNum">     504 </span>            :       mythrow(nlopt_set_##name(o, v.empty() ? NULL : &amp;v[0]));               \
+<a name="505"><span class="lineNum">     505 </span>            :     }</a>
+<a name="506"><span class="lineNum">     506 </span>            : </a>
+<span class="lineNum">     507 </span><span class="lineNoCov">          0 :     NLOPT_GETSET_VEC(lower_bounds)</span>
+<span class="lineNum">     508 </span><span class="lineNoCov">          0 :     NLOPT_GETSET_VEC(upper_bounds)</span>
+<span class="lineNum">     509 </span>            : 
+<span class="lineNum">     510 </span>            :     // stopping criteria:
+<span class="lineNum">     511 </span>            : 
+<span class="lineNum">     512 </span>            : #define NLOPT_GETSET(T, name)                                           \
+<span class="lineNum">     513 </span>            :     T get_##name() const {                                              \
+<span class="lineNum">     514 </span>            :       if (!o) throw std::runtime_error(&quot;uninitialized nlopt::opt&quot;);   \
+<span class="lineNum">     515 </span>            :       return nlopt_get_##name(o);                                       \
+<span class="lineNum">     516 </span>            :     }                                                                   \
+<span class="lineNum">     517 </span>            :     void set_##name(T name) {                                           \
+<span class="lineNum">     518 </span>            :       mythrow(nlopt_set_##name(o, name));                               \
+<a name="519"><span class="lineNum">     519 </span>            :     }</a>
+<span class="lineNum">     520 </span>            :     NLOPT_GETSET(double, stopval)
+<a name="521"><span class="lineNum">     521 </span><span class="lineNoCov">          0 :     NLOPT_GETSET(double, ftol_rel)</span></a>
+<span class="lineNum">     522 </span>            :     NLOPT_GETSET(double, ftol_abs)
+<span class="lineNum">     523 </span><span class="lineNoCov">          0 :     NLOPT_GETSET(double, xtol_rel)</span>
+<span class="lineNum">     524 </span>            :     NLOPT_GETSET_VEC(xtol_abs)
+<span class="lineNum">     525 </span>            :     NLOPT_GETSET(int, maxeval)
+<a name="526"><span class="lineNum">     526 </span>            :     NLOPT_GETSET(double, maxtime)</a>
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span><span class="lineNoCov">          0 :     NLOPT_GETSET(int, force_stop)</span>
+<span class="lineNum">     529 </span><span class="lineNoCov">          0 :     void force_stop() { set_force_stop(1); }</span>
+<span class="lineNum">     530 </span>            : 
+<span class="lineNum">     531 </span>            :     // algorithm-specific parameters:
+<span class="lineNum">     532 </span>            : 
+<span class="lineNum">     533 </span>            :     void set_local_optimizer(const opt &amp;lo) {
+<span class="lineNum">     534 </span>            :       nlopt_result ret = nlopt_set_local_optimizer(o, lo.o);
+<span class="lineNum">     535 </span>            :       mythrow(ret);
+<a name="536"><span class="lineNum">     536 </span>            :     }</a>
+<span class="lineNum">     537 </span>            : 
+<a name="538"><span class="lineNum">     538 </span><span class="lineNoCov">          0 :     NLOPT_GETSET(unsigned, population)</span></a>
+<span class="lineNum">     539 </span>            :     NLOPT_GETSET(unsigned, vector_storage)
+<span class="lineNum">     540 </span><span class="lineNoCov">          0 :     NLOPT_GETSET_VEC(initial_step)</span>
+<span class="lineNum">     541 </span>            : 
+<span class="lineNum">     542 </span>            :     void set_default_initial_step(const std::vector&lt;double&gt; &amp;x) {
+<span class="lineNum">     543 </span>            :       nlopt_result ret 
+<span class="lineNum">     544 </span>            :         = nlopt_set_default_initial_step(o, x.empty() ? NULL : &amp;x[0]);
+<span class="lineNum">     545 </span>            :       mythrow(ret);
+<span class="lineNum">     546 </span>            :     }
+<span class="lineNum">     547 </span>            :     void get_initial_step(const std::vector&lt;double&gt; &amp;x, std::vector&lt;double&gt; &amp;dx) const {
+<span class="lineNum">     548 </span>            :       if (o &amp;&amp; (nlopt_get_dimension(o) != x.size()
+<span class="lineNum">     549 </span>            :                 || nlopt_get_dimension(o) != dx.size()))
+<span class="lineNum">     550 </span>            :         throw std::invalid_argument(&quot;dimension mismatch&quot;);
+<span class="lineNum">     551 </span>            :       nlopt_result ret = nlopt_get_initial_step(o, x.empty() ? NULL : &amp;x[0],
+<span class="lineNum">     552 </span>            :                                                 dx.empty() ? NULL : &amp;dx[0]);
+<span class="lineNum">     553 </span>            :       mythrow(ret);
+<span class="lineNum">     554 </span>            :     }
+<span class="lineNum">     555 </span>            :     std::vector&lt;double&gt; get_initial_step_(const std::vector&lt;double&gt; &amp;x) const {
+<span class="lineNum">     556 </span>            :       if (!o) throw std::runtime_error(&quot;uninitialized nlopt::opt&quot;);
+<span class="lineNum">     557 </span>            :       std::vector&lt;double&gt; v(nlopt_get_dimension(o));
+<span class="lineNum">     558 </span>            :       get_initial_step(x, v);
+<span class="lineNum">     559 </span>            :       return v;
+<span class="lineNum">     560 </span>            :     }
+<span class="lineNum">     561 </span>            :   };
+<span class="lineNum">     562 </span>            : 
+<span class="lineNum">     563 </span>            : #undef NLOPT_GETSET
+<span class="lineNum">     564 </span>            : #undef NLOPT_GETSET_VEC
+<span class="lineNum">     565 </span>            : 
+<span class="lineNum">     566 </span>            :   //////////////////////////////////////////////////////////////////////
+<span class="lineNum">     567 </span>            : 
+<span class="lineNum">     568 </span>            :   inline void srand(unsigned long seed) { nlopt_srand(seed); }
+<span class="lineNum">     569 </span>            :   inline void srand_time() { nlopt_srand_time(); }
+<span class="lineNum">     570 </span>            :   inline void version(int &amp;major, int &amp;minor, int &amp;bugfix) {
+<span class="lineNum">     571 </span>            :     nlopt_version(&amp;major, &amp;minor, &amp;bugfix);
+<span class="lineNum">     572 </span>            :   }
+<span class="lineNum">     573 </span>            :   inline int version_major() {
+<span class="lineNum">     574 </span>            :     int major, minor, bugfix;
+<span class="lineNum">     575 </span>            :     nlopt_version(&amp;major, &amp;minor, &amp;bugfix);
+<span class="lineNum">     576 </span>            :     return major;
+<span class="lineNum">     577 </span>            :   }
+<span class="lineNum">     578 </span>            :   inline int version_minor() {
+<span class="lineNum">     579 </span>            :     int major, minor, bugfix;
+<span class="lineNum">     580 </span>            :     nlopt_version(&amp;major, &amp;minor, &amp;bugfix);
+<span class="lineNum">     581 </span>            :     return minor;
+<span class="lineNum">     582 </span>            :   }
+<span class="lineNum">     583 </span>            :   inline int version_bugfix() {
+<span class="lineNum">     584 </span>            :     int major, minor, bugfix;
+<span class="lineNum">     585 </span>            :     nlopt_version(&amp;major, &amp;minor, &amp;bugfix);
+<span class="lineNum">     586 </span>            :     return bugfix;
+<span class="lineNum">     587 </span>            :   }
+<span class="lineNum">     588 </span>            :   inline const char *algorithm_name(algorithm a) {
+<span class="lineNum">     589 </span>            :     return nlopt_algorithm_name(nlopt_algorithm(a));
+<span class="lineNum">     590 </span>            :   }
+<span class="lineNum">     591 </span>            : 
+<span class="lineNum">     592 </span>            :   //////////////////////////////////////////////////////////////////////
+<span class="lineNum">     593 </span>            : 
+<span class="lineNum">     594 </span>            : } // namespace nlopt
+<span class="lineNum">     595 </span>            : 
+<span class="lineNum">     596 </span>            : #endif /* NLOPT_HPP */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

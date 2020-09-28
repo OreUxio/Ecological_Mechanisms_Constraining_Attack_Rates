@@ -1,0 +1,12 @@
+relax.o relax.d1 : relax.cc   \
+ relax.h   \
+ ODE.h   \
+  error.h \
+  sequence.h \
+ simple_vector.h  \
+ polyfit.h   \
+ Statistics.h NewMatrix.h  \
+  random.h \
+  evaluate.h \
+ CLHEP_Evaluator.h cfgList.h parsecfg.h  \
+  

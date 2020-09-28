@@ -1,0 +1,62 @@
+// -*- mode: c++ -*-
+// $Id$
+#ifndef _OTHERWEBS_H_
+#define _OTHERWEBS_H_
+
+#include <string>
+#include <vector>
+#include "NewSpecies.h"
+#include <sys/stat.h>
+
+// Forward declaration.
+class NewWeb;
+
+/// Keeps in touch with other simulations of this model.
+/** Provides facilities to read snapshots of other simulations (and
+    wait until they are ready), and to extract all species found in
+    these snapshots. Used to simulate invasions from other
+    communities.*/
+class Otherwebs 
+{
+public:
+  typedef enum {off=0,newest=1,by_number=2} mode;
+private:
+  int the_number_of_other_webs;
+  std::vector<NewWeb> the_others;
+  std::vector<struct stat> the_file_stats;
+  sequence<std::string> the_dirs;
+  std::string this_dir;
+  int the_total_number_of_animals;
+  int the_total_number_of_plants;
+  double the_total_plant_biomass;
+  double the_total_animal_biomass;
+  mode the_mode;
+  time_t the_time_of_last_refresh;
+  void read_web(char * name,int i);
+  static int exit_now_dummy;
+public:
+  explicit Otherwebs(mode m=off);
+  int activate(mode m); // returns the number of other webs
+  ~Otherwebs();
+  const NewSpecies & get_random_species(NewSpecies::taxon_t taxon);
+  const NewSpecies & get_random_species_by_biomass(NewSpecies::taxon_t taxon);
+  int total_number_of_animals(){
+    return the_total_number_of_animals;
+  }
+  int total_number_of_plants(){
+    return the_total_number_of_plants;
+  }
+  double total_plant_biomass(){
+    return the_total_plant_biomass;
+  }
+  double total_animal_biomass(){
+    return the_total_animal_biomass;
+  }
+  bool get_newest_webs();
+  bool get_webs(int webnumber,int & exit_flag=exit_now_dummy);
+  mode current_mode(){
+    return the_mode;
+  }
+};
+
+#endif // _OTHERWEBS_H_

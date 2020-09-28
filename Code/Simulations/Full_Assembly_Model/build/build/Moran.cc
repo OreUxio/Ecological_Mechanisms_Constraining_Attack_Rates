@@ -1,0 +1,257 @@
+// $Id: Moran.cc 1404 2009-03-15 15:05:30Z axel $
+#include <string>
+const std::string version("$Revision: 1404 $");
+const std::string source("$Source: /home/cvsrep/CVS/NewWeb/src/Moran.cc,v $ $Date: 2009-03-15 15:05:30 +0000 (Sun, 15 Mar 2009) $");
+
+#include "Moran.h"
+#include "simple_vector.h"
+#include "sequence.h"
+#include "random.h"
+#include "linpack_eigen.h"
+
+#include <CLHEP/Matrix/Matrix.h>
+
+using namespace std;
+
+
+void Moran::get_degrees_of_relation(const int S0, degree_t & degree){
+  simple_vector< descendants_set_t > descendants(S0);
+  // relations between current species and final species:
+  //  simple_vector< simple_vector < int > > g_degree(S0,simple_vector< int >(S0,0));
+  sequence< sequence< int > > g_degree; 
+
+  for(int i=S0;i-->0;){
+    descendants[i].insert(i);
+  }
+  int open_degrees=(S0*(S0-1))/2;
+  while(open_degrees){
+    // link two species (speciation backward in time)
+    int p,c; // parent and child indices
+    
+    // get parent
+    p=random_integer(S0);
+
+    // get child
+    do{
+      c=random_integer(S0);
+    }while(p==c);
+    
+    if(!descendants[c].empty()){
+      for(diter c_desc=descendants[c].begin();
+	  c_desc!=descendants[c].end();
+	  c_desc++ ){
+	for(diter p_desc=descendants[p].begin();
+	    p_desc!=descendants[p].end();
+	    p_desc++ ){
+	  degree(*p_desc,*c_desc)=g_degree[p][*p_desc]+g_degree[c][*c_desc]+1;
+	  open_degrees--;
+	}
+	g_degree[p][*c_desc]=g_degree[c][*c_desc]+1;
+      }
+      for(diter c_desc=descendants[c].begin();
+	  c_desc!=descendants[c].end();
+	  c_desc++ ){
+	descendants[p].insert(*c_desc);
+      }
+      descendants[c].clear();
+    }
+  }
+}
+
+void get_central_multi_normal(CLHEP::HepMatrix & cov,
+			      CLHEP::HepVector & result){
+  int n=cov.num_col();
+  CLHEP::HepMatrix & M=cov;
+  CLHEP::HepVector xi(n);
+  rCholeskyL(M);
+  for(int i=n;i-->0;){
+    xi[i]=gaussian(0,1);
+  }
+  result=M*xi;
+  return;
+}
+
+void Moran::get_log_body_size(const int clade_size,
+			      degree_t & degrees,
+			      sequence< double > & log_body_size){
+  if(clade_size==1){
+    log_body_size[0]=unirand();
+    return;
+  }
+  const int size_m=clade_size-1;
+  CLHEP::HepMatrix cov(size_m,size_m,0);
+  for(int i=size_m;i-->0;){
+    cov[i][i]=degrees(i,size_m);
+    for(int j=i;j-->0;){
+      cov[i][j]=cov[j][i]=
+	(degrees(i,size_m)+
+	 degrees(j,size_m)-
+	 degrees(i,j)
+	 )/2;
+    }
+  }
+  CLHEP::HepVector size_spread;
+  get_central_multi_normal(cov,size_spread);
+  
+  sequence< double >  clade_body_size;
+  double size_offset=unirand()-0.5;
+  clade_body_size[size_m]=size_offset;
+  for(int i=size_m;i-->0;){
+    clade_body_size[i]=size_spread[i]*sqrt(_D)+size_offset;
+  }
+  
+  for(int i=clade_size;i-->0;){
+    double s=clade_body_size[i];
+    while(s>=1 || s<0){
+      if(s>=1) 
+	s=2-s;
+      else
+	s=-s;
+    }
+    log_body_size[i]=s;
+  }
+}
+
+class higher_in {
+private:
+  sequence< double > & the_mass;
+public:
+  higher_in(sequence< double > & m):the_mass(m){};
+  bool operator()(int s1, int s2){
+    return 
+      (the_mass[s1] >= the_mass[s2]);
+  }
+};
+
+double smax(sequence< double > x){
+  if(x.size()==0)
+    return 0;
+  double xmax=x[0];
+  for(int i=x.size();i-->0;){
+    if(x[i]>xmax) xmax=x[i];
+  }
+  return xmax;
+}
+
+// to compute inverse error function:
+#include <gsl/gsl_roots.h>
+#include <gsl/gsl_sf.h>
+typedef double function_t(double);
+static double solver_f (double x, void * p) {
+  return ((function_t*) p)(x);
+}
+static double find_root(function_t *f,double minx,double maxx){
+  const gsl_root_fsolver_type * T
+    = gsl_root_fsolver_brent;
+  gsl_root_fsolver * S
+    = gsl_root_fsolver_alloc (T);
+  gsl_function F;
+  F.function = &solver_f;
+  F.params = (void *)f;
+  gsl_root_fsolver_set(S,&F, minx,maxx);
+  double best_root;
+  do{
+    int error=gsl_root_fsolver_iterate(S);
+    ASSERT(error==0);
+    best_root=gsl_root_fsolver_root(S);
+  }while(gsl_root_fsolver_x_upper(S)-gsl_root_fsolver_x_lower(S)>0.00001);
+  double result=gsl_root_fsolver_root(S);
+  gsl_root_fsolver_free(S);
+  return result;
+}
+static double fr_C0;
+double x0_condition(double x){
+  //printf("%f -> %f\n",x,gauss_int(x));
+  return gsl_sf_erf_Q(x)-fr_C0;
+}
+static double find_x0(double C0,double minx,double maxx){
+  fr_C0=C0;
+  return find_root(x0_condition,minx,maxx);
+}
+// end inverse error function
+
+Moran::Moran(double D,double C0,double pf,double pv,
+	     double lambda,double q,int co_co):
+  _D(D),_C0(C0),
+  _pow_f(1-2*pf),_pow_v(1-2*pv),
+  _lambda(lambda),
+  _q(q),_correct_correlations(co_co),
+  _x0(find_x0(C0,-5,5))
+{
+  if(_q<1){
+    // select a subset of species
+    FATAL_ERROR("q<1 not implemented");
+  }
+}
+
+Interaction_Matrix Moran::draw_sample(const double rS0){
+
+  const int S0=int(rS0+unirand());
+  
+  sequence< double > log_body_size;
+  degree_t degrees;
+  CLHEP::HepMatrix fCholesky,vCholesky;
+
+
+  // compute clade numbers and sizes and number of species:
+//   int S0;
+//   if(!raw_target_S){
+//     FATAL_ERROR("currently only handles cases with raw_target_S set");
+//   }
+  
+//   S0=raw_target_S;
+    
+  if(_q<1){
+    // select a subset of species
+    FATAL_ERROR("q<1 not implemented");
+  }
+
+  // compute phylogenies, bodysizes and link correlations:
+  double max_degree;
+  get_degrees_of_relation(S0,degrees);
+  get_log_body_size(S0,degrees,log_body_size);
+  fCholesky=CLHEP::HepMatrix(S0,S0);
+  vCholesky=CLHEP::HepMatrix(S0,S0);
+  for(int k=S0;k-->0;){
+    for(int l=S0;l-->0;){
+      fCholesky[k][l]=
+	_pow_f(degrees(k,l));
+      vCholesky[k][l]=
+	_pow_v(degrees(k,l));
+    }
+  }
+  CholeskyL(fCholesky);
+  CholeskyL(vCholesky);
+  
+  max_degree=smax(Map(::smax,sequence< sequence< double > >(degrees)));
+
+
+  // compute links:
+  Interaction_Matrix m(S0);
+  for(int i=S0;i-->0;){
+    for(int j=S0;j-->0;){
+      m[i][j]=NetworkAnalysis::none;
+    }
+  }
+
+  //  REPORT(x0);
+  CLHEP::HepMatrix x(S0,S0);
+  for(int fi=S0;fi-->0;){
+    for(int vi=S0;vi-->0;){
+      x[fi][vi]=gaussian(0,1);
+    }
+  }
+  x=(fCholesky^x^vCholesky.T());
+  
+  for(int fi=S0;fi-->0;){
+    for(int vi=S0;vi-->0;){
+      if(log_body_size[fi]>log_body_size[vi]-_lambda){
+	if(x[fi][vi]>_x0){
+	  m[fi][vi]=
+	    NetworkAnalysis::eats;
+	}
+      }
+    }
+  }
+  return m;
+}

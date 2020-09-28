@@ -1,0 +1,535 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/boost/parameter/aux_/arg_list.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/parameter/aux_</a> - arg_list.hpp<span style="font-size: 80%;"> (source / <a href="arg_list.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright Daniel Wallin, David Abrahams 2005. Use, modification and</a>
+<span class="lineNum">       2 </span>            : // distribution is subject to the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef ARG_LIST_050329_HPP
+<span class="lineNum">       7 </span>            : #define ARG_LIST_050329_HPP
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;boost/parameter/aux_/void.hpp&gt;
+<span class="lineNum">      10 </span>            : #include &lt;boost/parameter/aux_/result_of0.hpp&gt;
+<span class="lineNum">      11 </span>            : #include &lt;boost/parameter/aux_/default.hpp&gt;
+<span class="lineNum">      12 </span>            : #include &lt;boost/parameter/aux_/parameter_requirements.hpp&gt;
+<span class="lineNum">      13 </span>            : #include &lt;boost/parameter/aux_/yesno.hpp&gt;
+<span class="lineNum">      14 </span>            : #include &lt;boost/parameter/aux_/is_maybe.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/parameter/config.hpp&gt;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : #include &lt;boost/mpl/apply.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/mpl/assert.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/mpl/begin.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/mpl/end.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/mpl/iterator_tags.hpp&gt;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : #include &lt;boost/type_traits/add_reference.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/type_traits/is_same.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/preprocessor/repetition/enum_params.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/preprocessor/repetition/enum_binary_params.hpp&gt;
+<span class="lineNum">      27 </span>            : #include &lt;boost/preprocessor/facilities/intercept.hpp&gt;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace boost { namespace parameter {
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : // Forward declaration for aux::arg_list, below.
+<span class="lineNum">      32 </span>            : template&lt;class T&gt; struct keyword;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : namespace aux {
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : // Tag type passed to MPL lambda.
+<span class="lineNum">      37 </span>            : struct lambda_tag;
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : //
+<span class="lineNum">      40 </span>            : // Structures used to build the tuple of actual arguments.  The
+<span class="lineNum">      41 </span>            : // tuple is a nested cons-style list of arg_list specializations
+<span class="lineNum">      42 </span>            : // terminated by an empty_arg_list.
+<span class="lineNum">      43 </span>            : //
+<span class="lineNum">      44 </span>            : // Each specialization of arg_list is derived from its successor in
+<span class="lineNum">      45 </span>            : // the list type.  This feature is used along with using
+<span class="lineNum">      46 </span>            : // declarations to build member function overload sets that can
+<span class="lineNum">      47 </span>            : // match against keywords.
+<span class="lineNum">      48 </span>            : //
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : // MPL sequence support
+<span class="lineNum">      51 </span>            : struct arg_list_tag;
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : // Terminates arg_list&lt;&gt; and represents an empty list.  Since this
+<span class="lineNum">      54 </span>            : // is just the terminating case you might want to look at arg_list
+<span class="lineNum">      55 </span>            : // first, to get a feel for what's really happening here.
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : struct empty_arg_list
+<span class="lineNum">      58 </span>            : {
+<span class="lineNum">      59 </span>            :     empty_arg_list() {}
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            :     // Constructor taking BOOST_PARAMETER_MAX_ARITY empty_arg_list
+<span class="lineNum">      62 </span>            :     // arguments; this makes initialization
+<span class="lineNum">      63 </span>            :     empty_arg_list(
+<span class="lineNum">      64 </span>            :         BOOST_PP_ENUM_PARAMS(
+<span class="lineNum">      65 </span>            :             BOOST_PARAMETER_MAX_ARITY, void_ BOOST_PP_INTERCEPT
+<span class="lineNum">      66 </span>            :         ))
+<span class="lineNum">      67 </span>            :     {}
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :     // A metafunction class that, given a keyword and a default
+<span class="lineNum">      70 </span>            :     // type, returns the appropriate result type for a keyword
+<span class="lineNum">      71 </span>            :     // lookup given that default
+<span class="lineNum">      72 </span>            :     struct binding
+<span class="lineNum">      73 </span>            :     {
+<span class="lineNum">      74 </span>            :         template&lt;class KW, class Default, class Reference&gt;
+<span class="lineNum">      75 </span>            :         struct apply
+<span class="lineNum">      76 </span>            :         {
+<span class="lineNum">      77 </span>            :             typedef Default type;
+<span class="lineNum">      78 </span>            :         };
+<span class="lineNum">      79 </span>            :     };
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : #if !BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300)
+<span class="lineNum">      82 </span>            :     // Terminator for has_key, indicating that the keyword is unique
+<span class="lineNum">      83 </span>            :     template &lt;class KW&gt;
+<span class="lineNum">      84 </span>            :     static no_tag has_key(KW*);
+<span class="lineNum">      85 </span>            : #endif
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300) \
+<span class="lineNum">      88 </span>            :     || (BOOST_WORKAROUND(__GNUC__, &lt; 3)) \
+<span class="lineNum">      89 </span>            :     || BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :     // The overload set technique doesn't work with these older
+<span class="lineNum">      92 </span>            :     // compilers, so they need some explicit handholding.
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :     // A metafunction class that, given a keyword, returns the type
+<span class="lineNum">      95 </span>            :     // of the base sublist whose get() function can produce the
+<span class="lineNum">      96 </span>            :     // value for that key
+<span class="lineNum">      97 </span>            :     struct key_owner
+<span class="lineNum">      98 </span>            :     {
+<span class="lineNum">      99 </span>            :         template&lt;class KW&gt;
+<span class="lineNum">     100 </span>            :         struct apply
+<span class="lineNum">     101 </span>            :         {
+<span class="lineNum">     102 </span>            :             typedef empty_arg_list type;
+<span class="lineNum">     103 </span>            :         };
+<span class="lineNum">     104 </span>            :     };
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :     template &lt;class K, class T&gt;
+<span class="lineNum">     107 </span>            :     T&amp; get(default_&lt;K,T&gt; x) const
+<span class="lineNum">     108 </span>            :     {
+<span class="lineNum">     109 </span>            :         return x.value;
+<span class="lineNum">     110 </span>            :     }
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            :     template &lt;class K, class F&gt;
+<span class="lineNum">     113 </span>            :     typename result_of0&lt;F&gt;::type
+<span class="lineNum">     114 </span>            :     get(lazy_default&lt;K,F&gt; x) const
+<span class="lineNum">     115 </span>            :     {
+<span class="lineNum">     116 </span>            :         return x.compute_default();
+<span class="lineNum">     117 </span>            :     }
+<span class="lineNum">     118 </span>            : #endif
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            :     // If this function is called, it means there is no argument
+<span class="lineNum">     121 </span>            :     // in the list that matches the supplied keyword. Just return
+<span class="lineNum">     122 </span>            :     // the default value.
+<span class="lineNum">     123 </span>            :     template &lt;class K, class Default&gt;
+<span class="lineNum">     124 </span>            :     Default&amp; operator[](default_&lt;K, Default&gt; x) const
+<span class="lineNum">     125 </span>            :     {
+<span class="lineNum">     126 </span>            :         return x.value;
+<span class="lineNum">     127 </span>            :     }
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            :     // If this function is called, it means there is no argument
+<span class="lineNum">     130 </span>            :     // in the list that matches the supplied keyword. Just evaluate
+<span class="lineNum">     131 </span>            :     // and return the default value.
+<span class="lineNum">     132 </span>            :     template &lt;class K, class F&gt;
+<span class="lineNum">     133 </span>            :     typename result_of0&lt;F&gt;::type
+<span class="lineNum">     134 </span>            :     operator[](
+<span class="lineNum">     135 </span>            :         BOOST_PARAMETER_lazy_default_fallback&lt;K,F&gt; x) const
+<span class="lineNum">     136 </span>            :     {
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :         return x.compute_default();</span>
+<span class="lineNum">     138 </span>            :     }
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :     // No argument corresponding to ParameterRequirements::key_type
+<span class="lineNum">     141 </span>            :     // was found if we match this overload, so unless that parameter
+<span class="lineNum">     142 </span>            :     // has a default, we indicate that the actual arguments don't
+<span class="lineNum">     143 </span>            :     // match the function's requirements.
+<span class="lineNum">     144 </span>            :     template &lt;class ParameterRequirements, class ArgPack&gt;
+<span class="lineNum">     145 </span>            :     static typename ParameterRequirements::has_default
+<span class="lineNum">     146 </span>            :     satisfies(ParameterRequirements*, ArgPack*);
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            :     // MPL sequence support
+<span class="lineNum">     149 </span>            :     typedef empty_arg_list type;   // convenience
+<span class="lineNum">     150 </span>            :     typedef arg_list_tag tag; // For dispatching to sequence intrinsics
+<span class="lineNum">     151 </span>            : };
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300)
+<span class="lineNum">     154 </span>            : template&lt;class KW&gt;
+<span class="lineNum">     155 </span>            : no_tag operator*(empty_arg_list, KW*);
+<span class="lineNum">     156 </span>            : #endif
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            : // Forward declaration for arg_list::operator,
+<span class="lineNum">     159 </span>            : template &lt;class KW, class T&gt;
+<span class="lineNum">     160 </span>            : struct tagged_argument;
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            : template &lt;class T&gt;
+<span class="lineNum">     163 </span>            : struct get_reference
+<span class="lineNum">     164 </span>            : {
+<span class="lineNum">     165 </span>            :     typedef typename T::reference type;
+<span class="lineNum">     166 </span>            : };
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            : // A tuple of tagged arguments, terminated with empty_arg_list.
+<span class="lineNum">     169 </span>            : // Every TaggedArg is an instance of tagged_argument&lt;&gt;.
+<span class="lineNum">     170 </span>            : template &lt;class TaggedArg, class Next = empty_arg_list&gt;
+<span class="lineNum">     171 </span>            : struct arg_list : Next
+<span class="lineNum">     172 </span>            : {
+<span class="lineNum">     173 </span>            :     typedef arg_list&lt;TaggedArg,Next&gt; self;
+<span class="lineNum">     174 </span>            :     typedef typename TaggedArg::key_type key_type;
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            :     typedef typename is_maybe&lt;typename TaggedArg::value_type&gt;::type holds_maybe;
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            :     typedef typename mpl::eval_if&lt;
+<span class="lineNum">     179 </span>            :         holds_maybe
+<span class="lineNum">     180 </span>            :       , get_reference&lt;typename TaggedArg::value_type&gt;
+<span class="lineNum">     181 </span>            :       , get_reference&lt;TaggedArg&gt;
+<span class="lineNum">     182 </span>            :     &gt;::type reference;
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :     typedef typename mpl::if_&lt;
+<span class="lineNum">     185 </span>            :         holds_maybe
+<span class="lineNum">     186 </span>            :       , reference
+<span class="lineNum">     187 </span>            :       , typename TaggedArg::value_type
+<span class="lineNum">     188 </span>            :     &gt;::type value_type;
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :     TaggedArg arg;      // Stores the argument
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            :     // Store the arguments in successive nodes of this list
+<span class="lineNum">     193 </span>            :     template&lt; // class A0, class A1, ...
+<span class="lineNum">     194 </span>            :         BOOST_PP_ENUM_PARAMS(BOOST_PARAMETER_MAX_ARITY, class A)
+<span class="lineNum">     195 </span>            :     &gt;
+<span class="lineNum">     196 </span>            :     arg_list( // A0&amp; a0, A1&amp; a1, ...
+<span class="lineNum">     197 </span>            :         BOOST_PP_ENUM_BINARY_PARAMS(BOOST_PARAMETER_MAX_ARITY, A, &amp; a)
+<span class="lineNum">     198 </span>            :     )
+<span class="lineNum">     199 </span>            :       : Next( // a1, a2, ...
+<span class="lineNum">     200 </span>            :             BOOST_PP_ENUM_SHIFTED_PARAMS(BOOST_PARAMETER_MAX_ARITY, a)
+<span class="lineNum">     201 </span>            :           , void_reference()
+<span class="lineNum">     202 </span>            :         )
+<span class="lineNum">     203 </span>            :       , arg(a0)
+<span class="lineNum">     204 </span>            :     {}
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span>            :     // Create a new list by prepending arg to a copy of tail.  Used
+<span class="lineNum">     207 </span>            :     // when incrementally building this structure with the comma
+<span class="lineNum">     208 </span>            :     // operator.
+<span class="lineNum">     209 </span>            :     arg_list(TaggedArg head, Next const&amp; tail)
+<span class="lineNum">     210 </span>            :       : Next(tail)
+<span class="lineNum">     211 </span>            :       , arg(head)
+<span class="lineNum">     212 </span>            :     {}
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            :     // A metafunction class that, given a keyword and a default
+<span class="lineNum">     215 </span>            :     // type, returns the appropriate result type for a keyword
+<span class="lineNum">     216 </span>            :     // lookup given that default
+<span class="lineNum">     217 </span>            :     struct binding
+<span class="lineNum">     218 </span>            :     {
+<span class="lineNum">     219 </span>            :         template &lt;class KW, class Default, class Reference&gt;
+<span class="lineNum">     220 </span>            :         struct apply
+<span class="lineNum">     221 </span>            :         {
+<span class="lineNum">     222 </span>            :           typedef typename mpl::eval_if&lt;
+<span class="lineNum">     223 </span>            :                 boost::is_same&lt;KW, key_type&gt;
+<span class="lineNum">     224 </span>            :               , mpl::if_&lt;Reference, reference, value_type&gt;
+<span class="lineNum">     225 </span>            :               , mpl::apply_wrap3&lt;typename Next::binding, KW, Default, Reference&gt;
+<span class="lineNum">     226 </span>            :           &gt;::type type;
+<span class="lineNum">     227 </span>            :         };
+<span class="lineNum">     228 </span>            :     };
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            : #if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564)) &amp;&amp; !BOOST_WORKAROUND(__GNUC__, == 2)
+<span class="lineNum">     231 </span>            : # if BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300)
+<span class="lineNum">     232 </span>            :     friend yes_tag operator*(arg_list, key_type*);
+<span class="lineNum">     233 </span>            : #  define BOOST_PARAMETER_CALL_HAS_KEY(next, key) (*(next*)0 * (key*)0)
+<span class="lineNum">     234 </span>            : # else
+<span class="lineNum">     235 </span>            :     // Overload for key_type, so the assert below will fire if the
+<span class="lineNum">     236 </span>            :     // same keyword is used again
+<span class="lineNum">     237 </span>            :     static yes_tag has_key(key_type*);
+<span class="lineNum">     238 </span>            :     using Next::has_key;
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            : #  define BOOST_PARAMETER_CALL_HAS_KEY(next, key) next::has_key((key*)0)
+<span class="lineNum">     241 </span>            : # endif
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :     BOOST_MPL_ASSERT_MSG(
+<span class="lineNum">     244 </span>            :         sizeof(BOOST_PARAMETER_CALL_HAS_KEY(Next,key_type)) == sizeof(no_tag)
+<span class="lineNum">     245 </span>            :       , duplicate_keyword, (key_type)
+<span class="lineNum">     246 </span>            :     );
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span>            : # undef BOOST_PARAMETER_CALL_HAS_KEY
+<span class="lineNum">     249 </span>            : #endif
+<span class="lineNum">     250 </span>            :     //
+<span class="lineNum">     251 </span>            :     // Begin implementation of indexing operators for looking up
+<span class="lineNum">     252 </span>            :     // specific arguments by name
+<span class="lineNum">     253 </span>            :     //
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            :     // Helpers that handle the case when TaggedArg is
+<span class="lineNum">     256 </span>            :     // empty&lt;T&gt;.
+<span class="lineNum">     257 </span>            :     template &lt;class D&gt;
+<span class="lineNum">     258 </span>            :     reference get_default(D const&amp;, mpl::false_) const
+<span class="lineNum">     259 </span>            :     {
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :         return arg.value;</span>
+<span class="lineNum">     261 </span>            :     }
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            :     template &lt;class D&gt;
+<span class="lineNum">     264 </span>            :     reference get_default(D const&amp; d, mpl::true_) const
+<span class="lineNum">     265 </span>            :     {
+<span class="lineNum">     266 </span>            :         return arg.value ? arg.value.get() : arg.value.construct(d.value);
+<span class="lineNum">     267 </span>            :     }
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300) \
+<span class="lineNum">     270 </span>            :     || BOOST_WORKAROUND(__GNUC__, &lt; 3) \
+<span class="lineNum">     271 </span>            :     || BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+<span class="lineNum">     272 </span>            :     // These older compilers don't support the overload set creation
+<span class="lineNum">     273 </span>            :     // idiom well, so we need to do all the return type calculation
+<span class="lineNum">     274 </span>            :     // for the compiler and dispatch through an outer function template
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span>            :     // A metafunction class that, given a keyword, returns the base
+<span class="lineNum">     277 </span>            :     // sublist whose get() function can produce the value for that
+<span class="lineNum">     278 </span>            :     // key.
+<span class="lineNum">     279 </span>            :     struct key_owner
+<span class="lineNum">     280 </span>            :     {
+<span class="lineNum">     281 </span>            :         template&lt;class KW&gt;
+<span class="lineNum">     282 </span>            :         struct apply
+<span class="lineNum">     283 </span>            :         {
+<span class="lineNum">     284 </span>            :           typedef typename mpl::eval_if&lt;
+<span class="lineNum">     285 </span>            :                 boost::is_same&lt;KW, key_type&gt;
+<span class="lineNum">     286 </span>            :               , mpl::identity&lt;arg_list&lt;TaggedArg,Next&gt; &gt;
+<span class="lineNum">     287 </span>            :               , mpl::apply_wrap1&lt;typename Next::key_owner,KW&gt;
+<span class="lineNum">     288 </span>            :           &gt;::type type;
+<span class="lineNum">     289 </span>            :         };
+<span class="lineNum">     290 </span>            :     };
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            :     // Outer indexing operators that dispatch to the right node's
+<span class="lineNum">     293 </span>            :     // get() function.
+<span class="lineNum">     294 </span>            :     template &lt;class KW&gt;
+<span class="lineNum">     295 </span>            :     typename mpl::apply_wrap3&lt;binding, KW, void_, mpl::true_&gt;::type
+<span class="lineNum">     296 </span>            :     operator[](keyword&lt;KW&gt; const&amp; x) const
+<span class="lineNum">     297 </span>            :     {
+<span class="lineNum">     298 </span>            :         typename mpl::apply_wrap1&lt;key_owner, KW&gt;::type const&amp; sublist = *this;
+<span class="lineNum">     299 </span>            :         return sublist.get(x);
+<span class="lineNum">     300 </span>            :     }
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span>            :     template &lt;class KW, class Default&gt;
+<span class="lineNum">     303 </span>            :     typename mpl::apply_wrap3&lt;binding, KW, Default&amp;, mpl::true_&gt;::type
+<span class="lineNum">     304 </span>            :     operator[](default_&lt;KW, Default&gt; x) const
+<span class="lineNum">     305 </span>            :     {
+<span class="lineNum">     306 </span>            :         typename mpl::apply_wrap1&lt;key_owner, KW&gt;::type const&amp; sublist = *this;
+<span class="lineNum">     307 </span>            :         return sublist.get(x);
+<span class="lineNum">     308 </span>            :     }
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span>            :     template &lt;class KW, class F&gt;
+<span class="lineNum">     311 </span>            :     typename mpl::apply_wrap3&lt;
+<span class="lineNum">     312 </span>            :         binding,KW
+<span class="lineNum">     313 </span>            :       , typename result_of0&lt;F&gt;::type
+<span class="lineNum">     314 </span>            :       , mpl::true_
+<span class="lineNum">     315 </span>            :     &gt;::type
+<span class="lineNum">     316 </span>            :     operator[](lazy_default&lt;KW,F&gt; x) const
+<span class="lineNum">     317 </span>            :     {
+<span class="lineNum">     318 </span>            :         typename mpl::apply_wrap1&lt;key_owner, KW&gt;::type const&amp; sublist = *this;
+<span class="lineNum">     319 </span>            :         return sublist.get(x);
+<span class="lineNum">     320 </span>            :     }
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :     // These just return the stored value; when empty_arg_list is
+<span class="lineNum">     323 </span>            :     // reached, indicating no matching argument was passed, the
+<span class="lineNum">     324 </span>            :     // default is returned, or if no default_ or lazy_default was
+<span class="lineNum">     325 </span>            :     // passed, compilation fails.
+<span class="lineNum">     326 </span>            :     reference get(keyword&lt;key_type&gt; const&amp;) const
+<span class="lineNum">     327 </span>            :     {
+<span class="lineNum">     328 </span>            :         BOOST_MPL_ASSERT_NOT((holds_maybe));
+<span class="lineNum">     329 </span>            :         return arg.value;
+<span class="lineNum">     330 </span>            :     }
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">     333 </span>            :     reference get(default_&lt;key_type,Default&gt; const&amp; d) const
+<span class="lineNum">     334 </span>            :     {
+<span class="lineNum">     335 </span>            :         return get_default(d, holds_maybe());
+<span class="lineNum">     336 </span>            :     }
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">     339 </span>            :     reference get(lazy_default&lt;key_type, Default&gt;) const
+<span class="lineNum">     340 </span>            :     {
+<span class="lineNum">     341 </span>            :         return arg.value;
+<span class="lineNum">     342 </span>            :     }
+<span class="lineNum">     343 </span>            : 
+<span class="lineNum">     344 </span>            : #else
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            :     reference operator[](keyword&lt;key_type&gt; const&amp;) const
+<span class="lineNum">     347 </span>            :     {
+<span class="lineNum">     348 </span>            :         BOOST_MPL_ASSERT_NOT((holds_maybe));
+<span class="lineNum">     349 </span>            :         return arg.value;
+<span class="lineNum">     350 </span>            :     }
+<span class="lineNum">     351 </span>            : 
+<span class="lineNum">     352 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">     353 </span>            :     reference operator[](default_&lt;key_type, Default&gt; const&amp; d) const
+<span class="lineNum">     354 </span>            :     {
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :         return get_default(d, holds_maybe());</span>
+<span class="lineNum">     356 </span>            :     }
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            :     template &lt;class Default&gt;
+<span class="lineNum">     359 </span>            :     reference operator[](lazy_default&lt;key_type, Default&gt;) const
+<span class="lineNum">     360 </span>            :     {
+<span class="lineNum">     361 </span>            :         return arg.value;
+<span class="lineNum">     362 </span>            :     }
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            :     // Builds an overload set including operator[]s defined in base
+<span class="lineNum">     365 </span>            :     // classes.
+<span class="lineNum">     366 </span>            :     using Next::operator[];
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            :     //
+<span class="lineNum">     369 </span>            :     // End of indexing support
+<span class="lineNum">     370 </span>            :     //
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span>            : 
+<span class="lineNum">     373 </span>            :     //
+<span class="lineNum">     374 </span>            :     // For parameter_requirements matching this node's key_type,
+<span class="lineNum">     375 </span>            :     // return a bool constant wrapper indicating whether the
+<span class="lineNum">     376 </span>            :     // requirements are satisfied by TaggedArg.  Used only for
+<span class="lineNum">     377 </span>            :     // compile-time computation and never really called, so a
+<span class="lineNum">     378 </span>            :     // declaration is enough.
+<span class="lineNum">     379 </span>            :     //
+<span class="lineNum">     380 </span>            :     template &lt;class HasDefault, class Predicate, class ArgPack&gt;
+<span class="lineNum">     381 </span>            :     static typename mpl::apply_wrap2&lt;
+<span class="lineNum">     382 </span>            :         typename mpl::lambda&lt;Predicate, lambda_tag&gt;::type
+<span class="lineNum">     383 </span>            :       , value_type, ArgPack
+<span class="lineNum">     384 </span>            :     &gt;::type
+<span class="lineNum">     385 </span>            :     satisfies(
+<span class="lineNum">     386 </span>            :         parameter_requirements&lt;key_type,Predicate,HasDefault&gt;*
+<span class="lineNum">     387 </span>            :       , ArgPack*
+<span class="lineNum">     388 </span>            :     );
+<span class="lineNum">     389 </span>            : 
+<span class="lineNum">     390 </span>            :     // Builds an overload set including satisfies functions defined
+<span class="lineNum">     391 </span>            :     // in base classes.
+<span class="lineNum">     392 </span>            :     using Next::satisfies;
+<span class="lineNum">     393 </span>            : #endif
+<span class="lineNum">     394 </span>            : 
+<span class="lineNum">     395 </span>            :     // Comma operator to compose argument list without using parameters&lt;&gt;.
+<span class="lineNum">     396 </span>            :     // Useful for argument lists with undetermined length.
+<span class="lineNum">     397 </span>            :     template &lt;class KW, class T2&gt;
+<span class="lineNum">     398 </span>            :     arg_list&lt;tagged_argument&lt;KW, T2&gt;, self&gt;
+<span class="lineNum">     399 </span>            :     operator,(tagged_argument&lt;KW,T2&gt; x) const
+<span class="lineNum">     400 </span>            :     {
+<span class="lineNum">     401 </span>            :         return arg_list&lt;tagged_argument&lt;KW,T2&gt;, self&gt;(x, *this);
+<span class="lineNum">     402 </span>            :     }
+<span class="lineNum">     403 </span>            : 
+<span class="lineNum">     404 </span>            :     // MPL sequence support
+<span class="lineNum">     405 </span>            :     typedef self type;             // Convenience for users
+<span class="lineNum">     406 </span>            :     typedef Next tail_type;        // For the benefit of iterators
+<span class="lineNum">     407 </span>            :     typedef arg_list_tag tag; // For dispatching to sequence intrinsics
+<span class="lineNum">     408 </span>            : };
+<span class="lineNum">     409 </span>            : 
+<span class="lineNum">     410 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300)  // ETI workaround
+<span class="lineNum">     411 </span>            : template &lt;&gt; struct arg_list&lt;int,int&gt; {};
+<span class="lineNum">     412 </span>            : #endif
+<span class="lineNum">     413 </span>            : 
+<span class="lineNum">     414 </span>            : // MPL sequence support
+<span class="lineNum">     415 </span>            : template &lt;class ArgumentPack&gt;
+<span class="lineNum">     416 </span>            : struct arg_list_iterator
+<span class="lineNum">     417 </span>            : {
+<span class="lineNum">     418 </span>            :     typedef mpl::forward_iterator_tag category;
+<span class="lineNum">     419 </span>            : 
+<span class="lineNum">     420 </span>            :     // The incremented iterator
+<span class="lineNum">     421 </span>            :     typedef arg_list_iterator&lt;typename ArgumentPack::tail_type&gt; next;
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span>            :     // dereferencing yields the key type
+<span class="lineNum">     424 </span>            :     typedef typename ArgumentPack::key_type type;
+<span class="lineNum">     425 </span>            : };
+<span class="lineNum">     426 </span>            : 
+<span class="lineNum">     427 </span>            : template &lt;&gt;
+<span class="lineNum">     428 </span>            : struct arg_list_iterator&lt;empty_arg_list&gt; {};
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            : }} // namespace parameter::aux
+<span class="lineNum">     431 </span>            : 
+<span class="lineNum">     432 </span>            : // MPL sequence support
+<span class="lineNum">     433 </span>            : namespace mpl
+<span class="lineNum">     434 </span>            : {
+<span class="lineNum">     435 </span>            :   template &lt;&gt;
+<span class="lineNum">     436 </span>            :   struct begin_impl&lt;parameter::aux::arg_list_tag&gt;
+<span class="lineNum">     437 </span>            :   {
+<span class="lineNum">     438 </span>            :       template &lt;class S&gt;
+<span class="lineNum">     439 </span>            :       struct apply
+<span class="lineNum">     440 </span>            :       {
+<span class="lineNum">     441 </span>            :           typedef parameter::aux::arg_list_iterator&lt;S&gt; type;
+<span class="lineNum">     442 </span>            :       };
+<span class="lineNum">     443 </span>            :   };
+<span class="lineNum">     444 </span>            : 
+<span class="lineNum">     445 </span>            :   template &lt;&gt;
+<span class="lineNum">     446 </span>            :   struct end_impl&lt;parameter::aux::arg_list_tag&gt;
+<span class="lineNum">     447 </span>            :   {
+<span class="lineNum">     448 </span>            :       template &lt;class&gt;
+<span class="lineNum">     449 </span>            :       struct apply
+<span class="lineNum">     450 </span>            :       {
+<span class="lineNum">     451 </span>            :           typedef parameter::aux::arg_list_iterator&lt;parameter::aux::empty_arg_list&gt; type;
+<span class="lineNum">     452 </span>            :       };
+<span class="lineNum">     453 </span>            :   };
+<span class="lineNum">     454 </span>            : }
+<span class="lineNum">     455 </span>            : 
+<span class="lineNum">     456 </span>            : } // namespace boost
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span>            : #endif // ARG_LIST_050329_HPP
+<span class="lineNum">     459 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

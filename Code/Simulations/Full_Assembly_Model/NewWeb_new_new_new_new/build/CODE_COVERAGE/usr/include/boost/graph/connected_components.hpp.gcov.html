@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/boost/graph/connected_components.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/graph</a> - connected_components.hpp<span style="font-size: 80%;"> (source / <a href="connected_components.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //</a>
+<span class="lineNum">       2 </span>            : //=======================================================================
+<span class="lineNum">       3 </span>            : // Copyright 1997-2001 University of Notre Dame.
+<span class="lineNum">       4 </span>            : // Authors: Andrew Lumsdaine, Lie-Quan Lee, Jeremy G. Siek
+<span class="lineNum">       5 </span>            : //
+<span class="lineNum">       6 </span>            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       7 </span>            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       8 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>            : //=======================================================================
+<span class="lineNum">      10 </span>            : //
+<span class="lineNum">      11 </span>            : #ifndef BOOST_GRAPH_CONNECTED_COMPONENTS_HPP
+<span class="lineNum">      12 </span>            : #define BOOST_GRAPH_CONNECTED_COMPONENTS_HPP
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/graph/depth_first_search.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/graph/properties.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/graph/graph_concepts.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/graph/overloading.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/static_assert.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/concept/assert.hpp&gt;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : namespace boost {
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            :   namespace detail {
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            :     // This visitor is used both in the connected_components algorithm
+<span class="lineNum">      27 </span>            :     // and in the kosaraju strong components algorithm during the
+<span class="lineNum">      28 </span>            :     // second DFS traversal.
+<span class="lineNum">      29 </span>            :     template &lt;class ComponentsMap&gt;
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :     class components_recorder : public dfs_visitor&lt;&gt;</span>
+<span class="lineNum">      31 </span>            :     {
+<span class="lineNum">      32 </span>            :       typedef typename property_traits&lt;ComponentsMap&gt;::value_type comp_type;
+<span class="lineNum">      33 </span>            :     public:
+<span class="lineNum">      34 </span>            :       components_recorder(ComponentsMap c, 
+<span class="lineNum">      35 </span>            :                           comp_type&amp; c_count)
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :         : m_component(c), m_count(c_count) {}</span>
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            :       template &lt;class Vertex, class Graph&gt;
+<span class="lineNum">      39 </span>            :       void start_vertex(Vertex, Graph&amp;) {
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :         if (m_count == (std::numeric_limits&lt;comp_type&gt;::max)())</span>
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :           m_count = 0; // start counting components at zero</span>
+<span class="lineNum">      42 </span>            :         else
+<span class="lineNum">      43 </span><span class="lineNoCov">          0 :           ++m_count;</span>
+<span class="lineNum">      44 </span>            :       }
+<span class="lineNum">      45 </span>            :       template &lt;class Vertex, class Graph&gt;
+<span class="lineNum">      46 </span>            :       void discover_vertex(Vertex u, Graph&amp;) {
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :         put(m_component, u, m_count);</span>
+<span class="lineNum">      48 </span>            :       }
+<span class="lineNum">      49 </span>            :     protected:
+<span class="lineNum">      50 </span>            :       ComponentsMap m_component;
+<span class="lineNum">      51 </span>            :       comp_type&amp; m_count;
+<span class="lineNum">      52 </span>            :     };
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            :   } // namespace detail
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            :   // This function computes the connected components of an undirected
+<span class="lineNum">      57 </span>            :   // graph using a single application of depth first search.
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :   template &lt;class Graph, class ComponentMap, class P, class T, class R&gt;
+<span class="lineNum">      60 </span>            :   inline typename property_traits&lt;ComponentMap&gt;::value_type
+<span class="lineNum">      61 </span>            :   connected_components(const Graph&amp; g, ComponentMap c, 
+<span class="lineNum">      62 </span>            :                        const bgl_named_params&lt;P, T, R&gt;&amp; params
+<span class="lineNum">      63 </span>            :                        BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph, vertex_list_graph_tag))
+<span class="lineNum">      64 </span>            :   {
+<span class="lineNum">      65 </span>            :     if (num_vertices(g) == 0) return 0;
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            :     typedef typename graph_traits&lt;Graph&gt;::vertex_descriptor Vertex;
+<span class="lineNum">      68 </span>            :     BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept&lt;ComponentMap, Vertex&gt; ));
+<span class="lineNum">      69 </span>            :     typedef typename boost::graph_traits&lt;Graph&gt;::directed_category directed;
+<span class="lineNum">      70 </span>            :     BOOST_STATIC_ASSERT((boost::is_same&lt;directed, undirected_tag&gt;::value));
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            :     typedef typename property_traits&lt;ComponentMap&gt;::value_type comp_type;
+<span class="lineNum">      73 </span>            :     // c_count initialized to &quot;nil&quot; (with nil represented by (max)())
+<span class="lineNum">      74 </span>            :     comp_type c_count((std::numeric_limits&lt;comp_type&gt;::max)());
+<span class="lineNum">      75 </span>            :     detail::components_recorder&lt;ComponentMap&gt; vis(c, c_count);
+<span class="lineNum">      76 </span>            :     depth_first_search(g, params.visitor(vis));
+<span class="lineNum">      77 </span>            :     return c_count + 1;
+<span class="lineNum">      78 </span>            :   }
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :   template &lt;class Graph, class ComponentMap&gt;
+<span class="lineNum">      81 </span>            :   inline typename property_traits&lt;ComponentMap&gt;::value_type
+<span class="lineNum">      82 </span><span class="lineNoCov">          0 :   connected_components(const Graph&amp; g, ComponentMap c</span>
+<span class="lineNum">      83 </span>            :                        BOOST_GRAPH_ENABLE_IF_MODELS_PARM(Graph, vertex_list_graph_tag))
+<span class="lineNum">      84 </span>            :   {
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :     if (num_vertices(g) == 0) return 0;</span>
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            :     typedef typename graph_traits&lt;Graph&gt;::vertex_descriptor Vertex;
+<span class="lineNum">      88 </span>            :     BOOST_CONCEPT_ASSERT(( WritablePropertyMapConcept&lt;ComponentMap, Vertex&gt; ));
+<span class="lineNum">      89 </span>            :     // typedef typename boost::graph_traits&lt;Graph&gt;::directed_category directed;
+<span class="lineNum">      90 </span>            :     // BOOST_STATIC_ASSERT((boost::is_same&lt;directed, undirected_tag&gt;::value));
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :     typedef typename property_traits&lt;ComponentMap&gt;::value_type comp_type;
+<span class="lineNum">      93 </span>            :     // c_count initialized to &quot;nil&quot; (with nil represented by (max)())
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :     comp_type c_count((std::numeric_limits&lt;comp_type&gt;::max)());</span>
+<span class="lineNum">      95 </span><span class="lineNoCov">          0 :     detail::components_recorder&lt;ComponentMap&gt; vis(c, c_count);</span>
+<span class="lineNum">      96 </span><span class="lineNoCov">          0 :     depth_first_search(g, visitor(vis));</span>
+<span class="lineNum">      97 </span><span class="lineNoCov">          0 :     return c_count + 1;</span>
+<span class="lineNum">      98 </span>            :   }
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            :   
+<span class="lineNum">     101 </span>            : } // namespace boost
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : #ifdef BOOST_GRAPH_USE_MPI
+<span class="lineNum">     104 </span>            : #  include &lt;boost/graph/distributed/connected_components.hpp&gt;
+<span class="lineNum">     105 </span>            : #endif
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : #endif // BOOST_GRAPH_CONNECTED_COMPONENTS_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/armadillo_bits/constants.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/armadillo_bits</a> - constants.hpp<span style="font-size: 80%;"> (source / <a href="constants.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2008-2012 National ICT Australia (NICTA)</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // This Source Code Form is subject to the terms of the Mozilla Public
+<span class="lineNum">       4 </span>            : // License, v. 2.0. If a copy of the MPL was not distributed with this
+<span class="lineNum">       5 </span>            : // file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<span class="lineNum">       6 </span>            : // -------------------------------------------------------------------
+<span class="lineNum">       7 </span>            : // 
+<span class="lineNum">       8 </span>            : // Written by Conrad Sanderson - http://conradsanderson.id.au
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : //! \addtogroup constants
+<span class="lineNum">      12 </span>            : //! @{
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : namespace priv
+<span class="lineNum">      16 </span>            :   {
+<span class="lineNum">      17 </span>            :   class Datum_helper
+<span class="lineNum">      18 </span>            :     {
+<span class="lineNum">      19 </span>            :     public:
+<span class="lineNum">      20 </span>            :     
+<span class="lineNum">      21 </span>            :     template&lt;typename eT&gt;
+<span class="lineNum">      22 </span>            :     static
+<span class="lineNum">      23 </span>            :     typename arma_real_only&lt;eT&gt;::result
+<span class="lineNum">      24 </span>            :     nan(typename arma_real_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">      25 </span>            :       {
+<span class="lineNum">      26 </span>            :       arma_ignore(junk);
+<span class="lineNum">      27 </span>            :       
+<span class="lineNum">      28 </span>            :       if(std::numeric_limits&lt;eT&gt;::has_quiet_NaN)
+<span class="lineNum">      29 </span>            :         {
+<span class="lineNum">      30 </span>            :         return std::numeric_limits&lt;eT&gt;::quiet_NaN();
+<span class="lineNum">      31 </span>            :         }
+<span class="lineNum">      32 </span>            :       else
+<span class="lineNum">      33 </span>            :         {
+<span class="lineNum">      34 </span>            :         return eT(0);
+<span class="lineNum">      35 </span>            :         }
+<span class="lineNum">      36 </span>            :       }
+<span class="lineNum">      37 </span>            :     
+<span class="lineNum">      38 </span>            :     
+<span class="lineNum">      39 </span>            :     template&lt;typename eT&gt;
+<span class="lineNum">      40 </span>            :     static
+<span class="lineNum">      41 </span>            :     typename arma_cx_only&lt;eT&gt;::result
+<span class="lineNum">      42 </span>            :     nan(typename arma_cx_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">      43 </span>            :       {
+<span class="lineNum">      44 </span>            :       arma_ignore(junk);
+<span class="lineNum">      45 </span>            :       
+<span class="lineNum">      46 </span>            :       typedef typename get_pod_type&lt;eT&gt;::result T;
+<span class="lineNum">      47 </span>            :       
+<span class="lineNum">      48 </span>            :       return eT( Datum_helper::nan&lt;T&gt;(), Datum_helper::nan&lt;T&gt;() );
+<span class="lineNum">      49 </span>            :       }
+<span class="lineNum">      50 </span>            :     
+<span class="lineNum">      51 </span>            :     
+<span class="lineNum">      52 </span>            :     template&lt;typename eT&gt;
+<span class="lineNum">      53 </span>            :     static
+<span class="lineNum">      54 </span>            :     typename arma_integral_only&lt;eT&gt;::result
+<span class="lineNum">      55 </span>            :     nan(typename arma_integral_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">      56 </span>            :       {
+<span class="lineNum">      57 </span>            :       arma_ignore(junk);
+<span class="lineNum">      58 </span>            :       
+<span class="lineNum">      59 </span>            :       return eT(0);
+<span class="lineNum">      60 </span>            :       }
+<span class="lineNum">      61 </span>            :     
+<span class="lineNum">      62 </span>            :     
+<span class="lineNum">      63 </span>            :     template&lt;typename eT&gt;
+<span class="lineNum">      64 </span>            :     static
+<span class="lineNum">      65 </span>            :     typename arma_real_only&lt;eT&gt;::result
+<span class="lineNum">      66 </span>            :     inf(typename arma_real_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">      67 </span>            :       {
+<span class="lineNum">      68 </span>            :       arma_ignore(junk);
+<span class="lineNum">      69 </span>            :       
+<span class="lineNum">      70 </span>            :       if(std::numeric_limits&lt;eT&gt;::has_infinity)
+<span class="lineNum">      71 </span>            :         {
+<span class="lineNum">      72 </span>            :         return std::numeric_limits&lt;eT&gt;::infinity();
+<span class="lineNum">      73 </span>            :         }
+<span class="lineNum">      74 </span>            :       else
+<span class="lineNum">      75 </span>            :         {
+<span class="lineNum">      76 </span>            :         return std::numeric_limits&lt;eT&gt;::max();
+<span class="lineNum">      77 </span>            :         }
+<span class="lineNum">      78 </span>            :       }
+<span class="lineNum">      79 </span>            :     
+<span class="lineNum">      80 </span>            :     
+<span class="lineNum">      81 </span>            :     template&lt;typename eT&gt;
+<span class="lineNum">      82 </span>            :     static
+<span class="lineNum">      83 </span>            :     typename arma_cx_only&lt;eT&gt;::result
+<span class="lineNum">      84 </span>            :     inf(typename arma_cx_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">      85 </span>            :       {
+<span class="lineNum">      86 </span>            :       arma_ignore(junk);
+<span class="lineNum">      87 </span>            :       
+<span class="lineNum">      88 </span>            :       typedef typename get_pod_type&lt;eT&gt;::result T;
+<span class="lineNum">      89 </span>            :       
+<span class="lineNum">      90 </span>            :       return eT( Datum_helper::inf&lt;T&gt;(), Datum_helper::inf&lt;T&gt;() );
+<span class="lineNum">      91 </span>            :       }
+<span class="lineNum">      92 </span>            :     
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :     template&lt;typename eT&gt;
+<span class="lineNum">      95 </span>            :     static
+<span class="lineNum">      96 </span>            :     typename arma_integral_only&lt;eT&gt;::result
+<span class="lineNum">      97 </span>            :     inf(typename arma_integral_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">      98 </span>            :       {
+<span class="lineNum">      99 </span>            :       arma_ignore(junk);
+<span class="lineNum">     100 </span>            :       
+<span class="lineNum">     101 </span>            :       return std::numeric_limits&lt;eT&gt;::max();
+<span class="lineNum">     102 </span>            :       }
+<span class="lineNum">     103 </span>            :     
+<span class="lineNum">     104 </span>            :     };
+<span class="lineNum">     105 </span>            :   }
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            : //! various constants.
+<span class="lineNum">     110 </span>            : //! Physical constants taken from NIST 2010 CODATA values, and some from WolframAlpha (values provided as of 2009-06-23)
+<span class="lineNum">     111 </span>            : //! http://physics.nist.gov/cuu/Constants
+<span class="lineNum">     112 </span>            : //! http://www.wolframalpha.com
+<span class="lineNum">     113 </span>            : //! See also http://en.wikipedia.org/wiki/Physical_constant
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : template&lt;typename eT&gt;
+<span class="lineNum">     117 </span>            : class Datum
+<span class="lineNum">     118 </span>            :   {
+<span class="lineNum">     119 </span>            :   public:
+<span class="lineNum">     120 </span>            :   
+<span class="lineNum">     121 </span>            :   static const eT pi;       //!&lt; ratio of any circle's circumference to its diameter
+<span class="lineNum">     122 </span>            :   static const eT e;        //!&lt; base of the natural logarithm
+<span class="lineNum">     123 </span>            :   static const eT euler;    //!&lt; Euler's constant, aka Euler-Mascheroni constant
+<span class="lineNum">     124 </span>            :   static const eT gratio;   //!&lt; golden ratio
+<span class="lineNum">     125 </span>            :   static const eT sqrt2;    //!&lt; square root of 2
+<span class="lineNum">     126 </span>            :   static const eT eps;      //!&lt; the difference between 1 and the least value greater than 1 that is representable
+<span class="lineNum">     127 </span>            :   static const eT log_min;  //!&lt; log of the minimum representable value
+<span class="lineNum">     128 </span>            :   static const eT log_max;  //!&lt; log of the maximum representable value
+<span class="lineNum">     129 </span>            :   static const eT nan;      //!&lt; &quot;not a number&quot;
+<span class="lineNum">     130 </span>            :   static const eT inf;      //!&lt; infinity 
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            :   // 
+<span class="lineNum">     133 </span>            :   
+<span class="lineNum">     134 </span>            :   static const eT m_u;       //!&lt; atomic mass constant (in kg)
+<span class="lineNum">     135 </span>            :   static const eT N_A;       //!&lt; Avogadro constant
+<span class="lineNum">     136 </span>            :   static const eT k;         //!&lt; Boltzmann constant (in joules per kelvin)
+<span class="lineNum">     137 </span>            :   static const eT k_evk;     //!&lt; Boltzmann constant (in eV/K)
+<span class="lineNum">     138 </span>            :   static const eT a_0;       //!&lt; Bohr radius (in meters)
+<span class="lineNum">     139 </span>            :   static const eT mu_B;      //!&lt; Bohr magneton
+<span class="lineNum">     140 </span>            :   static const eT Z_0;       //!&lt; characteristic impedance of vacuum (in ohms)
+<span class="lineNum">     141 </span>            :   static const eT G_0;       //!&lt; conductance quantum (in siemens)
+<span class="lineNum">     142 </span>            :   static const eT k_e;       //!&lt; Coulomb's constant (in meters per farad)
+<span class="lineNum">     143 </span>            :   static const eT eps_0;     //!&lt; electric constant (in farads per meter)
+<span class="lineNum">     144 </span>            :   static const eT m_e;       //!&lt; electron mass (in kg)
+<span class="lineNum">     145 </span>            :   static const eT eV;        //!&lt; electron volt (in joules)
+<span class="lineNum">     146 </span>            :   static const eT ec;        //!&lt; elementary charge (in coulombs)
+<span class="lineNum">     147 </span>            :   static const eT F;         //!&lt; Faraday constant (in coulombs)
+<span class="lineNum">     148 </span>            :   static const eT alpha;     //!&lt; fine-structure constant
+<span class="lineNum">     149 </span>            :   static const eT alpha_inv; //!&lt; inverse fine-structure constant
+<span class="lineNum">     150 </span>            :   static const eT K_J;       //!&lt; Josephson constant
+<span class="lineNum">     151 </span>            :   static const eT mu_0;      //!&lt; magnetic constant (in henries per meter)
+<span class="lineNum">     152 </span>            :   static const eT phi_0;     //!&lt; magnetic flux quantum (in webers)
+<span class="lineNum">     153 </span>            :   static const eT R;         //!&lt; molar gas constant (in joules per mole kelvin)
+<span class="lineNum">     154 </span>            :   static const eT G;         //!&lt; Newtonian constant of gravitation (in newton square meters per kilogram squared)
+<span class="lineNum">     155 </span>            :   static const eT h;         //!&lt; Planck constant (in joule seconds)
+<span class="lineNum">     156 </span>            :   static const eT h_bar;     //!&lt; Planck constant over 2 pi, aka reduced Planck constant (in joule seconds)
+<span class="lineNum">     157 </span>            :   static const eT m_p;       //!&lt; proton mass (in kg)
+<span class="lineNum">     158 </span>            :   static const eT R_inf;     //!&lt; Rydberg constant (in reciprocal meters)
+<span class="lineNum">     159 </span>            :   static const eT c_0;       //!&lt; speed of light in vacuum (in meters per second)
+<span class="lineNum">     160 </span>            :   static const eT sigma;     //!&lt; Stefan-Boltzmann constant
+<span class="lineNum">     161 </span>            :   static const eT R_k;       //!&lt; von Klitzing constant (in ohms)
+<span class="lineNum">     162 </span>            :   static const eT b;         //!&lt; Wien wavelength displacement law constant
+<span class="lineNum">     163 </span>            :   };
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : // the long lengths of the constants are for future support of &quot;long double&quot;
+<span class="lineNum">     167 </span>            : // and any smart compiler that does high-precision computation at compile-time
+<span class="lineNum">     168 </span>            :   
+<span class="lineNum">     169 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::pi        = eT(3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679);
+<span class="lineNum">     170 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::e         = eT(2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274);
+<span class="lineNum">     171 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::euler     = eT(0.5772156649015328606065120900824024310421593359399235988057672348848677267776646709369470632917467495);
+<span class="lineNum">     172 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::gratio    = eT(1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497072072041893911374);
+<span class="lineNum">     173 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::sqrt2     = eT(1.4142135623730950488016887242096980785696718753769480731766797379907324784621070388503875343276415727);
+<span class="lineNum">     174 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::eps       = std::numeric_limits&lt;eT&gt;::epsilon();
+<span class="lineNum">     175 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::log_min   = std::log(std::numeric_limits&lt;eT&gt;::min());
+<span class="lineNum">     176 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::log_max   = std::log(std::numeric_limits&lt;eT&gt;::max());
+<span class="lineNum">     177 </span><span class="lineCov">       1125 : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::nan       = priv::Datum_helper::nan&lt;eT&gt;();</span>
+<span class="lineNum">     178 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::inf       = priv::Datum_helper::inf&lt;eT&gt;();
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::m_u       = eT(1.660539040e-27);
+<span class="lineNum">     181 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::N_A       = eT(6.022140857e23);
+<span class="lineNum">     182 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::k         = eT(1.38064852e-23);
+<span class="lineNum">     183 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::k_evk     = eT(8.6173303e-5);
+<span class="lineNum">     184 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::a_0       = eT(0.52917721067e-10);
+<span class="lineNum">     185 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::mu_B      = eT(927.4009994e-26);
+<span class="lineNum">     186 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::Z_0       = eT(376.730313461771);
+<span class="lineNum">     187 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::G_0       = eT(7.7480917310e-5);
+<span class="lineNum">     188 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::k_e       = eT(8.9875517873681764e9);
+<span class="lineNum">     189 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::eps_0     = eT(8.85418781762039e-12);
+<span class="lineNum">     190 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::m_e       = eT(9.10938356e-31);
+<span class="lineNum">     191 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::eV        = eT(1.6021766208e-19);
+<span class="lineNum">     192 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::ec        = eT(1.6021766208e-19);
+<span class="lineNum">     193 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::F         = eT(96485.33289);
+<span class="lineNum">     194 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::alpha     = eT(7.2973525664e-3);
+<span class="lineNum">     195 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::alpha_inv = eT(137.035999139);
+<span class="lineNum">     196 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::K_J       = eT(483597.8525e9);
+<span class="lineNum">     197 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::mu_0      = eT(1.25663706143592e-06);
+<span class="lineNum">     198 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::phi_0     = eT(2.067833667e-15);
+<span class="lineNum">     199 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::R         = eT(8.3144598);
+<span class="lineNum">     200 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::G         = eT(6.67408e-11);
+<span class="lineNum">     201 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::h         = eT(6.626070040e-34);
+<span class="lineNum">     202 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::h_bar     = eT(1.054571800e-34);
+<span class="lineNum">     203 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::m_p       = eT(1.672621898e-27);
+<span class="lineNum">     204 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::R_inf     = eT(10973731.568508);
+<span class="lineNum">     205 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::c_0       = eT(299792458.0);
+<span class="lineNum">     206 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::sigma     = eT(5.670367e-8);
+<span class="lineNum">     207 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::R_k       = eT(25812.8074555);
+<span class="lineNum">     208 </span>            : template&lt;typename eT&gt; const eT Datum&lt;eT&gt;::b         = eT(2.8977729e-3);
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span>            : typedef Datum&lt;float&gt;  fdatum;
+<span class="lineNum">     213 </span>            : typedef Datum&lt;double&gt; datum;
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            : namespace priv
+<span class="lineNum">     219 </span>            :   {
+<span class="lineNum">     220 </span>            :   
+<span class="lineNum">     221 </span>            :   template&lt;typename eT&gt;
+<span class="lineNum">     222 </span>            :   static
+<span class="lineNum">     223 </span>            :   arma_inline
+<span class="lineNum">     224 </span>            :   arma_hot
+<span class="lineNum">     225 </span>            :   typename arma_real_only&lt;eT&gt;::result
+<span class="lineNum">     226 </span>            :   most_neg(typename arma_real_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">     227 </span>            :     {
+<span class="lineNum">     228 </span>            :     arma_ignore(junk);
+<span class="lineNum">     229 </span>            :     
+<span class="lineNum">     230 </span>            :     if(std::numeric_limits&lt;eT&gt;::has_infinity)
+<span class="lineNum">     231 </span>            :       {
+<span class="lineNum">     232 </span>            :       return -(std::numeric_limits&lt;eT&gt;::infinity());
+<span class="lineNum">     233 </span>            :       }
+<span class="lineNum">     234 </span>            :     else
+<span class="lineNum">     235 </span>            :       {
+<span class="lineNum">     236 </span>            :       return -(std::numeric_limits&lt;eT&gt;::max());
+<span class="lineNum">     237 </span>            :       }
+<span class="lineNum">     238 </span>            :     }
+<span class="lineNum">     239 </span>            :   
+<span class="lineNum">     240 </span>            :   
+<span class="lineNum">     241 </span>            :   template&lt;typename eT&gt;
+<span class="lineNum">     242 </span>            :   static
+<span class="lineNum">     243 </span>            :   arma_inline
+<span class="lineNum">     244 </span>            :   arma_hot
+<span class="lineNum">     245 </span>            :   typename arma_integral_only&lt;eT&gt;::result
+<span class="lineNum">     246 </span>            :   most_neg(typename arma_integral_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">     247 </span>            :     {
+<span class="lineNum">     248 </span>            :     arma_ignore(junk);
+<span class="lineNum">     249 </span>            :     
+<span class="lineNum">     250 </span>            :     return std::numeric_limits&lt;eT&gt;::min();
+<span class="lineNum">     251 </span>            :     }
+<span class="lineNum">     252 </span>            :   
+<span class="lineNum">     253 </span>            :   
+<span class="lineNum">     254 </span>            :   template&lt;typename eT&gt;
+<span class="lineNum">     255 </span>            :   static
+<span class="lineNum">     256 </span>            :   arma_inline
+<span class="lineNum">     257 </span>            :   arma_hot
+<span class="lineNum">     258 </span>            :   typename arma_real_only&lt;eT&gt;::result
+<span class="lineNum">     259 </span>            :   most_pos(typename arma_real_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">     260 </span>            :     {
+<span class="lineNum">     261 </span>            :     arma_ignore(junk);
+<span class="lineNum">     262 </span>            :     
+<span class="lineNum">     263 </span>            :     if(std::numeric_limits&lt;eT&gt;::has_infinity)
+<span class="lineNum">     264 </span>            :       {
+<span class="lineNum">     265 </span>            :       return std::numeric_limits&lt;eT&gt;::infinity();
+<span class="lineNum">     266 </span>            :       }
+<span class="lineNum">     267 </span>            :     else
+<span class="lineNum">     268 </span>            :       {
+<span class="lineNum">     269 </span>            :       return std::numeric_limits&lt;eT&gt;::max();
+<span class="lineNum">     270 </span>            :       }
+<span class="lineNum">     271 </span>            :     }
+<span class="lineNum">     272 </span>            :   
+<span class="lineNum">     273 </span>            :   
+<span class="lineNum">     274 </span>            :   template&lt;typename eT&gt;
+<span class="lineNum">     275 </span>            :   static
+<span class="lineNum">     276 </span>            :   arma_inline
+<span class="lineNum">     277 </span>            :   arma_hot
+<span class="lineNum">     278 </span>            :   typename arma_integral_only&lt;eT&gt;::result
+<span class="lineNum">     279 </span>            :   most_pos(typename arma_integral_only&lt;eT&gt;::result* junk = 0)
+<span class="lineNum">     280 </span>            :     {
+<span class="lineNum">     281 </span>            :     arma_ignore(junk);
+<span class="lineNum">     282 </span>            :     
+<span class="lineNum">     283 </span>            :     return std::numeric_limits&lt;eT&gt;::max();
+<span class="lineNum">     284 </span>            :     }
+<span class="lineNum">     285 </span>            : 
+<span class="lineNum">     286 </span>            :   }
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            : 
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            : //! @}
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

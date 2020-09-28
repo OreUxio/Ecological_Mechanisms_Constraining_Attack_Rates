@@ -1,0 +1,3 @@
+sequence.o sequence.d1 : sequence.cc  sequence.h \
+  simple_vector.h error.h \
+  

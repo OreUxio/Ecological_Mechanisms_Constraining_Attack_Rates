@@ -1,0 +1,111 @@
+// -*- mode: c++ -*-
+// $Id: niche_width_finder.cc 932 2007-08-22 08:05:25Z cvsrep $
+
+#include "niche_width_finder.h"
+#include "error.h"
+
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_roots.h>
+#include <gsl/gsl_sf.h>
+#include <gsl/gsl_integration.h>
+
+typedef double function_t(double);
+
+static double solver_f (double x, void * p) {
+  return ((function_t*) p)(x);
+}
+
+static const gsl_root_fsolver_type * T
+= gsl_root_fsolver_brent;
+static gsl_root_fsolver * S
+= gsl_root_fsolver_alloc (T);
+
+static double find_root(function_t *f,double minx,double maxx){
+  
+  gsl_function F;
+  F.function = &solver_f;
+  F.params = (void *)f;
+
+  //DEBUG
+  //printf("%f\n",GSL_FN_EVAL(&F,0.5));
+  //exit(1);
+
+  REPORT(minx);
+  REPORT(maxx);
+
+  gsl_root_fsolver_set(S,&F, minx,maxx);
+  do{
+    int error=gsl_root_fsolver_iterate(S);
+    if(error){
+      FATAL_ERROR("problem with root solver");
+    }
+    REPORT(gsl_root_fsolver_root(S));
+  }while(gsl_root_fsolver_x_upper(S)-gsl_root_fsolver_x_lower(S)>0.00001);
+  
+  double result=gsl_root_fsolver_root(S);
+  
+  // gsl_root_fsolver_free(S);
+
+  return result;
+}
+
+static size_t LIMIT=2000;
+static gsl_integration_workspace * W=
+  gsl_integration_workspace_alloc(LIMIT);
+
+static double integral(function_t * f,double xmin){
+
+  gsl_function F;
+  F.function = &solver_f;
+  F.params = (void *) f;
+
+  double result;
+  double abserror;
+  int integrator_status;
+  integrator_status=
+    gsl_integration_qagiu(&F, xmin,
+			  0.00001, 0.00001,
+			  LIMIT, W, 
+			  &result,&abserror);
+  ASSERT(integrator_status==0);
+
+  //  gsl_integration_workspace_free(W);
+
+  return result;
+}
+
+static double saturation;
+static int S0;
+static double C0;
+static int ndim;
+static double r2;
+static double sigma;
+
+static inline double variance(double time_since_speciaton){
+  if(saturation){
+    double V=1.0/saturation;
+    return 2*V*(1-exp(-2/V*time_since_speciaton));
+  }else
+    return 4*time_since_speciaton;
+}
+
+static double integrand(double t){
+  return sigma*exp(-sigma*t)*gsl_sf_gamma_inc_P(0.5*ndim,0.5*r2/variance(t));
+}
+
+
+static double C0_condition(double r22){
+  r2=r22;
+  return integral(integrand,0)-C0;
+}
+
+double niche_width_finder(double saturation0,int S00,double C00,int ndim0){
+  // save parameters as statics:
+  saturation=saturation0;
+  S0=S00;
+  C0=(C00*S0-1)/(S0-1);
+  ndim=ndim0;
+  sigma=2.0/(S0-1);
+  return find_root(C0_condition,0,5*C0*2*ndim*S0);
+}

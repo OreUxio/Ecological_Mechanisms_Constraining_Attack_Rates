@@ -1,0 +1,348 @@
+
+// -*- c++ -*-
+//$Id: polyfit.cc 2386 2014-10-08 10:13:51Z axel $
+
+#include <sstream>
+
+#include "polyfit.h"
+#include "error.h"
+
+// n-th order polynomial fit:
+fitted_function::fitted_function(sequence<double> & x,
+				 sequence<average_meter> & y,
+				 int n, bool re_estimate_co_variances){
+  ALWAYS_ASSERT(x.size()==y.size());
+  ASSERT(n>=1);
+
+  _n=n;
+  _a=gsl_vector_alloc(_n);
+  _COV=gsl_matrix_alloc(_n,_n);
+  if(!_a || !_COV) FATAL_ERROR("could not allocate memory");
+
+  if(x.size()==0 || n==0) return;
+
+  // allocate workspace
+  gsl_multifit_linear_workspace * workspace = 
+    gsl_multifit_linear_alloc(x.size(),n);
+  if(!workspace) FATAL_ERROR("could not allocate memory");
+
+  // prepare the input parameters
+  gsl_matrix * X = gsl_matrix_alloc(x.size(), n);
+  gsl_vector * Y = gsl_vector_alloc(x.size());
+  /*weights:*/
+  gsl_vector * W = gsl_vector_alloc(x.size());
+  if(!X || !Y || ! W) FATAL_ERROR("could not allocate memory");
+
+  for(size_t m=0;m<x.size();m++){
+    if(!(y[m].error_var()>0) || my_isnan(y[m].error_var())){
+      REPORT(m);
+      REPORT(y[m].error_var());
+      throw polyfit_error("var's no good");
+    }
+  }
+
+  for(size_t i=0;i<x.size();i++){
+    gsl_vector_set(Y,i,y[i].readout());
+    gsl_vector_set(W,i,1/y[i].error_var());
+    
+    double x_pow=1;
+    for(int j=0;j<n;j++){
+      gsl_matrix_set(X,i,j,x_pow);
+      x_pow*=x[i];
+    }
+  }
+
+  // prepare the output parameters
+  double CHISQ;
+    
+  // do the fitting
+  ALWAYS_ASSERT(!gsl_multifit_wlinear (X,W,Y,_a,_COV,&CHISQ,workspace));
+
+  if(re_estimate_co_variances){
+    gsl_matrix_scale(_COV,CHISQ/(x.size()-n));
+  }
+
+  // free everything
+  gsl_vector_free(W);
+  gsl_vector_free(Y);
+  gsl_matrix_free(X);
+  gsl_multifit_linear_free(workspace);
+}
+
+// n-variable fit (This is just a slighly modified version of the
+// previous function.  We should ideally remove this redundancy, for
+// example by expressing the previous function in terms of this
+// function.  But I shy away, because it would cost slighly more
+// memory and time; unreasonably, I guess.):
+fitted_function::fitted_function(sequence< sequence<double> > & x,
+				 sequence<average_meter> & y,
+				 bool re_estimate_co_variances){
+  int n=x.size();
+  ASSERT(n>=1);
+
+  _n=n;
+  _a=gsl_vector_alloc(_n);
+  _COV=gsl_matrix_alloc(_n,_n);
+  if(!_a || !_COV) FATAL_ERROR("could not allocate memory");
+
+  if(y.size()==0 || n==0) return;
+
+  // allocate workspace
+  gsl_multifit_linear_workspace * workspace = 
+    gsl_multifit_linear_alloc(y.size(),n);
+  if(!workspace) FATAL_ERROR("could not allocate memory");
+
+  // prepare the input parameters
+  gsl_matrix * X = gsl_matrix_alloc(y.size(), n);
+  gsl_vector * Y = gsl_vector_alloc(y.size());
+  /*weights:*/
+  gsl_vector * W = gsl_vector_alloc(y.size());
+  if(!X || !Y || ! W) FATAL_ERROR("could not allocate memory");
+
+  for(size_t m=0;m<y.size();m++){
+    if(!(y[m].error_var()>0) || my_isnan(y[m].error_var())){
+      REPORT(m);
+      REPORT(y[m].error_var());
+      FATAL_ERROR("var's no good");
+    }
+  }
+
+  for(size_t i=0;i<y.size();i++){
+    gsl_vector_set(Y,i,y[i].readout());
+    gsl_vector_set(W,i,1/y[i].error_var());
+    
+    for(int j=0;j<n;j++){
+      gsl_matrix_set(X,i,j,x[j][i]);
+    }
+  }
+
+  // prepare the output parameters
+  double CHISQ;
+    
+  // do the fitting
+  ALWAYS_ASSERT(!gsl_multifit_wlinear (X,W,Y,_a,_COV,&CHISQ,workspace));
+
+  if(re_estimate_co_variances){
+    gsl_matrix_scale(_COV,CHISQ/(y.size()-n));
+  }
+
+  // free everything
+  gsl_vector_free(W);
+  gsl_vector_free(Y);
+  gsl_matrix_free(X);
+  gsl_multifit_linear_free(workspace);
+}
+
+// get value as predicted:
+double fitted_function::operator()(double x) const{
+  double sum=0;
+  double x_pow=1;
+  for(size_t i=0;i<_n;i++){
+    sum+=gsl_vector_get(_a,i)*x_pow;
+    x_pow*=x;
+  }
+  return sum;
+}
+
+// get value as predicted:
+double fitted_function::operator()(sequence< double > x) const{
+  double sum=0;
+  for(size_t i=0;i<_n;i++){
+    sum+=gsl_vector_get(_a,i)*x[i];
+  }
+  return sum;
+}
+
+double fitted_function::cov_at(double x1, double x2) const{
+  double sum=0;
+  double x1_pow=1;
+  for(size_t i=0;i<_n;i++){
+    double x2_pow=1;
+    for(size_t j=0;j<_n;j++){
+      sum+=gsl_matrix_get(_COV,i,j)*x1_pow*x2_pow;
+      x2_pow*=x2;
+    }
+    x1_pow*=x1;
+  }
+  return sum;
+}
+
+double fitted_function::cov_at(const sequence<double> &x1, 
+			       const sequence<double> &x2) const{
+  double sum=0;
+  for(size_t i=0;i<_n;i++){
+    for(size_t j=0;j<_n;j++){
+      sum+=gsl_matrix_get(_COV,i,j)*x1[i]*x2[j];
+    }
+  }
+  return sum;
+}
+
+double fitted_function::var_at(double x) const{
+  return cov_at(x,x);
+}
+
+double fitted_function::var_at(const sequence<double> &x) const{
+  return cov_at(x,x);
+}
+
+// polynomial fit, order automatically determined:
+fitted_function::fitted_function(sequence<double> & x,
+				 sequence<average_meter> & y,
+				 bool re_estimate_co_variances){
+
+  ALWAYS_ASSERT(x.size()==y.size());
+  ASSERT(x.size()>=2);
+
+  double smallest_mean_chi2=DBL_MAX;
+  int best_order=1;
+
+  
+  //try all orders:
+  //(or if x.size()==2 we do a linear fit)
+  for(size_t n=2;n<=x.size()-2;n++){
+
+    //do leave-one-out cross validation:
+    average_meter mean_chi2;
+    for(size_t m=0;m<x.size();m++){
+      sequence<double> x1;
+      sequence<average_meter> y1;
+      // copy but leave m-th out:
+      for(int k=int(x.size()-1);k>=0;k--){
+	if(k>int(m)){
+	  x1[k-1]=x[k];
+	  y1[k-1]=y[k];
+	}else if(k<int(m)){
+	  x1[k]=x[k];
+	  y1[k]=y[k];
+	}
+      }
+      fitted_function f=fitted_function(x1,y1,n,re_estimate_co_variances);
+      double error=f(x[m])-y[m].readout();
+      mean_chi2.sample(error*error/y[m].error_var());
+    }
+    if(mean_chi2.readout()<smallest_mean_chi2){
+      smallest_mean_chi2=mean_chi2.readout();
+      best_order=n;
+    }
+  }
+  //std::cout << "best polynomial order = " << best_order-1 << std::endl;
+
+  fitted_function best_fit(x,y,best_order,re_estimate_co_variances);
+  _n=best_order;
+  _a=gsl_vector_alloc(_n);
+  _COV=gsl_matrix_alloc(_n,_n);
+  if(!_a || !_COV) FATAL_ERROR("could not allocate memory");
+  gsl_vector_memcpy(_a,best_fit._a);
+  gsl_matrix_memcpy(_COV,best_fit._COV);
+
+  //REPORT(smallest_mean_chi2);
+  return;
+}
+
+fitted_function fitted_function::derivative() const{
+  fitted_function df(_n-1);
+
+  for(int i=1;i<_n;i++){
+    gsl_vector_set(df._a,i-1,i*gsl_vector_get(_a,i));
+    for(int j=1;j<_n;j++){
+      gsl_matrix_set(df._COV,i-1,j-1,i*j*gsl_matrix_get(_COV,i,j));
+    }
+  }
+  return df;
+}
+
+fitted_function::fitted_function(int n){
+  _n=n;
+  _a=gsl_vector_alloc(_n);
+  _COV=gsl_matrix_alloc(_n,_n);
+  if(!_a || !_COV) FATAL_ERROR("could not allocate memory");
+}  
+
+fitted_function::fitted_function(){
+  _n=1;
+  _a=gsl_vector_alloc(_n);
+  _COV=gsl_matrix_alloc(_n,_n);
+  if(!_a || !_COV) FATAL_ERROR("could not allocate memory");
+}
+
+fitted_function::fitted_function(const fitted_function & other){
+  _n=other._n;
+  _a=gsl_vector_alloc(_n);
+  _COV=gsl_matrix_alloc(_n,_n);
+  if(!_a || !_COV) FATAL_ERROR("could not allocate memory");
+  gsl_vector_memcpy(_a,other._a);
+  gsl_matrix_memcpy(_COV,other._COV);
+}
+
+fitted_function::~fitted_function(){
+  gsl_matrix_free(_COV);
+  gsl_vector_free(_a);
+}
+
+fitted_function const & 
+fitted_function::operator= (fitted_function const& other){
+  if(_n!=other._n){
+    _n=other._n;
+    gsl_matrix_free(_COV);
+    gsl_vector_free(_a);
+    _a=gsl_vector_alloc(_n);
+    _COV=gsl_matrix_alloc(_n,_n);
+    if(!_a || !_COV) FATAL_ERROR("could not allocate memory");
+  }
+  gsl_vector_memcpy(_a,other._a);
+  gsl_matrix_memcpy(_COV,other._COV);
+  return *this;
+}  
+
+std::string fitted_function::operator()(const std::string s) const{
+  std::ostringstream formula;
+  if(_n>0){
+    formula << gsl_vector_get(_a,0) 
+	    << "(" << sqrt(gsl_matrix_get(_COV,0,0)) << ")";
+  }
+  if(_n>1){
+    formula << " + " << gsl_vector_get(_a,1) 
+	    << "(" << sqrt(gsl_matrix_get(_COV,1,1)) << ")";
+    formula << " * " << s;
+  }
+  for(int i=2;i<_n;i++){
+    formula << " + " << gsl_vector_get(_a,i) 
+	    << "(" << sqrt(gsl_matrix_get(_COV,i,i)) << ")";
+    formula << " * " << s << "^" << i;
+  }
+  return formula.str();
+}
+
+
+//tester:
+/*
+#include "cfgList.h"
+int main(){
+  sequence<double> x;
+  sequence<average_meter> y;
+  
+  x[0]=0;
+  x[1]=1;
+  x[2]=2;
+  x[3]=3;
+  y[0].sample(1);
+  y[0].sample(2);
+  y[0].sample(3);
+  y[1].sample(1);
+  y[1].sample(1);
+  y[1].sample(1.1);
+  y[2].sample(10);
+  y[2].sample(20);
+  y[2].sample(30);
+  y[3].sample(10);
+  y[3].sample(20);
+  y[3].sample(30);
+  
+  
+  fitted_function f=fitted_function(x,y);
+  std::cout << f(0) << std::endl;
+  std::cout << f(1) << std::endl;
+  std::cout << f(2) << std::endl;
+}
+*/

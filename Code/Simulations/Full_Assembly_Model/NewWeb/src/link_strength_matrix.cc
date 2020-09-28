@@ -1,0 +1,87 @@
+// -*- mode: c++ -*-
+// $Id: link_strength_matrix.cc 2466 2016-05-01 23:27:44Z axel $
+
+#include "link_strength_matrix.h"
+
+link_strength_matrix::link_strength_matrix():link_strength_matrix_base(1,1),the_size(0){};
+
+link_strength_matrix::link_strength_matrix(const sequence< sequence<double> > &m):
+  link_strength_matrix_base(make_odd(m.size()),make_odd(m.size())),
+  the_size(m.size()){
+  for(int i=m.size();i-->0;){
+    ASSERT(m[i].size()<=m.size());
+    for(int j=m.size();j-->0;){
+      (*this)[i][j]=m[i][j];
+    }
+  }
+}
+link_strength_matrix::link_strength_matrix(const link_strength_matrix_base &m):
+  link_strength_matrix_base(m),the_size(m.GetXSize()){
+  if(m.GetXSize() & 1==0){
+    // this will rarely happen, so we can be lazy
+    link_strength_matrix_base hold(m.GetXSize()+1,m.GetXSize()+1);
+    hold.assign_filling(m);
+    link_strength_matrix_base::operator=(m); //automatically enlarge
+  }
+}
+void link_strength_matrix::resize(int requested_size){
+  int new_size=requested_size;
+  if(requested_size > GetXSize()){
+    new_size=2*requested_size-1;
+    link_strength_matrix_base hold(new_size,new_size);
+    hold.assign_filling(*this);
+    link_strength_matrix_base::operator=(hold); //automatically enlarge
+  }
+  the_size=requested_size;
+}
+
+// the next two members are pretty much quick and dirty!!
+link_strength_matrix link_strength_matrix::operator+(const link_strength_matrix & y) const {
+  REPORT(the_size);
+  REPORT(y.the_size);
+  ALWAYS_ASSERT(the_size==y.the_size);
+  link_strength_matrix result;
+  result.resize(the_size);
+  for(int i=the_size;i-->0;){
+    for(int j=the_size;j-->0;){
+      result[i][j]=(*this)[i][j]+y[i][j];
+    }
+  }
+  return result;
+}
+
+link_strength_matrix link_strength_matrix::operator*(const double y)const {
+  link_strength_matrix result;
+  result.resize(the_size);
+  for(int i=the_size;i-->0;){
+    for(int j=the_size;j-->0;){
+      result[i][j]=(*this)[i][j]*y;
+    }
+  }
+  return result;
+}
+
+link_strength_matrix::link_strength_matrix(const Interaction_Matrix & m):
+  link_strength_matrix_base(make_odd(m.size()),make_odd(m.size()))
+{
+  int s=m.size();
+  for(int i=s;i-->0;){
+    for(int j=s;j-->0;){
+      (*this)[i][j]=(m[i][j]==NetworkAnalysis::eats?1:0);
+    }
+  }
+  the_size=m.size();
+}
+
+// transform a link_strength_matrix into a HepMatrix :
+link_strength_matrix::operator const NewMatrix() const{
+  int n=size();
+  NewMatrix m(n,n);
+  
+  for(int i=n;i-->0;){
+    for(int j=n;j-->0;){
+      m(i,j)=(*this)[i][j];
+    }
+  }
+  return m;
+}

@@ -1,0 +1,10 @@
+# -*- mode: c++ -*-
+#$Id$
+invade_from_other=0
+print_each_step=1
+stop_after_one_period=1
+fluctuation_tolerance=0.1
+chaos_detection_level=2
+min_relaxation_time=0
+
+TRACEFLAG=0

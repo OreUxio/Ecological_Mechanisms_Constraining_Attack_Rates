@@ -1,0 +1,341 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/nvector/nvector_serial.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">usr/include/nvector</a> - nvector_serial.h<span style="font-size: 80%;"> (source / <a href="nvector_serial.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntryLo">53.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntryLo">53.1 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">       3 </span>            :  * $Revision: 1.2 $
+<span class="lineNum">       4 </span>            :  * $Date: 2006/11/29 00:05:07 $
+<span class="lineNum">       5 </span>            :  * ----------------------------------------------------------------- 
+<span class="lineNum">       6 </span>            :  * Programmer(s): Scott D. Cohen, Alan C. Hindmarsh, Radu Serban,
+<span class="lineNum">       7 </span>            :  *                and Aaron Collier @ LLNL
+<span class="lineNum">       8 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">       9 </span>            :  * Copyright (c) 2002, The Regents of the University of California.
+<span class="lineNum">      10 </span>            :  * Produced at the Lawrence Livermore National Laboratory.
+<span class="lineNum">      11 </span>            :  * All rights reserved.
+<span class="lineNum">      12 </span>            :  * For details, see the LICENSE file.
+<span class="lineNum">      13 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">      14 </span>            :  * This is the header file for the serial implementation of the
+<span class="lineNum">      15 </span>            :  * NVECTOR module.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  * Part I contains declarations specific to the serial
+<span class="lineNum">      18 </span>            :  * implementation of the supplied NVECTOR module.
+<span class="lineNum">      19 </span>            :  *
+<span class="lineNum">      20 </span>            :  * Part II defines accessor macros that allow the user to
+<span class="lineNum">      21 </span>            :  * efficiently use the type N_Vector without making explicit
+<span class="lineNum">      22 </span>            :  * references to the underlying data structure.
+<span class="lineNum">      23 </span>            :  *
+<span class="lineNum">      24 </span>            :  * Part III contains the prototype for the constructor N_VNew_Serial
+<span class="lineNum">      25 </span>            :  * as well as implementation-specific prototypes for various useful
+<span class="lineNum">      26 </span>            :  * vector operations.
+<span class="lineNum">      27 </span>            :  *
+<span class="lineNum">      28 </span>            :  * Notes:
+<span class="lineNum">      29 </span>            :  *
+<span class="lineNum">      30 </span>            :  *   - The definition of the generic N_Vector structure can be found
+<span class="lineNum">      31 </span>            :  *     in the header file sundials_nvector.h.
+<span class="lineNum">      32 </span>            :  *
+<span class="lineNum">      33 </span>            :  *   - The definition of the type 'realtype' can be found in the
+<span class="lineNum">      34 </span>            :  *     header file sundials_types.h, and it may be changed (at the 
+<span class="lineNum">      35 </span>            :  *     configuration stage) according to the user's needs. 
+<span class="lineNum">      36 </span>            :  *     The sundials_types.h file also contains the definition
+<span class="lineNum">      37 </span>            :  *     for the type 'booleantype'.
+<span class="lineNum">      38 </span>            :  *
+<span class="lineNum">      39 </span>            :  *   - N_Vector arguments to arithmetic vector operations need not
+<span class="lineNum">      40 </span>            :  *     be distinct. For example, the following call:
+<span class="lineNum">      41 </span>            :  *
+<span class="lineNum">      42 </span>            :  *       N_VLinearSum_Serial(a,x,b,y,y);
+<span class="lineNum">      43 </span>            :  *
+<span class="lineNum">      44 </span>            :  *     (which stores the result of the operation a*x+b*y in y)
+<span class="lineNum">      45 </span>            :  *     is legal.
+<span class="lineNum">      46 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">      47 </span>            :  */
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : #ifndef _NVECTOR_SERIAL_H
+<span class="lineNum">      50 </span>            : #define _NVECTOR_SERIAL_H
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : #ifdef __cplusplus  /* wrapper to enable C++ usage */
+<span class="lineNum">      53 </span>            : extern &quot;C&quot; {
+<span class="lineNum">      54 </span>            : #endif
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : #include &lt;sundials/sundials_nvector.h&gt;
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : /*
+<span class="lineNum">      59 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">      60 </span>            :  * PART I: SERIAL implementation of N_Vector
+<span class="lineNum">      61 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">      62 </span>            :  */
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : /* serial implementation of the N_Vector 'content' structure
+<span class="lineNum">      65 </span>            :    contains the length of the vector, a pointer to an array
+<span class="lineNum">      66 </span>            :    of 'realtype' components, and a flag indicating ownership of
+<span class="lineNum">      67 </span>            :    the data */
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : struct _N_VectorContent_Serial {
+<span class="lineNum">      70 </span>            :   long int length;
+<span class="lineNum">      71 </span>            :   booleantype own_data;
+<span class="lineNum">      72 </span>            :   realtype *data;
+<span class="lineNum">      73 </span>            : };
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : typedef struct _N_VectorContent_Serial *N_VectorContent_Serial;
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : /*
+<span class="lineNum">      78 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">      79 </span>            :  * PART II: macros NV_CONTENT_S, NV_DATA_S, NV_OWN_DATA_S,
+<span class="lineNum">      80 </span>            :  *          NV_LENGTH_S, and NV_Ith_S
+<span class="lineNum">      81 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">      82 </span>            :  * In the descriptions below, the following user declarations
+<span class="lineNum">      83 </span>            :  * are assumed:
+<span class="lineNum">      84 </span>            :  *
+<span class="lineNum">      85 </span>            :  * N_Vector v;
+<span class="lineNum">      86 </span>            :  * long int i;
+<span class="lineNum">      87 </span>            :  *
+<span class="lineNum">      88 </span>            :  * (1) NV_CONTENT_S
+<span class="lineNum">      89 </span>            :  *
+<span class="lineNum">      90 </span>            :  *     This routines gives access to the contents of the serial
+<span class="lineNum">      91 </span>            :  *     vector N_Vector.
+<span class="lineNum">      92 </span>            :  *
+<span class="lineNum">      93 </span>            :  *     The assignment v_cont = NV_CONTENT_S(v) sets v_cont to be
+<span class="lineNum">      94 </span>            :  *     a pointer to the serial N_Vector content structure.
+<span class="lineNum">      95 </span>            :  *
+<span class="lineNum">      96 </span>            :  * (2) NV_DATA_S NV_OWN_DATA_S and NV_LENGTH_S
+<span class="lineNum">      97 </span>            :  *
+<span class="lineNum">      98 </span>            :  *     These routines give access to the individual parts of
+<span class="lineNum">      99 </span>            :  *     the content structure of a serial N_Vector.
+<span class="lineNum">     100 </span>            :  *
+<span class="lineNum">     101 </span>            :  *     The assignment v_data = NV_DATA_S(v) sets v_data to be
+<span class="lineNum">     102 </span>            :  *     a pointer to the first component of v. The assignment
+<span class="lineNum">     103 </span>            :  *     NV_DATA_S(v) = data_V sets the component array of v to
+<span class="lineNum">     104 </span>            :  *     be data_v by storing the pointer data_v.
+<span class="lineNum">     105 </span>            :  *
+<span class="lineNum">     106 </span>            :  *     The assignment v_len = NV_LENGTH_S(v) sets v_len to be
+<span class="lineNum">     107 </span>            :  *     the length of v. The call NV_LENGTH_S(v) = len_v sets
+<span class="lineNum">     108 </span>            :  *     the length of v to be len_v.
+<span class="lineNum">     109 </span>            :  *
+<span class="lineNum">     110 </span>            :  * (3) NV_Ith_S
+<span class="lineNum">     111 </span>            :  *
+<span class="lineNum">     112 </span>            :  *     In the following description, the components of an
+<span class="lineNum">     113 </span>            :  *     N_Vector are numbered 0..n-1, where n is the length of v.
+<span class="lineNum">     114 </span>            :  *
+<span class="lineNum">     115 </span>            :  *     The assignment r = NV_Ith_S(v,i) sets r to be the value of
+<span class="lineNum">     116 </span>            :  *     the ith component of v. The assignment NV_Ith_S(v,i) = r
+<span class="lineNum">     117 </span>            :  *     sets the value of the ith component of v to be r.
+<span class="lineNum">     118 </span>            :  *
+<span class="lineNum">     119 </span>            :  * Note: When looping over the components of an N_Vector v, it is
+<span class="lineNum">     120 </span>            :  * more efficient to first obtain the component array via
+<span class="lineNum">     121 </span>            :  * v_data = NV_DATA_S(v) and then access v_data[i] within the
+<span class="lineNum">     122 </span>            :  * loop than it is to use NV_Ith_S(v,i) within the loop.
+<span class="lineNum">     123 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     124 </span>            :  */
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            : #define NV_CONTENT_S(v)  ( (N_VectorContent_Serial)(v-&gt;content) )
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : #define NV_LENGTH_S(v)   ( NV_CONTENT_S(v)-&gt;length )
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : #define NV_OWN_DATA_S(v) ( NV_CONTENT_S(v)-&gt;own_data )
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            : #define NV_DATA_S(v)     ( NV_CONTENT_S(v)-&gt;data )
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : #define NV_Ith_S(v,i)    ( NV_DATA_S(v)[i] )
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            : /*
+<span class="lineNum">     137 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     138 </span>            :  * PART III: functions exported by nvector_serial
+<span class="lineNum">     139 </span>            :  * 
+<span class="lineNum">     140 </span>            :  * CONSTRUCTORS:
+<span class="lineNum">     141 </span>            :  *    N_VNew_Serial
+<span class="lineNum">     142 </span>            :  *    N_VNewEmpty_Serial
+<span class="lineNum">     143 </span>            :  *    N_VMake_Serial
+<span class="lineNum">     144 </span>            :  *    N_VCloneVectorArray_Serial
+<span class="lineNum">     145 </span>            :  *    N_VCloneVectorArrayEmpty_Serial
+<span class="lineNum">     146 </span>            :  * DESTRUCTORS:
+<span class="lineNum">     147 </span>            :  *    N_VDestroy_Serial
+<span class="lineNum">     148 </span>            :  *    N_VDestroyVectorArray_Serial
+<span class="lineNum">     149 </span>            :  * OTHER:
+<span class="lineNum">     150 </span>            :  *    N_VPrint_Serial
+<span class="lineNum">     151 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     152 </span>            :  */
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            : /*
+<span class="lineNum">     155 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     156 </span>            :  * Function : N_VNew_Serial
+<span class="lineNum">     157 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     158 </span>            :  * This function creates and allocates memory for a serial vector.
+<span class="lineNum">     159 </span>            :  * -----------------------------------------------------------------
+<a name="160"><span class="lineNum">     160 </span>            :  */</a>
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT N_Vector N_VNew_Serial(long int vec_length);</span>
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            : /*
+<span class="lineNum">     165 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     166 </span>            :  * Function : N_VNewEmpty_Serial
+<span class="lineNum">     167 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     168 </span>            :  * This function creates a new serial N_Vector with an empty (NULL)
+<span class="lineNum">     169 </span>            :  * data array.
+<span class="lineNum">     170 </span>            :  * -----------------------------------------------------------------
+<a name="171"><span class="lineNum">     171 </span>            :  */</a>
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span><span class="lineCov">        521 : SUNDIALS_EXPORT N_Vector N_VNewEmpty_Serial(long int vec_length);</span>
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            : /*
+<span class="lineNum">     176 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     177 </span>            :  * Function : N_VMake_Serial
+<span class="lineNum">     178 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     179 </span>            :  * This function creates and allocates memory for a serial vector
+<span class="lineNum">     180 </span>            :  * with a user-supplied data array.
+<span class="lineNum">     181 </span>            :  * -----------------------------------------------------------------
+<a name="182"><span class="lineNum">     182 </span>            :  */</a>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span><span class="lineCov">        521 : SUNDIALS_EXPORT N_Vector N_VMake_Serial(long int vec_length, realtype *v_data);</span>
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span>            : /*
+<span class="lineNum">     187 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     188 </span>            :  * Function : N_VCloneVectorArray_Serial
+<span class="lineNum">     189 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     190 </span>            :  * This function creates an array of 'count' SERIAL vectors by
+<span class="lineNum">     191 </span>            :  * cloning a given vector w.
+<span class="lineNum">     192 </span>            :  * -----------------------------------------------------------------
+<a name="193"><span class="lineNum">     193 </span>            :  */</a>
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT N_Vector *N_VCloneVectorArray_Serial(int count, N_Vector w);</span>
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : /*
+<span class="lineNum">     198 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     199 </span>            :  * Function : N_VCloneVectorArrayEmpty_Serial
+<span class="lineNum">     200 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     201 </span>            :  * This function creates an array of 'count' SERIAL vectors each
+<span class="lineNum">     202 </span>            :  * with an empty (NULL) data array by cloning w.
+<span class="lineNum">     203 </span>            :  * -----------------------------------------------------------------
+<a name="204"><span class="lineNum">     204 </span>            :  */</a>
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT N_Vector *N_VCloneVectorArrayEmpty_Serial(int count, N_Vector w);</span>
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : /*
+<span class="lineNum">     209 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     210 </span>            :  * Function : N_VDestroyVectorArray_Serial
+<span class="lineNum">     211 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     212 </span>            :  * This function frees an array of SERIAL vectors created with 
+<span class="lineNum">     213 </span>            :  * N_VCloneVectorArray_Serial or N_VCloneVectorArrayEmpty_Serial.
+<span class="lineNum">     214 </span>            :  * -----------------------------------------------------------------
+<a name="215"><span class="lineNum">     215 </span>            :  */</a>
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT void N_VDestroyVectorArray_Serial(N_Vector *vs, int count);</span>
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            : /*
+<span class="lineNum">     220 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     221 </span>            :  * Function : N_VPrint_Serial
+<span class="lineNum">     222 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     223 </span>            :  * This function prints the content of a serial vector to stdout.
+<span class="lineNum">     224 </span>            :  * -----------------------------------------------------------------
+<a name="225"><span class="lineNum">     225 </span>            :  */</a>
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT void N_VPrint_Serial(N_Vector v);</span>
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            : /*
+<span class="lineNum">     230 </span>            :  * -----------------------------------------------------------------
+<span class="lineNum">     231 </span>            :  * serial implementations of various useful vector operations
+<span class="lineNum">     232 </span>            :  * -----------------------------------------------------------------
+<a name="233"><span class="lineNum">     233 </span>            :  */</a>
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<a name="235"><span class="lineNum">     235 </span><span class="lineCov">      10420 : SUNDIALS_EXPORT N_Vector N_VCloneEmpty_Serial(N_Vector w);</span></a>
+<a name="236"><span class="lineNum">     236 </span><span class="lineCov">      10420 : SUNDIALS_EXPORT N_Vector N_VClone_Serial(N_Vector w);</span></a>
+<a name="237"><span class="lineNum">     237 </span><span class="lineCov">      10941 : SUNDIALS_EXPORT void N_VDestroy_Serial(N_Vector v);</span></a>
+<a name="238"><span class="lineNum">     238 </span><span class="lineCov">        521 : SUNDIALS_EXPORT void N_VSpace_Serial(N_Vector v, long int *lrw, long int *liw);</span></a>
+<a name="239"><span class="lineNum">     239 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT realtype *N_VGetArrayPointer_Serial(N_Vector v);</span></a>
+<a name="240"><span class="lineNum">     240 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT void N_VSetArrayPointer_Serial(realtype *v_data, N_Vector v);</span></a>
+<a name="241"><span class="lineNum">     241 </span><span class="lineCov">     693344 : SUNDIALS_EXPORT void N_VLinearSum_Serial(realtype a, N_Vector x, realtype b, N_Vector y, N_Vector z);</span></a>
+<a name="242"><span class="lineNum">     242 </span><span class="lineCov">      64675 : SUNDIALS_EXPORT void N_VConst_Serial(realtype c, N_Vector z);</span></a>
+<a name="243"><span class="lineNum">     243 </span><span class="lineCov">      67085 : SUNDIALS_EXPORT void N_VProd_Serial(N_Vector x, N_Vector y, N_Vector z);</span></a>
+<a name="244"><span class="lineNum">     244 </span><span class="lineCov">      66380 : SUNDIALS_EXPORT void N_VDiv_Serial(N_Vector x, N_Vector y, N_Vector z);</span></a>
+<a name="245"><span class="lineNum">     245 </span><span class="lineCov">     228580 : SUNDIALS_EXPORT void N_VScale_Serial(realtype c, N_Vector x, N_Vector z);</span></a>
+<a name="246"><span class="lineNum">     246 </span><span class="lineCov">      21199 : SUNDIALS_EXPORT void N_VAbs_Serial(N_Vector x, N_Vector z);</span></a>
+<a name="247"><span class="lineNum">     247 </span><span class="lineCov">      21199 : SUNDIALS_EXPORT void N_VInv_Serial(N_Vector x, N_Vector z);</span></a>
+<a name="248"><span class="lineNum">     248 </span><span class="lineCov">      21199 : SUNDIALS_EXPORT void N_VAddConst_Serial(N_Vector x, realtype b, N_Vector z);</span></a>
+<a name="249"><span class="lineNum">     249 </span><span class="lineCov">     218368 : SUNDIALS_EXPORT realtype N_VDotProd_Serial(N_Vector x, N_Vector y);</span></a>
+<a name="250"><span class="lineNum">     250 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT realtype N_VMaxNorm_Serial(N_Vector x);</span></a>
+<a name="251"><span class="lineNum">     251 </span><span class="lineCov">     131410 : SUNDIALS_EXPORT realtype N_VWrmsNorm_Serial(N_Vector x, N_Vector w);</span></a>
+<a name="252"><span class="lineNum">     252 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT realtype N_VWrmsNormMask_Serial(N_Vector x, N_Vector w, N_Vector id);</span></a>
+<a name="253"><span class="lineNum">     253 </span><span class="lineCov">      21199 : SUNDIALS_EXPORT realtype N_VMin_Serial(N_Vector x);</span></a>
+<a name="254"><span class="lineNum">     254 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT realtype N_VWL2Norm_Serial(N_Vector x, N_Vector w);</span></a>
+<a name="255"><span class="lineNum">     255 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT realtype N_VL1Norm_Serial(N_Vector x);</span></a>
+<a name="256"><span class="lineNum">     256 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT void N_VCompare_Serial(realtype c, N_Vector x, N_Vector z);</span></a>
+<a name="257"><span class="lineNum">     257 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT booleantype N_VInvTest_Serial(N_Vector x, N_Vector z);</span></a>
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT booleantype N_VConstrMask_Serial(N_Vector c, N_Vector x, N_Vector m);</span>
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 : SUNDIALS_EXPORT realtype N_VMinQuotient_Serial(N_Vector num, N_Vector denom);</span>
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span>            : #ifdef __cplusplus
+<span class="lineNum">     262 </span>            : }
+<span class="lineNum">     263 </span>            : #endif
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

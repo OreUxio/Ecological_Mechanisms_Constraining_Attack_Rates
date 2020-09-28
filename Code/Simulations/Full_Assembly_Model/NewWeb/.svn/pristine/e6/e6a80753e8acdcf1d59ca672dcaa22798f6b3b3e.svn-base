@@ -1,0 +1,13 @@
+// -*- mode: c++ -*-
+// $Id$
+#ifndef _TEMPLATE_H_
+#define _TEMPLATE_H_
+
+class Template 
+{
+ public:
+  Template();
+  ~Template();
+};
+
+#endif // _TEMPLATE_H_

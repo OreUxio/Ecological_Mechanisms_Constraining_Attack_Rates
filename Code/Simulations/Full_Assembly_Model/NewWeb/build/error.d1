@@ -1,0 +1,4 @@
+error.o error.d1 : error.cc  error.h \
+  cfgList.h parsecfg.h \
+ evaluate.h CLHEP_Evaluator.h  \
+  

@@ -1,0 +1,58 @@
+// -*- c++ -*-
+//$Id: random_pick_field.h 836 2007-01-09 06:43:38Z cvsrep $
+
+#ifndef __RANDOM_PICK_FIELD_H__
+#define __RANDOM_PICK_FIELD_H__
+
+
+// a random_pick_field is like a fortune bag:
+
+// You can put things in, you can pick things (rather, their
+// positions) at random, and, if you know the position of a thing, you
+// can through it away.
+
+#include <vector>
+      
+template<typename T>
+class random_pick_field : private std::vector<T> {
+  typedef std::vector<T> vt;
+  typedef size_t size_type;
+ private:
+  size_type _last;
+ public:
+  typedef size_type position;
+  const T & insert(const T & x){ //should be call by reference?
+    if(vt::size()==vt::capacity()){
+      vt::reserve(2*vt::size()+64);
+    }
+    size_type s=vt::size();
+    vt::resize(s+1);
+    vt::operator[](s)=x;
+    return x;
+  }
+  void erase(position pos){
+    size_type s=vt::size()-1;
+    vt::operator[](pos)=vt::operator[](s);
+    vt::resize(s);
+  }
+  void erase_value(T val){
+    int i;
+    for(i=vt::size();i-->0;){
+      if(vt::operator[](i)==val) break;
+    }
+    if(i<0) FATAL_ERROR("could not find value in random_pick_field");
+    erase(i);
+  }
+  template<class random_c> 
+  // operator()(int i) applied to a random_c object returns a random
+  // number between 0 and i-1;
+  size_type random_pick(random_c r){
+    return r(vt::size());
+  }
+  const T & operator[](position pos){
+    return vt::operator[](pos) ;
+  }
+};
+
+#endif
+

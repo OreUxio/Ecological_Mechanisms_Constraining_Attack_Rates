@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - build/NetworkAnalysis.h</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../index.html">top level</a> - <a href="index.html">build</a> - NetworkAnalysis.h<span style="font-size: 80%;"> (source / <a href="NetworkAnalysis.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryLo">36.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">25.0 %</td>
+          </tr>
+          <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //$Id: NetworkAnalysis.h 2466 2016-05-01 23:27:44Z axel $</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #ifndef __NETWORK_ANALYSIS__
+<span class="lineNum">       4 </span>            : #define __NETWORK_ANALYSIS__
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #define NEW_POPULATION_DYNAMICS
+<span class="lineNum">       7 </span>            : #define NO_POPULATION_DYNAMICS
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &quot;error.h&quot;
+<span class="lineNum">      10 </span>            : #include &quot;random.h&quot;
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #include &quot;CMatrix.h&quot;
+<span class="lineNum">      13 </span>            : #include &lt;iostream&gt;
+<span class="lineNum">      14 </span>            : #include &lt;iomanip&gt;
+<span class="lineNum">      15 </span>            : #include &lt;iosfwd&gt;
+<span class="lineNum">      16 </span>            : #include &lt;vector&gt;
+<span class="lineNum">      17 </span>            : #if !defined(NO_POPULATION_DYNAMICS) &amp;&amp; !defined(NEW_POPULATION_DYNAMICS)
+<span class="lineNum">      18 </span>            : #include &quot;lists.h&quot;
+<span class="lineNum">      19 </span>            : #elif !defined(NO_POPULATION_DYNAMICS) &amp;&amp; defined(NEW_POPULATION_DYNAMICS)
+<span class="lineNum">      20 </span>            : #include &quot;NewSpecies.h&quot;
+<span class="lineNum">      21 </span>            : #include &lt;list&gt;
+<span class="lineNum">      22 </span>            : typedef std::list&lt;NewSpecies *&gt; Species_List ;
+<span class="lineNum">      23 </span>            : #endif
+<span class="lineNum">      24 </span>            : #include &quot;sequence.h&quot;
+<span class="lineNum">      25 </span>            : #include &quot;NewMatrix.h&quot;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : // This should perhaps be a class member rather than a namespace?
+<span class="lineNum">      28 </span>            : namespace NetworkAnalysis
+<span class="lineNum">      29 </span>            : {
+<span class="lineNum">      30 </span>            :   /// Kinds of interactions. Currently only eats and none are used.
+<span class="lineNum">      31 </span>            :   typedef enum {none=0,eats,shadows,hampers,other} Interaction;
+<span class="lineNum">      32 </span>            : }
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : /// Base type for Interaction_Matrix
+<span class="lineNum">      35 </span>            : typedef CMatrix&lt;NetworkAnalysis::Interaction&gt; IMatrix;
+<a name="36"><span class="lineNum">      36 </span>            : </a>
+<span class="lineNum">      37 </span>            : /// Binary interaction matrix with many fancy operations defined.
+<span class="lineNum">      38 </span><span class="lineCov">        270 : class Interaction_Matrix : private IMatrix  {</span>
+<span class="lineNum">      39 </span>            :   int the_size;
+<span class="lineNum">      40 </span>            :  public:
+<span class="lineNum">      41 </span>            :   const IMatrix &amp; CMatrix(){return *this;}
+<span class="lineNum">      42 </span>            : #if !defined(NO_POPULATION_DYNAMICS)
+<span class="lineNum">      43 </span>            :   std::simple_vector&lt; Species_List &gt; the_species;
+<span class="lineNum">      44 </span>            : #else
+<span class="lineNum">      45 </span>            :   std::simple_vector&lt;bool&gt; the_species; //dummy
+<span class="lineNum">      46 </span>            : #endif
+<span class="lineNum">      47 </span>            :   void label_species_by_index();
+<a name="48"><span class="lineNum">      48 </span>            :   typedef NetworkAnalysis::Interaction entry;</a>
+<span class="lineNum">      49 </span>            :   //Constructor &amp; Copy Constructor
+<span class="lineNum">      50 </span><span class="lineCov">         90 :   Interaction_Matrix(int size=0):</span>
+<span class="lineNum">      51 </span><span class="lineCov">        180 :     IMatrix(size,size),the_size(size),the_species(size){};</span>
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :   Interaction_Matrix(const IMatrix&amp; matrix):</span>
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 :     IMatrix(matrix),the_size(matrix.GetYSize()),the_species(the_size)</span>
+<span class="lineNum">      54 </span>            :     {
+<span class="lineNum">      55 </span>            :       ASSERT(matrix.GetXSize()==matrix.GetYSize());
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :       the_size=matrix.GetYSize();</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :     };</span>
+<span class="lineNum">      58 </span>            :   Interaction_Matrix(const Interaction_Matrix&amp; matrix);
+<span class="lineNum">      59 </span>            :   Interaction_Matrix const &amp; operator= (Interaction_Matrix const&amp; matrix);
+<span class="lineNum">      60 </span>            : #if 0 //defined(DEBUGGING) &amp; !defined(PARALLEL)
+<span class="lineNum">      61 </span>            :   const Container2DRow&lt;NetworkAnalysis::Interaction&gt; &amp; operator [] (int i) 
+<span class="lineNum">      62 </span>            :     const
+<span class="lineNum">      63 </span>            :   {
+<span class="lineNum">      64 </span>            :     return IMatrix::operator[](i);
+<span class="lineNum">      65 </span>            :   };
+<span class="lineNum">      66 </span>            :   accountingContainer2DRow &amp; operator [] (int i)  {
+<span class="lineNum">      67 </span>            :     return IMatrix::operator[](i);
+<span class="lineNum">      68 </span>            :   };
+<span class="lineNum">      69 </span>            : #else
+<span class="lineNum">      70 </span>            :   const NetworkAnalysis::Interaction * operator [] (int i) 
+<span class="lineNum">      71 </span>            :     const
+<span class="lineNum">      72 </span>            :     {
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :       return IMatrix::operator[](i);</span>
+<span class="lineNum">      74 </span>            :     };
+<span class="lineNum">      75 </span>            :   NetworkAnalysis::Interaction * operator [] (int i)  
+<span class="lineNum">      76 </span>            :     {
+<span class="lineNum">      77 </span><span class="lineCov">    3479560 :       return IMatrix::operator[](i);</span>
+<span class="lineNum">      78 </span>            :     };
+<span class="lineNum">      79 </span>            : #endif //DEBUGGING
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : public:
+<span class="lineNum">      82 </span>            :   // helper functions:
+<span class="lineNum">      83 </span>            :   Interaction_Matrix select(std::simple_vector&lt;bool&gt; &amp;sel) const;
+<span class="lineNum">      84 </span>            :   Interaction_Matrix permute(permutation new_pos) const;
+<span class="lineNum">      85 </span>            :   int size() const {return the_size;};
+<span class="lineNum">      86 </span>            : 
+<span class="lineNum">      87 </span>            : public:
+<span class="lineNum">      88 </span>            :   // here comes the actual analysis stuff:
+<span class="lineNum">      89 </span>            :   bool eats(int i, int j) const{
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     return (int)(*this)[i][j]==(int) NetworkAnalysis::eats;</span>
+<span class="lineNum">      91 </span>            :   }
+<span class="lineNum">      92 </span>            :   bool connected(int i, int j){
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :     return eats(i,j) || eats(j,i);</span>
+<span class="lineNum">      94 </span>            :   }
+<span class="lineNum">      95 </span>            :   int Number_of_Species_S() const;
+<span class="lineNum">      96 </span>            :   int Number_of_Links_L();
+<span class="lineNum">      97 </span>            :   void Print(std::ostream &amp;os = std::cout) const;
+<span class="lineNum">      98 </span>            :   void PPrint(std::ostream &amp;os = std::cout) const; 
+<span class="lineNum">      99 </span>            :   void tPrint(std::ostream &amp;os = std::cout) const;
+<span class="lineNum">     100 </span>            :   void pgm_write(const char * filename);
+<span class="lineNum">     101 </span>            :   double connectance_C();
+<span class="lineNum">     102 </span>            :   double links_per_species_Z();
+<span class="lineNum">     103 </span>            :   Interaction_Matrix msort(); //sort by mass
+<span class="lineNum">     104 </span>            :   Interaction_Matrix tsort(); // topologial sort
+<span class="lineNum">     105 </span>            :   Interaction_Matrix tsort2();
+<span class="lineNum">     106 </span>            :   Interaction_Matrix random_shuffle();
+<span class="lineNum">     107 </span>            :   Interaction_Matrix trophic();
+<span class="lineNum">     108 </span>            :   Interaction_Matrix randomize();
+<span class="lineNum">     109 </span>            :   Interaction_Matrix remove_lowest_level();
+<span class="lineNum">     110 </span>            :   Interaction_Matrix lump_lowest_level();
+<span class="lineNum">     111 </span>            :   Interaction_Matrix largest_connected_subweb() const;
+<span class="lineNum">     112 </span>            :   void cumulative_prey_hist(std::ostream &amp; co,
+<span class="lineNum">     113 </span>            :                             std::string prefix=&quot;&quot;);
+<span class="lineNum">     114 </span>            :   void cumulative_predator_hist(std::ostream &amp; co,
+<span class="lineNum">     115 </span>            :                                 std::string prefix=&quot;&quot;);
+<span class="lineNum">     116 </span>            :   void prey_hist(std::ostream &amp; co,
+<span class="lineNum">     117 </span>            :                             std::string prefix=&quot;&quot;);
+<span class="lineNum">     118 </span>            :   void predator_hist(std::ostream &amp; co,
+<span class="lineNum">     119 </span>            :                                 std::string prefix=&quot;&quot;);
+<span class="lineNum">     120 </span>            :   //typedef sequence&lt;long long int&gt; histogram;
+<span class="lineNum">     121 </span>            :   typedef sequence&lt;double&gt; histogram;
+<span class="lineNum">     122 </span>            :   typedef sequence&lt;double&gt; distribution;
+<span class="lineNum">     123 </span>            :   histogram cumulative_prey_hist();
+<span class="lineNum">     124 </span>            :   histogram cumulative_predator_hist();
+<span class="lineNum">     125 </span>            :   histogram prey_hist();
+<span class="lineNum">     126 </span>            :   histogram predator_hist();
+<span class="lineNum">     127 </span>            :   distribution theoretical_cumulative_prey_dist(int n, double Z=-1);
+<span class="lineNum">     128 </span>            :   distribution theoretical_cumulative_predator_dist(int n, double Z=-1);
+<span class="lineNum">     129 </span>            :   distribution theoretical_prey_dist(int n, double Z=-1);
+<span class="lineNum">     130 </span>            :   distribution theoretical_predator_dist(int n, double Z=-1);
+<span class="lineNum">     131 </span>            :   bool connected(); // web is connected?
+<span class="lineNum">     132 </span>            :   double prop_T();//fraction of top predators
+<span class="lineNum">     133 </span>            :   double prop_I();//fraction of intermediate species
+<span class="lineNum">     134 </span>            :   double prop_B();//fraction of bottom species
+<span class="lineNum">     135 </span>            :   double prop_GenSD();//std of prey count normalized to (L/S)
+<span class="lineNum">     136 </span>            :   double prop_VulSD();//std of predator count normalized to (L/S)
+<span class="lineNum">     137 </span>            :  private:
+<span class="lineNum">     138 </span>            :   double prop_T(histogram &amp; h);//fraction of top predators
+<span class="lineNum">     139 </span>            :   double prop_I(histogram &amp; h1, histogram &amp; h2);
+<span class="lineNum">     140 </span>            :   //fraction of intermediate species
+<span class="lineNum">     141 </span>            :   double prop_B(histogram &amp; h);//fraction of bottom species
+<span class="lineNum">     142 </span>            :   double prop_GenSD(histogram &amp; h);//std of prey count normalized to (L/S)
+<span class="lineNum">     143 </span>            :   double prop_VulSD(histogram &amp; h);//std of predator count normalized to (L/S)
+<span class="lineNum">     144 </span>            :  public:
+<span class="lineNum">     145 </span>            :   /* class similarity_matrix_t :  */
+<span class="lineNum">     146 </span>            :   /* public ublas::symmetric_matrix&lt;double&gt;{ */
+<span class="lineNum">     147 </span>            :   /* public: */
+<span class="lineNum">     148 </span>            :   /* similarity_matrix_t(int l) :  */
+<span class="lineNum">     149 </span>            :   /*   symmetric_matrix(NewZeroMatrix(l,l)){}; */
+<span class="lineNum">     150 </span>            :   /* similarity_matrix_t() : symmetric_matrix(0){} */
+<span class="lineNum">     151 </span>            :   /* }; */
+<span class="lineNum">     152 </span>            :   typedef NewMatrix similarity_matrix_t; // must enforce symmetry
+<span class="lineNum">     153 </span>            :   similarity_matrix_t
+<span class="lineNum">     154 </span>            :     similarity_s();//fraction of prey and predators shared by a pair
+<span class="lineNum">     155 </span>            :   double prop_MxSim();//web average over max s
+<span class="lineNum">     156 </span>            :   typedef sequence&lt;int&gt; food_chain_t;
+<span class="lineNum">     157 </span>            :   histogram chain_hist(); 
+<span class="lineNum">     158 </span>            :   //all loop-free directed chains starting from bottom
+<span class="lineNum">     159 </span>            :   double prop_ChnLg(histogram &amp; h); //average chain length
+<span class="lineNum">     160 </span>            :   double prop_ChnSD(histogram &amp; h); //std chain length
+<span class="lineNum">     161 </span>            :   double prop_ChnNo(histogram &amp; h); //log # of chains
+<span class="lineNum">     162 </span>            :   double prop_Cannib(); //cannibal fraction
+<span class="lineNum">     163 </span>            :   double prop_Loop(); //fraction of species involved in loops
+<span class="lineNum">     164 </span>            :   double prop_Omniv(); // fraction of species that have food chains of
+<span class="lineNum">     165 </span>            :                        // different length
+<span class="lineNum">     166 </span>            :   double prop_Clust(); // Clustering Coefficient
+<span class="lineNum">     167 </span>            :   double prop_Ddiet(bool FrenchVariant=false);
+<span class="lineNum">     168 </span>            :   int prop_Cy4() const;
+<span class="lineNum">     169 </span>            :   double prop_Nest(); // degree of nestedness
+<span class="lineNum">     170 </span>            :   enum {pS,pC,pZ,pT,pI,pB,pGenSD,pVulSD,pMxSim,
+<span class="lineNum">     171 </span>            :         pChnLg, pChnSD,pChnNo,pLoop,pCannib,pOmniv,
+<span class="lineNum">     172 </span>            :         poChnLg, poChnSD,poChnNo,poLoop,poOmniv,
+<span class="lineNum">     173 </span>            :         pDdiet,
+<span class="lineNum">     174 </span>            :         pfDdiet,
+<span class="lineNum">     175 </span>            :         pCy4,
+<span class="lineNum">     176 </span>            :         pNest,
+<span class="lineNum">     177 </span>            :         pClust,
+<span class="lineNum">     178 </span>            :         pSStab,
+<span class="lineNum">     179 </span>            :         pend} property_t;
+<span class="lineNum">     180 </span>            :   typedef sequence&lt;double&gt; prop_vec_t;
+<span class="lineNum">     181 </span>            :   prop_vec_t props(); // all properties.
+<span class="lineNum">     182 </span>            :   static sequence&lt;const char *&gt; prop_names(); // the names of these properties.
+<span class="lineNum">     183 </span>            :   void two_column_write(const std::string &amp; filename,std::string deliminter=&quot;,&quot;);
+<span class="lineNum">     184 </span>            :   distribution trophic_height_vector();
+<span class="lineNum">     185 </span>            :   histogram shortest_path_level_vector();
+<span class="lineNum">     186 </span>            :   void dot_graph(const std::string &amp; filename);
+<span class="lineNum">     187 </span>            :   double structural_stability();
+<span class="lineNum">     188 </span>            :   bool has_consecutive_ones();
+<span class="lineNum">     189 </span>            :   bool is_interval();
+<span class="lineNum">     190 </span>            :   bool is_chordal();
+<span class="lineNum">     191 </span>            : };
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span>            : bool has_consecutive_ones(const CMatrix&lt;NetworkAnalysis::Interaction&gt; &amp; m);
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            : std::istream &amp; operator&gt;&gt;(std::istream &amp;is, Interaction_Matrix &amp; im);
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : #include &quot;NetworkHelpers.h&quot; //only to force linking
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span>            : #endif //__NETWORK_ANALYSIS__
+<span class="lineNum">     200 </span>            : 
+<span class="lineNum">     201 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

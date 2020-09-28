@@ -1,0 +1,97 @@
+//$Id: scheduler.h 1431 2009-05-04 12:22:40Z axel $
+
+#ifndef _SCHEDULER_H_
+#define _SCHEDULER_H_
+
+#include <list>
+#include <limits>
+#include "error.h"
+
+// Forward declaration.
+class scheduler_entry_t;
+typedef scheduler_entry_t * scheduler_entry_pt;
+typedef std::list<scheduler_entry_pt> scheduler_entry_lt;
+
+/// A collection of scheduler_entry_t.
+/** Used to compute time_of_next_call over all scheduler_entry_t. */
+class scheduler_t {
+  scheduler_entry_lt the_entries;
+  scheduler_t(scheduler_t const &s)
+    {FATAL_ERROR("can't copy scheduler_t");}
+  scheduler_t & operator=(scheduler_t &s)
+    {
+      FATAL_ERROR("can't copy scheduler_t");
+      return *this;
+    }
+ public:
+  scheduler_t();
+  double time_of_next_call() const;
+  scheduler_t & add(scheduler_entry_t & e);
+  scheduler_t & remove(scheduler_entry_t & e);
+};
+
+/// Abstract base class for things to be scheduled.
+class scheduler_entry_t {
+ protected:
+  bool this_is_active;
+  virtual double next_call() const =0;
+  friend class scheduler_t;
+ public:
+  virtual ~scheduler_entry_t();
+  bool is_active();
+  /// See if the thing is due now (that is, at \a t).
+  /** due_now will only be true once for each time something needs to
+      be done.  Then you should do this thing. */
+  virtual bool due_now(double t) =0;
+};
+
+
+#ifndef HUGE_VAL
+#ifdef MAXFLOAT
+#define HUGE_VAL MAXFLOAT
+#else
+#ifdef HUGE
+#define HUGE_VAL HUGE
+#else
+#define HUGE_VAL 1e30
+#endif
+#endif
+#endif 
+
+/// Repeat this a give amount of time after due_now last returned true.
+/** First due at t=0 */
+class repeat_after_t : public scheduler_entry_t{
+ protected:
+  double the_dt;
+  double the_next_call;
+  double the_time_since_last_call;
+  static const double not_set;
+  double next_call() const;
+ public:
+  repeat_after_t(double dt,double start_time=0);
+  bool due_now(double t);
+  double time_since_last_call() const;
+  void reset(double t);
+};
+
+
+/// Repeat this a give amount of time after due_now last returned true.
+/** First due at t=dt. */
+class do_after_every_t : public repeat_after_t {
+ public:
+  do_after_every_t(double dt);
+};
+
+/// Repeat this at every multiple of dt.
+/** This scheduler tries to synchronize calls as much as possible to
+    the times dt*n, with integer n.  It does not become due at
+    start_time. */
+class at_multiples_of_t : public repeat_after_t{
+ public:
+  at_multiples_of_t(double dt,double start_time=0);
+  bool due_now(double t);
+  void reset(double t);
+};
+
+
+#endif //_SCHEDULER_H_

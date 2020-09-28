@@ -1,0 +1,322 @@
+// $Id: nls_web.cc 1306 2008-12-10 16:52:33Z axel $
+#include "nls_web.h"
+#include <fstream>
+#include <string.h>
+#include <algorithm>
+#include <math.h>
+
+using namespace std;
+
+static const int maxbuf=256;
+static char buffer[maxbuf];
+
+#if defined(ON_SX5FSV) || defined(SX)
+//#define isblank __isblank
+inline bool isblank(char c){
+  return c==' ';
+}
+#endif
+
+static int get_int3(istream &stream){
+  // this function is quite tricky to incorporate different variants
+  // of the SCOR file format.  Here are the rules:
+  // 1. the int is at most 3 digits long and may be preceeded by white space
+  // 2. if the int finishes before the last digit, and the last digit is not 
+  //    white space, this digit it pushed back.
+  stream.read(buffer,3);
+  buffer[3]=0;
+  //  cout << buffer << endl;
+  int i=0,j=0;
+  while(isblank(buffer[j])) j++; //assume '\000' is not blank!
+  if(!(isdigit(buffer[j]) || buffer[j]=='-' || buffer[j]=='+')){
+    FATAL_ERROR("syntax error");
+  };
+  int sign=1;
+  if(buffer[j]=='-'){
+    sign=-1;
+    j++;
+  } else if(buffer[j]=='+'){
+    j++;
+  }
+  while(isdigit(buffer[j])){
+    i*=10;
+    i+=(buffer[j]-'0');
+    j++;
+  }
+  if(j<3){
+    // perhaps we have to fix something
+    // first we expect a white space
+    if(isblank(buffer[j]) || iscntrl(buffer[j])){
+      if(isblank(buffer[j]))
+	stream.putback(buffer[2]);
+    }else{
+      FATAL_ERROR("syntax error");
+    }
+  }
+  return i*sign;
+}
+
+static double get_doubleline(istream &stream){
+  stream.getline(buffer,maxbuf);
+  //  cout << buffer << endl;
+  double f;
+  if(1!=sscanf(buffer,"%lf",&f))
+    FATAL_ERROR("syntax error");
+  return f;
+}
+
+std::istream & operator>>(std::istream &stream, 
+			  nls_vector &v){
+  while(true){
+    int i=get_int3(stream);
+    if(i==-1){
+      stream.getline(buffer,maxbuf);
+      break;
+    }
+    if(i>=999 || i < 1){
+      REPORT(i);
+      FATAL_ERROR("wrong index");
+    }
+    double x=get_doubleline(stream);
+    //    REPORT(i);
+    //    REPORT(x);
+    v[i-1]=x;
+  }
+  return stream;
+};
+
+std::istream & operator>>(std::istream &stream, 
+			  nls_matrix &v){
+  while(true){
+    int i=get_int3(stream);
+    if(i==-1){
+      stream.getline(buffer,maxbuf);
+      break;
+    }
+    if(i>=999 || i < 1){
+      REPORT(i);
+      FATAL_ERROR("wrong index");
+    }
+    int j=get_int3(stream);
+    if(j>=999 || j < 1){
+      REPORT(j);
+      FATAL_ERROR("wrong index");
+    }
+    double x=get_doubleline(stream);
+    //printf("%3i %3i %g\n",i,j,x);
+    v[i-1][j-1]=x;
+  }
+  return stream;
+}
+
+istream & operator>>(std::istream &s, 
+			  nls_web &w){
+  s.getline(buffer,maxbuf);
+  //  cout << buffer;
+  if(!s){
+    REPORT(strerror(errno));
+    FATAL_ERROR("error while reading from file");
+  }
+  w.header=string(buffer);
+  //  cerr << w.header << endl;
+  s.getline(buffer,maxbuf);
+  sscanf(buffer,"%3i%3i",&(w.size),&(w.number_of_living_compartments));
+  //printf("%3i %3i\n",(w.size),(w.number_of_living_compartments));
+  //  cerr << w.size <<" "<< w.number_of_living_compartments << endl;
+  for(int i=0;i<w.size;i++){
+    s.getline(buffer,maxbuf);
+    // delete trailing control characters:
+    string bs(buffer);
+    while(bs.size()>0 && iscntrl(bs[bs.size()-1])){
+      bs=bs.substr(0,bs.size()-1);
+    }
+    w.name[i]=bs;
+    int j;
+    float f;
+    if(2==sscanf(buffer,"%3i%f",&j,&f))
+      WARNING("\"" << buffer << "\" might not be a species name");
+    //    cout << buffer << endl;
+  }
+  //  cerr << w.name;
+  s >> w.biomass;
+  //  cerr << w.biomass;
+  s >> w.input;
+  //  cerr << w.input ;
+  s >> w.output;
+  //  cerr << w.output;
+  s >> w.respiration;
+  //  cerr << w.respiration;
+  s >> w.flow;
+  //  cerr << w.flow;
+  return s;
+}
+   
+sequence<double> nls_web::disposition(int i){
+  if(i>=number_of_living_compartments)
+    FATAL_ERROR("index too large");
+  if(i<0)
+    FATAL_ERROR("index too small");
+  // for all living species
+  double inflow_sum=0;
+  // for all potential prey
+  sequence<double> inflow;
+  for(int j=0;j<size;j++){
+    inflow_sum+=flow[j][i];
+    inflow[j]=flow[j][i];
+  }
+  sequence<double> disposition;
+  if(inflow_sum>0){
+    disposition=(inflow)/(biomass);
+  }
+  return disposition;
+}
+ 
+sequence<double> nls_web::preference(int i){
+  sequence<double> disp=disposition(i);
+  if(sum(disp)>0){
+    return disp/sum(disp);
+  }else{
+    return disp;
+  }
+}
+ 
+sequence<double> nls_web::inflows(int i){
+  if(i>=number_of_living_compartments)
+    FATAL_ERROR("index too large");
+  if(i<0)
+    FATAL_ERROR("index too small");
+  // for all potential prey
+  sequence<double> inflow;
+  for(int j=0;j<number_of_living_compartments;j++){
+    inflow[j]=flow[j][i];
+  }
+  return inflow;
+}
+ 
+sequence<double> nls_web::outflows(int i){
+  if(i>=number_of_living_compartments)
+    FATAL_ERROR("index too large");
+  if(i<0)
+    FATAL_ERROR("index too small");
+  // for all potential prey
+  sequence<double> outflow;
+  for(int j=0;j<number_of_living_compartments;j++){
+    outflow[j]=flow[i][j];
+  }
+  return outflow;
+}
+
+bool nls_web::is_lumped(int j){
+  return name[j][0]=='L' && name[j][1]==':';
+}
+
+void nls_web::strength_distribution(double threshold, const char * filename){
+  // FOR DEBUGGING OF MATRIX TRANSPOSITION
+//   int nspecialists=0;
+//   for(int i=number_of_living_compartments;i-->0;){
+//     int ninflows=0;
+//     for(int j=number_of_living_compartments;j-->0;){
+//       if(flow[j][i]>0) ninflows++;
+//     }
+//     if(ninflows==1) nspecialists++;
+//   }
+//   cout << nspecialists << " specialists" << endl;
+
+  std::ofstream os(filename);
+  sequence<double> strength;
+  double resolved_fraction_sum=0;
+  int nspecies_sampled=0;
+  for(int i=0;i<number_of_living_compartments;i++){
+    if(!is_lumped(i)){
+      nspecies_sampled++;
+      double lumped_inflow=0;
+      double resolved_inflow=0;
+      for(int j=0;j<number_of_living_compartments;j++){
+	if(is_lumped(j)){
+	  lumped_inflow+=flow[j][i];
+	}else{
+	  resolved_inflow+=flow[j][i];
+	}
+      }
+      double total_inflow=lumped_inflow+resolved_inflow;
+      if(total_inflow>0){
+	resolved_fraction_sum+=resolved_inflow/total_inflow;
+	for(int j=0;j<number_of_living_compartments;j++){
+	  if(!is_lumped(j) && flow[j][i]/total_inflow>threshold){
+	    strength[strength.size()]=flow[j][i]/total_inflow;
+	  }
+	}
+      }
+    }
+  }
+  REPORT(resolved_fraction_sum);
+  // sort in decreasing order (there was a better way to do this,
+  // right?):
+  strength*=-1;
+  sort(strength.begin(),strength.end());
+  strength*=-1;
+  // naming conventions here are based on diet.tex paper:
+  double Sff=sum(strength*strength);
+  double SSffik=0;
+  for(int i=0;i<strength.size();i++){
+    for(int k=i;k<strength.size();k++){
+      SSffik+=strength[i]*strength[k]*(i+1)/double(k+1);
+    }
+  }
+  double pSSfmm=0;
+  double pSf=0;
+  const double relative_error_guess=0.3;
+  for(int i=0;i<strength.size();i++){
+    pSf+=strength[i];
+    double Spp=0;
+    for(int k=0;k<strength.size();k++){
+      pSSfmm+=strength[k]*(min(i,k)+1)/double(max(i,k)+1);
+      double pk=(1-erf(fabs(strength[k]-strength[i])/
+		       (strength[k]*relative_error_guess*sqrt(2.0)) ))/2;
+      Spp+=pk*(1-pk);
+    }
+    double j=i+1;
+    double p=resolved_fraction_sum/nspecies_sampled;
+    double Sc=nspecies_sampled;
+    sequence<double> Zc_relative_variance;
+    Zc_relative_variance[0]=5.0/(3.0*Sc);
+    Zc_relative_variance[1]=1/j;
+    Zc_relative_variance[2]=(1-p)/(p*p*Sc*Sc)*Sff;
+    Zc_relative_variance[3]=-2*(1-p)/(j*p*Sc)*pSf;
+    Zc_relative_variance[4]=Spp/j/j;
+    Zc_relative_variance[5]=(1-p)*
+      relative_error_guess*relative_error_guess/(p*p*Sc*Sc)*Sff;
+    os << j/resolved_fraction_sum
+       << " " << strength[i] 
+       << " " << j/resolved_fraction_sum*sqrt(sum(Zc_relative_variance))
+       << " " << Zc_relative_variance 
+       << " " << Zc_relative_variance[5]+Zc_relative_variance[4] 
+       << " " << sum(Zc_relative_variance)
+       << endl;
+  }
+}
+
+nls_web & nls_web::operator+=( nls_web &  other){
+  if(number_of_living_compartments!=other.number_of_living_compartments)
+    FATAL_ERROR("number_of_living_compartments does not match");
+  if(size!=other.size)
+    FATAL_ERROR("size does not match");
+
+  biomass+=other.biomass;
+  input+=other.input;
+  output+=other.output;
+  respiration+=other.respiration;
+  flow+=other.flow;
+  return *this;
+}
+
+
+nls_matrix nls_web::trophic_intake_matrix(){
+  nls_matrix m;
+  for(int i=number_of_living_compartments;i-->0;){
+    for(int j=number_of_living_compartments;j-->0;){
+      m[j][i]=flow[i][j];
+    }
+  }
+  return m;
+}

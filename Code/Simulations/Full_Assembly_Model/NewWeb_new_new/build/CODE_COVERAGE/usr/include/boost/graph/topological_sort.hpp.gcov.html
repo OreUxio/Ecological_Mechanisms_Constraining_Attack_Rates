@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - NewWeb.info - /usr/include/boost/graph/topological_sort.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/include/boost/graph</a> - topological_sort.hpp<span style="font-size: 80%;"> (source / <a href="topological_sort.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">NewWeb.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-05-14 13:23:03</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //</a>
+<span class="lineNum">       2 </span>            : //=======================================================================
+<span class="lineNum">       3 </span>            : // Copyright 1997, 1998, 1999, 2000 University of Notre Dame.
+<span class="lineNum">       4 </span>            : // Authors: Andrew Lumsdaine, Lie-Quan Lee, Jeremy G. Siek
+<span class="lineNum">       5 </span>            : //
+<span class="lineNum">       6 </span>            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       7 </span>            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       8 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       9 </span>            : //=======================================================================
+<span class="lineNum">      10 </span>            : //
+<span class="lineNum">      11 </span>            : #ifndef BOOST_GRAPH_TOPOLOGICAL_SORT_HPP
+<span class="lineNum">      12 </span>            : #define BOOST_GRAPH_TOPOLOGICAL_SORT_HPP
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/property_map/property_map.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/graph/depth_first_search.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/graph/visitors.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/graph/exception.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/throw_exception.hpp&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : namespace boost { 
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            :   // Topological sort visitor
+<span class="lineNum">      25 </span>            :   //
+<span class="lineNum">      26 </span>            :   // This visitor merely writes the linear ordering into an
+<span class="lineNum">      27 </span>            :   // OutputIterator. The OutputIterator could be something like an
+<span class="lineNum">      28 </span>            :   // ostream_iterator, or it could be a back/front_insert_iterator.
+<span class="lineNum">      29 </span>            :   // Note that if it is a back_insert_iterator, the recorded order is
+<span class="lineNum">      30 </span>            :   // the reverse topological order. On the other hand, if it is a
+<span class="lineNum">      31 </span>            :   // front_insert_iterator, the recorded order is the topological
+<span class="lineNum">      32 </span>            :   // order.
+<span class="lineNum">      33 </span>            :   //
+<span class="lineNum">      34 </span>            :   template &lt;typename OutputIterator&gt;
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 :   struct topo_sort_visitor : public dfs_visitor&lt;&gt;</span>
+<span class="lineNum">      36 </span>            :   {
+<span class="lineNum">      37 </span>            :     topo_sort_visitor(OutputIterator _iter)
+<span class="lineNum">      38 </span><span class="lineNoCov">          0 :       : m_iter(_iter) { }</span>
+<a name="39"><span class="lineNum">      39 </span>            :     </a>
+<span class="lineNum">      40 </span>            :     template &lt;typename Edge, typename Graph&gt;
+<span class="lineNum">      41 </span><span class="lineNoCov">          0 :     void back_edge(const Edge&amp;, Graph&amp;) { BOOST_THROW_EXCEPTION(not_a_dag()); }</span>
+<span class="lineNum">      42 </span>            :     
+<span class="lineNum">      43 </span>            :     template &lt;typename Vertex, typename Graph&gt; 
+<span class="lineNum">      44 </span><span class="lineNoCov">          0 :     void finish_vertex(const Vertex&amp; u, Graph&amp;) { *m_iter++ = u; }</span>
+<span class="lineNum">      45 </span>            :     
+<span class="lineNum">      46 </span>            :     OutputIterator m_iter;
+<span class="lineNum">      47 </span>            :   };
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :   // Topological Sort
+<span class="lineNum">      51 </span>            :   //
+<span class="lineNum">      52 </span>            :   // The topological sort algorithm creates a linear ordering
+<span class="lineNum">      53 </span>            :   // of the vertices such that if edge (u,v) appears in the graph,
+<span class="lineNum">      54 </span>            :   // then u comes before v in the ordering. The graph must
+<span class="lineNum">      55 </span>            :   // be a directed acyclic graph (DAG). The implementation
+<span class="lineNum">      56 </span>            :   // consists mainly of a call to depth-first search.
+<span class="lineNum">      57 </span>            :   //
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :   template &lt;typename VertexListGraph, typename OutputIterator,
+<span class="lineNum">      60 </span>            :     typename P, typename T, typename R&gt;
+<span class="lineNum">      61 </span>            :   void topological_sort(VertexListGraph&amp; g, OutputIterator result,
+<span class="lineNum">      62 </span>            :                         const bgl_named_params&lt;P, T, R&gt;&amp; params)
+<span class="lineNum">      63 </span>            :   {
+<span class="lineNum">      64 </span>            :     typedef topo_sort_visitor&lt;OutputIterator&gt; TopoVisitor;
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :     depth_first_search(g, params.visitor(TopoVisitor(result)));</span>
+<span class="lineNum">      66 </span>            :   }
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            :   template &lt;typename VertexListGraph, typename OutputIterator&gt;
+<span class="lineNum">      69 </span>            :   void topological_sort(VertexListGraph&amp; g, OutputIterator result)
+<span class="lineNum">      70 </span>            :   {
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :     topological_sort(g, result, </span>
+<span class="lineNum">      72 </span>            :                      bgl_named_params&lt;int, buffer_param_t&gt;(0)); // bogus
+<span class="lineNum">      73 </span>            :   }
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : } // namespace boost
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : #endif /*BOOST_GRAPH_TOPOLOGICAL_SORT_H*/
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
