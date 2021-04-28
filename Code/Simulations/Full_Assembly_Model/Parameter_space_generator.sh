@@ -3,7 +3,7 @@
 mkdir Data/Raw/Full_assembly_model/Old
 mv Data/Raw/Full_assembly_model/* Data/Raw/Full_assembly_model/
 for ((a=1;a<10;a++)); do
-	for b in 5; do
+	for b in 4; do
         	for c in 250; do
 			target=$a
 			target+=_
